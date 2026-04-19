@@ -1,0 +1,308 @@
+{
+  "asset": {
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\text_note.md",
+    "metadata": {
+      "filename": "text_note.md",
+      "language": "mixed"
+    },
+    "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0001",
+      "content_type": "text",
+      "content": "# PostgreSQL Slow Query Review",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "2c13daad-4b7b-472d-b392-e56f92660bb7"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0002",
+      "content_type": "text",
+      "content": "## Context",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "ad5df780-f101-4de3-9a8d-331d79c5f39a"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0003",
+      "content_type": "text",
+      "content": "This note captures a repeatable way to review slow SQL queries before blindly adding indexes.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "e99975e5-1457-4958-b760-e422e24620c3"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0004",
+      "content_type": "text",
+      "content": "## Procedure",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "89649571-0e2e-4773-a42a-787c61a71e8b"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0005",
+      "content_type": "text",
+      "content": "1. Capture the worst queries from `pg_stat_statements`.\n2. Run `EXPLAIN ANALYZE` and compare the actual plan with the expected access path.\n3. Measure whether the bottleneck is I/O, CPU, or lock contention.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "117420a9-9b19-4189-8664-e711c03b7207"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0006",
+      "content_type": "text",
+      "content": "## Rules",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "eb4db591-cc97-4e2d-b994-1bf78250830b"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0007",
+      "content_type": "text",
+      "content": "If the query is I/O bound, review index coverage before rewriting business logic.\nIf row estimates diverge sharply from actual rows, inspect stale statistics.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "616e1a80-bfa1-416c-929a-bdd0c5752dfc"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0008",
+      "content_type": "text",
+      "content": "## Anti-patterns",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "4634db72-def8-414f-9a5d-e0f691060336"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0009",
+      "content_type": "text",
+      "content": "Avoid adding overlapping indexes without calculating write amplification.\nDo not change the query text and the index strategy at the same time.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "a9457bf8-9364-42d4-ab82-2db14fcc36e8"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0010",
+      "content_type": "text",
+      "content": "## Verification",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "b031dbc7-63dc-4d16-8de4-19a5286774b7"
+    },
+    {
+      "asset_id": "6b8dd7be-e3bd-42dd-8ff2-552292e52f69",
+      "span_ref": "paragraph:0011",
+      "content_type": "text",
+      "content": "Verify the fix by comparing latency, buffer hits, and row estimates before and after the change.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "f7b9f626-437d-4cf9-b470-e4660a0dcc1d"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "precondition",
+      "summary": "This note captures a repeatable way to review slow SQL queries before blindly adding indexes.",
+      "evidence_refs": [
+        "e99975e5-1457-4958-b760-e422e24620c3"
+      ],
+      "confidence": 0.72,
+      "insight_id": "05490518-020b-4001-a601-b8b9b5ff7a71"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Capture the worst queries from `pg_stat_statements`.",
+      "evidence_refs": [
+        "117420a9-9b19-4189-8664-e711c03b7207"
+      ],
+      "confidence": 0.82,
+      "insight_id": "8df8a349-6f33-4f57-9c2e-d227691b9dfe"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Run `EXPLAIN ANALYZE` and compare the actual plan with the expected access path.",
+      "evidence_refs": [
+        "117420a9-9b19-4189-8664-e711c03b7207"
+      ],
+      "confidence": 0.82,
+      "insight_id": "b3ec829d-7fbc-494d-8962-a20017099cf6"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Measure whether the bottleneck is I/O, CPU, or lock contention.",
+      "evidence_refs": [
+        "117420a9-9b19-4189-8664-e711c03b7207"
+      ],
+      "confidence": 0.82,
+      "insight_id": "137f66d7-4a14-4e8c-ac4a-f223279af408"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If the query is I/O bound, review index coverage before rewriting business logic.",
+      "evidence_refs": [
+        "616e1a80-bfa1-416c-929a-bdd0c5752dfc"
+      ],
+      "confidence": 0.72,
+      "insight_id": "622c3848-e21f-4f07-89b7-3a4f50bcbc2b"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If row estimates diverge sharply from actual rows, inspect stale statistics.",
+      "evidence_refs": [
+        "616e1a80-bfa1-416c-929a-bdd0c5752dfc"
+      ],
+      "confidence": 0.74,
+      "insight_id": "27b1d6ae-86e6-4c86-957c-49cbd6c60d3c"
+    },
+    {
+      "insight_type": "anti_pattern",
+      "summary": "Avoid adding overlapping indexes without calculating write amplification.",
+      "evidence_refs": [
+        "a9457bf8-9364-42d4-ab82-2db14fcc36e8"
+      ],
+      "confidence": 0.78,
+      "insight_id": "c9c087ff-c1fa-46af-b2d6-9fb7e02f66b9"
+    },
+    {
+      "insight_type": "anti_pattern",
+      "summary": "Do not change the query text and the index strategy at the same time.",
+      "evidence_refs": [
+        "a9457bf8-9364-42d4-ab82-2db14fcc36e8"
+      ],
+      "confidence": 0.78,
+      "insight_id": "936bc860-1cce-434c-9128-043b92489065"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify the fix by comparing latency, buffer hits, and row estimates before and after the change.",
+      "evidence_refs": [
+        "f7b9f626-437d-4cf9-b470-e4660a0dcc1d"
+      ],
+      "confidence": 0.75,
+      "insight_id": "826282ec-72ac-408e-92f4-c4d46bf5b9b6"
+    }
+  ],
+  "skill": {
+    "name": "PostgreSQL Slow Query Review",
+    "goal": "Distill database material into a build_skill for self. Seed: # PostgreSQL Slow Query Review",
+    "source_modality": "text",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert text evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Source document",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "This note captures a repeatable way to review slow SQL queries before blindly adding indexes.",
+      "If the query is I/O bound, review index coverage before rewriting business logic."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Capture the worst queries from `pg_stat_statements`.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Run `EXPLAIN ANALYZE` and compare the actual plan with the expected access path.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "Measure whether the bottleneck is I/O, CPU, or lock contention.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If row estimates diverge sharply from actual rows, inspect stale statistics."
+    ],
+    "anti_patterns": [
+      "Avoid adding overlapping indexes without calculating write amplification.",
+      "Do not change the query text and the index strategy at the same time."
+    ],
+    "verification": [
+      "Verify the fix by comparing latency, buffer hits, and row estimates before and after the change."
+    ],
+    "evidence_refs": [
+      "2c13daad-4b7b-472d-b392-e56f92660bb7@paragraph:0001",
+      "ad5df780-f101-4de3-9a8d-331d79c5f39a@paragraph:0002",
+      "e99975e5-1457-4958-b760-e422e24620c3@paragraph:0003",
+      "89649571-0e2e-4773-a42a-787c61a71e8b@paragraph:0004",
+      "117420a9-9b19-4189-8664-e711c03b7207@paragraph:0005",
+      "eb4db591-cc97-4e2d-b994-1bf78250830b@paragraph:0006",
+      "616e1a80-bfa1-416c-929a-bdd0c5752dfc@paragraph:0007",
+      "4634db72-def8-414f-9a5d-e0f691060336@paragraph:0008",
+      "a9457bf8-9364-42d4-ab82-2db14fcc36e8@paragraph:0009",
+      "b031dbc7-63dc-4d16-8de4-19a5286774b7@paragraph:0010",
+      "f7b9f626-437d-4cf9-b470-e4660a0dcc1d@paragraph:0011"
+    ],
+    "confidence": 0.95,
+    "version": "0.1.0",
+    "summary": "# PostgreSQL Slow Query Review",
+    "tags": [
+      "database",
+      "text",
+      "build_skill"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-19T13:02:09Z",
+    "skill_id": "9d1d59b6-ae5f-4570-9864-fb1c6b86f8cd"
+  },
+  "skill_markdown": "# PostgreSQL Slow Query Review\n\n## 判词\n# PostgreSQL Slow Query Review\n\n## 元信息\n- skill_id: 9d1d59b6-ae5f-4570-9864-fb1c6b86f8cd\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: text\n- review_status: draft\n- confidence: 0.95\n- created_at: 2026-04-19T13:02:09Z\n\n## 目标\nDistill database material into a build_skill for self. Seed: # PostgreSQL Slow Query Review\n\n## 触发条件\n- Use when you need to convert text evidence into a reusable build_skill.\n\n## 输入\n- Source document\n- Distillation goal\n\n## 前置条件\n- This note captures a repeatable way to review slow SQL queries before blindly adding indexes.\n- If the query is I/O bound, review index coverage before rewriting business logic.\n\n## 操作步骤\n1. Capture the worst queries from `pg_stat_statements`.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Run `EXPLAIN ANALYZE` and compare the actual plan with the expected access path.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n3. Measure whether the bottleneck is I/O, CPU, or lock contention.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- If row estimates diverge sharply from actual rows, inspect stale statistics.\n\n## 反模式\n- Avoid adding overlapping indexes without calculating write amplification.\n- Do not change the query text and the index strategy at the same time.\n\n## 验证方式\n- Verify the fix by comparing latency, buffer hits, and row estimates before and after the change.\n\n## 证据链\n- 2c13daad-4b7b-472d-b392-e56f92660bb7@paragraph:0001\n- ad5df780-f101-4de3-9a8d-331d79c5f39a@paragraph:0002\n- e99975e5-1457-4958-b760-e422e24620c3@paragraph:0003\n- 89649571-0e2e-4773-a42a-787c61a71e8b@paragraph:0004\n- 117420a9-9b19-4189-8664-e711c03b7207@paragraph:0005\n- eb4db591-cc97-4e2d-b994-1bf78250830b@paragraph:0006\n- 616e1a80-bfa1-416c-929a-bdd0c5752dfc@paragraph:0007\n- 4634db72-def8-414f-9a5d-e0f691060336@paragraph:0008\n- a9457bf8-9364-42d4-ab82-2db14fcc36e8@paragraph:0009\n- b031dbc7-63dc-4d16-8de4-19a5286774b7@paragraph:0010\n- f7b9f626-437d-4cf9-b470-e4660a0dcc1d@paragraph:0011\n\n## 标签\n- database\n- text\n- build_skill\n",
+  "request_payload": {
+    "title": null,
+    "content": null,
+    "file_path": "examples\\text_note.md",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "database"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\postgresql-slow-query-review-9d1d59b6\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\postgresql-slow-query-review-9d1d59b6\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\postgresql-slow-query-review-9d1d59b6\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\postgresql-slow-query-review-9d1d59b6\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\postgresql-slow-query-review-9d1d59b6\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\postgresql-slow-query-review-9d1d59b6\\bundle.json"
+  }
+}

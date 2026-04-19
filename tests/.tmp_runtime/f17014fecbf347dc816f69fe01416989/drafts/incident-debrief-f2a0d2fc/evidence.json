@@ -1,0 +1,32 @@
+[
+{
+  "asset_id": "30441828-7493-42c8-9d5c-099bd564108b",
+  "span_ref": "timestamp:0.00-3.00",
+  "content_type": "speech",
+  "content": "1. Rebuild the incident timeline.",
+  "speaker": null,
+  "confidence": 0.91,
+  "tags": [],
+  "evidence_id": "5ff52889-95fb-4560-a91e-633ae0cdb605"
+},
+{
+  "asset_id": "30441828-7493-42c8-9d5c-099bd564108b",
+  "span_ref": "timestamp:3.00-6.00",
+  "content_type": "speech",
+  "content": "If alerts duplicate, merge them into one incident stream.",
+  "speaker": null,
+  "confidence": 0.88,
+  "tags": [],
+  "evidence_id": "9a182992-9304-4128-a810-f4f45d815cf7"
+},
+{
+  "asset_id": "30441828-7493-42c8-9d5c-099bd564108b",
+  "span_ref": "timestamp:6.00-9.00",
+  "content_type": "speech",
+  "content": "Verify recovery with error rate and latency.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "6baae87c-23f1-44c0-8513-71b9a0514a1b"
+}
+]

@@ -1,0 +1,28 @@
+[
+{
+  "asset_id": "8b05f1fc-a945-43c2-8527-2ffd785dd0da",
+  "span_ref": "frame:0001:ocr",
+  "content_type": "ocr",
+  "content": "krvce JegrMed\n'mpon shanghr\nMt1an h1overrea0trarc",
+  "speaker": null,
+  "confidence": 0.75,
+  "tags": [
+    "engine:tesseract",
+    "source:keyframe"
+  ],
+  "evidence_id": "e5cc6880-e9b5-436c-94e6-6d97cf913dc1"
+},
+{
+  "asset_id": "8b05f1fc-a945-43c2-8527-2ffd785dd0da",
+  "span_ref": "frame:0002:ocr",
+  "content_type": "ocr",
+  "content": "krvce degraded\n'mpon shanghr\nMt1an fa1overreadtmffc",
+  "speaker": null,
+  "confidence": 0.75,
+  "tags": [
+    "engine:tesseract",
+    "source:keyframe"
+  ],
+  "evidence_id": "cf57a72a-968a-4b2d-8cf3-c7a8543a40af"
+}
+]

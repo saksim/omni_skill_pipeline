@@ -1,0 +1,171 @@
+{
+  "asset": {
+    "modality": "text",
+    "source_uri": "inline://text",
+    "metadata": {
+      "filename": "inline.txt",
+      "language": "mixed"
+    },
+    "asset_id": "dd9d713d-f625-4f16-a14e-9ca09ee9b81b"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "dd9d713d-f625-4f16-a14e-9ca09ee9b81b",
+      "span_ref": "paragraph:0001",
+      "content_type": "text",
+      "content": "# PostgreSQL Slow Query Review",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "25ac4591-4249-485d-8b0e-4720cd1cf273"
+    },
+    {
+      "asset_id": "dd9d713d-f625-4f16-a14e-9ca09ee9b81b",
+      "span_ref": "paragraph:0002",
+      "content_type": "text",
+      "content": "1. Capture the top slow queries from pg_stat_statements.\n2. Compare execution plans before changing indexes.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "356ab51b-1237-4bd4-8a9d-c2b917d351d9"
+    },
+    {
+      "asset_id": "dd9d713d-f625-4f16-a14e-9ca09ee9b81b",
+      "span_ref": "paragraph:0003",
+      "content_type": "text",
+      "content": "If the query is I/O bound, review the missing indexes first.\nAvoid adding overlapping indexes without measuring write amplification.\nVerify the new plan with EXPLAIN ANALYZE and compare latency.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "19e3ecc5-bf95-470a-a555-52e46302a3ad"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Capture the top slow queries from pg_stat_statements.",
+      "evidence_refs": [
+        "356ab51b-1237-4bd4-8a9d-c2b917d351d9"
+      ],
+      "confidence": 0.82,
+      "insight_id": "17e6479b-9527-41bb-842e-e7f81c49f058"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Compare execution plans before changing indexes.",
+      "evidence_refs": [
+        "356ab51b-1237-4bd4-8a9d-c2b917d351d9"
+      ],
+      "confidence": 0.82,
+      "insight_id": "23448a1d-526a-45f8-90fa-af12e74d0379"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If the query is I/O bound, review the missing indexes first.",
+      "evidence_refs": [
+        "19e3ecc5-bf95-470a-a555-52e46302a3ad"
+      ],
+      "confidence": 0.74,
+      "insight_id": "82b791ee-d419-4081-86df-82aa5dd7dbf5"
+    },
+    {
+      "insight_type": "anti_pattern",
+      "summary": "Avoid adding overlapping indexes without measuring write amplification.",
+      "evidence_refs": [
+        "19e3ecc5-bf95-470a-a555-52e46302a3ad"
+      ],
+      "confidence": 0.78,
+      "insight_id": "045379a9-8f68-434a-820c-a858f3d98476"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify the new plan with EXPLAIN ANALYZE and compare latency.",
+      "evidence_refs": [
+        "19e3ecc5-bf95-470a-a555-52e46302a3ad"
+      ],
+      "confidence": 0.75,
+      "insight_id": "52c9f442-7700-4899-84d1-6a7643171137"
+    }
+  ],
+  "skill": {
+    "name": "PostgreSQL Slow Query Review",
+    "goal": "Distill database material into a build_skill for self. Seed: # PostgreSQL Slow Query Review",
+    "source_modality": "text",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert text evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Source document",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Capture the top slow queries from pg_stat_statements.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Compare execution plans before changing indexes.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If the query is I/O bound, review the missing indexes first."
+    ],
+    "anti_patterns": [
+      "Avoid adding overlapping indexes without measuring write amplification."
+    ],
+    "verification": [
+      "Verify the new plan with EXPLAIN ANALYZE and compare latency."
+    ],
+    "evidence_refs": [
+      "25ac4591-4249-485d-8b0e-4720cd1cf273@paragraph:0001",
+      "356ab51b-1237-4bd4-8a9d-c2b917d351d9@paragraph:0002",
+      "19e3ecc5-bf95-470a-a555-52e46302a3ad@paragraph:0003"
+    ],
+    "confidence": 0.77,
+    "version": "0.1.0",
+    "summary": "# PostgreSQL Slow Query Review",
+    "tags": [
+      "database",
+      "text",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-19T14:17:22Z",
+    "skill_id": "7405c5b8-ace1-40e5-9817-9be13e68fe16"
+  },
+  "skill_markdown": "# PostgreSQL Slow Query Review\n\n## 判词\n# PostgreSQL Slow Query Review\n\n## 元信息\n- skill_id: 7405c5b8-ace1-40e5-9817-9be13e68fe16\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: text\n- review_status: draft\n- confidence: 0.77\n- created_at: 2026-04-19T14:17:22Z\n\n## 目标\nDistill database material into a build_skill for self. Seed: # PostgreSQL Slow Query Review\n\n## 触发条件\n- Use when you need to convert text evidence into a reusable build_skill.\n\n## 输入\n- Source document\n- Distillation goal\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Capture the top slow queries from pg_stat_statements.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Compare execution plans before changing indexes.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- If the query is I/O bound, review the missing indexes first.\n\n## 反模式\n- Avoid adding overlapping indexes without measuring write amplification.\n\n## 验证方式\n- Verify the new plan with EXPLAIN ANALYZE and compare latency.\n\n## 证据链\n- 25ac4591-4249-485d-8b0e-4720cd1cf273@paragraph:0001\n- 356ab51b-1237-4bd4-8a9d-c2b917d351d9@paragraph:0002\n- 19e3ecc5-bf95-470a-a555-52e46302a3ad@paragraph:0003\n\n## 标签\n- database\n- text\n- build_skill\n- heuristic\n",
+  "request_payload": {
+    "title": "PostgreSQL Slow Query Review",
+    "content": "# PostgreSQL Slow Query Review\n\n1. Capture the top slow queries from pg_stat_statements.\n2. Compare execution plans before changing indexes.\n\nIf the query is I/O bound, review the missing indexes first.\nAvoid adding overlapping indexes without measuring write amplification.\nVerify the new plan with EXPLAIN ANALYZE and compare latency.",
+    "file_path": null,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "database"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\aa309435369a4720a54662784fc62342\\drafts\\postgresql-slow-query-review-7405c5b8\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\aa309435369a4720a54662784fc62342\\drafts\\postgresql-slow-query-review-7405c5b8\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\aa309435369a4720a54662784fc62342\\drafts\\postgresql-slow-query-review-7405c5b8\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\aa309435369a4720a54662784fc62342\\drafts\\postgresql-slow-query-review-7405c5b8\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\aa309435369a4720a54662784fc62342\\drafts\\postgresql-slow-query-review-7405c5b8\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\aa309435369a4720a54662784fc62342\\drafts\\postgresql-slow-query-review-7405c5b8\\bundle.json"
+  },
+  "adapter_metadata": {
+    "format": ".txt"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "modality": "audio",
+  "source_uri": "examples\\audio_transcript.srt",
+  "metadata": {
+    "transcript_source": "audio_transcript.srt"
+  },
+  "asset_id": "45c57973-04e1-4153-9945-696da34d411d"
+}

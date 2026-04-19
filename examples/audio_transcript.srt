@@ -1,0 +1,16 @@
+1
+00:00:01,000 --> 00:00:05,000
+Rebuild the incident timeline before proposing a root cause.
+
+2
+00:00:06,000 --> 00:00:11,000
+If multiple alerts point to the same dependency, merge them into one incident stream.
+
+3
+00:00:12,000 --> 00:00:16,000
+Avoid changing configuration, code, and infrastructure in one mitigation step.
+
+4
+00:00:17,000 --> 00:00:22,000
+Verify recovery with latency, saturation, and error rate instead of a single metric.
+

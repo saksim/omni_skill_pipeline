@@ -1,0 +1,9 @@
+{
+  "modality": "audio",
+  "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\audio_transcript.srt",
+  "metadata": {
+    "transcript_source": "audio_transcript.srt",
+    "language": null
+  },
+  "asset_id": "a48fce8e-c10b-496e-805c-a5924b8849b0"
+}

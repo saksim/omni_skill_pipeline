@@ -1,0 +1,48 @@
+{
+  "name": "Incident Debrief",
+  "goal": "Distill ops material into a build_skill for self. Seed: 1. Rebuild the incident timeline.",
+  "source_modality": "audio",
+  "skill_type": "decision",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert audio evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Audio source or transcript",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Confirm the source material matches the declared distillation goal."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Rebuild the incident timeline.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [
+    "If alerts duplicate, merge them into one incident stream."
+  ],
+  "anti_patterns": [],
+  "verification": [
+    "Verify recovery with error rate and latency."
+  ],
+  "evidence_refs": [
+    "5ff52889-95fb-4560-a91e-633ae0cdb605@timestamp:0.00-3.00",
+    "9a182992-9304-4128-a810-f4f45d815cf7@timestamp:3.00-6.00",
+    "6baae87c-23f1-44c0-8513-71b9a0514a1b@timestamp:6.00-9.00"
+  ],
+  "confidence": 0.72,
+  "version": "0.1.0",
+  "summary": "1. Rebuild the incident timeline.",
+  "tags": [
+    "ops",
+    "audio",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-04-19T13:54:07Z",
+  "skill_id": "f2a0d2fc-90a4-490c-aace-d4ca71e55ded"
+}

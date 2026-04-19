@@ -1,0 +1,124 @@
+[
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0001",
+  "content_type": "text",
+  "content": "# PostgreSQL Slow Query Review",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "d047d775-16b8-41e1-b979-661e099d322f"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0002",
+  "content_type": "text",
+  "content": "## Context",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "8a83dc35-21cc-4dbf-a598-882734c7f97f"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0003",
+  "content_type": "text",
+  "content": "This note captures a repeatable way to review slow SQL queries before blindly adding indexes.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "51f1518c-63d2-42ce-bca9-aeb3d344c4f9"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0004",
+  "content_type": "text",
+  "content": "## Procedure",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "f14e142d-926a-416d-89ad-bfc5381a6902"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0005",
+  "content_type": "text",
+  "content": "1. Capture the worst queries from `pg_stat_statements`.\n2. Run `EXPLAIN ANALYZE` and compare the actual plan with the expected access path.\n3. Measure whether the bottleneck is I/O, CPU, or lock contention.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "d22440bb-f41a-40eb-9dd0-7f8e4cbd25eb"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0006",
+  "content_type": "text",
+  "content": "## Rules",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "1143b789-9c10-444a-afd0-ff63f9c5a457"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0007",
+  "content_type": "text",
+  "content": "If the query is I/O bound, review index coverage before rewriting business logic.\nIf row estimates diverge sharply from actual rows, inspect stale statistics.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "0dfc3974-c132-46bb-b1c0-a4035fa753ce"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0008",
+  "content_type": "text",
+  "content": "## Anti-patterns",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "9b03d248-6297-4308-81c2-f05bdf56c09d"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0009",
+  "content_type": "text",
+  "content": "Avoid adding overlapping indexes without calculating write amplification.\nDo not change the query text and the index strategy at the same time.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "a0183ba7-1e09-46f2-8720-a8d985045ba4"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0010",
+  "content_type": "text",
+  "content": "## Verification",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "ee5cc3ac-262b-47a1-8c48-581f9aab76ff"
+},
+{
+  "asset_id": "e8b008ba-3055-44d0-9d61-93f90a4e1046",
+  "span_ref": "paragraph:0011",
+  "content_type": "text",
+  "content": "Verify the fix by comparing latency, buffer hits, and row estimates before and after the change.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "46f4be3b-31b7-4047-bd83-b8f367d5fd93"
+}
+]

@@ -1,0 +1,147 @@
+{
+  "asset": {
+    "modality": "audio",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\incident.wav",
+    "metadata": {
+      "transcript_source": "provider:fake-transcriber",
+      "language": null
+    },
+    "asset_id": "9561bb5d-07ca-4b5c-953e-cdd5f2a2ec65"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "9561bb5d-07ca-4b5c-953e-cdd5f2a2ec65",
+      "span_ref": "timestamp:0.00-3.00",
+      "content_type": "speech",
+      "content": "1. Rebuild the incident timeline.",
+      "speaker": null,
+      "confidence": 0.91,
+      "tags": [],
+      "evidence_id": "b06884a2-8be1-40c2-b662-df846d5c9081"
+    },
+    {
+      "asset_id": "9561bb5d-07ca-4b5c-953e-cdd5f2a2ec65",
+      "span_ref": "timestamp:3.00-6.00",
+      "content_type": "speech",
+      "content": "If alerts duplicate, merge them into one incident stream.",
+      "speaker": null,
+      "confidence": 0.88,
+      "tags": [],
+      "evidence_id": "5a011704-f839-45ec-9121-8962f7d3d4ad"
+    },
+    {
+      "asset_id": "9561bb5d-07ca-4b5c-953e-cdd5f2a2ec65",
+      "span_ref": "timestamp:6.00-9.00",
+      "content_type": "speech",
+      "content": "Verify recovery with error rate and latency.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [],
+      "evidence_id": "35fff96a-5f64-41cf-8108-55819e2c03b1"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Rebuild the incident timeline.",
+      "evidence_refs": [
+        "b06884a2-8be1-40c2-b662-df846d5c9081"
+      ],
+      "confidence": 0.82,
+      "insight_id": "4ea34077-ddda-4d0f-9b80-ca00f48423fb"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If alerts duplicate, merge them into one incident stream.",
+      "evidence_refs": [
+        "5a011704-f839-45ec-9121-8962f7d3d4ad"
+      ],
+      "confidence": 0.74,
+      "insight_id": "8aab47c4-f90b-4d7b-88fa-6044da5df911"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify recovery with error rate and latency.",
+      "evidence_refs": [
+        "35fff96a-5f64-41cf-8108-55819e2c03b1"
+      ],
+      "confidence": 0.75,
+      "insight_id": "d2a6e6cd-8487-4b74-a9da-cfa645255b4c"
+    }
+  ],
+  "skill": {
+    "name": "Incident Debrief",
+    "goal": "Distill ops material into a build_skill for self. Seed: 1. Rebuild the incident timeline.",
+    "source_modality": "audio",
+    "skill_type": "decision",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert audio evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Audio source or transcript",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Rebuild the incident timeline.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If alerts duplicate, merge them into one incident stream."
+    ],
+    "anti_patterns": [],
+    "verification": [
+      "Verify recovery with error rate and latency."
+    ],
+    "evidence_refs": [
+      "b06884a2-8be1-40c2-b662-df846d5c9081@timestamp:0.00-3.00",
+      "5a011704-f839-45ec-9121-8962f7d3d4ad@timestamp:3.00-6.00",
+      "35fff96a-5f64-41cf-8108-55819e2c03b1@timestamp:6.00-9.00"
+    ],
+    "confidence": 0.72,
+    "version": "0.1.0",
+    "summary": "1. Rebuild the incident timeline.",
+    "tags": [
+      "ops",
+      "audio",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-19T14:17:22Z",
+    "skill_id": "0eb035df-69cb-41e7-964c-f3d77bdd04e8"
+  },
+  "skill_markdown": "# Incident Debrief\n\n## 判词\n1. Rebuild the incident timeline.\n\n## 元信息\n- skill_id: 0eb035df-69cb-41e7-964c-f3d77bdd04e8\n- version: 0.1.0\n- skill_type: decision\n- audience: self\n- source_modality: audio\n- review_status: draft\n- confidence: 0.72\n- created_at: 2026-04-19T14:17:22Z\n\n## 目标\nDistill ops material into a build_skill for self. Seed: 1. Rebuild the incident timeline.\n\n## 触发条件\n- Use when you need to convert audio evidence into a reusable build_skill.\n\n## 输入\n- Audio source or transcript\n- Distillation goal\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Rebuild the incident timeline.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- If alerts duplicate, merge them into one incident stream.\n\n## 反模式\n- None\n\n## 验证方式\n- Verify recovery with error rate and latency.\n\n## 证据链\n- b06884a2-8be1-40c2-b662-df846d5c9081@timestamp:0.00-3.00\n- 5a011704-f839-45ec-9121-8962f7d3d4ad@timestamp:3.00-6.00\n- 35fff96a-5f64-41cf-8108-55819e2c03b1@timestamp:6.00-9.00\n\n## 标签\n- ops\n- audio\n- build_skill\n- heuristic\n",
+  "request_payload": {
+    "title": "Incident Debrief",
+    "audio_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\incident.wav",
+    "transcript": null,
+    "transcript_path": null,
+    "language": null,
+    "prompt": null,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "ops"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\drafts\\incident-debrief-0eb035df\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\drafts\\incident-debrief-0eb035df\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\drafts\\incident-debrief-0eb035df\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\drafts\\incident-debrief-0eb035df\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\drafts\\incident-debrief-0eb035df\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\01d55d0f42f4448a83fd71a6db2619b8\\drafts\\incident-debrief-0eb035df\\bundle.json"
+  },
+  "adapter_metadata": {
+    "transcript_source": "provider:fake-transcriber"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "modality": "text",
+  "source_uri": "inline://text",
+  "metadata": {
+    "filename": "inline.txt",
+    "language": "mixed"
+  },
+  "asset_id": "dd9d713d-f625-4f16-a14e-9ca09ee9b81b"
+}

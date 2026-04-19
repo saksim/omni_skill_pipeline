@@ -1,0 +1,11 @@
+[
+{
+  "insight_type": "concept",
+  "summary": "Service status: degraded\nPrimary region: shanghai",
+  "evidence_refs": [
+    "bfc6fe90-448f-4e3e-ae6b-dc00ee0bf463"
+  ],
+  "confidence": 0.65,
+  "insight_id": "ed3b3aaa-3d2e-4158-badb-aea7b7fd79b2"
+}
+]

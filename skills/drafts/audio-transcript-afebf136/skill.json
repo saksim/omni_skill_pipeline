@@ -1,0 +1,61 @@
+{
+  "name": "audio transcript",
+  "goal": "Distill ops material into a build_skill for self. Seed: Rebuild the incident timeline before proposing a root cause.",
+  "source_modality": "audio",
+  "skill_type": "procedure",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert audio evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Audio source or transcript",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Rebuild the incident timeline before proposing a root cause."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Rebuild the incident timeline before proposing a root cause.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "If multiple alerts point to the same dependency, merge them into one incident stream.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 3,
+      "action": "Avoid changing configuration, code, and infrastructure in one mitigation step.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [
+    "If multiple alerts point to the same dependency, merge them into one incident stream."
+  ],
+  "anti_patterns": [
+    "Avoid changing configuration, code, and infrastructure in one mitigation step."
+  ],
+  "verification": [
+    "Verify recovery with latency, saturation, and error rate instead of a single metric."
+  ],
+  "evidence_refs": [
+    "711d0dbe-9c41-4e95-9442-f4bc0a57c09c@timestamp:1.00-5.00",
+    "ffbe737d-2ea7-4804-be4f-98b27d870223@timestamp:6.00-11.00",
+    "dde0da3a-1a5c-4db0-a8f0-4adb20482b6a@timestamp:12.00-16.00",
+    "0a55a2d8-2fb1-4c96-b7d1-420455057cc3@timestamp:17.00-22.00"
+  ],
+  "confidence": 0.86,
+  "version": "0.1.0",
+  "summary": "Rebuild the incident timeline before proposing a root cause.",
+  "tags": [
+    "ops",
+    "audio",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-04-19T13:54:34Z",
+  "skill_id": "afebf136-2840-43ae-a2f2-25b6b3d28508"
+}

@@ -1,0 +1,376 @@
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field, fields, is_dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Type, TypeVar
+from uuid import uuid4
+
+
+class Modality(str, Enum):
+    TEXT = 'text'
+    AUDIO = 'audio'
+    VIDEO = 'video'
+    IMAGE = 'image'
+    TABULAR = 'tabular'
+
+
+class ContentType(str, Enum):
+    TEXT = 'text'
+    SPEECH = 'speech'
+    TABLE = 'table'
+    OCR = 'ocr'
+    SCENE = 'scene'
+    METRIC = 'metric'
+    EVENT = 'event'
+
+
+class InsightType(str, Enum):
+    CONCEPT = 'concept'
+    PROCEDURE = 'procedure'
+    RULE = 'rule'
+    ANTI_PATTERN = 'anti_pattern'
+    VERIFICATION = 'verification'
+    PRECONDITION = 'precondition'
+
+
+class SkillType(str, Enum):
+    PROCEDURE = 'procedure'
+    DECISION = 'decision'
+    DIAGNOSTIC = 'diagnostic'
+    ANALYSIS = 'analysis'
+    COMMUNICATION = 'communication'
+    AUTOMATION = 'automation'
+
+
+class ReviewStatus(str, Enum):
+    DRAFT = 'draft'
+    REVIEW_PENDING = 'review_pending'
+    PUBLISHED = 'published'
+    REJECTED = 'rejected'
+
+
+class GoalType(str, Enum):
+    BUILD_SKILL = 'build_skill'
+    BUILD_PLAYBOOK = 'build_playbook'
+    EXTRACT_DECISION_TREE = 'extract_decision_tree'
+    EXTRACT_CHECKLIST = 'extract_checklist'
+
+
+class Audience(str, Enum):
+    SELF = 'self'
+    JUNIOR = 'junior'
+    EXPERT = 'expert'
+
+
+class Rigor(str, Enum):
+    DRAFT = 'draft'
+    REVIEWED = 'reviewed'
+    PUBLISHABLE = 'publishable'
+
+
+class Granularity(str, Enum):
+    MICRO = 'micro'
+    TASK = 'task'
+    WORKFLOW = 'workflow'
+
+
+EnumType = TypeVar('EnumType', bound=Enum)
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+
+
+def new_id() -> str:
+    return str(uuid4())
+
+
+def parse_enum(enum_type: Type[EnumType], value: Any, field_name: str) -> EnumType:
+    if isinstance(value, enum_type):
+        return value
+    if value is None:
+        raise ValueError('Missing enum value for %s' % field_name)
+    try:
+        return enum_type(value)
+    except ValueError as exc:
+        valid = ', '.join(member.value for member in enum_type)
+        raise ValueError('%s must be one of: %s' % (field_name, valid)) from exc
+
+
+def to_primitive(value: Any) -> Any:
+    if isinstance(value, Enum):
+        return value.value
+    if is_dataclass(value):
+        return {
+            field_info.name: to_primitive(getattr(value, field_info.name))
+            for field_info in fields(value)
+        }
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, list):
+        return [to_primitive(item) for item in value]
+    if isinstance(value, tuple):
+        return [to_primitive(item) for item in value]
+    if isinstance(value, dict):
+        return {str(key): to_primitive(item) for key, item in value.items()}
+    return value
+
+
+class SerializableMixin(object):
+    def to_dict(self) -> Dict[str, Any]:
+        return to_primitive(self)
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict(), ensure_ascii=False, indent=2)
+
+
+@dataclass(slots=True)
+class DistillGoal(SerializableMixin):
+    goal_type: GoalType = GoalType.BUILD_SKILL
+    audience: Audience = Audience.SELF
+    rigor: Rigor = Rigor.DRAFT
+    granularity: Granularity = Granularity.TASK
+    domain: str = 'general'
+
+    @classmethod
+    def from_dict(cls, payload: Optional[Dict[str, Any]]) -> 'DistillGoal':
+        payload = payload or {}
+        return cls(
+            goal_type=parse_enum(GoalType, payload.get('goal_type', GoalType.BUILD_SKILL.value), 'goal_type'),
+            audience=parse_enum(Audience, payload.get('audience', Audience.SELF.value), 'audience'),
+            rigor=parse_enum(Rigor, payload.get('rigor', Rigor.DRAFT.value), 'rigor'),
+            granularity=parse_enum(
+                Granularity,
+                payload.get('granularity', Granularity.TASK.value),
+                'granularity',
+            ),
+            domain=str(payload.get('domain', 'general')).strip() or 'general',
+        )
+
+
+@dataclass(slots=True)
+class Asset(SerializableMixin):
+    modality: Modality
+    source_uri: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    asset_id: str = field(default_factory=new_id)
+
+
+@dataclass(slots=True)
+class EvidenceUnit(SerializableMixin):
+    asset_id: str
+    span_ref: str
+    content_type: ContentType
+    content: str
+    speaker: Optional[str] = None
+    confidence: float = 0.8
+    tags: List[str] = field(default_factory=list)
+    evidence_id: str = field(default_factory=new_id)
+
+
+@dataclass(slots=True)
+class Insight(SerializableMixin):
+    insight_type: InsightType
+    summary: str
+    evidence_refs: List[str]
+    confidence: float = 0.7
+    insight_id: str = field(default_factory=new_id)
+
+
+@dataclass(slots=True)
+class SkillStep(SerializableMixin):
+    step: int
+    action: str
+    why: str = ''
+
+
+@dataclass(slots=True)
+class SkillDocument(SerializableMixin):
+    name: str
+    goal: str
+    source_modality: Modality
+    skill_type: SkillType = SkillType.PROCEDURE
+    audience: Audience = Audience.SELF
+    trigger: List[str] = field(default_factory=list)
+    inputs: List[str] = field(default_factory=list)
+    preconditions: List[str] = field(default_factory=list)
+    steps: List[SkillStep] = field(default_factory=list)
+    decision_rules: List[str] = field(default_factory=list)
+    anti_patterns: List[str] = field(default_factory=list)
+    verification: List[str] = field(default_factory=list)
+    evidence_refs: List[str] = field(default_factory=list)
+    confidence: float = 0.6
+    version: str = '0.1.0'
+    summary: str = ''
+    tags: List[str] = field(default_factory=list)
+    review_status: ReviewStatus = ReviewStatus.DRAFT
+    created_at: str = field(default_factory=utc_now_iso)
+    skill_id: str = field(default_factory=new_id)
+
+
+@dataclass(slots=True)
+class LoadedAsset(SerializableMixin):
+    asset: Asset
+    evidence_units: List[EvidenceUnit]
+    title_hint: str
+    adapter_metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
+class DistillBundle(SerializableMixin):
+    asset: Asset
+    evidence_units: List[EvidenceUnit]
+    insights: List[Insight]
+    skill: SkillDocument
+    skill_markdown: str
+    request_payload: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, str] = field(default_factory=dict)
+    adapter_metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+class RequestMixin(SerializableMixin):
+    def validate(self) -> None:  # pragma: no cover - interface default
+        raise NotImplementedError
+
+
+@dataclass(slots=True)
+class TextDistillRequest(RequestMixin):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    file_path: Optional[str] = None
+    goal: DistillGoal = field(default_factory=DistillGoal)
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> 'TextDistillRequest':
+        return cls(
+            title=payload.get('title'),
+            content=payload.get('content'),
+            file_path=payload.get('file_path'),
+            goal=DistillGoal.from_dict(payload.get('goal')),
+        )
+
+    def validate(self) -> None:
+        if not (self.content or self.file_path):
+            raise ValueError('Text request requires content or file_path.')
+
+
+@dataclass(slots=True)
+class AudioDistillRequest(RequestMixin):
+    title: Optional[str] = None
+    audio_path: Optional[str] = None
+    transcript: Optional[str] = None
+    transcript_path: Optional[str] = None
+    language: Optional[str] = None
+    prompt: Optional[str] = None
+    goal: DistillGoal = field(default_factory=DistillGoal)
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> 'AudioDistillRequest':
+        return cls(
+            title=payload.get('title'),
+            audio_path=payload.get('audio_path'),
+            transcript=payload.get('transcript'),
+            transcript_path=payload.get('transcript_path'),
+            language=payload.get('language'),
+            prompt=payload.get('prompt'),
+            goal=DistillGoal.from_dict(payload.get('goal')),
+        )
+
+    def validate(self) -> None:
+        if not (self.transcript or self.transcript_path or self.audio_path):
+            raise ValueError('Audio request requires transcript, transcript_path, or audio_path.')
+
+
+@dataclass(slots=True)
+class ImageDistillRequest(RequestMixin):
+    image_path: str
+    title: Optional[str] = None
+    goal: DistillGoal = field(default_factory=DistillGoal)
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> 'ImageDistillRequest':
+        return cls(
+            image_path=payload['image_path'],
+            title=payload.get('title'),
+            goal=DistillGoal.from_dict(payload.get('goal')),
+        )
+
+    def validate(self) -> None:
+        if not self.image_path:
+            raise ValueError('Image request requires image_path.')
+
+
+@dataclass(slots=True)
+class TabularDistillRequest(RequestMixin):
+    file_path: str
+    title: Optional[str] = None
+    time_column: Optional[str] = None
+    value_columns: List[str] = field(default_factory=list)
+    entity_columns: List[str] = field(default_factory=list)
+    max_series: int = 6
+    goal: DistillGoal = field(default_factory=DistillGoal)
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> 'TabularDistillRequest':
+        return cls(
+            file_path=payload['file_path'],
+            title=payload.get('title'),
+            time_column=payload.get('time_column'),
+            value_columns=[str(item) for item in payload.get('value_columns', [])],
+            entity_columns=[str(item) for item in payload.get('entity_columns', [])],
+            max_series=int(payload.get('max_series', 6)),
+            goal=DistillGoal.from_dict(payload.get('goal')),
+        )
+
+    def validate(self) -> None:
+        if not self.file_path:
+            raise ValueError('Tabular request requires file_path.')
+        if self.max_series < 1:
+            raise ValueError('max_series must be >= 1.')
+
+
+@dataclass(slots=True)
+class VideoDistillRequest(RequestMixin):
+    video_path: str
+    title: Optional[str] = None
+    transcript: Optional[str] = None
+    transcript_path: Optional[str] = None
+    language: Optional[str] = None
+    prompt: Optional[str] = None
+    keyframe_interval_seconds: Optional[int] = None
+    max_keyframes: Optional[int] = None
+    scene_threshold: Optional[float] = None
+    dedupe_distance: Optional[int] = None
+    goal: DistillGoal = field(default_factory=DistillGoal)
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> 'VideoDistillRequest':
+        return cls(
+            video_path=payload['video_path'],
+            title=payload.get('title'),
+            transcript=payload.get('transcript'),
+            transcript_path=payload.get('transcript_path'),
+            language=payload.get('language'),
+            prompt=payload.get('prompt'),
+            keyframe_interval_seconds=payload.get('keyframe_interval_seconds'),
+            max_keyframes=payload.get('max_keyframes'),
+            scene_threshold=payload.get('scene_threshold'),
+            dedupe_distance=payload.get('dedupe_distance'),
+            goal=DistillGoal.from_dict(payload.get('goal')),
+        )
+
+    def validate(self) -> None:
+        if not self.video_path:
+            raise ValueError('Video request requires video_path.')
+        if self.max_keyframes is not None and self.max_keyframes < 1:
+            raise ValueError('max_keyframes must be >= 1.')
+        if self.dedupe_distance is not None and self.dedupe_distance < 0:
+            raise ValueError('dedupe_distance must be >= 0.')
+        if self.scene_threshold is not None and not 0 <= self.scene_threshold <= 1:
+            raise ValueError('scene_threshold must be between 0 and 1.')
+
+
+DistillRequest = TypeVar('DistillRequest', bound=RequestMixin)

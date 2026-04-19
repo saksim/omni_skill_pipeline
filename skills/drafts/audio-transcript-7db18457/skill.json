@@ -1,0 +1,60 @@
+{
+  "name": "audio transcript",
+  "goal": "Distill ops material into a build_skill for self. Seed: Rebuild the incident timeline before proposing a root cause.",
+  "source_modality": "audio",
+  "skill_type": "decision",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert audio evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Audio source or transcript",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Rebuild the incident timeline before proposing a root cause."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Rebuild the incident timeline before proposing a root cause.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "If multiple alerts point to the same dependency, merge them into one incident stream.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 3,
+      "action": "Avoid changing configuration, code, and infrastructure in one mitigation step.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [
+    "If multiple alerts point to the same dependency, merge them into one incident stream."
+  ],
+  "anti_patterns": [
+    "Avoid changing configuration, code, and infrastructure in one mitigation step."
+  ],
+  "verification": [
+    "Verify recovery with latency, saturation, and error rate instead of a single metric."
+  ],
+  "evidence_refs": [
+    "db3d0845-fb82-4366-aa5f-8cbef1492eb1@timestamp:00:00:01,000-00:00:05,000",
+    "3e1f418d-cc46-417a-852b-f64fb3425c9c@timestamp:00:00:06,000-00:00:11,000",
+    "1d7d64dc-59cc-4c95-8096-42e26f264a80@timestamp:00:00:12,000-00:00:16,000",
+    "55008c57-6f93-4195-ade7-5d9684a5800b@timestamp:00:00:17,000-00:00:22,000"
+  ],
+  "confidence": 0.9,
+  "version": "0.1.0",
+  "summary": "Rebuild the incident timeline before proposing a root cause.",
+  "tags": [
+    "ops",
+    "audio",
+    "build_skill"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-04-19T13:02:09Z",
+  "skill_id": "7db18457-cdf0-4e07-b654-ed607a1ea8a9"
+}

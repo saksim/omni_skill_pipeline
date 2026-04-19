@@ -1,0 +1,83 @@
+[
+{
+  "insight_type": "precondition",
+  "summary": "This note captures a repeatable way to review slow SQL queries before blindly adding indexes.",
+  "evidence_refs": [
+    "d6003682-aa57-47c0-8e5a-d9c47a3914b2"
+  ],
+  "confidence": 0.72,
+  "insight_id": "7ff3297f-9af9-4e22-ab51-f53101d8577b"
+},
+{
+  "insight_type": "procedure",
+  "summary": "Capture the worst queries from `pg_stat_statements`.",
+  "evidence_refs": [
+    "51848cbe-782a-409f-aa66-6dc38e370820"
+  ],
+  "confidence": 0.82,
+  "insight_id": "aa7cce03-3ecc-4b62-beaa-d050e3eadd00"
+},
+{
+  "insight_type": "procedure",
+  "summary": "Run `EXPLAIN ANALYZE` and compare the actual plan with the expected access path.",
+  "evidence_refs": [
+    "51848cbe-782a-409f-aa66-6dc38e370820"
+  ],
+  "confidence": 0.82,
+  "insight_id": "5794c54b-9f00-415c-9597-c79056e4fef6"
+},
+{
+  "insight_type": "procedure",
+  "summary": "Measure whether the bottleneck is I/O, CPU, or lock contention.",
+  "evidence_refs": [
+    "51848cbe-782a-409f-aa66-6dc38e370820"
+  ],
+  "confidence": 0.82,
+  "insight_id": "b5f501d5-0840-4e73-8916-1fac46d57991"
+},
+{
+  "insight_type": "precondition",
+  "summary": "If the query is I/O bound, review index coverage before rewriting business logic.",
+  "evidence_refs": [
+    "ea1c71c4-18e5-4e23-8ce5-94421ea7efc5"
+  ],
+  "confidence": 0.72,
+  "insight_id": "a80b278d-a808-4add-b490-4810057ca034"
+},
+{
+  "insight_type": "rule",
+  "summary": "If row estimates diverge sharply from actual rows, inspect stale statistics.",
+  "evidence_refs": [
+    "ea1c71c4-18e5-4e23-8ce5-94421ea7efc5"
+  ],
+  "confidence": 0.74,
+  "insight_id": "5360d9c4-1213-438a-a1a8-420c7bcf4305"
+},
+{
+  "insight_type": "anti_pattern",
+  "summary": "Avoid adding overlapping indexes without calculating write amplification.",
+  "evidence_refs": [
+    "e2feaf12-5821-4911-82be-7e40402b8e09"
+  ],
+  "confidence": 0.78,
+  "insight_id": "735ec202-9add-4426-be61-4a6bdcff6f0b"
+},
+{
+  "insight_type": "anti_pattern",
+  "summary": "Do not change the query text and the index strategy at the same time.",
+  "evidence_refs": [
+    "e2feaf12-5821-4911-82be-7e40402b8e09"
+  ],
+  "confidence": 0.78,
+  "insight_id": "05c4eb68-3fa3-42a7-b381-0055e0e592b8"
+},
+{
+  "insight_type": "verification",
+  "summary": "Verify the fix by comparing latency, buffer hits, and row estimates before and after the change.",
+  "evidence_refs": [
+    "233a0a20-86cd-4425-98c9-67db331aa6fa"
+  ],
+  "confidence": 0.75,
+  "insight_id": "0065e89c-790d-41e2-9744-8b88da274085"
+}
+]

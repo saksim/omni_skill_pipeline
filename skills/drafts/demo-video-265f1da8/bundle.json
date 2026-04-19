@@ -1,0 +1,134 @@
+{
+  "asset": {
+    "modality": "video",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\demo_video.mp4",
+    "metadata": {
+      "filename": "demo_video.mp4"
+    },
+    "asset_id": "8b05f1fc-a945-43c2-8527-2ffd785dd0da"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "8b05f1fc-a945-43c2-8527-2ffd785dd0da",
+      "span_ref": "frame:0001:ocr",
+      "content_type": "ocr",
+      "content": "krvce JegrMed\n'mpon shanghr\nMt1an h1overrea0trarc",
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:tesseract",
+        "source:keyframe"
+      ],
+      "evidence_id": "e5cc6880-e9b5-436c-94e6-6d97cf913dc1"
+    },
+    {
+      "asset_id": "8b05f1fc-a945-43c2-8527-2ffd785dd0da",
+      "span_ref": "frame:0002:ocr",
+      "content_type": "ocr",
+      "content": "krvce degraded\n'mpon shanghr\nMt1an fa1overreadtmffc",
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:tesseract",
+        "source:keyframe"
+      ],
+      "evidence_id": "cf57a72a-968a-4b2d-8cf3-c7a8543a40af"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "concept",
+      "summary": "krvce JegrMed\n'mpon shanghr\nMt1an h1overrea0trarc",
+      "evidence_refs": [
+        "e5cc6880-e9b5-436c-94e6-6d97cf913dc1"
+      ],
+      "confidence": 0.65,
+      "insight_id": "4949dc16-719e-4ba1-9132-c6c444e12586"
+    }
+  ],
+  "skill": {
+    "name": "demo video",
+    "goal": "Distill incident_response material into a build_skill for self. Seed: krvce JegrMed 'mpon shanghr Mt1an h1overrea0trarc",
+    "source_modality": "video",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert video evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Video source",
+      "Distillation goal",
+      "Keyframe/OCR evidence"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "krvce JegrMed 'mpon shanghr Mt1an h1overrea0trarc",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "krvce degraded 'mpon shanghr Mt1an fa1overreadtmffc",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "e5cc6880-e9b5-436c-94e6-6d97cf913dc1@frame:0001:ocr",
+      "cf57a72a-968a-4b2d-8cf3-c7a8543a40af@frame:0002:ocr"
+    ],
+    "confidence": 0.63,
+    "version": "0.1.0",
+    "summary": "krvce JegrMed 'mpon shanghr Mt1an h1overrea0trarc",
+    "tags": [
+      "incident_response",
+      "video",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-19T14:17:36Z",
+    "skill_id": "265f1da8-0a28-4cea-a975-bc3f2233dd71"
+  },
+  "skill_markdown": "# demo video\n\n## 判词\nkrvce JegrMed 'mpon shanghr Mt1an h1overrea0trarc\n\n## 元信息\n- skill_id: 265f1da8-0a28-4cea-a975-bc3f2233dd71\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: video\n- review_status: draft\n- confidence: 0.63\n- created_at: 2026-04-19T14:17:36Z\n\n## 目标\nDistill incident_response material into a build_skill for self. Seed: krvce JegrMed 'mpon shanghr Mt1an h1overrea0trarc\n\n## 触发条件\n- Use when you need to convert video evidence into a reusable build_skill.\n\n## 输入\n- Video source\n- Distillation goal\n- Keyframe/OCR evidence\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. krvce JegrMed 'mpon shanghr Mt1an h1overrea0trarc\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. krvce degraded 'mpon shanghr Mt1an fa1overreadtmffc\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- None\n\n## 反模式\n- None\n\n## 验证方式\n- Confirm each key conclusion can be traced back to evidence_refs.\n- Run one manual rehearsal to verify the steps are executable.\n\n## 证据链\n- e5cc6880-e9b5-436c-94e6-6d97cf913dc1@frame:0001:ocr\n- cf57a72a-968a-4b2d-8cf3-c7a8543a40af@frame:0002:ocr\n\n## 标签\n- incident_response\n- video\n- build_skill\n- heuristic\n",
+  "request_payload": {
+    "video_path": "examples\\demo_video.mp4",
+    "title": null,
+    "transcript": null,
+    "transcript_path": null,
+    "language": null,
+    "prompt": null,
+    "keyframe_interval_seconds": null,
+    "max_keyframes": 2,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "incident_response"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-video-265f1da8\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-video-265f1da8\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-video-265f1da8\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-video-265f1da8\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-video-265f1da8\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-video-265f1da8\\bundle.json"
+  },
+  "adapter_metadata": {
+    "video_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\demo_video.mp4",
+    "keyframes": [
+      "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.tmp_omni_media\\omni_video_4fbd32b3168746a39096e7f785659319\\frame_fallback_001.jpg",
+      "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.tmp_omni_media\\omni_video_4fbd32b3168746a39096e7f785659319\\frame_fallback_002.jpg"
+    ]
+  }
+}

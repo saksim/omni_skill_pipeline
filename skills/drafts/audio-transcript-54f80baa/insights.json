@@ -1,0 +1,38 @@
+[
+{
+  "insight_type": "precondition",
+  "summary": "Rebuild the incident timeline before proposing a root cause.",
+  "evidence_refs": [
+    "b8b17793-7216-4a53-a56f-a9f76d49a397"
+  ],
+  "confidence": 0.72,
+  "insight_id": "23b3fe07-96c2-46e9-9637-623815b2e4a9"
+},
+{
+  "insight_type": "rule",
+  "summary": "If multiple alerts point to the same dependency, merge them into one incident stream.",
+  "evidence_refs": [
+    "7ed062ff-cf8a-40b5-8d8e-b4399146a2fb"
+  ],
+  "confidence": 0.74,
+  "insight_id": "fc8f7ee3-91ac-4a12-9f8a-8d2358a38e05"
+},
+{
+  "insight_type": "anti_pattern",
+  "summary": "Avoid changing configuration, code, and infrastructure in one mitigation step.",
+  "evidence_refs": [
+    "17fc270e-f331-4761-8dad-72b891d18af4"
+  ],
+  "confidence": 0.78,
+  "insight_id": "d69761cf-3c8f-4093-856e-aa10e969431d"
+},
+{
+  "insight_type": "verification",
+  "summary": "Verify recovery with latency, saturation, and error rate instead of a single metric.",
+  "evidence_refs": [
+    "795b0e75-5528-4e31-a366-319a4c13980c"
+  ],
+  "confidence": 0.75,
+  "insight_id": "77f3f428-2991-430d-891a-f1f3cf62007e"
+}
+]
