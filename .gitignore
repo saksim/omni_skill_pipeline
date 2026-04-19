@@ -82,6 +82,7 @@ config/models/*.yaml.example
 .coverage
 htmlcov/
 .pytest_cache/
+test/.tmp_runtime/
 
 # 类型检查
 .mypy_cache/
