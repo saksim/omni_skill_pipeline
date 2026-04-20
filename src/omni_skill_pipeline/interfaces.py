@@ -1,17 +1,26 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Protocol, Sequence, TypeVar, runtime_checkable
+from typing import Protocol, Sequence, TypeAlias, TypeVar, runtime_checkable
 
 from omni_skill_pipeline.models import (
+    AudioDistillRequest,
+    CorpusAssetInput,
+    CorpusDistillRequest,
     DistillGoal,
     EvidenceNode,
     EvidenceUnit,
+    ImageDistillRequest,
     Insight,
+    LoadedCorpus,
     LoadedAsset,
     Modality,
+    RequestMixin,
     SemanticAtom,
     SkillDocument,
+    TabularDistillRequest,
+    TextDistillRequest,
+    VideoDistillRequest,
 )
 from omni_skill_pipeline.providers.base import (
     FrameAnalysis,
@@ -22,6 +31,14 @@ from omni_skill_pipeline.providers.base import (
 )
 
 ReqT = TypeVar('ReqT')
+AssetRequestT = TypeVar('AssetRequestT', bound=RequestMixin)
+AssetDistillRequest: TypeAlias = (
+    TextDistillRequest
+    | AudioDistillRequest
+    | ImageDistillRequest
+    | TabularDistillRequest
+    | VideoDistillRequest
+)
 
 
 @runtime_checkable
@@ -39,6 +56,18 @@ class InsightExtractor(Protocol):
 @runtime_checkable
 class AtomExtractor(Protocol):
     def extract(self, evidence_nodes: Sequence[EvidenceNode]) -> list[SemanticAtom]:
+        ...
+
+
+@runtime_checkable
+class CorpusAssetRequestBuilder(Protocol):
+    def build(self, asset: CorpusAssetInput, goal: DistillGoal) -> AssetDistillRequest:
+        ...
+
+
+@runtime_checkable
+class CorpusLoader(Protocol):
+    def load_corpus(self, request: CorpusDistillRequest) -> LoadedCorpus:
         ...
 
 

@@ -1,0 +1,28 @@
+[TOC L1] Incident Response Playbook
+[TOC L2] 1. Scope
+[TOC L2] 2. Timeline Reconstruction
+[TOC L2] 3. Verification Queries
+
+# Incident Response Playbook
+
+## 1. Scope
+
+Use this runbook when service latency and error rate spike at the same time.
+
+## 2. Timeline Reconstruction
+
+| phase | owner | sla |
+| --- | --- | --- |
+| detect | oncall | 5m |
+| classify | incident commander | 10m |
+| verify | sre | 15m |
+
+```sql
+select ts, p95_latency_ms, error_rate
+from metrics_incident
+where service = 'api-gateway'
+order by ts desc
+limit 100;
+```
+
+Figure 2: production dashboard snapshot after rollback

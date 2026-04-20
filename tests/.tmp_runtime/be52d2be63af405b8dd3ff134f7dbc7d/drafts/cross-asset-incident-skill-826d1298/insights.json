@@ -1,0 +1,56 @@
+[
+  {
+    "insight_type": "procedure",
+    "summary": "Rebuild the timeline.",
+    "evidence_refs": [
+      "74205e37-9955-4b8b-b146-886aea6b8595"
+    ],
+    "confidence": 0.82,
+    "insight_id": "aebb1c8e-f3cb-4f84-ad80-7f3e6bfa653c"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Merge duplicate alerts.",
+    "evidence_refs": [
+      "74205e37-9955-4b8b-b146-886aea6b8595"
+    ],
+    "confidence": 0.82,
+    "insight_id": "d875418d-4c1a-46c4-b1d7-b7093d0f11bb"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "Verify recovery with latency and error rate.",
+    "evidence_refs": [
+      "74205e37-9955-4b8b-b146-886aea6b8595"
+    ],
+    "confidence": 0.75,
+    "insight_id": "82898dc5-2fde-4171-b56d-31a7eb7d6f75"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Rebuild the timeline.",
+    "evidence_refs": [
+      "5b17b954-a3b3-4b1d-bf3f-3619258dd8eb"
+    ],
+    "confidence": 0.82,
+    "insight_id": "73682c1b-2182-4d9a-985f-6a88039fefe4"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Merge duplicate alerts.",
+    "evidence_refs": [
+      "4071fe1e-4870-4c8c-8d1f-7fa2d45e8b60"
+    ],
+    "confidence": 0.82,
+    "insight_id": "dad086d8-d3c6-4542-821b-feb1cb684666"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "Verify recovery with latency and error rate.",
+    "evidence_refs": [
+      "f0a0c44b-8809-495b-a948-cc067771df91"
+    ],
+    "confidence": 0.75,
+    "insight_id": "792c005a-b31a-4571-8644-76c347414ab7"
+  }
+]

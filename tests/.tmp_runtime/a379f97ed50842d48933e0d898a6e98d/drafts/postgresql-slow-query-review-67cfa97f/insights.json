@@ -1,0 +1,47 @@
+[
+  {
+    "insight_type": "procedure",
+    "summary": "Capture the top slow queries from pg_stat_statements.",
+    "evidence_refs": [
+      "e2160afb-c26a-47bb-bf7e-30ecec40db8d"
+    ],
+    "confidence": 0.82,
+    "insight_id": "2c9ed5b9-8a6a-48de-a577-86db1caf080c"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Compare execution plans before changing indexes.",
+    "evidence_refs": [
+      "e2160afb-c26a-47bb-bf7e-30ecec40db8d"
+    ],
+    "confidence": 0.82,
+    "insight_id": "f54829c0-aec6-4af3-9470-fb357d5fc007"
+  },
+  {
+    "insight_type": "rule",
+    "summary": "If the query is I/O bound, review the missing indexes first.",
+    "evidence_refs": [
+      "1f712aa6-036b-4cc8-950c-dbcfffbbea33"
+    ],
+    "confidence": 0.74,
+    "insight_id": "5780f74f-849f-4c83-9130-ae5297eae39f"
+  },
+  {
+    "insight_type": "anti_pattern",
+    "summary": "Avoid adding overlapping indexes without measuring write amplification.",
+    "evidence_refs": [
+      "1f712aa6-036b-4cc8-950c-dbcfffbbea33"
+    ],
+    "confidence": 0.78,
+    "insight_id": "df6300d4-28fb-4077-8396-6dbd706dfeec"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "Verify the new plan with EXPLAIN ANALYZE and compare latency.",
+    "evidence_refs": [
+      "1f712aa6-036b-4cc8-950c-dbcfffbbea33"
+    ],
+    "confidence": 0.75,
+    "insight_id": "eb0a660e-edfd-46f4-adb0-d78690de6ee0"
+  }
+]

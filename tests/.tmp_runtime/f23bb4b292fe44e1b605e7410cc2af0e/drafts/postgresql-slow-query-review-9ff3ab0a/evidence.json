@@ -1,0 +1,34 @@
+[
+{
+  "asset_id": "1c360b80-012e-4615-b717-6edc6595d469",
+  "span_ref": "paragraph:0001",
+  "content_type": "text",
+  "content": "# PostgreSQL Slow Query Review",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "heading"
+  ],
+  "evidence_id": "6bb19512-5ce6-4448-b829-360b1105a12c"
+},
+{
+  "asset_id": "1c360b80-012e-4615-b717-6edc6595d469",
+  "span_ref": "paragraph:0002",
+  "content_type": "text",
+  "content": "1. Capture the top slow queries from pg_stat_statements.\n2. Compare execution plans before changing indexes.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "2d7574d2-d0f2-4e5c-bc5f-b7ca19732438"
+},
+{
+  "asset_id": "1c360b80-012e-4615-b717-6edc6595d469",
+  "span_ref": "paragraph:0003",
+  "content_type": "text",
+  "content": "If the query is I/O bound, review the missing indexes first.\nAvoid adding overlapping indexes without measuring write amplification.\nVerify the new plan with EXPLAIN ANALYZE and compare latency.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [],
+  "evidence_id": "338a172d-c42d-4d8d-a713-0e8903e2408e"
+}
+]

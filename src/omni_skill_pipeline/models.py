@@ -480,8 +480,19 @@ class DistillBundle(SerializableMixin):
     insights: List[Insight]
     skill: SkillDocument
     skill_markdown: str
+    corpus: Optional[Corpus] = None
+    evidence_nodes: List[EvidenceNode] = field(default_factory=list)
     request_payload: Dict[str, Any] = field(default_factory=dict)
     artifacts: Dict[str, str] = field(default_factory=dict)
+    adapter_metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
+class LoadedCorpus(SerializableMixin):
+    corpus: Corpus
+    loaded_assets: List[LoadedAsset]
+    evidence_units: List[EvidenceUnit]
+    evidence_nodes: List[EvidenceNode] = field(default_factory=list)
     adapter_metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -546,6 +557,12 @@ class CorpusDistillRequest(RequestMixin):
                 raise ValueError('Corpus asset #%s source_uri is empty.' % index)
             if not item.role.strip():
                 raise ValueError('Corpus asset #%s role is empty.' % index)
+
+    def primary_asset_index(self) -> int:
+        for index, item in enumerate(self.assets):
+            if item.role.lower() == 'primary':
+                return index
+        return 0
 
 
 @dataclass(slots=True)

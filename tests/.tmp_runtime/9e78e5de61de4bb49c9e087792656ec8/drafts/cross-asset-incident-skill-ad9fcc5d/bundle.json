@@ -1,0 +1,459 @@
+{
+  "asset": {
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.md",
+    "metadata": {
+      "filename": "incident.md",
+      "language": "mixed"
+    },
+    "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea",
+      "span_ref": "section:1",
+      "content_type": "text",
+      "content": "Incident Runbook",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1",
+        "block:section",
+        "section_level:1",
+        "section_parent:root"
+      ],
+      "evidence_id": "2d4555fe-b997-487c-9558-8ddd8b2c3bba"
+    },
+    {
+      "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea",
+      "span_ref": "section:1:paragraph:0001",
+      "content_type": "text",
+      "content": "1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1",
+        "block:paragraph"
+      ],
+      "evidence_id": "797e6628-a25e-42f6-948e-fd7ff9e998cd"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "span_ref": "timestamp:segment:0001",
+      "content_type": "speech",
+      "content": "# Incident Runbook",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "evidence_id": "bfc6eeb8-92ba-4c05-86a9-352eb450e99f"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "span_ref": "timestamp:segment:0002",
+      "content_type": "speech",
+      "content": "1. Rebuild the timeline.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "evidence_id": "84e705d2-2404-4443-86fa-cf2df0d911e3"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "span_ref": "timestamp:segment:0003",
+      "content_type": "speech",
+      "content": "2. Merge duplicate alerts.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "evidence_id": "7fe4d07f-36ab-4649-a8ca-b39a5a86c071"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "span_ref": "timestamp:segment:0004",
+      "content_type": "speech",
+      "content": "Verify recovery with latency and error rate.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "evidence_id": "6d6c2036-41d2-4c8f-9084-c67b67667721"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Rebuild the timeline.",
+      "evidence_refs": [
+        "797e6628-a25e-42f6-948e-fd7ff9e998cd"
+      ],
+      "confidence": 0.82,
+      "insight_id": "5adcf326-07da-4d15-bec9-a16488e114c9"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Merge duplicate alerts.",
+      "evidence_refs": [
+        "797e6628-a25e-42f6-948e-fd7ff9e998cd"
+      ],
+      "confidence": 0.82,
+      "insight_id": "cbb98b5f-b3d5-40d6-9000-ada8e3f40816"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify recovery with latency and error rate.",
+      "evidence_refs": [
+        "797e6628-a25e-42f6-948e-fd7ff9e998cd"
+      ],
+      "confidence": 0.75,
+      "insight_id": "715d27e5-8d0c-466e-8df3-4a545648a118"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Rebuild the timeline.",
+      "evidence_refs": [
+        "84e705d2-2404-4443-86fa-cf2df0d911e3"
+      ],
+      "confidence": 0.82,
+      "insight_id": "86b170e0-d825-4477-96fc-2adde9d7bb58"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Merge duplicate alerts.",
+      "evidence_refs": [
+        "7fe4d07f-36ab-4649-a8ca-b39a5a86c071"
+      ],
+      "confidence": 0.82,
+      "insight_id": "ea8d8cf1-f4ef-4f6b-98d0-f701f259a0c2"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify recovery with latency and error rate.",
+      "evidence_refs": [
+        "6d6c2036-41d2-4c8f-9084-c67b67667721"
+      ],
+      "confidence": 0.75,
+      "insight_id": "2a9eb0fc-7a7c-4810-b214-59d5334ac2a5"
+    }
+  ],
+  "skill": {
+    "name": "cross asset incident skill",
+    "goal": "Distill incident_response material into a build_skill for self. Seed: Incident Runbook",
+    "source_modality": "text",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert text evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Source document",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Rebuild the timeline.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Merge duplicate alerts.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Verify recovery with latency and error rate."
+    ],
+    "evidence_refs": [
+      "2d4555fe-b997-487c-9558-8ddd8b2c3bba@section:1",
+      "797e6628-a25e-42f6-948e-fd7ff9e998cd@section:1:paragraph:0001",
+      "bfc6eeb8-92ba-4c05-86a9-352eb450e99f@timestamp:segment:0001",
+      "84e705d2-2404-4443-86fa-cf2df0d911e3@timestamp:segment:0002",
+      "7fe4d07f-36ab-4649-a8ca-b39a5a86c071@timestamp:segment:0003",
+      "6d6c2036-41d2-4c8f-9084-c67b67667721@timestamp:segment:0004"
+    ],
+    "confidence": 0.79,
+    "version": "0.1.0",
+    "summary": "Incident Runbook",
+    "tags": [
+      "incident_response",
+      "text",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-20T15:45:17Z",
+    "skill_id": "ad9fcc5d-d1cc-4c10-88c8-482033d03ab9"
+  },
+  "skill_markdown": "# cross asset incident skill\n\n## 判词\nIncident Runbook\n\n## 元信息\n- skill_id: ad9fcc5d-d1cc-4c10-88c8-482033d03ab9\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: text\n- review_status: draft\n- confidence: 0.79\n- created_at: 2026-04-20T15:45:17Z\n\n## 目标\nDistill incident_response material into a build_skill for self. Seed: Incident Runbook\n\n## 触发条件\n- Use when you need to convert text evidence into a reusable build_skill.\n\n## 输入\n- Source document\n- Distillation goal\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Rebuild the timeline.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Merge duplicate alerts.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- None\n\n## 反模式\n- None\n\n## 验证方式\n- Verify recovery with latency and error rate.\n\n## 证据链\n- 2d4555fe-b997-487c-9558-8ddd8b2c3bba@section:1\n- 797e6628-a25e-42f6-948e-fd7ff9e998cd@section:1:paragraph:0001\n- bfc6eeb8-92ba-4c05-86a9-352eb450e99f@timestamp:segment:0001\n- 84e705d2-2404-4443-86fa-cf2df0d911e3@timestamp:segment:0002\n- 7fe4d07f-36ab-4649-a8ca-b39a5a86c071@timestamp:segment:0003\n- 6d6c2036-41d2-4c8f-9084-c67b67667721@timestamp:segment:0004\n\n## 标签\n- incident_response\n- text\n- build_skill\n- heuristic\n",
+  "corpus": {
+    "name": "cross asset incident skill",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "incident_response"
+    },
+    "assets": [
+      {
+        "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea",
+        "modality": "text",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.md",
+        "role": "primary",
+        "title_hint": "Incident Runbook",
+        "metadata": {
+          "filename": "incident.md",
+          "language": "mixed"
+        }
+      },
+      {
+        "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+        "modality": "audio",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.wav",
+        "role": "context",
+        "title_hint": "incident",
+        "metadata": {
+          "transcript_source": "incident.md",
+          "language": null
+        }
+      }
+    ],
+    "tags": [
+      "cross_asset"
+    ],
+    "metadata": {
+      "asset_count": 2,
+      "modalities": [
+        "text",
+        "audio"
+      ]
+    },
+    "created_at": "2026-04-20T15:45:17Z",
+    "corpus_id": "5d841da7-ae46-4d17-9e12-5ede7c49a226"
+  },
+  "evidence_nodes": [
+    {
+      "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1",
+      "text_content": "Incident Runbook",
+      "payload": {
+        "legacy_content": "Incident Runbook"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1",
+        "block:section",
+        "section_level:1",
+        "section_parent:root"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "2d4555fe-b997-487c-9558-8ddd8b2c3bba"
+    },
+    {
+      "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1:paragraph:0001",
+      "text_content": "1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate.",
+      "payload": {
+        "legacy_content": "1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1",
+        "block:paragraph"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "797e6628-a25e-42f6-948e-fd7ff9e998cd"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:segment:0001",
+      "text_content": "# Incident Runbook",
+      "payload": {
+        "legacy_content": "# Incident Runbook"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "bfc6eeb8-92ba-4c05-86a9-352eb450e99f"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:segment:0002",
+      "text_content": "1. Rebuild the timeline.",
+      "payload": {
+        "legacy_content": "1. Rebuild the timeline."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "84e705d2-2404-4443-86fa-cf2df0d911e3"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:segment:0003",
+      "text_content": "2. Merge duplicate alerts.",
+      "payload": {
+        "legacy_content": "2. Merge duplicate alerts."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "7fe4d07f-36ab-4649-a8ca-b39a5a86c071"
+    },
+    {
+      "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:segment:0004",
+      "text_content": "Verify recovery with latency and error rate.",
+      "payload": {
+        "legacy_content": "Verify recovery with latency and error rate."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "6d6c2036-41d2-4c8f-9084-c67b67667721"
+    }
+  ],
+  "request_payload": {
+    "name": "cross asset incident skill",
+    "assets": [
+      {
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.md",
+        "modality": "text",
+        "title_hint": "",
+        "role": "primary",
+        "metadata": {}
+      },
+      {
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.wav",
+        "modality": "audio",
+        "title_hint": "",
+        "role": "context",
+        "metadata": {}
+      }
+    ],
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "incident_response"
+    },
+    "tags": [
+      "cross_asset"
+    ],
+    "metadata": {}
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\bundle.json",
+    "corpus": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\corpus.json",
+    "corpus_assets": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\corpus_assets.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\evidence_nodes.json",
+    "cross_asset_refs": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\drafts\\cross-asset-incident-skill-ad9fcc5d\\cross_asset_refs.json"
+  },
+  "adapter_metadata": {
+    "corpus_id": "5d841da7-ae46-4d17-9e12-5ede7c49a226",
+    "corpus_name": "cross asset incident skill",
+    "asset_count": 2,
+    "cross_asset": true,
+    "evidence_node_count": 6,
+    "corpus_assets": [
+      {
+        "asset_id": "7c12b00e-c8f3-41d1-b682-f5cf2095aeea",
+        "modality": "text",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.md",
+        "role": "primary",
+        "title_hint": "Incident Runbook",
+        "metadata": {
+          "filename": "incident.md",
+          "language": "mixed"
+        }
+      },
+      {
+        "asset_id": "eee742b2-3920-4d8d-80d3-76547c52167a",
+        "modality": "audio",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.wav",
+        "role": "context",
+        "title_hint": "incident",
+        "metadata": {
+          "transcript_source": "incident.md",
+          "language": null
+        }
+      }
+    ],
+    "asset_adapter_metadata": {
+      "7c12b00e-c8f3-41d1-b682-f5cf2095aeea": {
+        "role": "primary",
+        "modality": "text",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.md",
+        "adapter_metadata": {
+          "format": ".md"
+        }
+      },
+      "eee742b2-3920-4d8d-80d3-76547c52167a": {
+        "role": "context",
+        "modality": "audio",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\9e78e5de61de4bb49c9e087792656ec8\\incident.wav",
+        "adapter_metadata": {
+          "transcript_source": "incident.md"
+        }
+      }
+    }
+  }
+}

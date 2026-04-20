@@ -193,6 +193,10 @@ Verify the new plan with EXPLAIN ANALYZE and compare latency.
         content_types = {unit.content_type.value for unit in bundle.evidence_units}
         self.assertIn('ocr', content_types)
         self.assertIn('scene', content_types)
+        span_refs = {unit.span_ref for unit in bundle.evidence_units}
+        self.assertTrue(any(span.startswith('image:region:') for span in span_refs))
+        layout_tags = {tag for unit in bundle.evidence_units for tag in unit.tags if tag.startswith('layout_role:')}
+        self.assertTrue(layout_tags)
         self.assertTrue(Path(bundle.artifacts['skill_markdown']).exists())
 
     def test_video_distillation_merges_audio_and_keyframe_evidence(self) -> None:

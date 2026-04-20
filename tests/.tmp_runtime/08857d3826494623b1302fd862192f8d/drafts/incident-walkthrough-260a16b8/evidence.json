@@ -1,0 +1,98 @@
+[
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "video:timestamp:0.00-3.00",
+    "content_type": "speech",
+    "content": "1. Rebuild the incident timeline.",
+    "speaker": null,
+    "confidence": 0.91,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown",
+      "source:audio_track"
+    ],
+    "evidence_id": "a5f61825-2d9b-45e7-b6d6-14e3a61a2beb"
+  },
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "video:timestamp:3.00-6.00",
+    "content_type": "speech",
+    "content": "If alerts duplicate, merge them into one incident stream.",
+    "speaker": null,
+    "confidence": 0.88,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown",
+      "source:audio_track"
+    ],
+    "evidence_id": "cb8c5273-53bb-4e24-a770-0c2703d8c45d"
+  },
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "video:timestamp:6.00-9.00",
+    "content_type": "speech",
+    "content": "Verify recovery with error rate and latency.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown",
+      "source:audio_track"
+    ],
+    "evidence_id": "b94df71e-b4c2-4b13-b240-8991cdedac87"
+  },
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "frame:0001@1.00s:ocr",
+    "content_type": "ocr",
+    "content": "Service status: degraded\nPrimary region: shanghai",
+    "speaker": null,
+    "confidence": 0.75,
+    "tags": [
+      "engine:fake-ocr",
+      "source:scene"
+    ],
+    "evidence_id": "4746c280-9b00-4bf5-815f-c302b50ed7d6"
+  },
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "frame:0001@1.00s:scene",
+    "content_type": "scene",
+    "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+    "speaker": null,
+    "confidence": 0.7,
+    "tags": [
+      "dashboard",
+      "latency",
+      "source:scene"
+    ],
+    "evidence_id": "b98008da-8a23-4392-b891-15f22e7eca63"
+  },
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "frame:0002@2.00s:ocr",
+    "content_type": "ocr",
+    "content": "Service status: degraded\nPrimary region: shanghai",
+    "speaker": null,
+    "confidence": 0.75,
+    "tags": [
+      "engine:fake-ocr",
+      "source:timeline"
+    ],
+    "evidence_id": "5f614e26-9924-4c08-8601-45abb2c7bccd"
+  },
+  {
+    "asset_id": "a92139d9-d2d6-4607-9120-176cb901ff40",
+    "span_ref": "frame:0002@2.00s:scene",
+    "content_type": "scene",
+    "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+    "speaker": null,
+    "confidence": 0.7,
+    "tags": [
+      "dashboard",
+      "latency",
+      "source:timeline"
+    ],
+    "evidence_id": "055929c3-8a7b-4cba-a297-5856cccbbfb4"
+  }
+]

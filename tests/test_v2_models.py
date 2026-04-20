@@ -12,10 +12,13 @@ if str(SRC_ROOT) not in sys.path:
 
 from omni_skill_pipeline.interfaces import AtomExtractor
 from omni_skill_pipeline.extraction.atom_extractor import LegacyInsightAtomExtractor
+from omni_skill_pipeline.extraction.evidence_builder import EvidenceBuilder
 from omni_skill_pipeline.models import (
+    Asset,
     AtomType,
     Corpus,
     CorpusAssetRef,
+    CorpusDistillRequest,
     ContentType,
     DecisionNode,
     DistillGoal,
@@ -24,6 +27,7 @@ from omni_skill_pipeline.models import (
     GraphEdgeType,
     Insight,
     InsightType,
+    LoadedAsset,
     Modality,
     SemanticAtom,
     SpatialRef,
@@ -144,6 +148,114 @@ class V2ModelTests(unittest.TestCase):
         self.assertEqual(payload['edges'][0]['edge_type'], 'verified_by')
         self.assertEqual(json.loads(corpus.to_json())['assets'][0]['source_uri'], 'file:///incident.md')
         self.assertEqual(json.loads(atom.to_json())['atom_type'], 'claim')
+
+    def test_corpus_request_can_represent_multi_asset_distillation(self) -> None:
+        request = CorpusDistillRequest.from_dict(
+            {
+                'name': 'incident corpus',
+                'goal': {'domain': 'incident_response', 'audience': 'expert'},
+                'assets': [
+                    {'source_uri': 'D:/tmp/incident.md', 'modality': 'text', 'role': 'primary'},
+                    {'source_uri': 'D:/tmp/incident.wav', 'modality': 'audio', 'role': 'context'},
+                    {'source_uri': 'D:/tmp/dashboard.png', 'modality': 'image', 'role': 'evidence'},
+                ],
+                'tags': ['incident', 'multi_asset'],
+                'metadata': {'ticket': 'INC-42'},
+            }
+        )
+        request.validate()
+        self.assertEqual(request.name, 'incident corpus')
+        self.assertEqual(len(request.assets), 3)
+        self.assertEqual(request.assets[0].modality, Modality.TEXT)
+        self.assertEqual(request.assets[1].modality, Modality.AUDIO)
+        self.assertEqual(request.assets[2].role, 'evidence')
+        self.assertEqual(request.primary_asset_index(), 0)
+        serialized = request.to_dict()
+        self.assertEqual(serialized['assets'][1]['source_uri'], 'D:/tmp/incident.wav')
+        self.assertEqual(serialized['metadata']['ticket'], 'INC-42')
+
+    def test_corpus_request_requires_at_least_one_asset(self) -> None:
+        request = CorpusDistillRequest(
+            name='empty corpus',
+            assets=[],
+            goal=DistillGoal(),
+        )
+        with self.assertRaises(ValueError):
+            request.validate()
+
+    def test_evidence_builder_creates_video_frame_lineage(self) -> None:
+        builder = EvidenceBuilder()
+        loaded_asset = LoadedAsset(
+            asset=Asset(modality=Modality.VIDEO, source_uri='file:///demo.mp4'),
+            evidence_units=[
+                EvidenceUnit(
+                    asset_id='asset-video',
+                    span_ref='frame:0001@1.00s:ocr',
+                    content_type=ContentType.OCR,
+                    content='Service degraded',
+                    evidence_id='ev-ocr',
+                ),
+                EvidenceUnit(
+                    asset_id='asset-video',
+                    span_ref='frame:0001@1.00s:scene',
+                    content_type=ContentType.SCENE,
+                    content='Dashboard shows alert banner',
+                    evidence_id='ev-scene',
+                ),
+            ],
+            title_hint='demo video',
+        )
+        nodes = builder.build_from_loaded_asset(loaded_asset)
+        frame_node = next(item for item in nodes if item.span_ref == 'frame:0001@1.00s')
+        ocr_node = next(item for item in nodes if item.evidence_id == 'ev-ocr')
+        scene_node = next(item for item in nodes if item.evidence_id == 'ev-scene')
+
+        self.assertIn('lineage:frame_anchor', frame_node.tags)
+        self.assertEqual(frame_node.time_range.start_ms, 1000)
+        self.assertEqual(frame_node.time_range.end_ms, 1000)
+        self.assertIn(ocr_node.evidence_id, frame_node.children)
+        self.assertIn(scene_node.evidence_id, frame_node.children)
+        self.assertIn(frame_node.evidence_id, ocr_node.parents)
+        self.assertIn(frame_node.evidence_id, scene_node.parents)
+        self.assertIn(frame_node.evidence_id, ocr_node.derived_from)
+        self.assertIn(frame_node.evidence_id, scene_node.derived_from)
+
+    def test_evidence_builder_links_timeseries_event_to_metric(self) -> None:
+        builder = EvidenceBuilder()
+        loaded_asset = LoadedAsset(
+            asset=Asset(modality=Modality.TABULAR, source_uri='file:///metric.csv'),
+            evidence_units=[
+                EvidenceUnit(
+                    asset_id='asset-tabular',
+                    span_ref='timeseries:overview:0001',
+                    content_type=ContentType.METRIC,
+                    content='overview',
+                    evidence_id='ev-overview',
+                ),
+                EvidenceUnit(
+                    asset_id='asset-tabular',
+                    span_ref='timeseries:metric:0001',
+                    content_type=ContentType.METRIC,
+                    content='latency series',
+                    evidence_id='ev-metric',
+                ),
+                EvidenceUnit(
+                    asset_id='asset-tabular',
+                    span_ref='timeseries:event:0001',
+                    content_type=ContentType.EVENT,
+                    content='anomaly at t=10',
+                    evidence_id='ev-event',
+                ),
+            ],
+            title_hint='demo table',
+        )
+        nodes = builder.build_from_loaded_asset(loaded_asset)
+        metric_node = next(item for item in nodes if item.evidence_id == 'ev-metric')
+        event_node = next(item for item in nodes if item.evidence_id == 'ev-event')
+
+        self.assertIn(event_node.evidence_id, metric_node.children)
+        self.assertIn(metric_node.evidence_id, event_node.parents)
+        self.assertIn(metric_node.evidence_id, event_node.derived_from)
 
     def test_skill_graph_to_document_builds_skill_document(self) -> None:
         graph = SkillGraph(

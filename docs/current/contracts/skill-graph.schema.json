@@ -1,0 +1,477 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://omni-skill-pipeline.local/schemas/skill-graph.schema.json",
+  "title": "SkillGraph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "goal",
+    "source_modalities",
+    "audience",
+    "summary",
+    "tags",
+    "domain",
+    "trigger",
+    "inputs",
+    "preconditions",
+    "steps",
+    "decisions",
+    "verifications",
+    "risks",
+    "examples",
+    "variables",
+    "edges",
+    "evidence_refs",
+    "atom_refs",
+    "confidence",
+    "version",
+    "review_status",
+    "created_at",
+    "graph_id"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_modalities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "text",
+          "audio",
+          "video",
+          "image",
+          "tabular"
+        ]
+      }
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "self",
+        "junior",
+        "expert"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trigger": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/stepNode"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/decisionNode"
+      }
+    },
+    "verifications": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verificationNode"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/riskNode"
+      }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/exampleNode"
+      }
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/variableNode"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skillGraphEdge"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "atom_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "review_pending",
+        "published",
+        "rejected"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "graph_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "stringList": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "stepNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step",
+        "action",
+        "why",
+        "atom_refs",
+        "evidence_refs",
+        "metadata",
+        "node_type",
+        "node_id"
+      ],
+      "properties": {
+        "step": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why": {
+          "type": "string"
+        },
+        "atom_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "node_type": {
+          "const": "step"
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "decisionNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition",
+        "decision",
+        "rationale",
+        "atom_refs",
+        "evidence_refs",
+        "metadata",
+        "node_type",
+        "node_id"
+      ],
+      "properties": {
+        "condition": {
+          "type": "string"
+        },
+        "decision": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "atom_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "node_type": {
+          "const": "decision"
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "verificationNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check",
+        "expected",
+        "atom_refs",
+        "evidence_refs",
+        "metadata",
+        "node_type",
+        "node_id"
+      ],
+      "properties": {
+        "check": {
+          "type": "string"
+        },
+        "expected": {
+          "type": "string"
+        },
+        "atom_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "node_type": {
+          "const": "verification"
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "riskNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk",
+        "mitigation",
+        "atom_refs",
+        "evidence_refs",
+        "metadata",
+        "node_type",
+        "node_id"
+      ],
+      "properties": {
+        "risk": {
+          "type": "string"
+        },
+        "mitigation": {
+          "type": "string"
+        },
+        "atom_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "node_type": {
+          "const": "risk"
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "exampleNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "example",
+        "classification",
+        "atom_refs",
+        "evidence_refs",
+        "metadata",
+        "node_type",
+        "node_id"
+      ],
+      "properties": {
+        "example": {
+          "type": "string"
+        },
+        "classification": {
+          "type": "string"
+        },
+        "atom_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "node_type": {
+          "const": "example"
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "variableNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "default_value",
+        "required",
+        "atom_refs",
+        "evidence_refs",
+        "metadata",
+        "node_type",
+        "node_id"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default_value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "atom_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "node_type": {
+          "const": "variable"
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "skillGraphEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_type",
+        "source_node_id",
+        "target_node_id",
+        "rationale",
+        "weight",
+        "metadata",
+        "edge_id"
+      ],
+      "properties": {
+        "edge_type": {
+          "type": "string",
+          "enum": [
+            "depends_on",
+            "justified_by",
+            "verified_by",
+            "parameterizes",
+            "supersedes",
+            "conflicts_with"
+          ]
+        },
+        "source_node_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_node_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "number"
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "edge_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

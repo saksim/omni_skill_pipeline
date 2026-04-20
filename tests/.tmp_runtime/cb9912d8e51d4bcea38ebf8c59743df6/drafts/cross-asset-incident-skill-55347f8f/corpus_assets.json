@@ -1,0 +1,24 @@
+[
+  {
+    "asset_id": "99ffd71e-4595-457d-a360-6931b03ca993",
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\cb9912d8e51d4bcea38ebf8c59743df6\\incident.md",
+    "role": "primary",
+    "title_hint": "Incident Runbook",
+    "metadata": {
+      "filename": "incident.md",
+      "language": "mixed"
+    }
+  },
+  {
+    "asset_id": "8bc12ca3-ce1a-48bf-9023-c576dfd73644",
+    "modality": "audio",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\cb9912d8e51d4bcea38ebf8c59743df6\\incident.wav",
+    "role": "context",
+    "title_hint": "incident",
+    "metadata": {
+      "transcript_source": "incident.md",
+      "language": null
+    }
+  }
+]

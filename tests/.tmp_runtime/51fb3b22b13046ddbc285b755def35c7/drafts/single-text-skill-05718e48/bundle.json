@@ -1,0 +1,129 @@
+{
+  "asset": {
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\incident.md",
+    "metadata": {
+      "filename": "incident.md",
+      "language": "mixed"
+    },
+    "asset_id": "8fe4dda4-71a5-41f0-8750-d80e0a58fe38"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "8fe4dda4-71a5-41f0-8750-d80e0a58fe38",
+      "span_ref": "paragraph:0001",
+      "content_type": "text",
+      "content": "# Incident Runbook\n1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "heading"
+      ],
+      "evidence_id": "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Rebuild the timeline.",
+      "evidence_refs": [
+        "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+      ],
+      "confidence": 0.82,
+      "insight_id": "c751ffe4-454b-49cc-a91a-6f26115bc7fa"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Merge duplicate alerts.",
+      "evidence_refs": [
+        "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+      ],
+      "confidence": 0.82,
+      "insight_id": "856ac8f5-ed6e-4ad9-a52e-e53600971660"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify recovery with latency and error rate.",
+      "evidence_refs": [
+        "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+      ],
+      "confidence": 0.75,
+      "insight_id": "2cef1cdf-d1b2-4dcf-afd9-f58f0bb486d5"
+    }
+  ],
+  "skill": {
+    "name": "single text skill",
+    "goal": "Distill incident_response material into a build_skill for self. Seed: # Incident Runbook 1. Rebuild the timeline. 2. Merge duplicate alerts. Verify recovery with latency and error rate.",
+    "source_modality": "text",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert text evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Source document",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Rebuild the timeline.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Merge duplicate alerts.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Verify recovery with latency and error rate."
+    ],
+    "evidence_refs": [
+      "e168224f-ddb9-49b6-8e2e-c344ac7c2174@paragraph:0001"
+    ],
+    "confidence": 0.59,
+    "version": "0.1.0",
+    "summary": "# Incident Runbook 1. Rebuild the timeline. 2. Merge duplicate alerts. Verify recovery with latency and error rate.",
+    "tags": [
+      "incident_response",
+      "text",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-20T15:23:46Z",
+    "skill_id": "05718e48-590f-4d2d-a616-1fbcb52eed93"
+  },
+  "skill_markdown": "# single text skill\n\n## 判词\n# Incident Runbook 1. Rebuild the timeline. 2. Merge duplicate alerts. Verify recovery with latency and error rate.\n\n## 元信息\n- skill_id: 05718e48-590f-4d2d-a616-1fbcb52eed93\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: text\n- review_status: draft\n- confidence: 0.59\n- created_at: 2026-04-20T15:23:46Z\n\n## 目标\nDistill incident_response material into a build_skill for self. Seed: # Incident Runbook 1. Rebuild the timeline. 2. Merge duplicate alerts. Verify recovery with latency and error rate.\n\n## 触发条件\n- Use when you need to convert text evidence into a reusable build_skill.\n\n## 输入\n- Source document\n- Distillation goal\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Rebuild the timeline.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Merge duplicate alerts.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- None\n\n## 反模式\n- None\n\n## 验证方式\n- Verify recovery with latency and error rate.\n\n## 证据链\n- e168224f-ddb9-49b6-8e2e-c344ac7c2174@paragraph:0001\n\n## 标签\n- incident_response\n- text\n- build_skill\n- heuristic\n",
+  "corpus": null,
+  "evidence_nodes": [],
+  "request_payload": {
+    "title": "single text skill",
+    "content": null,
+    "file_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\incident.md",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "incident_response"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\drafts\\single-text-skill-05718e48\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\drafts\\single-text-skill-05718e48\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\drafts\\single-text-skill-05718e48\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\drafts\\single-text-skill-05718e48\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\drafts\\single-text-skill-05718e48\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\51fb3b22b13046ddbc285b755def35c7\\drafts\\single-text-skill-05718e48\\bundle.json"
+  },
+  "adapter_metadata": {
+    "format": ".md"
+  }
+}

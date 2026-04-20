@@ -1,0 +1,27 @@
+[
+  {
+    "asset_id": "36bf6d44-829c-477f-959d-7031b144e600",
+    "span_ref": "image:ocr:0001",
+    "content_type": "ocr",
+    "content": "Service status: degraded\nPrimary region: shanghai",
+    "speaker": null,
+    "confidence": 0.78,
+    "tags": [
+      "engine:fake-ocr"
+    ],
+    "evidence_id": "e659c043-9d3b-4ea4-9f13-2b76c5bce608"
+  },
+  {
+    "asset_id": "36bf6d44-829c-477f-959d-7031b144e600",
+    "span_ref": "image:scene:0001",
+    "content_type": "scene",
+    "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+    "speaker": null,
+    "confidence": 0.72,
+    "tags": [
+      "dashboard",
+      "latency"
+    ],
+    "evidence_id": "a34d9e70-9d5f-42c6-b4d9-e1379e969809"
+  }
+]

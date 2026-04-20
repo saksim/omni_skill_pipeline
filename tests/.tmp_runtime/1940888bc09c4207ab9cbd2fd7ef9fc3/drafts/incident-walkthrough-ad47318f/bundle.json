@@ -1,0 +1,238 @@
+{
+  "asset": {
+    "modality": "video",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\fixture.mp4",
+    "metadata": {
+      "filename": "fixture.mp4",
+      "duration_seconds": 12.0,
+      "width": 320,
+      "height": 200,
+      "fps": 1.0,
+      "frame_count": 12
+    },
+    "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "video:timestamp:0.00-3.00",
+      "content_type": "speech",
+      "content": "1. Rebuild the incident timeline.",
+      "speaker": null,
+      "confidence": 0.91,
+      "tags": [
+        "source:audio_track"
+      ],
+      "evidence_id": "2d56d6ad-bb78-459d-9726-a6bd3b027bdf"
+    },
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "video:timestamp:3.00-6.00",
+      "content_type": "speech",
+      "content": "If alerts duplicate, merge them into one incident stream.",
+      "speaker": null,
+      "confidence": 0.88,
+      "tags": [
+        "source:audio_track"
+      ],
+      "evidence_id": "25a7e119-54c7-4d2c-9179-4b1b02242d4f"
+    },
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "video:timestamp:6.00-9.00",
+      "content_type": "speech",
+      "content": "Verify recovery with error rate and latency.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "source:audio_track"
+      ],
+      "evidence_id": "da77fa2b-859d-4036-91d1-673e5602d97c"
+    },
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "frame:0001@1.00s:ocr",
+      "content_type": "ocr",
+      "content": "Service status: degraded\nPrimary region: shanghai",
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:fake-ocr",
+        "source:scene"
+      ],
+      "evidence_id": "f5681722-fb8f-4a52-8d04-81d1366d1ffc"
+    },
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "frame:0001@1.00s:scene",
+      "content_type": "scene",
+      "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+      "speaker": null,
+      "confidence": 0.7,
+      "tags": [
+        "dashboard",
+        "latency",
+        "source:scene"
+      ],
+      "evidence_id": "ae2c7141-e8b3-4a1a-8b73-744034659e56"
+    },
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "frame:0002@2.00s:ocr",
+      "content_type": "ocr",
+      "content": "Service status: degraded\nPrimary region: shanghai",
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:fake-ocr",
+        "source:timeline"
+      ],
+      "evidence_id": "302bbea9-748b-4e77-8a63-597b072df82b"
+    },
+    {
+      "asset_id": "6dc8b0b7-2387-4e46-aa4e-41485546dd9d",
+      "span_ref": "frame:0002@2.00s:scene",
+      "content_type": "scene",
+      "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+      "speaker": null,
+      "confidence": 0.7,
+      "tags": [
+        "dashboard",
+        "latency",
+        "source:timeline"
+      ],
+      "evidence_id": "75cb1387-a270-422e-aa68-a09aebc7e4aa"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Rebuild the incident timeline.",
+      "evidence_refs": [
+        "2d56d6ad-bb78-459d-9726-a6bd3b027bdf"
+      ],
+      "confidence": 0.82,
+      "insight_id": "682c0e92-9e44-431a-bd4b-b1f9be49f6a7"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If alerts duplicate, merge them into one incident stream.",
+      "evidence_refs": [
+        "25a7e119-54c7-4d2c-9179-4b1b02242d4f"
+      ],
+      "confidence": 0.74,
+      "insight_id": "3ad125b2-4468-499c-a802-80a429254325"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify recovery with error rate and latency.",
+      "evidence_refs": [
+        "da77fa2b-859d-4036-91d1-673e5602d97c"
+      ],
+      "confidence": 0.75,
+      "insight_id": "54b14856-9da9-4554-9c94-406de0bf4cd9"
+    }
+  ],
+  "skill": {
+    "name": "Incident Walkthrough",
+    "goal": "Distill incident_response material into a build_skill for self. Seed: 1. Rebuild the incident timeline.",
+    "source_modality": "video",
+    "skill_type": "decision",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert video evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Video source",
+      "Distillation goal",
+      "Keyframe/OCR evidence"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Rebuild the incident timeline.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If alerts duplicate, merge them into one incident stream."
+    ],
+    "anti_patterns": [],
+    "verification": [
+      "Verify recovery with error rate and latency."
+    ],
+    "evidence_refs": [
+      "2d56d6ad-bb78-459d-9726-a6bd3b027bdf@video:timestamp:0.00-3.00",
+      "25a7e119-54c7-4d2c-9179-4b1b02242d4f@video:timestamp:3.00-6.00",
+      "da77fa2b-859d-4036-91d1-673e5602d97c@video:timestamp:6.00-9.00",
+      "f5681722-fb8f-4a52-8d04-81d1366d1ffc@frame:0001@1.00s:ocr",
+      "ae2c7141-e8b3-4a1a-8b73-744034659e56@frame:0001@1.00s:scene",
+      "302bbea9-748b-4e77-8a63-597b072df82b@frame:0002@2.00s:ocr",
+      "75cb1387-a270-422e-aa68-a09aebc7e4aa@frame:0002@2.00s:scene"
+    ],
+    "confidence": 0.85,
+    "version": "0.1.0",
+    "summary": "1. Rebuild the incident timeline.",
+    "tags": [
+      "incident_response",
+      "video",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-20T14:13:38Z",
+    "skill_id": "ad47318f-e486-4fbb-938f-a368411e8866"
+  },
+  "skill_markdown": "# Incident Walkthrough\n\n## 判词\n1. Rebuild the incident timeline.\n\n## 元信息\n- skill_id: ad47318f-e486-4fbb-938f-a368411e8866\n- version: 0.1.0\n- skill_type: decision\n- audience: self\n- source_modality: video\n- review_status: draft\n- confidence: 0.85\n- created_at: 2026-04-20T14:13:38Z\n\n## 目标\nDistill incident_response material into a build_skill for self. Seed: 1. Rebuild the incident timeline.\n\n## 触发条件\n- Use when you need to convert video evidence into a reusable build_skill.\n\n## 输入\n- Video source\n- Distillation goal\n- Keyframe/OCR evidence\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Rebuild the incident timeline.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- If alerts duplicate, merge them into one incident stream.\n\n## 反模式\n- None\n\n## 验证方式\n- Verify recovery with error rate and latency.\n\n## 证据链\n- 2d56d6ad-bb78-459d-9726-a6bd3b027bdf@video:timestamp:0.00-3.00\n- 25a7e119-54c7-4d2c-9179-4b1b02242d4f@video:timestamp:3.00-6.00\n- da77fa2b-859d-4036-91d1-673e5602d97c@video:timestamp:6.00-9.00\n- f5681722-fb8f-4a52-8d04-81d1366d1ffc@frame:0001@1.00s:ocr\n- ae2c7141-e8b3-4a1a-8b73-744034659e56@frame:0001@1.00s:scene\n- 302bbea9-748b-4e77-8a63-597b072df82b@frame:0002@2.00s:ocr\n- 75cb1387-a270-422e-aa68-a09aebc7e4aa@frame:0002@2.00s:scene\n\n## 标签\n- incident_response\n- video\n- build_skill\n- heuristic\n",
+  "request_payload": {
+    "video_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\fixture.mp4",
+    "title": "Incident Walkthrough",
+    "transcript": null,
+    "transcript_path": null,
+    "language": null,
+    "prompt": null,
+    "keyframe_interval_seconds": null,
+    "max_keyframes": null,
+    "scene_threshold": null,
+    "dedupe_distance": null,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "incident_response"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\drafts\\incident-walkthrough-ad47318f\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\drafts\\incident-walkthrough-ad47318f\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\drafts\\incident-walkthrough-ad47318f\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\drafts\\incident-walkthrough-ad47318f\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\drafts\\incident-walkthrough-ad47318f\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\drafts\\incident-walkthrough-ad47318f\\bundle.json"
+  },
+  "adapter_metadata": {
+    "video_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1940888bc09c4207ab9cbd2fd7ef9fc3\\fixture.mp4",
+    "duration_seconds": 12.0,
+    "fps": 1.0,
+    "audio_track_extracted": true,
+    "audio_evidence_count": 3,
+    "keyframes": [
+      {
+        "source": "scene",
+        "timestamp_seconds": 1.0,
+        "scene_score": null
+      },
+      {
+        "source": "timeline",
+        "timestamp_seconds": 2.0,
+        "scene_score": null
+      }
+    ],
+    "scene_threshold": 0.32,
+    "dedupe_distance": 5
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "asset_id": "a21f3bdf-229e-43fa-9575-5e40ef86c001",
+    "span_ref": "paragraph:0001",
+    "content_type": "text",
+    "content": "# Incident Runbook\n1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "heading"
+    ],
+    "evidence_id": "3b4a0b96-db72-448d-949e-cb558448e4ff"
+  },
+  {
+    "asset_id": "da0cf337-832e-4118-8d16-e4231893364e",
+    "span_ref": "timestamp:segment:0001",
+    "content_type": "speech",
+    "content": "# Incident Runbook",
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [],
+    "evidence_id": "24d109a9-a769-4fe7-9f4c-9d44eb16f581"
+  },
+  {
+    "asset_id": "da0cf337-832e-4118-8d16-e4231893364e",
+    "span_ref": "timestamp:segment:0002",
+    "content_type": "speech",
+    "content": "1. Rebuild the timeline.",
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [],
+    "evidence_id": "32dd9e14-89f8-4794-8b72-07f53e8e409c"
+  },
+  {
+    "asset_id": "da0cf337-832e-4118-8d16-e4231893364e",
+    "span_ref": "timestamp:segment:0003",
+    "content_type": "speech",
+    "content": "2. Merge duplicate alerts.",
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [],
+    "evidence_id": "5e65f859-584d-4319-8012-0b7889a78dba"
+  },
+  {
+    "asset_id": "da0cf337-832e-4118-8d16-e4231893364e",
+    "span_ref": "timestamp:segment:0004",
+    "content_type": "speech",
+    "content": "Verify recovery with latency and error rate.",
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [],
+    "evidence_id": "5261ec3c-e0cb-41ea-8918-f854975ce6fe"
+  }
+]

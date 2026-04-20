@@ -1,0 +1,19 @@
+1 Introduction ........................................ 3
+1.1 System Context .................................... 4
+2 Failure Signals ..................................... 7
+3 Verification SQL .................................... 11
+
++----------------------+------------------+------------------+
+| signal               | baseline         | current          |
++----------------------+------------------+------------------+
+| p95_latency_ms       | 190              | 420              |
+| error_rate_pct       | 0.4              | 3.7              |
++----------------------+------------------+------------------+
+
+    def correlate_events(deploy_log, alert_stream):
+        merged = sorted(deploy_log + alert_stream, key=lambda x: x["ts"])
+        return merged
+
+Dashboard status: degraded
+Primary region: shanghai
+p95 latency: 420ms

@@ -1,0 +1,29 @@
+[
+  {
+    "insight_type": "procedure",
+    "summary": "Rebuild the timeline.",
+    "evidence_refs": [
+      "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+    ],
+    "confidence": 0.82,
+    "insight_id": "c751ffe4-454b-49cc-a91a-6f26115bc7fa"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Merge duplicate alerts.",
+    "evidence_refs": [
+      "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+    ],
+    "confidence": 0.82,
+    "insight_id": "856ac8f5-ed6e-4ad9-a52e-e53600971660"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "Verify recovery with latency and error rate.",
+    "evidence_refs": [
+      "e168224f-ddb9-49b6-8e2e-c344ac7c2174"
+    ],
+    "confidence": 0.75,
+    "insight_id": "2cef1cdf-d1b2-4dcf-afd9-f58f0bb486d5"
+  }
+]

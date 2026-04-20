@@ -1,0 +1,29 @@
+[
+  {
+    "insight_type": "procedure",
+    "summary": "Rebuild the incident timeline.",
+    "evidence_refs": [
+      "72bb8e74-a72d-43f1-8d26-b6fb50a23696"
+    ],
+    "confidence": 0.82,
+    "insight_id": "4b678ce4-6611-45b5-88da-fc6a440505a1"
+  },
+  {
+    "insight_type": "rule",
+    "summary": "If alerts duplicate, merge them into one incident stream.",
+    "evidence_refs": [
+      "67395052-5d5b-4a0b-b80a-c9515374bcce"
+    ],
+    "confidence": 0.74,
+    "insight_id": "c98b8387-464a-4713-86bf-2d31ef85fb86"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "Verify recovery with error rate and latency.",
+    "evidence_refs": [
+      "1cd8d153-e11d-4c30-95e2-f55cc27ec113"
+    ],
+    "confidence": 0.75,
+    "insight_id": "f611c565-4fd1-480a-9eb1-749b46cf5ab9"
+  }
+]

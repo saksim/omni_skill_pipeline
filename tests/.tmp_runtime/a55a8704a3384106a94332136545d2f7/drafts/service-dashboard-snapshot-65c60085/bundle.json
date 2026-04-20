@@ -1,0 +1,194 @@
+{
+  "asset": {
+    "modality": "image",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\fixture.png",
+    "metadata": {
+      "filename": "fixture.png",
+      "width": 320,
+      "height": 200,
+      "format": "PNG"
+    },
+    "asset_id": "63d0e1d3-851b-4f75-af5c-e8ecb7ed99a0"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "63d0e1d3-851b-4f75-af5c-e8ecb7ed99a0",
+      "span_ref": "image:ocr:0001",
+      "content_type": "ocr",
+      "content": "Service status: degraded\nPrimary region: shanghai",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "engine:fake-ocr",
+        "block:ocr_full"
+      ],
+      "evidence_id": "50e011b1-ca4c-4986-b4eb-5cd366cdb2c6"
+    },
+    {
+      "asset_id": "63d0e1d3-851b-4f75-af5c-e8ecb7ed99a0",
+      "span_ref": "image:region:0001",
+      "content_type": "ocr",
+      "content": "Service status: degraded",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "engine:fake-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:status",
+        "region_size:1"
+      ],
+      "evidence_id": "a0d95148-9acc-4157-a7bf-8e61772682e4"
+    },
+    {
+      "asset_id": "63d0e1d3-851b-4f75-af5c-e8ecb7ed99a0",
+      "span_ref": "image:region:0002",
+      "content_type": "ocr",
+      "content": "Primary region: shanghai",
+      "speaker": null,
+      "confidence": 0.88,
+      "tags": [
+        "engine:fake-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:region",
+        "region_size:1"
+      ],
+      "evidence_id": "9d120908-c2dc-43c8-a82b-4a1f24025d7f"
+    },
+    {
+      "asset_id": "63d0e1d3-851b-4f75-af5c-e8ecb7ed99a0",
+      "span_ref": "image:scene:0001",
+      "content_type": "scene",
+      "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+      "speaker": null,
+      "confidence": 0.72,
+      "tags": [
+        "dashboard",
+        "latency"
+      ],
+      "evidence_id": "373acec6-9798-45e8-9054-b2408fe73d72"
+    },
+    {
+      "asset_id": "63d0e1d3-851b-4f75-af5c-e8ecb7ed99a0",
+      "span_ref": "image:layout:0001",
+      "content_type": "scene",
+      "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+      "speaker": null,
+      "confidence": 0.74,
+      "tags": [
+        "block:layout",
+        "source:scene_summary",
+        "layout_role:dashboard",
+        "layout_role:status",
+        "layout_role:chart",
+        "layout_hint:dashboard",
+        "layout_hint:latency",
+        "dashboard",
+        "latency"
+      ],
+      "evidence_id": "e0a7c068-23bc-4cf8-923b-758916725ffc"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "concept",
+      "summary": "Service status: degraded\nPrimary region: shanghai",
+      "evidence_refs": [
+        "50e011b1-ca4c-4986-b4eb-5cd366cdb2c6"
+      ],
+      "confidence": 0.65,
+      "insight_id": "285dee0e-03c5-46a2-a9ec-fa5a7aa669bb"
+    }
+  ],
+  "skill": {
+    "name": "Service Dashboard Snapshot",
+    "goal": "Distill observability material into a build_skill for self. Seed: Service status: degraded Primary region: shanghai",
+    "source_modality": "image",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert image evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Image source",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Service status: degraded Primary region: shanghai",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Service status: degraded",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "Primary region: shanghai",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "50e011b1-ca4c-4986-b4eb-5cd366cdb2c6@image:ocr:0001",
+      "a0d95148-9acc-4157-a7bf-8e61772682e4@image:region:0001",
+      "9d120908-c2dc-43c8-a82b-4a1f24025d7f@image:region:0002",
+      "373acec6-9798-45e8-9054-b2408fe73d72@image:scene:0001",
+      "e0a7c068-23bc-4cf8-923b-758916725ffc@image:layout:0001"
+    ],
+    "confidence": 0.8,
+    "version": "0.1.0",
+    "summary": "Service status: degraded Primary region: shanghai",
+    "tags": [
+      "observability",
+      "image",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-20T16:21:33Z",
+    "skill_id": "65c60085-c3a3-4f0c-93a1-b2485ef00a8e"
+  },
+  "skill_markdown": "# Service Dashboard Snapshot\n\n## 判词\nService status: degraded Primary region: shanghai\n\n## 元信息\n- skill_id: 65c60085-c3a3-4f0c-93a1-b2485ef00a8e\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: image\n- review_status: draft\n- confidence: 0.80\n- created_at: 2026-04-20T16:21:33Z\n\n## 目标\nDistill observability material into a build_skill for self. Seed: Service status: degraded Primary region: shanghai\n\n## 触发条件\n- Use when you need to convert image evidence into a reusable build_skill.\n\n## 输入\n- Image source\n- Distillation goal\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Service status: degraded Primary region: shanghai\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Service status: degraded\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n3. Primary region: shanghai\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- None\n\n## 反模式\n- None\n\n## 验证方式\n- Confirm each key conclusion can be traced back to evidence_refs.\n- Run one manual rehearsal to verify the steps are executable.\n\n## 证据链\n- 50e011b1-ca4c-4986-b4eb-5cd366cdb2c6@image:ocr:0001\n- a0d95148-9acc-4157-a7bf-8e61772682e4@image:region:0001\n- 9d120908-c2dc-43c8-a82b-4a1f24025d7f@image:region:0002\n- 373acec6-9798-45e8-9054-b2408fe73d72@image:scene:0001\n- e0a7c068-23bc-4cf8-923b-758916725ffc@image:layout:0001\n\n## 标签\n- observability\n- image\n- build_skill\n- heuristic\n",
+  "corpus": null,
+  "evidence_nodes": [],
+  "request_payload": {
+    "image_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\fixture.png",
+    "title": "Service Dashboard Snapshot",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "observability"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\drafts\\service-dashboard-snapshot-65c60085\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\drafts\\service-dashboard-snapshot-65c60085\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\drafts\\service-dashboard-snapshot-65c60085\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\drafts\\service-dashboard-snapshot-65c60085\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\drafts\\service-dashboard-snapshot-65c60085\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\a55a8704a3384106a94332136545d2f7\\drafts\\service-dashboard-snapshot-65c60085\\bundle.json"
+  },
+  "adapter_metadata": {
+    "frame_count": 1,
+    "ocr_region_count": 2,
+    "ocr_layout_roles": [
+      "layout_role:region",
+      "layout_role:status"
+    ],
+    "layout_evidence_count": 1
+  }
+}

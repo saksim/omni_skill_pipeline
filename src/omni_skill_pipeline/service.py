@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Optional
+from urllib.parse import unquote, urlparse
 
 from omni_skill_pipeline.adapters.audio import AudioAdapter
 from omni_skill_pipeline.adapters.image import ImageAdapter
@@ -9,12 +10,21 @@ from omni_skill_pipeline.adapters.tabular import TabularAdapter
 from omni_skill_pipeline.adapters.text import TextAdapter
 from omni_skill_pipeline.adapters.video import VideoAdapter
 from omni_skill_pipeline.config import Settings, load_settings
+from omni_skill_pipeline.extraction import EvidenceBuilder
 from omni_skill_pipeline.exceptions import ProviderUnavailableError
-from omni_skill_pipeline.interfaces import DistillAdapter, InsightExtractor, SkillComposer
+from omni_skill_pipeline.interfaces import AssetDistillRequest, DistillAdapter, InsightExtractor, SkillComposer
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
+    Corpus,
+    CorpusAssetInput,
+    CorpusAssetRef,
+    CorpusDistillRequest,
     DistillBundle,
+    DistillGoal,
     ImageDistillRequest,
+    LoadedCorpus,
+    LoadedAsset,
+    Modality,
     TabularDistillRequest,
     TextDistillRequest,
     VideoDistillRequest,
@@ -31,6 +41,7 @@ from omni_skill_pipeline.providers.openai_provider import OpenAIAudioTranscriber
 from omni_skill_pipeline.providers.tesseract import TesseractOCRProvider
 from omni_skill_pipeline.render import render_skill_markdown
 from omni_skill_pipeline.repository import FileArtifactRepository
+from omni_skill_pipeline.utils import unique_preserve_order
 
 
 class DistillationService(object):
@@ -45,6 +56,7 @@ class DistillationService(object):
         video_adapter: DistillAdapter[VideoDistillRequest],
         insight_extractor: InsightExtractor,
         skill_composer: SkillComposer,
+        evidence_builder: EvidenceBuilder | None = None,
     ) -> None:
         self.repository = repository
         self.text_adapter = text_adapter
@@ -54,6 +66,7 @@ class DistillationService(object):
         self.video_adapter = video_adapter
         self.insight_extractor = insight_extractor
         self.skill_composer = skill_composer
+        self.evidence_builder = evidence_builder or EvidenceBuilder()
 
     def distill_text(self, request: TextDistillRequest) -> DistillBundle:
         return self._distill(request, self.text_adapter)
@@ -69,6 +82,96 @@ class DistillationService(object):
 
     def distill_video(self, request: VideoDistillRequest) -> DistillBundle:
         return self._distill(request, self.video_adapter)
+
+    def distill_corpus(self, request: CorpusDistillRequest) -> DistillBundle:
+        loaded_corpus = self.load_corpus(request)
+        insights = self.insight_extractor.extract(loaded_corpus.evidence_units)
+        primary_index = min(request.primary_asset_index(), max(len(loaded_corpus.loaded_assets) - 1, 0))
+        primary_loaded = loaded_corpus.loaded_assets[primary_index]
+        skill = self.skill_composer.compose(
+            request.name.strip() or loaded_corpus.corpus.name,
+            request.goal,
+            primary_loaded.asset.modality,
+            loaded_corpus.evidence_units,
+            insights,
+        )
+        markdown = render_skill_markdown(skill)
+        bundle = DistillBundle(
+            asset=primary_loaded.asset,
+            evidence_units=loaded_corpus.evidence_units,
+            insights=insights,
+            skill=skill,
+            skill_markdown=markdown,
+            corpus=loaded_corpus.corpus,
+            evidence_nodes=loaded_corpus.evidence_nodes,
+            request_payload=request.to_dict(),
+            adapter_metadata={
+                'corpus_id': loaded_corpus.corpus.corpus_id,
+                'corpus_name': loaded_corpus.corpus.name,
+                'asset_count': len(loaded_corpus.loaded_assets),
+                'cross_asset': len(loaded_corpus.loaded_assets) > 1,
+                'evidence_node_count': len(loaded_corpus.evidence_nodes),
+                'corpus_assets': [item.to_dict() for item in loaded_corpus.corpus.assets],
+                'asset_adapter_metadata': loaded_corpus.adapter_metadata,
+            },
+        )
+        self.repository.save_bundle(bundle)
+        return bundle
+
+    def load_corpus(self, request: CorpusDistillRequest) -> LoadedCorpus:
+        request.validate()
+        loaded_assets: list[LoadedAsset] = []
+        corpus_assets: list[CorpusAssetRef] = []
+        evidence_units = []
+        adapter_metadata: dict[str, object] = {}
+
+        for asset_input in request.assets:
+            adapter = self._adapter_for_modality(asset_input.modality)
+            asset_request = self._build_corpus_asset_request(asset_input, request.goal)
+            loaded = adapter.load(asset_request)
+            loaded_assets.append(loaded)
+            evidence_units.extend(loaded.evidence_units)
+            merged_metadata = dict(loaded.asset.metadata)
+            merged_metadata.update(asset_input.metadata)
+            corpus_assets.append(
+                CorpusAssetRef(
+                    asset_id=loaded.asset.asset_id,
+                    modality=loaded.asset.modality,
+                    source_uri=loaded.asset.source_uri,
+                    role=asset_input.role,
+                    title_hint=asset_input.title_hint or loaded.title_hint,
+                    metadata=merged_metadata,
+                )
+            )
+            adapter_metadata[loaded.asset.asset_id] = {
+                'role': asset_input.role,
+                'modality': loaded.asset.modality.value,
+                'source_uri': loaded.asset.source_uri,
+                'adapter_metadata': loaded.adapter_metadata,
+            }
+
+        corpus_name = request.name.strip() or self._derive_corpus_name(loaded_assets)
+        corpus_metadata = dict(request.metadata)
+        corpus_metadata.setdefault('asset_count', len(corpus_assets))
+        corpus_metadata.setdefault(
+            'modalities',
+            unique_preserve_order(item.modality.value for item in corpus_assets),
+        )
+        corpus = Corpus(
+            name=corpus_name,
+            goal=request.goal,
+            assets=corpus_assets,
+            tags=list(request.tags),
+            metadata=corpus_metadata,
+        )
+        evidence_nodes = self.evidence_builder.build_from_loaded_assets(loaded_assets)
+        return LoadedCorpus(
+            corpus=corpus,
+            loaded_assets=loaded_assets,
+            evidence_units=evidence_units,
+            evidence_nodes=evidence_nodes,
+            adapter_metadata=adapter_metadata,
+        )
 
     def _distill(self, request, adapter) -> DistillBundle:
         request.validate()
@@ -93,6 +196,54 @@ class DistillationService(object):
         )
         self.repository.save_bundle(bundle)
         return bundle
+
+    def _adapter_for_modality(self, modality: Modality):
+        if modality == Modality.TEXT:
+            return self.text_adapter
+        if modality == Modality.AUDIO:
+            return self.audio_adapter
+        if modality == Modality.IMAGE:
+            return self.image_adapter
+        if modality == Modality.TABULAR:
+            return self.tabular_adapter
+        if modality == Modality.VIDEO:
+            return self.video_adapter
+        raise ValueError('Unsupported modality for corpus distill: %s' % modality.value)
+
+    def _build_corpus_asset_request(self, asset: CorpusAssetInput, goal: DistillGoal) -> AssetDistillRequest:
+        source_uri = self._resolve_source_uri(asset.source_uri)
+        title_hint = asset.title_hint or None
+        if asset.modality == Modality.TEXT:
+            return TextDistillRequest(title=title_hint, file_path=source_uri, goal=goal)
+        if asset.modality == Modality.AUDIO:
+            return AudioDistillRequest(title=title_hint, audio_path=source_uri, goal=goal)
+        if asset.modality == Modality.IMAGE:
+            return ImageDistillRequest(image_path=source_uri, title=title_hint, goal=goal)
+        if asset.modality == Modality.TABULAR:
+            return TabularDistillRequest(file_path=source_uri, title=title_hint, goal=goal)
+        if asset.modality == Modality.VIDEO:
+            return VideoDistillRequest(video_path=source_uri, title=title_hint, goal=goal)
+        raise ValueError('Unsupported modality for corpus request: %s' % asset.modality.value)
+
+    def _derive_corpus_name(self, loaded_assets: list[LoadedAsset]) -> str:
+        for loaded in loaded_assets:
+            if loaded.title_hint.strip():
+                return loaded.title_hint.strip()
+        if loaded_assets:
+            return Path(loaded_assets[0].asset.source_uri).stem.replace('_', ' ')
+        return 'corpus-distill'
+
+    def _resolve_source_uri(self, source_uri: str) -> str:
+        raw = source_uri.strip()
+        parsed = urlparse(raw)
+        if parsed.scheme.lower() != 'file':
+            return raw
+        resolved = unquote(parsed.path or '')
+        if parsed.netloc and resolved and not resolved.startswith('/'):
+            resolved = '/%s/%s' % (parsed.netloc, resolved)
+        if len(resolved) >= 3 and resolved[0] == '/' and resolved[2] == ':':
+            resolved = resolved[1:]
+        return resolved or raw
 
 
 def _build_skill_composer(settings: Settings) -> SkillComposer:

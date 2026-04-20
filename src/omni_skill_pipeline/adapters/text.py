@@ -10,6 +10,7 @@ from html import unescape
 from pathlib import Path
 from typing import Dict, List, Protocol, Sequence
 
+from omni_skill_pipeline.extraction.modality.document_parser import DocumentStructureParser
 from omni_skill_pipeline.models import Asset, ContentType, EvidenceUnit, LoadedAsset, Modality, TextDistillRequest
 from omni_skill_pipeline.utils import read_text_file, split_paragraphs, unique_preserve_order
 
@@ -58,8 +59,98 @@ class DocxReader(object):
         except ImportError:
             return self._read_via_zip(path)
         document = Document(str(path))
-        paragraphs = [paragraph.text.strip() for paragraph in document.paragraphs if paragraph.text.strip()]
-        return '\n\n'.join(paragraphs)
+        lines: list[str] = []
+        code_buffer: list[str] = []
+
+        def flush_code_buffer() -> None:
+            if not code_buffer:
+                return
+            lines.append('```')
+            lines.extend(code_buffer)
+            lines.append('```')
+            lines.append('')
+            code_buffer.clear()
+
+        for paragraph in document.paragraphs:
+            text = paragraph.text.strip()
+            if not text:
+                flush_code_buffer()
+                lines.append('')
+                continue
+            style_name = str(getattr(getattr(paragraph, "style", None), "name", "") or "").strip()
+            lowered_style = style_name.lower()
+
+            if "code" in lowered_style:
+                code_buffer.append(text)
+                continue
+
+            flush_code_buffer()
+            heading_level = self._heading_level_from_style(style_name)
+            if heading_level is not None:
+                lines.append("%s %s" % ("#" * heading_level, text))
+                lines.append('')
+                continue
+
+            toc_level = self._toc_level_from_style(style_name)
+            if toc_level is not None:
+                lines.append("[TOC L%s] %s" % (toc_level, text))
+                continue
+
+            lines.append(text)
+            lines.append('')
+
+        flush_code_buffer()
+
+        for table in document.tables:
+            markdown_table = self._table_to_markdown(table)
+            if markdown_table:
+                if lines and lines[-1] != '':
+                    lines.append('')
+                lines.extend(markdown_table)
+                lines.append('')
+
+        return "\n".join(lines).strip()
+
+    def _heading_level_from_style(self, style_name: str) -> int | None:
+        lowered = style_name.lower()
+        if not lowered.startswith("heading"):
+            return None
+        match = re.search(r"(\d+)", lowered)
+        if match is None:
+            return 1
+        try:
+            level = int(match.group(1))
+        except ValueError:
+            return 1
+        return max(1, min(level, 6))
+
+    def _toc_level_from_style(self, style_name: str) -> int | None:
+        lowered = style_name.lower()
+        if "toc" not in lowered and "contents" not in lowered:
+            return None
+        match = re.search(r"(\d+)", lowered)
+        if match is None:
+            return 1
+        try:
+            return max(1, int(match.group(1)))
+        except ValueError:
+            return 1
+
+    def _table_to_markdown(self, table) -> list[str]:
+        rows: list[list[str]] = []
+        for row in table.rows:
+            cells = [cell.text.strip().replace("\n", " ") for cell in row.cells]
+            if any(cell for cell in cells):
+                rows.append(cells)
+        if not rows:
+            return []
+        width = max(len(row) for row in rows)
+        normalized_rows = [row + [""] * (width - len(row)) for row in rows]
+        lines = ["| " + " | ".join(normalized_rows[0]) + " |"]
+        lines.append("| " + " | ".join(["---"] * width) + " |")
+        for row in normalized_rows[1:]:
+            lines.append("| " + " | ".join(row) + " |")
+        return lines
 
     def _read_via_zip(self, path: Path) -> str:
         with zipfile.ZipFile(str(path)) as archive:
@@ -134,7 +225,11 @@ class TextReaderRegistry:
 
 
 class TextAdapter(object):
-    def __init__(self, registry: TextReaderRegistry | None = None) -> None:
+    def __init__(
+        self,
+        registry: TextReaderRegistry | None = None,
+        document_parser: DocumentStructureParser | None = None,
+    ) -> None:
         self.registry = registry or TextReaderRegistry(
             readers=[
                 PlainTextReader(),
@@ -145,6 +240,7 @@ class TextAdapter(object):
                 DocReader(),
             ]
         )
+        self.document_parser = document_parser or DocumentStructureParser()
 
     def load(self, request: TextDistillRequest) -> LoadedAsset:
         request.validate()
@@ -164,12 +260,13 @@ class TextAdapter(object):
             source_uri=source_uri,
             metadata={'filename': filename, 'language': 'mixed'},
         )
-        evidence_units = self._build_evidence(asset.asset_id, raw_text)
+        source_format = Path(filename).suffix.lower() or 'inline'
+        evidence_units = self._build_evidence(asset.asset_id, raw_text, source_format=source_format)
         return LoadedAsset(
             asset=asset,
             evidence_units=evidence_units,
             title_hint=title_hint,
-            adapter_metadata={'format': Path(filename).suffix.lower() or 'inline'},
+            adapter_metadata={'format': source_format},
         )
 
     def _read_path(self, path: Path) -> str:
@@ -186,7 +283,23 @@ class TextAdapter(object):
                 return stripped[:80]
         return Path(filename).stem.replace('_', ' ')
 
-    def _build_evidence(self, asset_id: str, raw_text: str) -> List[EvidenceUnit]:
+    def _build_evidence(self, asset_id: str, raw_text: str, *, source_format: str = "") -> List[EvidenceUnit]:
+        parsed_blocks = self.document_parser.parse(raw_text, source_format=source_format)
+        if parsed_blocks:
+            evidence_units = []
+            for block in parsed_blocks:
+                evidence_units.append(
+                    EvidenceUnit(
+                        asset_id=asset_id,
+                        span_ref=block.span_ref,
+                        content_type=block.content_type,
+                        content=block.content,
+                        confidence=block.confidence,
+                        tags=unique_preserve_order(block.tags),
+                    )
+                )
+            return evidence_units
+
         paragraphs = split_paragraphs(raw_text)
         evidence_units = []
         for index, paragraph in enumerate(paragraphs, start=1):

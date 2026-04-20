@@ -5,15 +5,22 @@ from pathlib import Path
 from PIL import Image
 
 from omni_skill_pipeline.exceptions import ProviderUnavailableError
+from omni_skill_pipeline.extraction.modality.image_parser import ImageStructureParser
 from omni_skill_pipeline.interfaces import ImageAnalyzer, OCRProvider
 from omni_skill_pipeline.models import Asset, ContentType, EvidenceUnit, ImageDistillRequest, LoadedAsset, Modality
 from omni_skill_pipeline.utils import unique_preserve_order
 
 
 class ImageAdapter(object):
-    def __init__(self, ocr_provider: OCRProvider | None = None, analyzer: ImageAnalyzer | None = None) -> None:
+    def __init__(
+        self,
+        ocr_provider: OCRProvider | None = None,
+        analyzer: ImageAnalyzer | None = None,
+        image_parser: ImageStructureParser | None = None,
+    ) -> None:
         self.ocr_provider = ocr_provider
         self.analyzer = analyzer
+        self.image_parser = image_parser or ImageStructureParser()
 
     def load(self, request: ImageDistillRequest) -> LoadedAsset:
         request.validate()
@@ -28,6 +35,7 @@ class ImageAdapter(object):
         )
         title_hint = request.title or image_path.stem.replace('_', ' ')
         evidence_units = []
+        adapter_metadata: dict[str, object] = {'frame_count': 1}
 
         if self.ocr_provider is not None:
             try:
@@ -45,9 +53,27 @@ class ImageAdapter(object):
                             content_type=ContentType.OCR,
                             content=ocr_result.text.strip(),
                             confidence=0.78,
-                            tags=['engine:%s' % ocr_result.engine],
+                            tags=['engine:%s' % ocr_result.engine, 'block:ocr_full'],
                         )
                     )
+                    region_blocks = self.image_parser.parse_ocr_regions(ocr_result)
+                    layout_roles = set()
+                    for block in region_blocks:
+                        for tag in block.tags:
+                            if tag.startswith('layout_role:'):
+                                layout_roles.add(tag)
+                        evidence_units.append(
+                            EvidenceUnit(
+                                asset_id=asset.asset_id,
+                                span_ref=block.span_ref,
+                                content_type=block.content_type,
+                                content=block.content,
+                                confidence=block.confidence,
+                                tags=unique_preserve_order(['engine:%s' % ocr_result.engine] + block.tags),
+                            )
+                        )
+                    adapter_metadata['ocr_region_count'] = len(region_blocks)
+                    adapter_metadata['ocr_layout_roles'] = sorted(layout_roles)
 
         if self.analyzer is not None:
             try:
@@ -68,6 +94,19 @@ class ImageAdapter(object):
                             tags=unique_preserve_order(analysis.tags),
                         )
                     )
+                    layout_blocks = self.image_parser.parse_layout_summary(analysis)
+                    for block in layout_blocks:
+                        evidence_units.append(
+                            EvidenceUnit(
+                                asset_id=asset.asset_id,
+                                span_ref=block.span_ref,
+                                content_type=block.content_type,
+                                content=block.content,
+                                confidence=block.confidence,
+                                tags=unique_preserve_order(block.tags),
+                            )
+                        )
+                    adapter_metadata['layout_evidence_count'] = len(layout_blocks)
 
         if not evidence_units:
             raise ValueError('Image adapter produced no evidence. Configure OCR or image analysis providers.')
@@ -76,7 +115,7 @@ class ImageAdapter(object):
             asset=asset,
             evidence_units=evidence_units,
             title_hint=title_hint,
-            adapter_metadata={'frame_count': 1},
+            adapter_metadata=adapter_metadata,
         )
 
     def _build_metadata(self, image_path: Path) -> dict[str, object]:

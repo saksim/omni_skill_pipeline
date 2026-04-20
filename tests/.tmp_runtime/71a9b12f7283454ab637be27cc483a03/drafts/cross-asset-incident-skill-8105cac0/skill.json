@@ -1,0 +1,53 @@
+{
+  "name": "cross asset incident skill",
+  "goal": "Distill incident_response material into a build_skill for self. Seed: # Incident Runbook 1. Rebuild the timeline. 2. Merge duplicate alerts. Verify recovery with latency and error rate.",
+  "source_modality": "text",
+  "skill_type": "procedure",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert text evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Source document",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Confirm the source material matches the declared distillation goal."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Rebuild the timeline.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "Merge duplicate alerts.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [],
+  "anti_patterns": [],
+  "verification": [
+    "Verify recovery with latency and error rate."
+  ],
+  "evidence_refs": [
+    "898e1452-3a83-4678-9d39-cdc415128887@paragraph:0001",
+    "6c03cb60-77b0-4bda-be1e-54b667d08b3c@timestamp:segment:0001",
+    "ef90e094-8f0f-4711-b4fa-9375799b9dab@timestamp:segment:0002",
+    "f74a1d44-0d2a-4f68-872d-30013fe0f6e1@timestamp:segment:0003",
+    "5e3a2394-4440-49ee-b506-05976b89ebf8@timestamp:segment:0004"
+  ],
+  "confidence": 0.75,
+  "version": "0.1.0",
+  "summary": "# Incident Runbook 1. Rebuild the timeline. 2. Merge duplicate alerts. Verify recovery with latency and error rate.",
+  "tags": [
+    "incident_response",
+    "text",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-04-20T14:58:37Z",
+  "skill_id": "8105cac0-6cf9-4ab0-a69c-ed3a4f26e4b1"
+}

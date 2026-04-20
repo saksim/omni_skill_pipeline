@@ -1,0 +1,55 @@
+{
+  "name": "PostgreSQL Slow Query Review",
+  "goal": "Distill database material into a build_skill for self. Seed: PostgreSQL Slow Query Review",
+  "source_modality": "text",
+  "skill_type": "procedure",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert text evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Source document",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Confirm the source material matches the declared distillation goal."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Capture the top slow queries from pg_stat_statements.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "Compare execution plans before changing indexes.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [
+    "If the query is I/O bound, review the missing indexes first."
+  ],
+  "anti_patterns": [
+    "Avoid adding overlapping indexes without measuring write amplification."
+  ],
+  "verification": [
+    "Verify the new plan with EXPLAIN ANALYZE and compare latency."
+  ],
+  "evidence_refs": [
+    "1a70c6c6-9463-4246-addd-978d93b9634a@section:1",
+    "56d618e1-1a2e-4c81-9bc2-800624ee877d@section:1:paragraph:0001",
+    "75ff662f-27fe-4ca5-a73c-eb33e3d9457e@section:1:paragraph:0002"
+  ],
+  "confidence": 0.77,
+  "version": "0.1.0",
+  "summary": "PostgreSQL Slow Query Review",
+  "tags": [
+    "database",
+    "text",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-04-20T16:21:33Z",
+  "skill_id": "a3e80d4c-1f1a-4bd4-91ae-1b8d9d5dde0c"
+}

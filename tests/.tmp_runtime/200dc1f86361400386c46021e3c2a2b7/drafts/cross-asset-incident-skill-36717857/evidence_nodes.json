@@ -1,0 +1,142 @@
+[
+  {
+    "asset_id": "70910292-7133-4b39-8628-14759bcbea7d",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1",
+    "text_content": "Incident Runbook",
+    "payload": {
+      "legacy_content": "Incident Runbook"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "a3c985ae-941f-49a0-a7b4-e831f8dcc74a"
+  },
+  {
+    "asset_id": "70910292-7133-4b39-8628-14759bcbea7d",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1:paragraph:0001",
+    "text_content": "1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate.",
+    "payload": {
+      "legacy_content": "1. Rebuild the timeline.\n2. Merge duplicate alerts.\nVerify recovery with latency and error rate."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "bfa1e8c0-f691-45bf-82b2-efbb35a96e1c"
+  },
+  {
+    "asset_id": "8e90994c-8996-445d-8d0b-7d4fb26b6e83",
+    "modality": "audio",
+    "content_type": "speech",
+    "span_ref": "timestamp:segment:0001",
+    "text_content": "# Incident Runbook",
+    "payload": {
+      "legacy_content": "# Incident Runbook"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "669f87d3-4e77-4733-ab23-bac53daec437"
+  },
+  {
+    "asset_id": "8e90994c-8996-445d-8d0b-7d4fb26b6e83",
+    "modality": "audio",
+    "content_type": "speech",
+    "span_ref": "timestamp:segment:0002",
+    "text_content": "1. Rebuild the timeline.",
+    "payload": {
+      "legacy_content": "1. Rebuild the timeline."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "584e8500-0ea9-453d-927b-535a8f46cc1a"
+  },
+  {
+    "asset_id": "8e90994c-8996-445d-8d0b-7d4fb26b6e83",
+    "modality": "audio",
+    "content_type": "speech",
+    "span_ref": "timestamp:segment:0003",
+    "text_content": "2. Merge duplicate alerts.",
+    "payload": {
+      "legacy_content": "2. Merge duplicate alerts."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "c25de681-ded9-4f88-b481-ffb34c7576dc"
+  },
+  {
+    "asset_id": "8e90994c-8996-445d-8d0b-7d4fb26b6e83",
+    "modality": "audio",
+    "content_type": "speech",
+    "span_ref": "timestamp:segment:0004",
+    "text_content": "Verify recovery with latency and error rate.",
+    "payload": {
+      "legacy_content": "Verify recovery with latency and error rate."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.82,
+    "tags": [
+      "utterance_act:context",
+      "speaker_role:unknown"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "bf2f14cc-c106-4cc9-99d6-6484a2730b83"
+  }
+]

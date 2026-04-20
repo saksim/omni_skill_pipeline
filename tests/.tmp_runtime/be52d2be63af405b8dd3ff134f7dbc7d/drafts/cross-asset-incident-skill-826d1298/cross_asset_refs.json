@@ -1,0 +1,78 @@
+[
+  {
+    "reference_type": "skill",
+    "reference_id": "826d1298-49b8-4189-b70f-1fbf6a0b0e40",
+    "summary": "cross asset incident skill",
+    "asset_ids": [
+      "d057b29b-3282-4915-a74c-a0915ad51b44",
+      "f84a9572-6ca3-48bc-a6c0-69a9d57132f2"
+    ],
+    "modalities": [
+      "text",
+      "audio"
+    ],
+    "roles": [
+      "primary",
+      "context"
+    ],
+    "evidence_refs": [
+      "74205e37-9955-4b8b-b146-886aea6b8595",
+      "067a99c0-479b-4056-b70a-a44e9ae89b4f",
+      "5b17b954-a3b3-4b1d-bf3f-3619258dd8eb",
+      "4071fe1e-4870-4c8c-8d1f-7fa2d45e8b60",
+      "f0a0c44b-8809-495b-a948-cc067771df91"
+    ],
+    "evidence": [
+      {
+        "evidence_ref": "74205e37-9955-4b8b-b146-886aea6b8595@paragraph:0001",
+        "evidence_id": "74205e37-9955-4b8b-b146-886aea6b8595",
+        "asset_id": "d057b29b-3282-4915-a74c-a0915ad51b44",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "paragraph:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\be52d2be63af405b8dd3ff134f7dbc7d\\incident.md"
+      },
+      {
+        "evidence_ref": "067a99c0-479b-4056-b70a-a44e9ae89b4f@timestamp:segment:0001",
+        "evidence_id": "067a99c0-479b-4056-b70a-a44e9ae89b4f",
+        "asset_id": "f84a9572-6ca3-48bc-a6c0-69a9d57132f2",
+        "modality": "audio",
+        "role": "context",
+        "content_type": "speech",
+        "span_ref": "timestamp:segment:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\be52d2be63af405b8dd3ff134f7dbc7d\\incident.wav"
+      },
+      {
+        "evidence_ref": "5b17b954-a3b3-4b1d-bf3f-3619258dd8eb@timestamp:segment:0002",
+        "evidence_id": "5b17b954-a3b3-4b1d-bf3f-3619258dd8eb",
+        "asset_id": "f84a9572-6ca3-48bc-a6c0-69a9d57132f2",
+        "modality": "audio",
+        "role": "context",
+        "content_type": "speech",
+        "span_ref": "timestamp:segment:0002",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\be52d2be63af405b8dd3ff134f7dbc7d\\incident.wav"
+      },
+      {
+        "evidence_ref": "4071fe1e-4870-4c8c-8d1f-7fa2d45e8b60@timestamp:segment:0003",
+        "evidence_id": "4071fe1e-4870-4c8c-8d1f-7fa2d45e8b60",
+        "asset_id": "f84a9572-6ca3-48bc-a6c0-69a9d57132f2",
+        "modality": "audio",
+        "role": "context",
+        "content_type": "speech",
+        "span_ref": "timestamp:segment:0003",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\be52d2be63af405b8dd3ff134f7dbc7d\\incident.wav"
+      },
+      {
+        "evidence_ref": "f0a0c44b-8809-495b-a948-cc067771df91@timestamp:segment:0004",
+        "evidence_id": "f0a0c44b-8809-495b-a948-cc067771df91",
+        "asset_id": "f84a9572-6ca3-48bc-a6c0-69a9d57132f2",
+        "modality": "audio",
+        "role": "context",
+        "content_type": "speech",
+        "span_ref": "timestamp:segment:0004",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\be52d2be63af405b8dd3ff134f7dbc7d\\incident.wav"
+      }
+    ]
+  }
+]

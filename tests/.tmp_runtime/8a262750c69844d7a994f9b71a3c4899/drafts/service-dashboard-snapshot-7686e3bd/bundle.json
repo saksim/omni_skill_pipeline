@@ -1,0 +1,127 @@
+{
+  "asset": {
+    "modality": "image",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\fixture.png",
+    "metadata": {
+      "filename": "fixture.png",
+      "width": 320,
+      "height": 200,
+      "format": "PNG"
+    },
+    "asset_id": "d9e65b08-8432-4bc3-8919-8cc357521c50"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "d9e65b08-8432-4bc3-8919-8cc357521c50",
+      "span_ref": "image:ocr:0001",
+      "content_type": "ocr",
+      "content": "Service status: degraded\nPrimary region: shanghai",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "engine:fake-ocr"
+      ],
+      "evidence_id": "c85261c1-32a5-4d0f-b281-fc961fc4cf4c"
+    },
+    {
+      "asset_id": "d9e65b08-8432-4bc3-8919-8cc357521c50",
+      "span_ref": "image:scene:0001",
+      "content_type": "scene",
+      "content": "Dashboard frame shows a degraded service banner and a latency spike.",
+      "speaker": null,
+      "confidence": 0.72,
+      "tags": [
+        "dashboard",
+        "latency"
+      ],
+      "evidence_id": "f1ed09bc-594e-474f-8219-c93f2933b0e0"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "concept",
+      "summary": "Service status: degraded\nPrimary region: shanghai",
+      "evidence_refs": [
+        "c85261c1-32a5-4d0f-b281-fc961fc4cf4c"
+      ],
+      "confidence": 0.65,
+      "insight_id": "2a692c4b-92e2-4b7e-9563-de77c9493212"
+    }
+  ],
+  "skill": {
+    "name": "Service Dashboard Snapshot",
+    "goal": "Distill observability material into a build_skill for self. Seed: Service status: degraded Primary region: shanghai",
+    "source_modality": "image",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert image evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Image source",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Service status: degraded Primary region: shanghai",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Dashboard frame shows a degraded service banner and a latency spike.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "c85261c1-32a5-4d0f-b281-fc961fc4cf4c@image:ocr:0001",
+      "f1ed09bc-594e-474f-8219-c93f2933b0e0@image:scene:0001"
+    ],
+    "confidence": 0.63,
+    "version": "0.1.0",
+    "summary": "Service status: degraded Primary region: shanghai",
+    "tags": [
+      "observability",
+      "image",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-20T15:23:46Z",
+    "skill_id": "7686e3bd-d746-4ce5-9a0b-3d9d5c3938cd"
+  },
+  "skill_markdown": "# Service Dashboard Snapshot\n\n## 判词\nService status: degraded Primary region: shanghai\n\n## 元信息\n- skill_id: 7686e3bd-d746-4ce5-9a0b-3d9d5c3938cd\n- version: 0.1.0\n- skill_type: procedure\n- audience: self\n- source_modality: image\n- review_status: draft\n- confidence: 0.63\n- created_at: 2026-04-20T15:23:46Z\n\n## 目标\nDistill observability material into a build_skill for self. Seed: Service status: degraded Primary region: shanghai\n\n## 触发条件\n- Use when you need to convert image evidence into a reusable build_skill.\n\n## 输入\n- Image source\n- Distillation goal\n\n## 前置条件\n- Confirm the source material matches the declared distillation goal.\n\n## 操作步骤\n1. Service status: degraded Primary region: shanghai\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Dashboard frame shows a degraded service banner and a latency spike.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- None\n\n## 反模式\n- None\n\n## 验证方式\n- Confirm each key conclusion can be traced back to evidence_refs.\n- Run one manual rehearsal to verify the steps are executable.\n\n## 证据链\n- c85261c1-32a5-4d0f-b281-fc961fc4cf4c@image:ocr:0001\n- f1ed09bc-594e-474f-8219-c93f2933b0e0@image:scene:0001\n\n## 标签\n- observability\n- image\n- build_skill\n- heuristic\n",
+  "corpus": null,
+  "evidence_nodes": [],
+  "request_payload": {
+    "image_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\fixture.png",
+    "title": "Service Dashboard Snapshot",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "observability"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\drafts\\service-dashboard-snapshot-7686e3bd\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\drafts\\service-dashboard-snapshot-7686e3bd\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\drafts\\service-dashboard-snapshot-7686e3bd\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\drafts\\service-dashboard-snapshot-7686e3bd\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\drafts\\service-dashboard-snapshot-7686e3bd\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\8a262750c69844d7a994f9b71a3c4899\\drafts\\service-dashboard-snapshot-7686e3bd\\bundle.json"
+  },
+  "adapter_metadata": {
+    "frame_count": 1
+  }
+}

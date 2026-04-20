@@ -102,6 +102,17 @@
   - `TP-E3-01`：`EvidenceNode` 结构字段覆盖 `time_range/spatial_ref/structural_ref/payload/lineage`
   - `TP-E5-01`：`AtomExtractor` 主接口与 `LegacyInsightAtomExtractor` 过渡实现已落地
   - `TP-E6-01`：`SkillGraph` node/edge 模型与序列化测试已补齐
+- 已完成 `TP-E1-03`：
+  - `src/omni_skill_pipeline/schema.py` 新增 `SKILL_GRAPH_SCHEMA`
+  - `docs/current/contracts/skill-graph.schema.json` 已落地并与运行时 schema 对齐
+  - 新增 schema 校验测试，覆盖合法与非法 payload
+- 已完成 `TP-E2-01`：
+  - `CorpusDistillRequest` 多资产请求构造与校验测试补齐
+  - `interfaces.py` 增加多资产请求协议（`CorpusAssetRequestBuilder` / `CorpusLoader`）
+- 已完成 `TP-E2-02`：
+  - `service.py` 新增 `load_corpus` 与 `distill_corpus`
+  - 保持原有 `distill_text/audio/image/tabular/video` 兼容
+  - service 集成测试验证多资产可组装 `Corpus` 并聚合 evidence
 
 ## 当前目录分层
 
@@ -129,6 +140,6 @@
 
 ## 推荐下一刀
 
-1. 继续 Batch A 收口：`TP-E1-03`（schema v2 草案与 contract 对齐）。
-2. 进入 Batch B：`TP-E2-01 -> TP-E2-02`，先打通多资产 `Corpus` 请求与 service 组装。
-3. 紧接 `TP-E3-02`（EvidenceBuilder）并保持与现有 adapter 输出兼容。
+1. 进入 `TP-E2-03`：统一 corpus artifact 输出（repository 落地 corpus 级产物与 cross-asset 引用）。
+2. 并行准备 `TP-E3-02`：`EvidenceBuilder` 正式接入 service 多资产路径。
+3. 完成后再推进 `TP-E3-03`，补 parent/child/derived_from 链路测试。
