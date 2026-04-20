@@ -1,9 +1,0 @@
-{
-  "modality": "audio",
-  "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\21c7760cd3d140cc8a532a31da7f8033\\incident.wav",
-  "metadata": {
-    "transcript_source": "provider:fake-transcriber",
-    "language": null
-  },
-  "asset_id": "56b6f08d-6e79-4250-9899-3f3b0722ac2d"
-}
