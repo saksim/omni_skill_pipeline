@@ -1,0 +1,639 @@
+{
+  "asset": {
+    "modality": "tabular",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\demo_timeseries.csv",
+    "metadata": {
+      "filename": "demo_timeseries.csv",
+      "row_count": 12,
+      "column_count": 5
+    },
+    "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "table:schema:0001",
+      "content_type": "table",
+      "content": "Table schema summary\nRows: 12\nColumns: 5\n1. Confirm row count and dtype assumptions before interpreting the table.\n2. Normalize time zones, units, and duplicated keys before aggregation.\nIf a column mixes numeric and string forms, clean it before trend analysis.\nVerify the business grain of one row before building any skill from this table.\n- timestamp :: str\n- service :: str\n- latency_ms :: int64\n- error_rate :: float64\n- rps :: int64",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "schema"
+      ],
+      "evidence_id": "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "table:missingness:0001",
+      "content_type": "table",
+      "content": "Table missingness profile\n1. Inspect the highest-missing columns before trusting downstream trends.\nIf missingness jumps after a date boundary, inspect upstream ingestion or schema drift.\nVerify whether null means unavailable, zero, or not applicable in the source system.\n- timestamp missing_pct=0.0\n- service missing_pct=0.0\n- latency_ms missing_pct=0.0\n- error_rate missing_pct=0.0\n- rps missing_pct=0.0",
+      "speaker": null,
+      "confidence": 0.88,
+      "tags": [
+        "missingness"
+      ],
+      "evidence_id": "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "table:entities:0001",
+      "content_type": "table",
+      "content": "Entity/group summary\n1. Compare per-entity counts before aggregating the whole table.\nIf one entity dominates the sample, review entity bias before reading the global average.\nTop values for service:\n- api -> 12 rows",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "entity"
+      ],
+      "evidence_id": "daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "table:numeric:0001",
+      "content_type": "metric",
+      "content": "Numeric profile for latency_ms\ncount=12 mean=156.2500 std=28.2758 min=120.0000 max=205.0000\np10=124.4000 median=148.0000 p90=197.2000\n1. Review distribution shape before setting thresholds on latency_ms.\nIf latency_ms shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "latency_ms"
+      ],
+      "evidence_id": "000c705d-c769-47fa-85bf-b42a3e47cc83"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "table:numeric:0002",
+      "content_type": "metric",
+      "content": "Numeric profile for error_rate\ncount=12 mean=0.7000 std=0.5099 min=0.2000 max=1.8000\np10=0.2100 median=0.4500 p90=1.4700\n1. Review distribution shape before setting thresholds on error_rate.\nIf error_rate shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "error_rate"
+      ],
+      "evidence_id": "aa423517-1ae1-4de5-82d0-3bc9834dc4c1"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "table:numeric:0003",
+      "content_type": "metric",
+      "content": "Numeric profile for rps\ncount=12 mean=822.2500 std=30.8737 min=760.0000 max=860.0000\np10=776.5000 median=832.5000 p90=851.8000\n1. Review distribution shape before setting thresholds on rps.\nIf rps shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "rps"
+      ],
+      "evidence_id": "67794919-af9e-4b34-aa26-05a5d3b97fca"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "timeseries:overview:0001",
+      "content_type": "metric",
+      "content": "Time series overview\ntime_column=timestamp range=2026-04-10 00:00:00 -> 2026-04-10 11:00:00\n1. Sort by timestamp before comparing neighboring measurements.\n2. Investigate abrupt deltas before averaging the full observation window.\nIf anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.\nVerify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "timeseries",
+        "timestamp"
+      ],
+      "evidence_id": "2e32dcf1-e95b-4171-9745-4ea75eb602f1"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "timeseries:metric:0001",
+      "content_type": "metric",
+      "content": "Time series diagnostic for latency_ms\ntrend=upward pct_change=21.6667%\nlargest_jump_timestamp=2026-04-10 05:00:00 largest_jump_value=48.0000\nanomaly_timestamps=none\n1. Sort latency_ms by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-04-10 05:00:00 before trusting a global trend.\nIf latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "latency_ms"
+      ],
+      "evidence_id": "f235e26d-2922-4159-8634-79e23d46c683"
+    },
+    {
+      "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+      "span_ref": "timeseries:metric:0002",
+      "content_type": "metric",
+      "content": "Time series diagnostic for error_rate\ntrend=upward pct_change=100.0000%\nlargest_jump_timestamp=2026-04-10 05:00:00 largest_jump_value=0.8000\nanomaly_timestamps=none\n1. Sort error_rate by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-04-10 05:00:00 before trusting a global trend.\nIf error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "error_rate"
+      ],
+      "evidence_id": "93e756a5-8259-42eb-a687-d6afd1d37564"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Confirm row count and dtype assumptions before interpreting the table.",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "91626a93-6053-432a-a5b8-1879af222d5c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Normalize time zones, units, and duplicated keys before aggregation.",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "0f2a074a-55ed-4610-bb43-eb4284c9d9e6"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If a column mixes numeric and string forms, clean it before trend analysis.",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.72,
+      "insight_id": "7ad926e1-47b4-4731-b00d-c97914e845fc"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify the business grain of one row before building any skill from this table.",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.75,
+      "insight_id": "2426cf01-4bc7-465e-8037-dc8112322a8f"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "timestamp :: str",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "59a5ff05-0f70-4860-81a1-6f2d40f77b9c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "service :: str",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "e47057b4-069e-47de-9e9a-356f9eda1ebf"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "latency_ms :: int64",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "9a90bea6-cf7e-4228-b7dc-36d4a85ec296"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "error_rate :: float64",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "34fe06de-8792-41da-9979-6c86b9205ea1"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "rps :: int64",
+      "evidence_refs": [
+        "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+      ],
+      "confidence": 0.82,
+      "insight_id": "e1d806b7-aa06-47ea-8d0a-18ce8a18b7ad"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Inspect the highest-missing columns before trusting downstream trends.",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "46266d5a-f8e8-487a-80af-38d929291f2d"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.74,
+      "insight_id": "64a25be7-a1b0-4389-aae3-46fc0fb8a056"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify whether null means unavailable, zero, or not applicable in the source system.",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.75,
+      "insight_id": "1ebeebd2-8bd3-4a64-9064-7c9e7ca03557"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "timestamp missing_pct=0.0",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "a59bf4f0-19d8-4b09-b2e0-df1b7a262862"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "service missing_pct=0.0",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "bf84cb2c-98e0-4afb-b0cc-5b9ad4c43969"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "latency_ms missing_pct=0.0",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "4fec0118-41aa-489e-a7da-589dd53fc5eb"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "error_rate missing_pct=0.0",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "5822d767-5360-4e4e-be22-77c201375330"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "rps missing_pct=0.0",
+      "evidence_refs": [
+        "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "318357ea-a6a6-4beb-b904-42ef3e60c67c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Compare per-entity counts before aggregating the whole table.",
+      "evidence_refs": [
+        "daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d419931a-b482-4b79-ad52-58ffeb298948"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If one entity dominates the sample, review entity bias before reading the global average.",
+      "evidence_refs": [
+        "daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b"
+      ],
+      "confidence": 0.72,
+      "insight_id": "a52cf61d-780e-4000-b22f-040f62bca51f"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "api -> 12 rows",
+      "evidence_refs": [
+        "daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b"
+      ],
+      "confidence": 0.82,
+      "insight_id": "b1f526fc-a3ef-4fe0-b2bd-d633f53e597e"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review distribution shape before setting thresholds on latency_ms.",
+      "evidence_refs": [
+        "000c705d-c769-47fa-85bf-b42a3e47cc83"
+      ],
+      "confidence": 0.82,
+      "insight_id": "60a2c261-b100-406b-a86e-67049b31f3fd"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+      "evidence_refs": [
+        "000c705d-c769-47fa-85bf-b42a3e47cc83"
+      ],
+      "confidence": 0.72,
+      "insight_id": "913a7588-9371-49ae-99b9-d012e70a13ad"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify extreme rows against source records and unit assumptions.",
+      "evidence_refs": [
+        "000c705d-c769-47fa-85bf-b42a3e47cc83"
+      ],
+      "confidence": 0.75,
+      "insight_id": "6c0ebbfa-9f38-4589-b73a-475bb964e58a"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review distribution shape before setting thresholds on error_rate.",
+      "evidence_refs": [
+        "aa423517-1ae1-4de5-82d0-3bc9834dc4c1"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f342f3b0-1c9d-492b-be07-96838209ce94"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+      "evidence_refs": [
+        "aa423517-1ae1-4de5-82d0-3bc9834dc4c1"
+      ],
+      "confidence": 0.72,
+      "insight_id": "92516c50-d6df-4c3f-bc8b-a8134e633b53"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify extreme rows against source records and unit assumptions.",
+      "evidence_refs": [
+        "aa423517-1ae1-4de5-82d0-3bc9834dc4c1"
+      ],
+      "confidence": 0.75,
+      "insight_id": "09c71734-fae7-4d94-b36e-95352196204d"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review distribution shape before setting thresholds on rps.",
+      "evidence_refs": [
+        "67794919-af9e-4b34-aa26-05a5d3b97fca"
+      ],
+      "confidence": 0.82,
+      "insight_id": "df77a113-b264-4d5a-aabb-13833be26910"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If rps shows a long tail, inspect outliers before computing a baseline.",
+      "evidence_refs": [
+        "67794919-af9e-4b34-aa26-05a5d3b97fca"
+      ],
+      "confidence": 0.72,
+      "insight_id": "367a3971-8d6f-4710-8981-ddfc954c8035"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify extreme rows against source records and unit assumptions.",
+      "evidence_refs": [
+        "67794919-af9e-4b34-aa26-05a5d3b97fca"
+      ],
+      "confidence": 0.75,
+      "insight_id": "49b4e27e-371f-4460-9db5-b3810ed0909c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort by timestamp before comparing neighboring measurements.",
+      "evidence_refs": [
+        "2e32dcf1-e95b-4171-9745-4ea75eb602f1"
+      ],
+      "confidence": 0.82,
+      "insight_id": "335c3619-87e7-4261-b9a1-d4e60f748a69"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Investigate abrupt deltas before averaging the full observation window.",
+      "evidence_refs": [
+        "2e32dcf1-e95b-4171-9745-4ea75eb602f1"
+      ],
+      "confidence": 0.82,
+      "insight_id": "5eb57916-49d5-4bd6-98d7-a8e229f92cb0"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+      "evidence_refs": [
+        "2e32dcf1-e95b-4171-9745-4ea75eb602f1"
+      ],
+      "confidence": 0.74,
+      "insight_id": "15e4112d-5818-41e1-b753-81ffbead4e7d"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "evidence_refs": [
+        "2e32dcf1-e95b-4171-9745-4ea75eb602f1"
+      ],
+      "confidence": 0.75,
+      "insight_id": "9128e682-f1e8-4079-8228-edd8bcbf0663"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort latency_ms by timestamp before comparing local deltas.",
+      "evidence_refs": [
+        "f235e26d-2922-4159-8634-79e23d46c683"
+      ],
+      "confidence": 0.82,
+      "insight_id": "e785bfe7-190b-4767-a2a4-068a4fa81851"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review the largest jump around 2026-04-10 05:00:00 before trusting a global trend.",
+      "evidence_refs": [
+        "f235e26d-2922-4159-8634-79e23d46c683"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f51d0419-1727-4886-8b80-a231d236b252"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "evidence_refs": [
+        "f235e26d-2922-4159-8634-79e23d46c683"
+      ],
+      "confidence": 0.74,
+      "insight_id": "de02acdd-8224-4ffa-80d9-09e7fce74555"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each flagged point against neighboring rows and source records.",
+      "evidence_refs": [
+        "f235e26d-2922-4159-8634-79e23d46c683"
+      ],
+      "confidence": 0.75,
+      "insight_id": "5e82182e-314c-4975-8ac8-e50b93ebcc65"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort error_rate by timestamp before comparing local deltas.",
+      "evidence_refs": [
+        "93e756a5-8259-42eb-a687-d6afd1d37564"
+      ],
+      "confidence": 0.82,
+      "insight_id": "61cab495-7397-4750-a125-6695483b2f8e"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review the largest jump around 2026-04-10 05:00:00 before trusting a global trend.",
+      "evidence_refs": [
+        "93e756a5-8259-42eb-a687-d6afd1d37564"
+      ],
+      "confidence": 0.82,
+      "insight_id": "221a6ce7-9fb4-4c0c-abbd-9eaa00a759a5"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "evidence_refs": [
+        "93e756a5-8259-42eb-a687-d6afd1d37564"
+      ],
+      "confidence": 0.74,
+      "insight_id": "338a0f1d-5e5e-4b3f-91b8-35fa45d5a36a"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each flagged point against neighboring rows and source records.",
+      "evidence_refs": [
+        "93e756a5-8259-42eb-a687-d6afd1d37564"
+      ],
+      "confidence": 0.75,
+      "insight_id": "6cbb8f22-7dcb-4065-a28b-6841b2f34bd5"
+    }
+  ],
+  "skill": {
+    "name": "demo timeseries",
+    "goal": "Distill incident_response material into a build_skill for self. Seed: Table schema summary Rows: 12 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. No",
+    "source_modality": "tabular",
+    "skill_type": "analysis",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert tabular evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Structured table or time-series dataset",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "If a column mixes numeric and string forms, clean it before trend analysis.",
+      "If one entity dominates the sample, review entity bias before reading the global average.",
+      "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+      "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+      "If rps shows a long tail, inspect outliers before computing a baseline."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Confirm row count and dtype assumptions before interpreting the table.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Normalize time zones, units, and duplicated keys before aggregation.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "timestamp :: str",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 4,
+        "action": "service :: str",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 5,
+        "action": "latency_ms :: int64",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 6,
+        "action": "error_rate :: float64",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 7,
+        "action": "rps :: int64",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 8,
+        "action": "Inspect the highest-missing columns before trusting downstream trends.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+      "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+      "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first."
+    ],
+    "anti_patterns": [],
+    "verification": [
+      "Verify the business grain of one row before building any skill from this table.",
+      "Verify whether null means unavailable, zero, or not applicable in the source system.",
+      "Verify extreme rows against source records and unit assumptions.",
+      "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "Verify each flagged point against neighboring rows and source records."
+    ],
+    "evidence_refs": [
+      "fb97c437-4f62-4b22-a06a-4b6c1d13f938@table:schema:0001",
+      "5a971037-119e-4a74-a00f-d6bf3ba52ea7@table:missingness:0001",
+      "daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b@table:entities:0001",
+      "000c705d-c769-47fa-85bf-b42a3e47cc83@table:numeric:0001",
+      "aa423517-1ae1-4de5-82d0-3bc9834dc4c1@table:numeric:0002",
+      "67794919-af9e-4b34-aa26-05a5d3b97fca@table:numeric:0003",
+      "2e32dcf1-e95b-4171-9745-4ea75eb602f1@timeseries:overview:0001",
+      "f235e26d-2922-4159-8634-79e23d46c683@timeseries:metric:0001",
+      "93e756a5-8259-42eb-a687-d6afd1d37564@timeseries:metric:0002"
+    ],
+    "confidence": 0.95,
+    "version": "0.1.0",
+    "summary": "Table schema summary Rows: 12 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean it before trend analysis. Verify the busine",
+    "tags": [
+      "incident_response",
+      "tabular",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-04-20T12:06:08Z",
+    "skill_id": "94e2be4d-852a-45d5-bbed-2bba55922176"
+  },
+  "skill_markdown": "# demo timeseries\n\n## 判词\nTable schema summary Rows: 12 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean it before trend analysis. Verify the busine\n\n## 元信息\n- skill_id: 94e2be4d-852a-45d5-bbed-2bba55922176\n- version: 0.1.0\n- skill_type: analysis\n- audience: self\n- source_modality: tabular\n- review_status: draft\n- confidence: 0.95\n- created_at: 2026-04-20T12:06:08Z\n\n## 目标\nDistill incident_response material into a build_skill for self. Seed: Table schema summary Rows: 12 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. No\n\n## 触发条件\n- Use when you need to convert tabular evidence into a reusable build_skill.\n\n## 输入\n- Structured table or time-series dataset\n- Distillation goal\n\n## 前置条件\n- If a column mixes numeric and string forms, clean it before trend analysis.\n- If one entity dominates the sample, review entity bias before reading the global average.\n- If latency_ms shows a long tail, inspect outliers before computing a baseline.\n- If error_rate shows a long tail, inspect outliers before computing a baseline.\n- If rps shows a long tail, inspect outliers before computing a baseline.\n\n## 操作步骤\n1. Confirm row count and dtype assumptions before interpreting the table.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n2. Normalize time zones, units, and duplicated keys before aggregation.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n3. timestamp :: str\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n4. service :: str\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n5. latency_ms :: int64\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n6. error_rate :: float64\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n7. rps :: int64\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n8. Inspect the highest-missing columns before trusting downstream trends.\nReason: Derived from normalized evidence and intended to preserve the original reasoning chain.\n\n## 决策规则\n- If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.\n- If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.\n- If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\n- If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\n\n## 反模式\n- None\n\n## 验证方式\n- Verify the business grain of one row before building any skill from this table.\n- Verify whether null means unavailable, zero, or not applicable in the source system.\n- Verify extreme rows against source records and unit assumptions.\n- Verify each anomaly against raw rows immediately before and after the flagged timestamp.\n- Verify each flagged point against neighboring rows and source records.\n\n## 证据链\n- fb97c437-4f62-4b22-a06a-4b6c1d13f938@table:schema:0001\n- 5a971037-119e-4a74-a00f-d6bf3ba52ea7@table:missingness:0001\n- daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b@table:entities:0001\n- 000c705d-c769-47fa-85bf-b42a3e47cc83@table:numeric:0001\n- aa423517-1ae1-4de5-82d0-3bc9834dc4c1@table:numeric:0002\n- 67794919-af9e-4b34-aa26-05a5d3b97fca@table:numeric:0003\n- 2e32dcf1-e95b-4171-9745-4ea75eb602f1@timeseries:overview:0001\n- f235e26d-2922-4159-8634-79e23d46c683@timeseries:metric:0001\n- 93e756a5-8259-42eb-a687-d6afd1d37564@timeseries:metric:0002\n\n## 标签\n- incident_response\n- tabular\n- build_skill\n- heuristic\n",
+  "request_payload": {
+    "file_path": "examples\\demo_timeseries.csv",
+    "title": null,
+    "time_column": "timestamp",
+    "value_columns": [
+      "latency_ms",
+      "error_rate"
+    ],
+    "entity_columns": [
+      "service"
+    ],
+    "max_series": 6,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "incident_response"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-timeseries-94e2be4d\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-timeseries-94e2be4d\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-timeseries-94e2be4d\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-timeseries-94e2be4d\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-timeseries-94e2be4d\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\demo-timeseries-94e2be4d\\bundle.json"
+  },
+  "adapter_metadata": {
+    "time_column": "timestamp",
+    "entity_columns": [
+      "service"
+    ],
+    "numeric_columns": [
+      "latency_ms",
+      "error_rate",
+      "rps"
+    ]
+  }
+}

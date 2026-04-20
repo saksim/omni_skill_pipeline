@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from omni_skill_pipeline.models import SkillDocument, SkillStep
+from omni_skill_pipeline.models import SkillDocument, SkillGraph, SkillStep
 
 
 def _render_list(items: Iterable[str], empty_text: str = "- None") -> str:
@@ -93,3 +93,8 @@ def render_skill_markdown(skill: SkillDocument) -> str:
         tags=_render_list(skill.tags),
     )
 
+
+def render_skill_graph_markdown(graph: SkillGraph) -> str:
+    from omni_skill_pipeline.transformers import skill_graph_to_document
+
+    return render_skill_markdown(skill_graph_to_document(graph))

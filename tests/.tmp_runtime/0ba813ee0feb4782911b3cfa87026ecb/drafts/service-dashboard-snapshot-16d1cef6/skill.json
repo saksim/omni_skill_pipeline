@@ -1,0 +1,51 @@
+{
+  "name": "Service Dashboard Snapshot",
+  "goal": "Distill observability material into a build_skill for self. Seed: Service status: degraded Primary region: shanghai",
+  "source_modality": "image",
+  "skill_type": "procedure",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert image evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Image source",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Confirm the source material matches the declared distillation goal."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Service status: degraded Primary region: shanghai",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "Dashboard frame shows a degraded service banner and a latency spike.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [],
+  "anti_patterns": [],
+  "verification": [
+    "Confirm each key conclusion can be traced back to evidence_refs.",
+    "Run one manual rehearsal to verify the steps are executable."
+  ],
+  "evidence_refs": [
+    "88980fcc-5cf1-4333-8354-d0e449d1b4ef@image:ocr:0001",
+    "eb0aa06e-0bf8-4cd2-a849-1b4d29e0235c@image:scene:0001"
+  ],
+  "confidence": 0.63,
+  "version": "0.1.0",
+  "summary": "Service status: degraded Primary region: shanghai",
+  "tags": [
+    "observability",
+    "image",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-04-20T13:20:00Z",
+  "skill_id": "16d1cef6-38b4-40ac-a129-2c6b0223ac7b"
+}

@@ -1,0 +1,116 @@
+[
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "table:schema:0001",
+  "content_type": "table",
+  "content": "Table schema summary\nRows: 12\nColumns: 5\n1. Confirm row count and dtype assumptions before interpreting the table.\n2. Normalize time zones, units, and duplicated keys before aggregation.\nIf a column mixes numeric and string forms, clean it before trend analysis.\nVerify the business grain of one row before building any skill from this table.\n- timestamp :: str\n- service :: str\n- latency_ms :: int64\n- error_rate :: float64\n- rps :: int64",
+  "speaker": null,
+  "confidence": 0.9,
+  "tags": [
+    "schema"
+  ],
+  "evidence_id": "fb97c437-4f62-4b22-a06a-4b6c1d13f938"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "table:missingness:0001",
+  "content_type": "table",
+  "content": "Table missingness profile\n1. Inspect the highest-missing columns before trusting downstream trends.\nIf missingness jumps after a date boundary, inspect upstream ingestion or schema drift.\nVerify whether null means unavailable, zero, or not applicable in the source system.\n- timestamp missing_pct=0.0\n- service missing_pct=0.0\n- latency_ms missing_pct=0.0\n- error_rate missing_pct=0.0\n- rps missing_pct=0.0",
+  "speaker": null,
+  "confidence": 0.88,
+  "tags": [
+    "missingness"
+  ],
+  "evidence_id": "5a971037-119e-4a74-a00f-d6bf3ba52ea7"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "table:entities:0001",
+  "content_type": "table",
+  "content": "Entity/group summary\n1. Compare per-entity counts before aggregating the whole table.\nIf one entity dominates the sample, review entity bias before reading the global average.\nTop values for service:\n- api -> 12 rows",
+  "speaker": null,
+  "confidence": 0.82,
+  "tags": [
+    "entity"
+  ],
+  "evidence_id": "daa9d6fc-dcf1-4cd3-b80f-bea2d7a3dc9b"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "table:numeric:0001",
+  "content_type": "metric",
+  "content": "Numeric profile for latency_ms\ncount=12 mean=156.2500 std=28.2758 min=120.0000 max=205.0000\np10=124.4000 median=148.0000 p90=197.2000\n1. Review distribution shape before setting thresholds on latency_ms.\nIf latency_ms shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+  "speaker": null,
+  "confidence": 0.8,
+  "tags": [
+    "numeric",
+    "latency_ms"
+  ],
+  "evidence_id": "000c705d-c769-47fa-85bf-b42a3e47cc83"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "table:numeric:0002",
+  "content_type": "metric",
+  "content": "Numeric profile for error_rate\ncount=12 mean=0.7000 std=0.5099 min=0.2000 max=1.8000\np10=0.2100 median=0.4500 p90=1.4700\n1. Review distribution shape before setting thresholds on error_rate.\nIf error_rate shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+  "speaker": null,
+  "confidence": 0.8,
+  "tags": [
+    "numeric",
+    "error_rate"
+  ],
+  "evidence_id": "aa423517-1ae1-4de5-82d0-3bc9834dc4c1"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "table:numeric:0003",
+  "content_type": "metric",
+  "content": "Numeric profile for rps\ncount=12 mean=822.2500 std=30.8737 min=760.0000 max=860.0000\np10=776.5000 median=832.5000 p90=851.8000\n1. Review distribution shape before setting thresholds on rps.\nIf rps shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+  "speaker": null,
+  "confidence": 0.8,
+  "tags": [
+    "numeric",
+    "rps"
+  ],
+  "evidence_id": "67794919-af9e-4b34-aa26-05a5d3b97fca"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "timeseries:overview:0001",
+  "content_type": "metric",
+  "content": "Time series overview\ntime_column=timestamp range=2026-04-10 00:00:00 -> 2026-04-10 11:00:00\n1. Sort by timestamp before comparing neighboring measurements.\n2. Investigate abrupt deltas before averaging the full observation window.\nIf anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.\nVerify each anomaly against raw rows immediately before and after the flagged timestamp.",
+  "speaker": null,
+  "confidence": 0.9,
+  "tags": [
+    "timeseries",
+    "timestamp"
+  ],
+  "evidence_id": "2e32dcf1-e95b-4171-9745-4ea75eb602f1"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "timeseries:metric:0001",
+  "content_type": "metric",
+  "content": "Time series diagnostic for latency_ms\ntrend=upward pct_change=21.6667%\nlargest_jump_timestamp=2026-04-10 05:00:00 largest_jump_value=48.0000\nanomaly_timestamps=none\n1. Sort latency_ms by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-04-10 05:00:00 before trusting a global trend.\nIf latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "timeseries",
+    "latency_ms"
+  ],
+  "evidence_id": "f235e26d-2922-4159-8634-79e23d46c683"
+},
+{
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b",
+  "span_ref": "timeseries:metric:0002",
+  "content_type": "metric",
+  "content": "Time series diagnostic for error_rate\ntrend=upward pct_change=100.0000%\nlargest_jump_timestamp=2026-04-10 05:00:00 largest_jump_value=0.8000\nanomaly_timestamps=none\n1. Sort error_rate by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-04-10 05:00:00 before trusting a global trend.\nIf error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+  "speaker": null,
+  "confidence": 0.86,
+  "tags": [
+    "timeseries",
+    "error_rate"
+  ],
+  "evidence_id": "93e756a5-8259-42eb-a687-d6afd1d37564"
+}
+]

@@ -2,11 +2,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Any, TYPE_CHECKING, Sequence
 
 import numpy as np
-import pandas as pd
-from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
+
+if TYPE_CHECKING:
+    import pandas as pd
+else:
+    class _PandasNamespace(object):
+        DataFrame = Any
+
+    pd = _PandasNamespace()  # type: ignore[assignment]
 
 from omni_skill_pipeline.models import (
     Asset,
@@ -17,6 +23,24 @@ from omni_skill_pipeline.models import (
     TabularDistillRequest,
 )
 from omni_skill_pipeline.utils import unique_preserve_order
+
+
+def _pandas_runtime():
+    import pandas as pd_runtime
+    from pandas.api.types import is_datetime64_any_dtype as is_datetime64_any_dtype_runtime
+    from pandas.api.types import is_numeric_dtype as is_numeric_dtype_runtime
+
+    return pd_runtime, is_datetime64_any_dtype_runtime, is_numeric_dtype_runtime
+
+
+def _is_datetime_dtype(series: Any) -> bool:
+    _, is_datetime64_any_dtype_runtime, _ = _pandas_runtime()
+    return bool(is_datetime64_any_dtype_runtime(series))
+
+
+def _is_numeric(series: Any) -> bool:
+    _, _, is_numeric_dtype_runtime = _pandas_runtime()
+    return bool(is_numeric_dtype_runtime(series))
 
 
 @dataclass(slots=True)
@@ -61,7 +85,7 @@ class TabularAdapter(object):
         if entity_columns:
             evidence_units.append(self._entity_evidence(asset.asset_id, frame, entity_columns))
 
-        numeric_columns = [column for column in frame.columns if is_numeric_dtype(frame[column])]
+        numeric_columns = [column for column in frame.columns if _is_numeric(frame[column])]
         if numeric_columns:
             evidence_units.extend(self._numeric_profile_evidence(asset.asset_id, frame, numeric_columns))
 
@@ -88,20 +112,21 @@ class TabularAdapter(object):
         )
 
     def _read_frame(self, path: Path) -> pd.DataFrame:
+        pd_runtime, _, _ = _pandas_runtime()
         suffix = path.suffix.lower()
         if suffix not in self.SUPPORTED_SUFFIXES:
             raise ValueError('Unsupported tabular format: %s' % suffix)
         if suffix == '.csv':
-            return pd.read_csv(path)
+            return pd_runtime.read_csv(path)
         if suffix in {'.tsv', '.txt'}:
-            return pd.read_csv(path, sep='\t')
+            return pd_runtime.read_csv(path, sep='\t')
         if suffix == '.json':
             try:
-                return pd.read_json(path)
+                return pd_runtime.read_json(path)
             except ValueError:
-                return pd.read_json(path, lines=True)
+                return pd_runtime.read_json(path, lines=True)
         if suffix in {'.xlsx', '.xls'}:
-            return pd.read_excel(path)
+            return pd_runtime.read_excel(path)
         raise ValueError('Unsupported tabular format: %s' % suffix)
 
     def _schema_evidence(self, asset_id: str, frame: pd.DataFrame) -> EvidenceUnit:
@@ -164,9 +189,10 @@ class TabularAdapter(object):
         frame: pd.DataFrame,
         numeric_columns: Sequence[str],
     ) -> list[EvidenceUnit]:
+        pd_runtime, _, _ = _pandas_runtime()
         evidence: list[EvidenceUnit] = []
         for index, column in enumerate(numeric_columns[:8], start=1):
-            series = pd.to_numeric(frame[column], errors='coerce').dropna()
+            series = pd_runtime.to_numeric(frame[column], errors='coerce').dropna()
             if series.empty:
                 continue
             quantiles = series.quantile([0.1, 0.5, 0.9]).to_dict()
@@ -310,15 +336,16 @@ class TabularAdapter(object):
         if explicit and explicit in frame.columns:
             return explicit
         for column in frame.columns:
-            if is_datetime64_any_dtype(frame[column]):
+            if _is_datetime_dtype(frame[column]):
                 return column
         candidates = []
         for column in frame.columns:
             lowered = column.lower()
             if any(token in lowered for token in ('time', 'date', 'timestamp', 'ts')):
                 candidates.append(column)
+        pd_runtime, _, _ = _pandas_runtime()
         for column in candidates:
-            parsed = pd.to_datetime(frame[column], errors='coerce', utc=False)
+            parsed = pd_runtime.to_datetime(frame[column], errors='coerce', utc=False)
             if parsed.notna().mean() >= 0.7:
                 frame[column] = parsed
                 return column
@@ -326,8 +353,9 @@ class TabularAdapter(object):
 
     def _prepare_time_frame(self, frame: pd.DataFrame, time_column: str) -> pd.DataFrame:
         prepared = frame.copy()
-        if not is_datetime64_any_dtype(prepared[time_column]):
-            prepared[time_column] = pd.to_datetime(prepared[time_column], errors='coerce', utc=False)
+        if not _is_datetime_dtype(prepared[time_column]):
+            pd_runtime, _, _ = _pandas_runtime()
+            prepared[time_column] = pd_runtime.to_datetime(prepared[time_column], errors='coerce', utc=False)
         prepared = prepared.dropna(subset=[time_column]).sort_values(time_column).reset_index(drop=True)
         return prepared
 
@@ -339,7 +367,7 @@ class TabularAdapter(object):
     ) -> list[str]:
         if explicit_columns:
             return [column for column in explicit_columns if column in frame.columns][:max_series]
-        numeric_columns = [column for column in frame.columns if is_numeric_dtype(frame[column])]
+        numeric_columns = [column for column in frame.columns if _is_numeric(frame[column])]
         return numeric_columns[:max_series]
 
     def _resolve_entity_columns(self, frame: pd.DataFrame, explicit_columns: Sequence[str]) -> list[str]:
@@ -348,7 +376,7 @@ class TabularAdapter(object):
         candidates = []
         for column in frame.columns:
             series = frame[column]
-            if is_numeric_dtype(series):
+            if _is_numeric(series):
                 continue
             cardinality = series.astype(str).nunique(dropna=True)
             if 1 < cardinality <= 12:
@@ -356,7 +384,8 @@ class TabularAdapter(object):
         return candidates[:3]
 
     def _summarize_signal(self, frame: pd.DataFrame, time_column: str, value_column: str) -> TimeSeriesSignal:
-        series = pd.to_numeric(frame[value_column], errors='coerce')
+        pd_runtime, _, _ = _pandas_runtime()
+        series = pd_runtime.to_numeric(frame[value_column], errors='coerce')
         valid = frame.loc[series.notna(), [time_column]].copy()
         valid[value_column] = series.dropna().values
         if valid.empty:
@@ -378,7 +407,8 @@ class TabularAdapter(object):
         jump_index = diffs.idxmax() if len(diffs.dropna()) else None
         largest_jump_timestamp = None
         largest_jump_value = None
-        if jump_index is not None and not pd.isna(jump_index):
+        pd_runtime, _, _ = _pandas_runtime()
+        if jump_index is not None and not pd_runtime.isna(jump_index):
             timestamp = valid.loc[jump_index, time_column]
             largest_jump_timestamp = str(timestamp)
             largest_jump_value = float(diffs.loc[jump_index])

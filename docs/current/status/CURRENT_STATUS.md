@@ -11,12 +11,16 @@
 - 根入口文档已收敛为 `README.md`
 - 架构文档已细分为：
   - `docs/current/architecture/ARCHITECTURE.md`
+  - `docs/current/architecture/skill-distillation-v2.md`
+  - `docs/current/architecture/skill-distillation-v2-roadmap.md`
+  - `docs/current/architecture/skill-distillation-v2-implementation-backlog.md`
   - `docs/current/architecture/system-overview.md`
   - `docs/current/architecture/data-flow.md`
   - `docs/current/architecture/providers.md`
   - `docs/current/architecture/storage.md`
 - 契约文档已迁移到 `docs/current/contracts/`
 - 状态文档已迁移到 `docs/current/status/`
+- E0 基线包已落地到 `docs/current/status/baselines/`
 - 运行文档已细分为：
   - `docs/current/operations/OPERATIONS.md`
   - `docs/current/operations/cli.md`
@@ -80,6 +84,25 @@
 - 增加 time-series overview / metric / anomaly event evidence
 - 让结构化输入统一落到 `TABLE / METRIC / EVENT` 类型的 `EvidenceUnit`
 
+### E0 基线补齐
+
+- 建立了 E0 样本清单：`docs/current/status/baselines/e0-sample-inventory.md`
+- 建立了 2026-04-20 基线重放记录：`docs/current/status/baselines/e0-baseline-2026-04-20.md`
+- 建立了评估口径：`docs/current/status/baselines/evaluation-rubric.md`
+- 建立了机器可读 manifest：`docs/current/status/baselines/e0-baseline-manifest.json`
+- 实际完成了 text / audio / image / video / tabular 五类样本重放
+- 实际运行了 MVP 测试：`python -m unittest discover -s tests -p 'test_mvp.py'`
+
+### V2 施工准备
+
+- 已把 E1 及后续 Epic 落成施工任务单：`docs/current/architecture/skill-distillation-v2-work-orders.md`
+- 已完成前五刀最小骨架闭环：
+  - `TP-E1-01`：V2 基础 enum/dataclass（`Corpus/EvidenceNode/SemanticAtom/SkillGraph`）已落地
+  - `TP-E1-02`：`EvidenceUnit -> EvidenceNode` 与 `SkillGraph -> SkillDocument -> SKILL.md` 兼容闭环已可跑
+  - `TP-E3-01`：`EvidenceNode` 结构字段覆盖 `time_range/spatial_ref/structural_ref/payload/lineage`
+  - `TP-E5-01`：`AtomExtractor` 主接口与 `LegacyInsightAtomExtractor` 过渡实现已落地
+  - `TP-E6-01`：`SkillGraph` node/edge 模型与序列化测试已补齐
+
 ## 当前目录分层
 
 ```text
@@ -106,6 +129,6 @@
 
 ## 推荐下一刀
 
-1. 把 `tabular/time-series` prompt 专门化，和通用 skill composer 解耦。
-2. 把 `docs/current/operations/` 再拆成 `runbooks / environments / interfaces` 的实页内容，而不只是占位目录。
-3. 把文件系统仓储升级到 PostgreSQL Repository。
+1. 继续 Batch A 收口：`TP-E1-03`（schema v2 草案与 contract 对齐）。
+2. 进入 Batch B：`TP-E2-01 -> TP-E2-02`，先打通多资产 `Corpus` 请求与 service 组装。
+3. 紧接 `TP-E3-02`（EvidenceBuilder）并保持与现有 adapter 输出兼容。

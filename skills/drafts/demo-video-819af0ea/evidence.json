@@ -1,0 +1,15 @@
+[
+{
+  "asset_id": "2fb1bc79-2095-4880-ba88-db0bd10a0b48",
+  "span_ref": "frame:0001:ocr",
+  "content_type": "ocr",
+  "content": "krvce JegrMed\n'mpon shanghr\nMt1an h1overrea0trarc",
+  "speaker": null,
+  "confidence": 0.75,
+  "tags": [
+    "engine:tesseract",
+    "source:fallback"
+  ],
+  "evidence_id": "49b0cf9f-6b88-46f4-b29d-4a315adfd5dc"
+}
+]

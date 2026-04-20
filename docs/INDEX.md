@@ -5,6 +5,10 @@
 ### Architecture
 
 - [Architecture](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\ARCHITECTURE.md)
+- [Skill Distillation V2](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2.md)
+- [Skill Distillation V2 Roadmap](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-roadmap.md)
+- [Skill Distillation V2 Implementation Backlog](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-implementation-backlog.md)
+- [Skill Distillation V2 Work Orders](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-work-orders.md)
 
 ### Contracts
 
@@ -14,6 +18,7 @@
 ### Status
 
 - [Current Status](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\CURRENT_STATUS.md)
+- [E0 Baseline Pack](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\baselines\README.md)
 
 ### Operations
 

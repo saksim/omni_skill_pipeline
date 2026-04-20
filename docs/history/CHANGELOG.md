@@ -54,3 +54,22 @@
 
 - Added schema, missingness, entity summary, numeric profile, and time-series anomaly evidence generation.
 - Unified tabular output into `EvidenceUnit` with `TABLE / METRIC / EVENT` content types.
+
+## 2026-04-20
+
+### Architecture
+
+- Added `docs/current/architecture/skill-distillation-v2.md` to record the current diagnosis, V2 target architecture, domain model evolution, and architecture decisions.
+- Added `docs/current/architecture/skill-distillation-v2-roadmap.md` to define phased implementation steps, acceptance criteria, and migration constraints for future implementation.
+- Added `docs/current/architecture/skill-distillation-v2-implementation-backlog.md` to enumerate the full V2 development backlog, task packages, file touchpoints, dependencies, and acceptance criteria for future implementation.
+- Added `docs/current/architecture/skill-distillation-v2-work-orders.md` to turn E1+ backlog items into directly executable work orders for future implementation.
+- Updated `README.md`, `docs/current/status/CURRENT_STATUS.md`, `docs/current/architecture/ARCHITECTURE.md`, and `docs/INDEX.md` to expose the new V2 design documents.
+
+### Status
+
+- Added `docs/current/status/baselines/README.md` as the E0 baseline pack entry.
+- Added `docs/current/status/baselines/e0-sample-inventory.md` to enumerate current baseline samples and known coverage gaps.
+- Added `docs/current/status/baselines/e0-baseline-2026-04-20.md` to record actual baseline replay commands, observed outputs, and conclusions.
+- Added `docs/current/status/baselines/evaluation-rubric.md` to define the common evaluation metrics for future V2 comparisons.
+- Added `docs/current/status/baselines/e0-baseline-manifest.json` as a machine-readable baseline manifest.
+- Recorded that the current MVP test suite passed via `python -m unittest discover -s tests -p 'test_mvp.py'`.

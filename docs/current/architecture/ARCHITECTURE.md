@@ -6,6 +6,10 @@
 - [Data Flow](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\data-flow.md)
 - [Providers](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\providers.md)
 - [Storage](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\storage.md)
+- [Skill Distillation V2](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2.md)
+- [Skill Distillation V2 Roadmap](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-roadmap.md)
+- [Skill Distillation V2 Implementation Backlog](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-implementation-backlog.md)
+- [Skill Distillation V2 Work Orders](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-work-orders.md)
 
 ## Notes
 

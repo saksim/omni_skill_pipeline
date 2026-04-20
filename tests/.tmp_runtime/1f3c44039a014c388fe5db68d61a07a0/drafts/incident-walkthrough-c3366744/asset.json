@@ -1,0 +1,13 @@
+{
+  "modality": "video",
+  "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\1f3c44039a014c388fe5db68d61a07a0\\fixture.mp4",
+  "metadata": {
+    "filename": "fixture.mp4",
+    "duration_seconds": 12.0,
+    "width": 320,
+    "height": 200,
+    "fps": 1.0,
+    "frame_count": 12
+  },
+  "asset_id": "d2282309-702d-4f25-aa89-bfe91edd3fb5"
+}

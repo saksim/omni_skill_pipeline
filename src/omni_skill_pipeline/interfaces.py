@@ -5,10 +5,12 @@ from typing import Protocol, Sequence, TypeVar, runtime_checkable
 
 from omni_skill_pipeline.models import (
     DistillGoal,
+    EvidenceNode,
     EvidenceUnit,
     Insight,
     LoadedAsset,
     Modality,
+    SemanticAtom,
     SkillDocument,
 )
 from omni_skill_pipeline.providers.base import (
@@ -31,6 +33,12 @@ class DistillAdapter(Protocol[ReqT]):
 @runtime_checkable
 class InsightExtractor(Protocol):
     def extract(self, evidence_units: Sequence[EvidenceUnit]) -> list[Insight]:
+        ...
+
+
+@runtime_checkable
+class AtomExtractor(Protocol):
+    def extract(self, evidence_nodes: Sequence[EvidenceNode]) -> list[SemanticAtom]:
         ...
 
 
