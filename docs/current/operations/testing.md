@@ -40,7 +40,7 @@ python3 scripts/run_tp_tests.py TP-E6-02 --python python3
 一次执行多个工单：
 
 ```bash
-python3 scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 --python python3
+python3 scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 --python python3
 ```
 
 执行所有已登记工单：
@@ -67,6 +67,12 @@ python3 scripts/run_tp_tests.py --all --python python3
 - `TP-E5-04`：LLM Atom 增强与 fallback 保障
 - `TP-E6-01`：SkillGraph node/edge 模型增强
 - `TP-E6-02`：SkillGraphBuilder 构图与追溯增强
+- `TP-E6-03`：PublicationBuilder 输出与落盘增强
+- `TP-E6-04`：V1 renderer 兼容与 skill_markdown 回归保障
+- `TP-E7-01`：质量评分器与六分项落盘增强
+- `TP-E7-02`：ReviewPolicy 阈值决策与理由码输出
+- `TP-E7-03`：ReviewTask 结构化落地与修正建议持久化
+- `TP-E7-04`：ReviewFeedback 回流到 atom/graph/policy 的修订信号
 
 ## 维护规则
 

@@ -152,6 +152,98 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="无 atom 时应从 evidence 回退生成可追溯 step。",
         ),
     ],
+    "TP-E6-03": [
+        TestCaseSpec(
+            case_id="tests.test_publication_builder.PublicationBuilderTests.test_builder_default_emits_markdown_and_json",
+            description="PublicationBuilder 默认应输出 SKILL.md 与 skill.json。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="service/repository 应落盘 publication 与 manifest。",
+        ),
+    ],
+    "TP-E6-04": [
+        TestCaseSpec(
+            case_id="tests.test_render_compat.RenderCompatibilityTests.test_render_skill_markdown_compat_prefers_publication_payload",
+            description="compat renderer 应优先返回 publication 中的 markdown。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_render_compat.RenderCompatibilityTests.test_render_skill_markdown_compat_falls_back_to_skill_document",
+            description="缺失 markdown publication 时应回退到 SkillDocument 渲染。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="外部接口应继续可获取 skill_markdown。",
+        ),
+    ],
+    "TP-E7-01": [
+        TestCaseSpec(
+            case_id="tests.test_quality_scoring.QualityScorerTests.test_scorer_outputs_all_required_metrics",
+            description="质量评分器应输出 traceability/actionability/coverage/consistency/noise/novelty 六分项。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_quality_scoring.QualityScorerTests.test_traceability_drops_when_step_lacks_evidence_refs",
+            description="traceability 分应对缺失证据追溯的 step 降分。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="每次蒸馏都应落 quality_score 并回写到 adapter_metadata。",
+        ),
+    ],
+    "TP-E7-02": [
+        TestCaseSpec(
+            case_id="tests.test_review_policy.ReviewPolicyTests.test_auto_publish_when_all_scores_high",
+            description="ReviewPolicy 应在高分时输出 auto_publish。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_review_policy.ReviewPolicyTests.test_reject_when_scores_are_critical",
+            description="ReviewPolicy 应在关键低分时输出 reject 与理由码。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_review_policy.ReviewPolicyTests.test_review_required_when_between_auto_and_reject",
+            description="ReviewPolicy 应在中间区间输出 review_required 与理由码。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="每次蒸馏都应输出 review_policy 决策与原因码。",
+        ),
+    ],
+    "TP-E7-03": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_review_task_from_policy_keeps_reason_codes_and_revision_suggestions",
+            description="ReviewTask 必须结构化保存 reason_codes 与 revision_suggestions。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_review_task_auto_publish_is_marked_published",
+            description="auto_publish 决策应生成已发布状态的结构化 ReviewTask。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_review_task_reject_is_marked_rejected",
+            description="reject 决策应生成 rejected 状态并保留修正建议。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="repository 应将结构化 review_task 落盘并与 review_policy 保持一致。",
+        ),
+    ],
+    "TP-E7-04": [
+        TestCaseSpec(
+            case_id="tests.test_review_feedback.ReviewFeedbackEngineTests.test_feedback_maps_traceability_and_actionability_to_structured_actions",
+            description="review feedback 需能回流出 evidence/step 修订动作。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_review_feedback.ReviewFeedbackEngineTests.test_feedback_maps_reject_to_noise_and_consistency_remediation",
+            description="reject 场景需输出 noise/consistency 的结构化修订动作。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_review_feedback.ReviewFeedbackEngineTests.test_feedback_auto_publish_generates_publish_ready_signal",
+            description="auto_publish 场景需保留可复用的 publish-ready 回流信号。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="service/repository 应落盘 review_feedback 并可用于后续修订链路。",
+        ),
+    ],
 }
 
 

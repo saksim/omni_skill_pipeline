@@ -29,6 +29,8 @@ from omni_skill_pipeline.models import (
     InsightType,
     LoadedAsset,
     Modality,
+    ReviewDecision,
+    ReviewTask,
     SemanticAtom,
     SpatialRef,
     StructuralRef,
@@ -182,6 +184,50 @@ class V2ModelTests(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             request.validate()
+
+    def test_review_task_from_policy_keeps_reason_codes_and_revision_suggestions(self) -> None:
+        task = ReviewTask.from_review_policy(
+            skill_id='skill-1',
+            review_policy={
+                'decision': ReviewDecision.REVIEW_REQUIRED.value,
+                'reason_codes': ['Q_TRACEABILITY_LOW', 'Q_ACTIONABILITY_LOW'],
+                'score_snapshot': {'traceability_score': 0.61, 'actionability_score': 0.58, 'overall_score': 0.69},
+                'thresholds': {'auto_publish_min_traceability': 0.78, 'auto_publish_min_actionability': 0.72},
+            },
+            review_notes='Need stronger evidence links.',
+        )
+        payload = task.to_dict()
+        self.assertEqual(payload['decision'], 'review_required')
+        self.assertEqual(payload['status'], 'review_pending')
+        self.assertEqual(payload['reason_codes'], ['Q_TRACEABILITY_LOW', 'Q_ACTIONABILITY_LOW'])
+        self.assertIn('S_ADD_TRACEABLE_EVIDENCE', payload['revision_suggestions'])
+        self.assertIn('S_REWRITE_ACTIONABLE_STEPS', payload['revision_suggestions'])
+        self.assertEqual(payload['score_snapshot']['overall_score'], 0.69)
+        self.assertEqual(payload['thresholds']['auto_publish_min_actionability'], 0.72)
+
+    def test_review_task_auto_publish_is_marked_published(self) -> None:
+        task = ReviewTask.from_review_policy(
+            skill_id='skill-2',
+            review_policy={
+                'decision': ReviewDecision.AUTO_PUBLISH.value,
+                'reason_codes': ['A_MEETS_ALL_THRESHOLDS'],
+            },
+        )
+        payload = task.to_dict()
+        self.assertEqual(payload['status'], 'published')
+        self.assertTrue(payload['revision_suggestions'])
+
+    def test_review_task_reject_is_marked_rejected(self) -> None:
+        task = ReviewTask.from_review_policy(
+            skill_id='skill-3',
+            review_policy={
+                'decision': ReviewDecision.REJECT.value,
+                'reason_codes': ['R_LOW_OVERALL'],
+            },
+        )
+        payload = task.to_dict()
+        self.assertEqual(payload['status'], 'rejected')
+        self.assertIn('S_REBUILD_FROM_EVIDENCE', payload['revision_suggestions'])
 
     def test_evidence_builder_creates_video_frame_lineage(self) -> None:
         builder = EvidenceBuilder()

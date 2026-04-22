@@ -125,6 +125,12 @@ class LifecycleDecisionType(str, Enum):
     REJECT = 'reject'
 
 
+class ReviewDecision(str, Enum):
+    AUTO_PUBLISH = 'auto_publish'
+    REVIEW_REQUIRED = 'review_required'
+    REJECT = 'reject'
+
+
 EnumType = TypeVar('EnumType', bound=Enum)
 
 
@@ -514,6 +520,98 @@ class LifecycleDecision(SerializableMixin):
 
 
 @dataclass(slots=True)
+class ReviewTask(SerializableMixin):
+    skill_id: str
+    decision: ReviewDecision
+    reason_codes: List[str] = field(default_factory=list)
+    revision_suggestions: List[str] = field(default_factory=list)
+    score_snapshot: Dict[str, float] = field(default_factory=dict)
+    thresholds: Dict[str, float] = field(default_factory=dict)
+    review_notes: str = ''
+    status: ReviewStatus = ReviewStatus.REVIEW_PENDING
+    created_at: str = field(default_factory=utc_now_iso)
+    review_task_id: str = field(default_factory=new_id)
+
+    @classmethod
+    def from_review_policy(
+        cls,
+        *,
+        skill_id: str,
+        review_policy: Dict[str, Any],
+        review_notes: str = '',
+    ) -> 'ReviewTask':
+        reason_codes_raw = review_policy.get('reason_codes', [])
+        reason_codes = [str(item).strip() for item in reason_codes_raw if str(item).strip()]
+        decision = parse_enum(
+            ReviewDecision,
+            review_policy.get('decision', ReviewDecision.REVIEW_REQUIRED.value),
+            'decision',
+        )
+        return cls(
+            skill_id=skill_id,
+            decision=decision,
+            reason_codes=reason_codes,
+            revision_suggestions=cls._build_revision_suggestions(reason_codes, decision),
+            score_snapshot=cls._coerce_float_dict(review_policy.get('score_snapshot')),
+            thresholds=cls._coerce_float_dict(review_policy.get('thresholds')),
+            review_notes=review_notes.strip(),
+            status=(
+                ReviewStatus.PUBLISHED
+                if decision == ReviewDecision.AUTO_PUBLISH
+                else ReviewStatus.REJECTED if decision == ReviewDecision.REJECT else ReviewStatus.REVIEW_PENDING
+            ),
+        )
+
+    @staticmethod
+    def _coerce_float_dict(payload: Any) -> Dict[str, float]:
+        if not isinstance(payload, dict):
+            return {}
+        output: Dict[str, float] = {}
+        for key, value in payload.items():
+            try:
+                output[str(key)] = float(value)
+            except (TypeError, ValueError):
+                continue
+        return output
+
+    @staticmethod
+    def _build_revision_suggestions(reason_codes: List[str], decision: ReviewDecision) -> List[str]:
+        reason_to_suggestion = {
+            'R_LOW_OVERALL': ['S_REBUILD_FROM_EVIDENCE'],
+            'R_TRACEABILITY_CRITICAL': ['S_ADD_TRACEABLE_EVIDENCE'],
+            'R_ACTIONABILITY_CRITICAL': ['S_REWRITE_ACTIONABLE_STEPS'],
+            'R_COVERAGE_CRITICAL': ['S_EXPAND_EVIDENCE_COVERAGE'],
+            'R_CONSISTENCY_CRITICAL': ['S_RESOLVE_CONFLICTING_STATEMENTS'],
+            'R_NOISE_CRITICAL': ['S_FILTER_NOISY_EVIDENCE'],
+            'Q_TRACEABILITY_LOW': ['S_ADD_TRACEABLE_EVIDENCE'],
+            'Q_ACTIONABILITY_LOW': ['S_REWRITE_ACTIONABLE_STEPS'],
+            'Q_COVERAGE_LOW': ['S_EXPAND_EVIDENCE_COVERAGE'],
+            'Q_CONSISTENCY_LOW': ['S_RESOLVE_CONFLICTING_STATEMENTS'],
+            'Q_NOISE_HIGH': ['S_FILTER_NOISY_EVIDENCE'],
+            'Q_NOVELTY_LOW': ['S_INCREASE_NOVELTY_SIGNAL'],
+            'Q_OVERALL_BELOW_AUTO': ['S_RERUN_AFTER_REBALANCING_SCORES'],
+            'Q_MANUAL_REVIEW_DEFAULT': ['S_MANUAL_REVIEW_REQUIRED'],
+            'A_MEETS_ALL_THRESHOLDS': ['S_MONITOR_POST_PUBLISH'],
+            'A_HIGH_NOVELTY': ['S_CAPTURE_NOVEL_PATTERN_FOR_REUSE'],
+        }
+        suggestions: List[str] = []
+        seen: set[str] = set()
+        for code in reason_codes:
+            for suggestion in reason_to_suggestion.get(code, []):
+                if suggestion in seen:
+                    continue
+                seen.add(suggestion)
+                suggestions.append(suggestion)
+        if suggestions:
+            return suggestions
+        if decision == ReviewDecision.AUTO_PUBLISH:
+            return ['S_MONITOR_POST_PUBLISH']
+        if decision == ReviewDecision.REJECT:
+            return ['S_REBUILD_FROM_EVIDENCE']
+        return ['S_MANUAL_REVIEW_REQUIRED']
+
+
+@dataclass(slots=True)
 class LoadedAsset(SerializableMixin):
     asset: Asset
     evidence_units: List[EvidenceUnit]
@@ -530,6 +628,8 @@ class DistillBundle(SerializableMixin):
     skill_markdown: str
     skill_graph: Optional[SkillGraph] = None
     publications: List[Publication] = field(default_factory=list)
+    quality_scores: Dict[str, Any] = field(default_factory=dict)
+    review_task: Optional[ReviewTask] = None
     corpus: Optional[Corpus] = None
     evidence_nodes: List[EvidenceNode] = field(default_factory=list)
     request_payload: Dict[str, Any] = field(default_factory=dict)

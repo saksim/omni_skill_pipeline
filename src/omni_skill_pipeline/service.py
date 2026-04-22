@@ -29,6 +29,7 @@ from omni_skill_pipeline.models import (
     Modality,
     Publication,
     PublicationType,
+    ReviewTask,
     SkillDocument,
     SkillGraph,
     TabularDistillRequest,
@@ -45,7 +46,10 @@ from omni_skill_pipeline.providers.fallback import (
 from omni_skill_pipeline.providers.media import FFmpegMediaProcessor
 from omni_skill_pipeline.providers.openai_provider import OpenAIAudioTranscriber, OpenAILLMSkillComposer, OpenAIVisionAnalyzer
 from omni_skill_pipeline.providers.tesseract import TesseractOCRProvider
-from omni_skill_pipeline.render import render_skill_markdown
+from omni_skill_pipeline.quality.feedback import ReviewFeedbackEngine
+from omni_skill_pipeline.quality.review_policy import ReviewPolicy
+from omni_skill_pipeline.quality.scoring import QualityScorer
+from omni_skill_pipeline.render import render_skill_markdown, render_skill_markdown_compat
 from omni_skill_pipeline.repository import FileArtifactRepository
 from omni_skill_pipeline.utils import unique_preserve_order
 
@@ -66,6 +70,9 @@ class DistillationService(object):
         atom_extractor: AtomExtractor | None = None,
         skill_graph_builder: SkillGraphBuilder | None = None,
         publication_builder: PublicationBuilder | None = None,
+        quality_scorer: QualityScorer | None = None,
+        review_policy: ReviewPolicy | None = None,
+        review_feedback_engine: ReviewFeedbackEngine | None = None,
     ) -> None:
         self.repository = repository
         self.text_adapter = text_adapter
@@ -79,6 +86,9 @@ class DistillationService(object):
         self.atom_extractor = atom_extractor or LegacyInsightAtomExtractor(insight_extractor=insight_extractor)
         self.skill_graph_builder = skill_graph_builder or SkillGraphBuilder()
         self.publication_builder = publication_builder or PublicationBuilder()
+        self.quality_scorer = quality_scorer or QualityScorer()
+        self.review_policy = review_policy or ReviewPolicy()
+        self.review_feedback_engine = review_feedback_engine or ReviewFeedbackEngine()
 
     def distill_text(self, request: TextDistillRequest) -> DistillBundle:
         return self._distill(request, self.text_adapter)
@@ -107,14 +117,22 @@ class DistillationService(object):
             loaded_corpus.evidence_units,
             insights,
         )
-        markdown = render_skill_markdown(skill)
         skill_graph, publications = self._build_publications(
             title_hint=request.name.strip() or loaded_corpus.corpus.name,
             goal=request.goal,
             evidence_nodes=loaded_corpus.evidence_nodes,
             skill=skill,
-            skill_markdown=markdown,
         )
+        markdown = render_skill_markdown_compat(publications=publications, skill=skill, graph=skill_graph)
+        quality_scores = self.quality_scorer.score(
+            skill=skill,
+            skill_graph=skill_graph,
+            evidence_nodes=loaded_corpus.evidence_nodes,
+            publications=publications,
+        ).to_dict()
+        review_decision = self.review_policy.decide(quality_scores).to_dict()
+        review_task = ReviewTask.from_review_policy(skill_id=skill.skill_id, review_policy=review_decision)
+        review_feedback = self.review_feedback_engine.build(review_task).to_dict()
         bundle = DistillBundle(
             asset=primary_loaded.asset,
             evidence_units=loaded_corpus.evidence_units,
@@ -123,6 +141,8 @@ class DistillationService(object):
             skill_markdown=markdown,
             skill_graph=skill_graph,
             publications=publications,
+            quality_scores=quality_scores,
+            review_task=review_task,
             corpus=loaded_corpus.corpus,
             evidence_nodes=loaded_corpus.evidence_nodes,
             request_payload=request.to_dict(),
@@ -133,6 +153,10 @@ class DistillationService(object):
                 'cross_asset': len(loaded_corpus.loaded_assets) > 1,
                 'evidence_node_count': len(loaded_corpus.evidence_nodes),
                 'publication_types': [item.publication_type.value for item in publications],
+                'quality_scores': quality_scores,
+                'review_policy': review_decision,
+                'review_task': review_task.to_dict(),
+                'review_feedback': review_feedback,
                 'corpus_assets': [item.to_dict() for item in loaded_corpus.corpus.assets],
                 'asset_adapter_metadata': loaded_corpus.adapter_metadata,
             },
@@ -206,15 +230,23 @@ class DistillationService(object):
             loaded.evidence_units,
             insights,
         )
-        markdown = render_skill_markdown(skill)
         evidence_nodes = self.evidence_builder.build_from_loaded_asset(loaded)
         skill_graph, publications = self._build_publications(
             title_hint=loaded.title_hint,
             goal=request.goal,
             evidence_nodes=evidence_nodes,
             skill=skill,
-            skill_markdown=markdown,
         )
+        markdown = render_skill_markdown_compat(publications=publications, skill=skill, graph=skill_graph)
+        quality_scores = self.quality_scorer.score(
+            skill=skill,
+            skill_graph=skill_graph,
+            evidence_nodes=evidence_nodes,
+            publications=publications,
+        ).to_dict()
+        review_decision = self.review_policy.decide(quality_scores).to_dict()
+        review_task = ReviewTask.from_review_policy(skill_id=skill.skill_id, review_policy=review_decision)
+        review_feedback = self.review_feedback_engine.build(review_task).to_dict()
         bundle = DistillBundle(
             asset=loaded.asset,
             evidence_units=loaded.evidence_units,
@@ -223,12 +255,18 @@ class DistillationService(object):
             skill_markdown=markdown,
             skill_graph=skill_graph,
             publications=publications,
+            quality_scores=quality_scores,
+            review_task=review_task,
             evidence_nodes=evidence_nodes,
             request_payload=request.to_dict(),
             adapter_metadata={
                 **loaded.adapter_metadata,
                 'evidence_node_count': len(evidence_nodes),
                 'publication_types': [item.publication_type.value for item in publications],
+                'quality_scores': quality_scores,
+                'review_policy': review_decision,
+                'review_task': review_task.to_dict(),
+                'review_feedback': review_feedback,
             },
         )
         self.repository.save_bundle(bundle)
@@ -241,30 +279,31 @@ class DistillationService(object):
         goal: DistillGoal,
         evidence_nodes,
         skill: SkillDocument,
-        skill_markdown: str,
     ) -> tuple[SkillGraph, list[Publication]]:
         atoms = self.atom_extractor.extract(evidence_nodes)
         graph_name = skill.name.strip() or title_hint.strip() or 'untitled skill'
         skill_graph = self.skill_graph_builder.build(graph_name, goal, evidence_nodes, atoms)
         publications = self.publication_builder.build(skill_graph)
-        return skill_graph, self._harmonize_publications(publications, skill, skill_markdown, skill_graph)
+        return skill_graph, self._harmonize_publications(publications, skill, skill_graph)
 
     def _harmonize_publications(
         self,
         publications: list[Publication],
         skill: SkillDocument,
-        skill_markdown: str,
         skill_graph: SkillGraph,
     ) -> list[Publication]:
+        markdown_text = render_skill_markdown(skill)
+        has_markdown_publication = False
         for publication in publications:
             publication.metadata = dict(publication.metadata)
             publication.metadata.setdefault('evidence_refs', unique_preserve_order(skill_graph.evidence_refs))
             if publication.publication_type == PublicationType.SKILL_MARKDOWN:
+                has_markdown_publication = True
                 publication.path = 'SKILL.md'
                 publication.content = {
                     **dict(publication.content),
                     'filename': 'SKILL.md',
-                    'text': skill_markdown,
+                    'text': str(dict(publication.content).get('text') or markdown_text),
                     'graph_id': skill_graph.graph_id,
                     'skill_id': skill.skill_id,
                 }
@@ -279,6 +318,28 @@ class DistillationService(object):
                     'skill_id': skill.skill_id,
                 }
                 publication.metadata['renderer'] = 'skill_json_v1_compat'
+        if not has_markdown_publication:
+            publications.insert(
+                0,
+                Publication(
+                    publication_type=PublicationType.SKILL_MARKDOWN,
+                    content={
+                        'filename': 'SKILL.md',
+                        'text': markdown_text,
+                        'graph_id': skill_graph.graph_id,
+                        'skill_id': skill.skill_id,
+                    },
+                    path='SKILL.md',
+                    metadata={
+                        'source': 'skill_graph',
+                        'graph_id': skill_graph.graph_id,
+                        'skill_id': skill.skill_id,
+                        'version': skill_graph.version,
+                        'renderer': 'skill_markdown_v1_compat',
+                        'evidence_refs': unique_preserve_order(skill_graph.evidence_refs),
+                    },
+                ),
+            )
         return publications
 
     def _adapter_for_modality(self, modality: Modality):

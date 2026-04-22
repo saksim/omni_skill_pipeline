@@ -174,6 +174,10 @@ class CorpusServiceTests(unittest.TestCase):
         self.assertIn('publication_manifest', bundle.artifacts)
         self.assertIn('publication_skill_markdown', bundle.artifacts)
         self.assertIn('publication_skill_json', bundle.artifacts)
+        self.assertIn('quality_score', bundle.artifacts)
+        self.assertIn('review_policy', bundle.artifacts)
+        self.assertIn('review_task', bundle.artifacts)
+        self.assertIn('review_feedback', bundle.artifacts)
 
         corpus_payload = json.loads(Path(bundle.artifacts['corpus']).read_text(encoding='utf-8'))
         self.assertEqual(corpus_payload['metadata']['asset_count'], 2)
@@ -191,6 +195,43 @@ class CorpusServiceTests(unittest.TestCase):
         self.assertIn('skill_json', publication_types)
         self.assertTrue(any(item.get('evidence_refs') for item in publication_manifest))
         self.assertTrue(all('graph_id' in item.get('metadata', {}) for item in publication_manifest))
+        legacy_markdown = Path(bundle.artifacts['skill_markdown']).read_text(encoding='utf-8')
+        publication_markdown = Path(bundle.artifacts['publication_skill_markdown']).read_text(encoding='utf-8')
+        self.assertEqual(bundle.skill_markdown, legacy_markdown)
+        self.assertEqual(bundle.skill_markdown, publication_markdown)
+        quality_payload = json.loads(Path(bundle.artifacts['quality_score']).read_text(encoding='utf-8'))
+        for key in (
+            'traceability_score',
+            'actionability_score',
+            'coverage_score',
+            'consistency_score',
+            'noise_score',
+            'novelty_score',
+        ):
+            self.assertIn(key, quality_payload)
+            self.assertIn(key, bundle.adapter_metadata['quality_scores'])
+        review_policy_payload = json.loads(Path(bundle.artifacts['review_policy']).read_text(encoding='utf-8'))
+        self.assertIn(review_policy_payload['decision'], {'auto_publish', 'review_required', 'reject'})
+        self.assertTrue(review_policy_payload['reason_codes'])
+        self.assertIn('thresholds', review_policy_payload)
+        self.assertIn('score_snapshot', review_policy_payload)
+        self.assertEqual(bundle.adapter_metadata['review_policy']['decision'], review_policy_payload['decision'])
+        review_task_payload = json.loads(Path(bundle.artifacts['review_task']).read_text(encoding='utf-8'))
+        self.assertEqual(review_task_payload['decision'], review_policy_payload['decision'])
+        self.assertEqual(review_task_payload['reason_codes'], review_policy_payload['reason_codes'])
+        self.assertTrue(review_task_payload['revision_suggestions'])
+        self.assertIn(review_task_payload['status'], {'review_pending', 'published', 'rejected'})
+        review_feedback_payload = json.loads(Path(bundle.artifacts['review_feedback']).read_text(encoding='utf-8'))
+        self.assertEqual(review_feedback_payload['decision'], review_task_payload['decision'])
+        self.assertEqual(review_feedback_payload['reason_codes'], review_task_payload['reason_codes'])
+        self.assertTrue(review_feedback_payload['categories'])
+        self.assertTrue(
+            review_feedback_payload['atom_actions']
+            or review_feedback_payload['graph_actions']
+            or review_feedback_payload['policy_actions']
+        )
+        self.assertTrue(review_feedback_payload['follow_up_checks'])
+        self.assertEqual(bundle.adapter_metadata['review_feedback']['decision'], review_feedback_payload['decision'])
 
         single_bundle = self.service.distill_text(
             TextDistillRequest(
@@ -206,6 +247,24 @@ class CorpusServiceTests(unittest.TestCase):
         self.assertIn('publication_manifest', single_bundle.artifacts)
         single_publication_manifest = json.loads(Path(single_bundle.artifacts['publication_manifest']).read_text(encoding='utf-8'))
         self.assertGreaterEqual(len(single_publication_manifest), 2)
+        self.assertEqual(
+            single_bundle.skill_markdown,
+            Path(single_bundle.artifacts['publication_skill_markdown']).read_text(encoding='utf-8'),
+        )
+        self.assertIn('quality_score', single_bundle.artifacts)
+        single_quality_payload = json.loads(Path(single_bundle.artifacts['quality_score']).read_text(encoding='utf-8'))
+        self.assertIn('overall_score', single_quality_payload)
+        self.assertIn('review_policy', single_bundle.artifacts)
+        single_review_policy = json.loads(Path(single_bundle.artifacts['review_policy']).read_text(encoding='utf-8'))
+        self.assertIn(single_review_policy['decision'], {'auto_publish', 'review_required', 'reject'})
+        self.assertIn('review_task', single_bundle.artifacts)
+        single_review_task = json.loads(Path(single_bundle.artifacts['review_task']).read_text(encoding='utf-8'))
+        self.assertEqual(single_review_task['decision'], single_review_policy['decision'])
+        self.assertTrue(single_review_task['revision_suggestions'])
+        self.assertIn('review_feedback', single_bundle.artifacts)
+        single_review_feedback = json.loads(Path(single_bundle.artifacts['review_feedback']).read_text(encoding='utf-8'))
+        self.assertEqual(single_review_feedback['decision'], single_review_task['decision'])
+        self.assertTrue(single_review_feedback['follow_up_checks'])
 
 
 if __name__ == '__main__':

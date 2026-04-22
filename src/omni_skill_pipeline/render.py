@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Sequence
 
-from omni_skill_pipeline.models import SkillDocument, SkillGraph, SkillStep
+from omni_skill_pipeline.models import Publication, PublicationType, SkillDocument, SkillGraph, SkillStep
 
 
 def _render_list(items: Iterable[str], empty_text: str = "- None") -> str:
@@ -94,7 +94,37 @@ def render_skill_markdown(skill: SkillDocument) -> str:
     )
 
 
+def resolve_skill_markdown(publications: Sequence[Publication]) -> str | None:
+    for publication in publications:
+        if publication.publication_type != PublicationType.SKILL_MARKDOWN:
+            continue
+        if isinstance(publication.content, dict):
+            text = publication.content.get('text')
+            if isinstance(text, str) and text:
+                return text
+        if isinstance(publication.content, str) and publication.content:
+            return publication.content
+    return None
+
+
 def render_skill_graph_markdown(graph: SkillGraph) -> str:
     from omni_skill_pipeline.transformers import skill_graph_to_document
 
     return render_skill_markdown(skill_graph_to_document(graph))
+
+
+def render_skill_markdown_compat(
+    *,
+    publications: Sequence[Publication] | None = None,
+    skill: SkillDocument | None = None,
+    graph: SkillGraph | None = None,
+) -> str:
+    if publications:
+        resolved = resolve_skill_markdown(publications)
+        if resolved:
+            return resolved
+    if skill is not None:
+        return render_skill_markdown(skill)
+    if graph is not None:
+        return render_skill_graph_markdown(graph)
+    raise ValueError('render_skill_markdown_compat requires publications, skill, or graph.')

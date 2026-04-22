@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
-from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication
+from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication, ReviewTask
 from omni_skill_pipeline.utils import slugify, unique_preserve_order
 
 
@@ -37,6 +37,17 @@ class FileArtifactRepository(object):
         if bundle.publications:
             artifacts["publications_dir"] = bundle_dir / "publications"
             artifacts["publication_manifest"] = artifacts["publications_dir"] / "manifest.json"
+        if bundle.quality_scores:
+            artifacts["quality_score"] = bundle_dir / "quality_score.json"
+        review_task_payload = self._resolve_review_task_payload(bundle)
+        if review_task_payload:
+            artifacts["review_task"] = bundle_dir / "review_task.json"
+        review_feedback_payload = self._resolve_review_feedback_payload(bundle)
+        if review_feedback_payload:
+            artifacts["review_feedback"] = bundle_dir / "review_feedback.json"
+        review_policy_payload = bundle.adapter_metadata.get("review_policy")
+        if isinstance(review_policy_payload, dict) and review_policy_payload:
+            artifacts["review_policy"] = bundle_dir / "review_policy.json"
 
         artifacts["asset"].write_text(bundle.asset.to_json() + "\n", encoding="utf-8")
         self._write_json_array(artifacts["evidence"], bundle.evidence_units)
@@ -53,11 +64,36 @@ class FileArtifactRepository(object):
         if bundle.publications:
             publication_entries = self._write_publications(artifacts["publications_dir"], bundle.publications, artifacts)
             self._write_json_array(artifacts["publication_manifest"], publication_entries)
+        if bundle.quality_scores:
+            artifacts["quality_score"].write_text(json.dumps(bundle.quality_scores, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if "review_task" in artifacts:
+            artifacts["review_task"].write_text(json.dumps(review_task_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if "review_feedback" in artifacts:
+            artifacts["review_feedback"].write_text(
+                json.dumps(review_feedback_payload, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        if "review_policy" in artifacts:
+            artifacts["review_policy"].write_text(json.dumps(review_policy_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
         artifact_strings = {name: str(path) for name, path in artifacts.items()}
         bundle.artifacts = artifact_strings
         artifacts["bundle"].write_text(bundle.to_json() + "\n", encoding="utf-8")
         return artifact_strings
+
+    def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
+        if isinstance(bundle.review_task, ReviewTask):
+            return bundle.review_task.to_dict()
+        payload = bundle.adapter_metadata.get('review_task')
+        if isinstance(payload, dict):
+            return dict(payload)
+        return {}
+
+    def _resolve_review_feedback_payload(self, bundle: DistillBundle) -> dict[str, Any]:
+        payload = bundle.adapter_metadata.get('review_feedback')
+        if isinstance(payload, dict):
+            return dict(payload)
+        return {}
 
     def _write_json_array(self, target: Path, items: Sequence[Any]) -> None:
         payload = []
