@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from omni_skill_pipeline.adapters.audio import AudioAdapter
 from omni_skill_pipeline.exceptions import MediaProcessingError, ProviderUnavailableError
+from omni_skill_pipeline.extraction.modality.video_parser import VideoStructureParser
 from omni_skill_pipeline.interfaces import ImageAnalyzer, MediaProcessor, OCRProvider
 from omni_skill_pipeline.models import (
     Asset,
@@ -33,11 +34,13 @@ class VideoAdapter(object):
         default_scene_threshold: float = 0.32,
         default_dedupe_distance: int = 5,
         scratch_root: Path | None = None,
+        video_parser: VideoStructureParser | None = None,
     ) -> None:
         self.media_processor = media_processor
         self.audio_adapter = audio_adapter
         self.ocr_provider = ocr_provider
         self.analyzer = analyzer
+        self.video_parser = video_parser or VideoStructureParser()
         self.default_interval_seconds = default_interval_seconds
         self.default_max_keyframes = default_max_keyframes
         self.default_scene_threshold = default_scene_threshold
@@ -76,7 +79,8 @@ class VideoAdapter(object):
         work_dir.mkdir(parents=True, exist_ok=True)
         try:
             self._collect_audio_evidence(asset, request, video_path, work_dir, evidence_units, adapter_metadata)
-            self._collect_frame_evidence(asset, request, video_path, work_dir, evidence_units, adapter_metadata)
+            sampled_frames = self._collect_frame_evidence(asset, request, video_path, work_dir, evidence_units, adapter_metadata)
+            self._collect_timeline_evidence(asset, evidence_units, sampled_frames, adapter_metadata)
         finally:
             shutil.rmtree(work_dir, ignore_errors=True)
 
@@ -142,7 +146,7 @@ class VideoAdapter(object):
         work_dir: Path,
         evidence_units: list[EvidenceUnit],
         adapter_metadata: dict[str, object],
-    ) -> None:
+    ) -> list[SampledFrame]:
         interval_seconds = request.keyframe_interval_seconds or self.default_interval_seconds
         max_keyframes = request.max_keyframes or self.default_max_keyframes
         scene_threshold = request.scene_threshold if request.scene_threshold is not None else self.default_scene_threshold
@@ -209,6 +213,31 @@ class VideoAdapter(object):
                                 tags=unique_preserve_order(list(analysis.tags) + ['source:%s' % frame.source]),
                             )
                         )
+        return frames
+
+    def _collect_timeline_evidence(
+        self,
+        asset: Asset,
+        evidence_units: list[EvidenceUnit],
+        sampled_frames: list[SampledFrame],
+        adapter_metadata: dict[str, object],
+    ) -> None:
+        parsed = self.video_parser.parse(frames=sampled_frames, evidence_units=evidence_units)
+        for block in parsed.evidence_blocks:
+            evidence_units.append(
+                EvidenceUnit(
+                    asset_id=asset.asset_id,
+                    span_ref=block.span_ref,
+                    content_type=block.content_type,
+                    content=block.content,
+                    confidence=block.confidence,
+                    tags=unique_preserve_order(block.tags),
+                )
+            )
+        adapter_metadata['scene_cluster_count'] = len(parsed.scene_clusters)
+        adapter_metadata['scene_clusters'] = parsed.scene_clusters
+        adapter_metadata['frame_event_count'] = parsed.frame_event_count
+        adapter_metadata['subtitle_alignment_count'] = parsed.subtitle_alignment_count
 
     def _build_frame_span(self, index: int, frame: SampledFrame) -> str:
         if frame.timestamp_seconds is None:

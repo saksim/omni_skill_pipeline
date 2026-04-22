@@ -23,6 +23,7 @@
 ### Operations
 
 - [Operations](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\OPERATIONS.md)
+- [Testing](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\testing.md)
 
 ## History
 

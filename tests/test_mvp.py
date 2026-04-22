@@ -22,6 +22,7 @@ from omni_skill_pipeline.models import (
     AudioDistillRequest,
     DistillGoal,
     ImageDistillRequest,
+    TabularDistillRequest,
     TextDistillRequest,
     VideoDistillRequest,
 )
@@ -211,7 +212,57 @@ Verify the new plan with EXPLAIN ANALYZE and compare latency.
         self.assertIn('speech', content_types)
         self.assertIn('ocr', content_types)
         self.assertIn('scene', content_types)
+        self.assertIn('event', content_types)
         self.assertGreaterEqual(len(bundle.evidence_units), 5)
+        scene_clusters = [unit for unit in bundle.evidence_units if unit.span_ref.startswith('video:scene_cluster:')]
+        frame_events = [unit for unit in bundle.evidence_units if unit.span_ref.endswith(':event')]
+        subtitle_alignments = [unit for unit in bundle.evidence_units if ':subtitle:' in unit.span_ref]
+        self.assertGreaterEqual(len(scene_clusters), 1)
+        self.assertGreaterEqual(len(frame_events), 1)
+        self.assertGreaterEqual(len(subtitle_alignments), 1)
+        self.assertGreaterEqual(bundle.adapter_metadata.get('scene_cluster_count', 0), 1)
+        self.assertGreaterEqual(bundle.adapter_metadata.get('frame_event_count', 0), 1)
+        self.assertGreaterEqual(bundle.adapter_metadata.get('subtitle_alignment_count', 0), 1)
+
+    def test_tabular_distillation_emits_baseline_change_point_and_drift_evidence(self) -> None:
+        table_path = self.workspace / 'timeseries.csv'
+        table_path.write_text(
+            '\n'.join(
+                [
+                    'timestamp,latency_ms,error_rate,service',
+                    '2026-04-21T00:00:00,100,0.01,api',
+                    '2026-04-21T00:01:00,101,0.01,api',
+                    '2026-04-21T00:02:00,99,0.01,api',
+                    '2026-04-21T00:03:00,102,0.01,api',
+                    '2026-04-21T00:04:00,100,0.02,api',
+                    '2026-04-21T00:05:00,101,0.02,api',
+                    '2026-04-21T00:06:00,146,0.04,api',
+                    '2026-04-21T00:07:00,154,0.05,api',
+                    '2026-04-21T00:08:00,162,0.06,api',
+                    '2026-04-21T00:09:00,170,0.07,api',
+                ]
+            ),
+            encoding='utf-8',
+        )
+        bundle = self.service.distill_tabular(
+            TabularDistillRequest(
+                file_path=str(table_path),
+                title='Latency Drift Check',
+                time_column='timestamp',
+                value_columns=['latency_ms', 'error_rate'],
+                entity_columns=['service'],
+                goal=DistillGoal.from_dict({'domain': 'incident_response'}),
+            )
+        )
+        metric_blocks = [unit for unit in bundle.evidence_units if unit.span_ref.startswith('timeseries:metric:')]
+        event_blocks = [unit for unit in bundle.evidence_units if unit.span_ref.startswith('timeseries:event:')]
+        self.assertTrue(metric_blocks)
+        self.assertTrue(event_blocks)
+        self.assertTrue(any('baseline_mean=' in unit.content for unit in metric_blocks))
+        self.assertTrue(any('drift_label=' in unit.content for unit in metric_blocks))
+        self.assertTrue(any('change_points=' in unit.content for unit in metric_blocks))
+        self.assertTrue(any('change_point=' in unit.content for unit in event_blocks))
+        self.assertTrue(any('anomaly_interval=' in unit.content for unit in event_blocks))
 
 
 if __name__ == '__main__':

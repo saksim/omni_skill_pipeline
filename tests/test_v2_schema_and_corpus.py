@@ -171,6 +171,9 @@ class CorpusServiceTests(unittest.TestCase):
         self.assertIn('corpus_assets', bundle.artifacts)
         self.assertIn('evidence_nodes', bundle.artifacts)
         self.assertIn('cross_asset_refs', bundle.artifacts)
+        self.assertIn('publication_manifest', bundle.artifacts)
+        self.assertIn('publication_skill_markdown', bundle.artifacts)
+        self.assertIn('publication_skill_json', bundle.artifacts)
 
         corpus_payload = json.loads(Path(bundle.artifacts['corpus']).read_text(encoding='utf-8'))
         self.assertEqual(corpus_payload['metadata']['asset_count'], 2)
@@ -182,6 +185,12 @@ class CorpusServiceTests(unittest.TestCase):
         self.assertTrue(cross_asset_payload)
         self.assertTrue(any(len(item['asset_ids']) == 2 for item in cross_asset_payload))
         self.assertTrue(any(item['reference_type'] == 'skill' for item in cross_asset_payload))
+        publication_manifest = json.loads(Path(bundle.artifacts['publication_manifest']).read_text(encoding='utf-8'))
+        publication_types = {item['publication_type'] for item in publication_manifest}
+        self.assertIn('skill_markdown', publication_types)
+        self.assertIn('skill_json', publication_types)
+        self.assertTrue(any(item.get('evidence_refs') for item in publication_manifest))
+        self.assertTrue(all('graph_id' in item.get('metadata', {}) for item in publication_manifest))
 
         single_bundle = self.service.distill_text(
             TextDistillRequest(
@@ -194,6 +203,9 @@ class CorpusServiceTests(unittest.TestCase):
         self.assertTrue(single_bundle.skill.steps)
         self.assertNotIn('corpus', single_bundle.artifacts)
         self.assertNotIn('cross_asset_refs', single_bundle.artifacts)
+        self.assertIn('publication_manifest', single_bundle.artifacts)
+        single_publication_manifest = json.loads(Path(single_bundle.artifacts['publication_manifest']).read_text(encoding='utf-8'))
+        self.assertGreaterEqual(len(single_publication_manifest), 2)
 
 
 if __name__ == '__main__':

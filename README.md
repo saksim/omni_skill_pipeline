@@ -44,6 +44,7 @@
 - API: [docs/current/operations/api.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\api.md)
 - Worker: [docs/current/operations/worker.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\worker.md)
 - Environment: [docs/current/operations/env.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\env.md)
+- Testing: [docs/current/operations/testing.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\testing.md)
 
 ### History
 

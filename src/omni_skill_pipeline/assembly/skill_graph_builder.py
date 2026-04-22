@@ -37,7 +37,7 @@ class SkillGraphBuilder(object):
         examples = self._build_examples(atoms)
         variables = self._build_variables(atoms)
         edges = self._build_edges(steps, decisions, verifications)
-        return SkillGraph(
+        graph = SkillGraph(
             name=name.strip() or self._fallback_name(goal, evidence_nodes),
             goal=self._build_goal(goal),
             source_modalities=source_modalities,
@@ -59,6 +59,8 @@ class SkillGraphBuilder(object):
             atom_refs=unique_preserve_order(item.atom_id for item in atoms),
             confidence=self._estimate_confidence(evidence_nodes, atoms, steps),
         )
+        graph.validate()
+        return graph
 
     def _collect_modalities(self, evidence_nodes: Sequence[EvidenceNode]) -> list[Modality]:
         if not evidence_nodes:
@@ -84,35 +86,86 @@ class SkillGraphBuilder(object):
                     action=atom.summary.strip(),
                     why=why,
                     atom_refs=[atom.atom_id],
-                    evidence_refs=list(atom.evidence_refs),
+                    evidence_refs=unique_preserve_order(atom.evidence_refs),
                 )
             )
         if steps:
             return steps
+
+        fallback_atoms = [
+            item for item in atoms if item.atom_type in {AtomType.EVENT, AtomType.RULE, AtomType.QUESTION, AtomType.METRIC_GUARDRAIL}
+        ]
+        for index, atom in enumerate(fallback_atoms[:6], start=1):
+            action = self._action_from_fallback_atom(atom)
+            steps.append(
+                StepNode(
+                    step=index,
+                    action=action,
+                    why='Derived from %s atom fallback because no procedure atoms were found.' % atom.atom_type.value,
+                    atom_refs=[atom.atom_id],
+                    evidence_refs=unique_preserve_order(atom.evidence_refs),
+                    metadata={'fallback_from_atom_type': atom.atom_type.value},
+                )
+            )
+        if steps:
+            return steps
+
         fallback_actions = self._fallback_actions(evidence_nodes)
-        for index, action in enumerate(fallback_actions, start=1):
+        for index, (action, evidence_ref, span_ref) in enumerate(fallback_actions, start=1):
+            refs = [evidence_ref] if evidence_ref else []
+            metadata = {'fallback_source': 'evidence'}
+            if span_ref:
+                metadata['source_span_ref'] = span_ref
             steps.append(
                 StepNode(
                     step=index,
                     action=action,
                     why='Derived from evidence fallback because no procedure atoms were found.',
+                    evidence_refs=refs,
+                    metadata=metadata,
                 )
             )
         return steps
 
-    def _fallback_actions(self, evidence_nodes: Sequence[EvidenceNode]) -> list[str]:
-        actions: list[str] = []
+    def _fallback_actions(self, evidence_nodes: Sequence[EvidenceNode]) -> list[tuple[str, str | None, str | None]]:
+        actions: list[tuple[str, str | None, str | None]] = []
         for item in evidence_nodes[:3]:
             sentences = split_sentences(item.text_content)
             if sentences:
-                actions.append(sentences[0])
-        return unique_preserve_order(actions) or ['Review the available evidence and define concrete procedural steps.']
+                actions.append((sentences[0], item.evidence_id, item.span_ref))
+        deduped: list[tuple[str, str | None, str | None]] = []
+        seen_actions: set[str] = set()
+        for action, evidence_ref, span_ref in actions:
+            key = action.strip().lower()
+            if not key or key in seen_actions:
+                continue
+            seen_actions.add(key)
+            deduped.append((action.strip(), evidence_ref, span_ref))
+        if deduped:
+            return deduped
+        return [('Review the available evidence and define concrete procedural steps.', None, None)]
+
+    def _action_from_fallback_atom(self, atom: SemanticAtom) -> str:
+        summary = atom.summary.strip()
+        if atom.atom_type == AtomType.RULE:
+            return 'Evaluate rule: %s' % summary
+        if atom.atom_type == AtomType.QUESTION:
+            return 'Resolve question before execution: %s' % summary
+        if atom.atom_type == AtomType.METRIC_GUARDRAIL:
+            return 'Apply metric guardrail: %s' % summary
+        if atom.atom_type == AtomType.EVENT:
+            return 'Replay event context: %s' % summary
+        return summary
 
     def _build_decisions(self, atoms: Sequence[SemanticAtom]) -> list[DecisionNode]:
-        rules = [item for item in atoms if item.atom_type == AtomType.RULE]
+        rules = [item for item in atoms if item.atom_type in {AtomType.RULE, AtomType.QUESTION}]
         nodes: list[DecisionNode] = []
         for atom in rules:
-            condition, decision = self._split_rule(atom.summary)
+            if atom.atom_type == AtomType.QUESTION:
+                condition = atom.summary.strip()
+                decision = 'Require human confirmation before continuing.'
+            else:
+                condition, decision = self._split_rule(atom.summary)
             nodes.append(
                 DecisionNode(
                     condition=condition,
@@ -134,16 +187,21 @@ class SkillGraphBuilder(object):
         return 'When rule conditions are met.', normalized
 
     def _build_verifications(self, atoms: Sequence[SemanticAtom]) -> list[VerificationNode]:
-        verifications = [item for item in atoms if item.atom_type == AtomType.VERIFICATION]
-        return [
-            VerificationNode(
-                check=atom.summary.strip(),
-                expected=str(atom.attributes.get('expected', '')).strip(),
-                atom_refs=[atom.atom_id],
-                evidence_refs=list(atom.evidence_refs),
+        verifications = [item for item in atoms if item.atom_type in {AtomType.VERIFICATION, AtomType.METRIC_GUARDRAIL}]
+        nodes: list[VerificationNode] = []
+        for atom in verifications:
+            expected = str(atom.attributes.get('expected', '')).strip()
+            if atom.atom_type == AtomType.METRIC_GUARDRAIL and not expected:
+                expected = 'Metrics remain within declared guardrail range.'
+            nodes.append(
+                VerificationNode(
+                    check=atom.summary.strip(),
+                    expected=expected,
+                    atom_refs=[atom.atom_id],
+                    evidence_refs=unique_preserve_order(atom.evidence_refs),
+                )
             )
-            for atom in verifications
-        ]
+        return nodes
 
     def _build_risks(self, atoms: Sequence[SemanticAtom]) -> list[RiskNode]:
         anti_patterns = [item for item in atoms if item.atom_type == AtomType.ANTI_PATTERN]
@@ -158,13 +216,16 @@ class SkillGraphBuilder(object):
         ]
 
     def _build_examples(self, atoms: Sequence[SemanticAtom]) -> list[ExampleNode]:
-        examples = [item for item in atoms if item.atom_type == AtomType.EXAMPLE]
+        examples = [item for item in atoms if item.atom_type in {AtomType.EXAMPLE, AtomType.EVENT}]
         return [
             ExampleNode(
                 example=atom.summary.strip(),
-                classification=str(atom.attributes.get('classification', 'positive')).strip() or 'positive',
+                classification=str(
+                    atom.attributes.get('classification', 'event' if atom.atom_type == AtomType.EVENT else 'positive')
+                ).strip()
+                or ('event' if atom.atom_type == AtomType.EVENT else 'positive'),
                 atom_refs=[atom.atom_id],
-                evidence_refs=list(atom.evidence_refs),
+                evidence_refs=unique_preserve_order(atom.evidence_refs),
             )
             for atom in examples
         ]

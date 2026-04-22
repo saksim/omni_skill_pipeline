@@ -9,7 +9,19 @@ from pydantic import BaseModel, Field
 
 from omni_skill_pipeline.config import Settings
 from omni_skill_pipeline.exceptions import ProviderExecutionError, ProviderUnavailableError
-from omni_skill_pipeline.models import Audience, DistillGoal, EvidenceUnit, Insight, Modality, SkillDocument, SkillStep, SkillType
+from omni_skill_pipeline.models import (
+    AtomType,
+    Audience,
+    DistillGoal,
+    EvidenceNode,
+    EvidenceUnit,
+    Insight,
+    Modality,
+    SemanticAtom,
+    SkillDocument,
+    SkillStep,
+    SkillType,
+)
 from omni_skill_pipeline.providers.base import FrameAnalysis, OCRBlock, OCRResult, TranscriptSegment, TranscriptionResult
 from omni_skill_pipeline.utils import unique_preserve_order
 
@@ -39,6 +51,18 @@ class SkillDraftModel(BaseModel):
     verification: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
     evidence_refs: list[str] = Field(default_factory=list)
+
+
+class AtomDraftModel(BaseModel):
+    atom_type: str
+    summary: str
+    evidence_refs: list[str] = Field(default_factory=list)
+    confidence: float = 0.74
+    attributes: dict[str, object] = Field(default_factory=dict)
+
+
+class AtomDraftListModel(BaseModel):
+    atoms: list[AtomDraftModel] = Field(default_factory=list)
 
 
 class OCRTextModel(BaseModel):
@@ -252,3 +276,88 @@ class OpenAILLMSkillComposer(OpenAIClientMixin):
             if member.value == normalized:
                 return member
         return SkillType.PROCEDURE
+
+
+class OpenAILLMAtomEnhancer(OpenAIClientMixin):
+    def extract_atoms(
+        self,
+        evidence_nodes: Sequence[EvidenceNode],
+        *,
+        seed_atoms: Sequence[SemanticAtom] | None = None,
+    ) -> list[SemanticAtom]:
+        evidence_ids = {item.evidence_id for item in evidence_nodes}
+        payload = self._build_payload(evidence_nodes, seed_atoms or [])
+        instructions = self._build_instructions()
+        try:
+            response = self.client.responses.parse(
+                model=self.settings.llm_model,
+                instructions=instructions,
+                input=payload,
+                text_format=AtomDraftListModel,
+            )
+        except Exception as exc:  # pragma: no cover - network boundary
+            raise ProviderExecutionError('OpenAI atom enhancement failed: %s' % exc) from exc
+
+        parsed = response.output_parsed
+        if parsed is None:
+            raise ProviderExecutionError('OpenAI atom enhancement returned no structured output.')
+
+        atoms: list[SemanticAtom] = []
+        for item in parsed.atoms:
+            summary = item.summary.strip()
+            if not summary:
+                continue
+            atom_type = self._coerce_atom_type(item.atom_type)
+            refs = self._sanitize_evidence_refs(item.evidence_refs, evidence_ids)
+            attributes = dict(item.attributes)
+            attributes.setdefault('llm_enhanced', True)
+            atoms.append(
+                SemanticAtom(
+                    atom_type=atom_type,
+                    summary=summary,
+                    evidence_refs=refs,
+                    confidence=max(0.0, min(float(item.confidence), 1.0)),
+                    attributes=attributes,
+                )
+            )
+        return atoms
+
+    def _build_instructions(self) -> str:
+        return '\n'.join(
+            [
+                'You enhance semantic atoms extracted from evidence nodes.',
+                'Do not fabricate facts outside evidence.',
+                'Prefer adding missing high-value atoms over rewriting seed atoms.',
+                'Allowed atom_type values: claim, procedure, rule, verification, anti_pattern, entity, event, example, metric_guardrail, question.',
+                'Return compact, executable summaries and attach evidence_refs when possible.',
+            ]
+        )
+
+    def _build_payload(self, evidence_nodes: Sequence[EvidenceNode], seed_atoms: Sequence[SemanticAtom]) -> list[dict[str, object]]:
+        evidence_lines = []
+        for node in evidence_nodes[:24]:
+            evidence_lines.append(
+                '[%s|%s|%s|%s] %s'
+                % (node.evidence_id, node.modality.value, node.content_type.value, node.span_ref, node.text_content[:500])
+            )
+        seed_lines = []
+        for atom in seed_atoms[:24]:
+            seed_lines.append('[%s|%s] %s' % (atom.atom_id, atom.atom_type.value, atom.summary[:300]))
+        text = 'Evidence Nodes:\n%s\n\nSeed Atoms:\n%s' % (
+            '\n'.join(evidence_lines),
+            '\n'.join(seed_lines) if seed_lines else 'None',
+        )
+        return [{'role': 'user', 'content': [{'type': 'input_text', 'text': text}]}]
+
+    def _coerce_atom_type(self, raw_value: str) -> AtomType:
+        normalized = (raw_value or '').strip().lower()
+        for member in AtomType:
+            if member.value == normalized:
+                return member
+        return AtomType.CLAIM
+
+    def _sanitize_evidence_refs(self, refs: Sequence[str], known_ids: set[str]) -> list[str]:
+        cleaned = [str(item).strip() for item in refs if str(item).strip()]
+        if not cleaned:
+            return []
+        return [item for item in unique_preserve_order(cleaned) if item in known_ids]

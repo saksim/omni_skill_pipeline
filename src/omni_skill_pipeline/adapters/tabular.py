@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
+from functools import lru_cache
+import io
 from pathlib import Path
 from typing import Any, TYPE_CHECKING, Sequence
 
@@ -22,13 +25,18 @@ from omni_skill_pipeline.models import (
     Modality,
     TabularDistillRequest,
 )
+from omni_skill_pipeline.extraction.modality.timeseries_parser import TimeSeriesSemanticParser
 from omni_skill_pipeline.utils import unique_preserve_order
 
 
+@lru_cache(maxsize=1)
 def _pandas_runtime():
-    import pandas as pd_runtime
-    from pandas.api.types import is_datetime64_any_dtype as is_datetime64_any_dtype_runtime
-    from pandas.api.types import is_numeric_dtype as is_numeric_dtype_runtime
+    # Some environments ship optional pandas deps built against old NumPy ABI,
+    # which emit noisy diagnostics on stderr during import even when pandas works.
+    with contextlib.redirect_stderr(io.StringIO()):
+        import pandas as pd_runtime
+        from pandas.api.types import is_datetime64_any_dtype as is_datetime64_any_dtype_runtime
+        from pandas.api.types import is_numeric_dtype as is_numeric_dtype_runtime
 
     return pd_runtime, is_datetime64_any_dtype_runtime, is_numeric_dtype_runtime
 
@@ -50,11 +58,23 @@ class TimeSeriesSignal:
     pct_change: float | None
     largest_jump_timestamp: str | None
     largest_jump_value: float | None
+    baseline_mean: float | None
+    baseline_std: float | None
+    baseline_min: float | None
+    baseline_max: float | None
+    recent_mean: float | None
+    drift_score: float | None
+    drift_label: str
+    change_points: list[tuple[str, float]]
+    anomaly_intervals: list[tuple[str, str]]
     anomaly_timestamps: list[str]
 
 
 class TabularAdapter(object):
     SUPPORTED_SUFFIXES = {'.csv', '.tsv', '.txt', '.json', '.xlsx', '.xls'}
+
+    def __init__(self, timeseries_parser: TimeSeriesSemanticParser | None = None) -> None:
+        self.timeseries_parser = timeseries_parser or TimeSeriesSemanticParser()
 
     def load(self, request: TabularDistillRequest) -> LoadedAsset:
         request.validate()
@@ -269,6 +289,25 @@ class TabularAdapter(object):
                     signal.largest_jump_timestamp or 'none',
                     self._format_optional(signal.largest_jump_value),
                 ),
+                'baseline_mean=%s baseline_std=%s baseline_range=%s..%s'
+                % (
+                    self._format_optional(signal.baseline_mean),
+                    self._format_optional(signal.baseline_std),
+                    self._format_optional(signal.baseline_min),
+                    self._format_optional(signal.baseline_max),
+                ),
+                'recent_mean=%s drift_label=%s drift_score=%s'
+                % (
+                    self._format_optional(signal.recent_mean),
+                    signal.drift_label,
+                    self._format_optional(signal.drift_score),
+                ),
+                'change_points=%s'
+                % (
+                    ', '.join('%s(delta=%s)' % (item[0], self._format_optional(item[1])) for item in signal.change_points[:6])
+                    if signal.change_points
+                    else 'none'
+                ),
                 'anomaly_timestamps=%s'
                 % (', '.join(signal.anomaly_timestamps[:5]) if signal.anomaly_timestamps else 'none'),
                 '1. Sort %s by %s before comparing local deltas.' % (column, time_column),
@@ -288,11 +327,20 @@ class TabularAdapter(object):
                     tags=['timeseries', column],
                 )
             )
-            if signal.anomaly_timestamps:
+            should_emit_event = bool(signal.anomaly_timestamps or signal.change_points or signal.anomaly_intervals)
+            if should_emit_event:
                 event_lines = [
                     'Detected anomaly windows for %s' % column,
                     'When anomalies cluster, inspect the shared upstream dependency before per-row debugging.',
                 ]
+                if signal.change_points:
+                    event_lines.append('change_point_candidates:')
+                    for timestamp, delta in signal.change_points[:8]:
+                        event_lines.append('- change_point=%s delta=%s' % (timestamp, self._format_optional(delta)))
+                if signal.anomaly_intervals:
+                    event_lines.append('anomaly_intervals:')
+                    for start, end in signal.anomaly_intervals[:6]:
+                        event_lines.append('- anomaly_interval=%s -> %s' % (start, end))
                 for timestamp in signal.anomaly_timestamps[:8]:
                     event_lines.append('- anomaly_at=%s' % timestamp)
                 evidence.append(
@@ -302,7 +350,9 @@ class TabularAdapter(object):
                         content_type=ContentType.EVENT,
                         content='\n'.join(event_lines),
                         confidence=0.78,
-                        tags=['anomaly', column],
+                        tags=unique_preserve_order(
+                            ['anomaly', column, 'timeseries:baseline', 'timeseries:change_point', 'timeseries:drift']
+                        ),
                     )
                 )
         return evidence
@@ -389,7 +439,23 @@ class TabularAdapter(object):
         valid = frame.loc[series.notna(), [time_column]].copy()
         valid[value_column] = series.dropna().values
         if valid.empty:
-            return TimeSeriesSignal(value_column, 'flat', None, None, None, [])
+            return TimeSeriesSignal(
+                value_column,
+                'flat',
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                'stable',
+                [],
+                [],
+                [],
+            )
 
         values = valid[value_column].astype(float)
         pct_change = None
@@ -421,13 +487,27 @@ class TabularAdapter(object):
             anomaly_rows = valid.loc[z_scores > 2.5, time_column]
             anomaly_timestamps = [str(item) for item in anomaly_rows.head(8).tolist()]
 
+        semantic = self.timeseries_parser.parse(
+            timestamps=valid[time_column].tolist(),
+            values=[float(item) for item in values.tolist()],
+        )
+
         return TimeSeriesSignal(
             column=value_column,
             trend_label=trend_label,
             pct_change=pct_change,
             largest_jump_timestamp=largest_jump_timestamp,
             largest_jump_value=largest_jump_value,
-            anomaly_timestamps=unique_preserve_order(anomaly_timestamps),
+            baseline_mean=semantic.baseline_mean,
+            baseline_std=semantic.baseline_std,
+            baseline_min=semantic.baseline_min,
+            baseline_max=semantic.baseline_max,
+            recent_mean=semantic.recent_mean,
+            drift_score=semantic.drift_score,
+            drift_label=semantic.drift_label,
+            change_points=[(item.timestamp, item.delta) for item in semantic.change_points],
+            anomaly_intervals=[(item.start_timestamp, item.end_timestamp) for item in semantic.anomaly_intervals],
+            anomaly_timestamps=unique_preserve_order(semantic.anomaly_timestamps + anomaly_timestamps),
         )
 
     def _format_optional(self, value: float | None, suffix: str = '') -> str:

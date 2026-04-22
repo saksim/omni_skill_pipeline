@@ -6,6 +6,7 @@
 - [API](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\api.md)
 - [Worker](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\worker.md)
 - [Environment](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\env.md)
+- [Testing](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\testing.md)
 
 ## Expansion Zones
 

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
-from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit
+from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication
 from omni_skill_pipeline.utils import slugify, unique_preserve_order
 
 
@@ -34,6 +34,9 @@ class FileArtifactRepository(object):
             artifacts["evidence_nodes"] = bundle_dir / "evidence_nodes.json"
         if cross_asset_refs:
             artifacts["cross_asset_refs"] = bundle_dir / "cross_asset_refs.json"
+        if bundle.publications:
+            artifacts["publications_dir"] = bundle_dir / "publications"
+            artifacts["publication_manifest"] = artifacts["publications_dir"] / "manifest.json"
 
         artifacts["asset"].write_text(bundle.asset.to_json() + "\n", encoding="utf-8")
         self._write_json_array(artifacts["evidence"], bundle.evidence_units)
@@ -47,6 +50,9 @@ class FileArtifactRepository(object):
             self._write_json_array(artifacts["evidence_nodes"], bundle.evidence_nodes)
         if cross_asset_refs:
             self._write_json_array(artifacts["cross_asset_refs"], cross_asset_refs)
+        if bundle.publications:
+            publication_entries = self._write_publications(artifacts["publications_dir"], bundle.publications, artifacts)
+            self._write_json_array(artifacts["publication_manifest"], publication_entries)
 
         artifact_strings = {name: str(path) for name, path in artifacts.items()}
         bundle.artifacts = artifact_strings
@@ -60,6 +66,56 @@ class FileArtifactRepository(object):
                 payload.append(item.to_dict())
             else:
                 payload.append(item)
+        target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    def _write_publications(
+        self,
+        publications_dir: Path,
+        publications: Sequence[Publication],
+        artifacts: dict[str, Path],
+    ) -> list[dict[str, Any]]:
+        publications_dir.mkdir(parents=True, exist_ok=True)
+        manifest: list[dict[str, Any]] = []
+        key_counter: dict[str, int] = {}
+        for publication in publications:
+            key_base = "publication_%s" % publication.publication_type.value
+            key_index = key_counter.get(key_base, 0) + 1
+            key_counter[key_base] = key_index
+            artifact_key = key_base if key_index == 1 else "%s_%s" % (key_base, key_index)
+            output_path = publications_dir / self._resolve_publication_filename(publication)
+            self._write_publication_file(output_path, publication)
+            artifacts[artifact_key] = output_path
+            manifest.append(
+                {
+                    'publication_id': publication.publication_id,
+                    'publication_type': publication.publication_type.value,
+                    'path': str(output_path),
+                    'relative_path': output_path.name,
+                    'metadata': publication.metadata,
+                    'evidence_refs': unique_preserve_order(publication.metadata.get('evidence_refs', [])),
+                }
+            )
+        return manifest
+
+    def _resolve_publication_filename(self, publication: Publication) -> str:
+        if publication.path:
+            candidate = Path(publication.path).name.strip()
+            if candidate:
+                return candidate
+        if isinstance(publication.content, dict):
+            filename = str(publication.content.get('filename', '')).strip()
+            if filename:
+                return Path(filename).name
+        return "%s.json" % publication.publication_type.value
+
+    def _write_publication_file(self, target: Path, publication: Publication) -> None:
+        if publication.publication_type.value == 'skill_markdown':
+            text = ''
+            if isinstance(publication.content, dict):
+                text = str(publication.content.get('text', '') or '')
+            target.write_text(text, encoding='utf-8')
+            return
+        payload = publication.content if isinstance(publication.content, dict) else {'content': publication.content}
         target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     def _build_cross_asset_refs(self, bundle: DistillBundle) -> list[dict[str, Any]]:

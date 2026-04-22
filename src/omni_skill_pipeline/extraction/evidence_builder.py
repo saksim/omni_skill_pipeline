@@ -97,12 +97,15 @@ class EvidenceBuilder(object):
         return list(nodes)
 
     def _extract_frame_parent_span(self, node: EvidenceNode) -> Optional[str]:
-        if node.content_type not in {ContentType.OCR, ContentType.SCENE}:
+        if node.content_type not in {ContentType.OCR, ContentType.SCENE, ContentType.EVENT, ContentType.SPEECH}:
             return None
         if not node.span_ref.startswith('frame:'):
             return None
-        if node.span_ref.endswith(':ocr') or node.span_ref.endswith(':scene'):
-            return node.span_ref.rsplit(':', 1)[0]
+        parts = node.span_ref.split(':')
+        if len(parts) < 3:
+            return None
+        if parts[2] in {'ocr', 'scene', 'event', 'subtitle', 'speech'}:
+            return ':'.join(parts[:2])
         return None
 
     def _frame_time_range(self, frame_span: str) -> Optional[TimeRangeRef]:

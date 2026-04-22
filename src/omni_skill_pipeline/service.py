@@ -4,15 +4,17 @@ from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote, urlparse
 
+from omni_skill_pipeline.assembly.publication_builder import PublicationBuilder
+from omni_skill_pipeline.assembly.skill_graph_builder import SkillGraphBuilder
 from omni_skill_pipeline.adapters.audio import AudioAdapter
 from omni_skill_pipeline.adapters.image import ImageAdapter
 from omni_skill_pipeline.adapters.tabular import TabularAdapter
 from omni_skill_pipeline.adapters.text import TextAdapter
 from omni_skill_pipeline.adapters.video import VideoAdapter
 from omni_skill_pipeline.config import Settings, load_settings
-from omni_skill_pipeline.extraction import EvidenceBuilder
+from omni_skill_pipeline.extraction import EvidenceBuilder, LegacyInsightAtomExtractor
 from omni_skill_pipeline.exceptions import ProviderUnavailableError
-from omni_skill_pipeline.interfaces import AssetDistillRequest, DistillAdapter, InsightExtractor, SkillComposer
+from omni_skill_pipeline.interfaces import AssetDistillRequest, AtomExtractor, DistillAdapter, InsightExtractor, SkillComposer
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
     Corpus,
@@ -25,6 +27,10 @@ from omni_skill_pipeline.models import (
     LoadedCorpus,
     LoadedAsset,
     Modality,
+    Publication,
+    PublicationType,
+    SkillDocument,
+    SkillGraph,
     TabularDistillRequest,
     TextDistillRequest,
     VideoDistillRequest,
@@ -57,6 +63,9 @@ class DistillationService(object):
         insight_extractor: InsightExtractor,
         skill_composer: SkillComposer,
         evidence_builder: EvidenceBuilder | None = None,
+        atom_extractor: AtomExtractor | None = None,
+        skill_graph_builder: SkillGraphBuilder | None = None,
+        publication_builder: PublicationBuilder | None = None,
     ) -> None:
         self.repository = repository
         self.text_adapter = text_adapter
@@ -67,6 +76,9 @@ class DistillationService(object):
         self.insight_extractor = insight_extractor
         self.skill_composer = skill_composer
         self.evidence_builder = evidence_builder or EvidenceBuilder()
+        self.atom_extractor = atom_extractor or LegacyInsightAtomExtractor(insight_extractor=insight_extractor)
+        self.skill_graph_builder = skill_graph_builder or SkillGraphBuilder()
+        self.publication_builder = publication_builder or PublicationBuilder()
 
     def distill_text(self, request: TextDistillRequest) -> DistillBundle:
         return self._distill(request, self.text_adapter)
@@ -96,12 +108,21 @@ class DistillationService(object):
             insights,
         )
         markdown = render_skill_markdown(skill)
+        skill_graph, publications = self._build_publications(
+            title_hint=request.name.strip() or loaded_corpus.corpus.name,
+            goal=request.goal,
+            evidence_nodes=loaded_corpus.evidence_nodes,
+            skill=skill,
+            skill_markdown=markdown,
+        )
         bundle = DistillBundle(
             asset=primary_loaded.asset,
             evidence_units=loaded_corpus.evidence_units,
             insights=insights,
             skill=skill,
             skill_markdown=markdown,
+            skill_graph=skill_graph,
+            publications=publications,
             corpus=loaded_corpus.corpus,
             evidence_nodes=loaded_corpus.evidence_nodes,
             request_payload=request.to_dict(),
@@ -111,6 +132,7 @@ class DistillationService(object):
                 'asset_count': len(loaded_corpus.loaded_assets),
                 'cross_asset': len(loaded_corpus.loaded_assets) > 1,
                 'evidence_node_count': len(loaded_corpus.evidence_nodes),
+                'publication_types': [item.publication_type.value for item in publications],
                 'corpus_assets': [item.to_dict() for item in loaded_corpus.corpus.assets],
                 'asset_adapter_metadata': loaded_corpus.adapter_metadata,
             },
@@ -185,17 +207,79 @@ class DistillationService(object):
             insights,
         )
         markdown = render_skill_markdown(skill)
+        evidence_nodes = self.evidence_builder.build_from_loaded_asset(loaded)
+        skill_graph, publications = self._build_publications(
+            title_hint=loaded.title_hint,
+            goal=request.goal,
+            evidence_nodes=evidence_nodes,
+            skill=skill,
+            skill_markdown=markdown,
+        )
         bundle = DistillBundle(
             asset=loaded.asset,
             evidence_units=loaded.evidence_units,
             insights=insights,
             skill=skill,
             skill_markdown=markdown,
+            skill_graph=skill_graph,
+            publications=publications,
+            evidence_nodes=evidence_nodes,
             request_payload=request.to_dict(),
-            adapter_metadata=loaded.adapter_metadata,
+            adapter_metadata={
+                **loaded.adapter_metadata,
+                'evidence_node_count': len(evidence_nodes),
+                'publication_types': [item.publication_type.value for item in publications],
+            },
         )
         self.repository.save_bundle(bundle)
         return bundle
+
+    def _build_publications(
+        self,
+        *,
+        title_hint: str,
+        goal: DistillGoal,
+        evidence_nodes,
+        skill: SkillDocument,
+        skill_markdown: str,
+    ) -> tuple[SkillGraph, list[Publication]]:
+        atoms = self.atom_extractor.extract(evidence_nodes)
+        graph_name = skill.name.strip() or title_hint.strip() or 'untitled skill'
+        skill_graph = self.skill_graph_builder.build(graph_name, goal, evidence_nodes, atoms)
+        publications = self.publication_builder.build(skill_graph)
+        return skill_graph, self._harmonize_publications(publications, skill, skill_markdown, skill_graph)
+
+    def _harmonize_publications(
+        self,
+        publications: list[Publication],
+        skill: SkillDocument,
+        skill_markdown: str,
+        skill_graph: SkillGraph,
+    ) -> list[Publication]:
+        for publication in publications:
+            publication.metadata = dict(publication.metadata)
+            publication.metadata.setdefault('evidence_refs', unique_preserve_order(skill_graph.evidence_refs))
+            if publication.publication_type == PublicationType.SKILL_MARKDOWN:
+                publication.path = 'SKILL.md'
+                publication.content = {
+                    **dict(publication.content),
+                    'filename': 'SKILL.md',
+                    'text': skill_markdown,
+                    'graph_id': skill_graph.graph_id,
+                    'skill_id': skill.skill_id,
+                }
+                publication.metadata['renderer'] = 'skill_markdown_v1_compat'
+            elif publication.publication_type == PublicationType.SKILL_JSON:
+                publication.path = 'skill.json'
+                publication.content = {
+                    **dict(publication.content),
+                    'filename': 'skill.json',
+                    'skill': skill.to_dict(),
+                    'graph_id': skill_graph.graph_id,
+                    'skill_id': skill.skill_id,
+                }
+                publication.metadata['renderer'] = 'skill_json_v1_compat'
+        return publications
 
     def _adapter_for_modality(self, modality: Modality):
         if modality == Modality.TEXT:

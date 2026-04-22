@@ -37,6 +37,8 @@
 
 ## Notes
 
+- Prefer an isolated virtual environment over a shared global Python runtime.
+- Install project dependencies with `python -m pip install -r requirements-dev.txt` before running CI or tests.
 - `docs/current/contracts/` is the source of truth for template and schema files.
 - `scripts/export_skill_schema.py` exports into `docs/current/contracts/skill.schema.json`.
 - Video temporary files are staged under `.tmp_omni_media/`.

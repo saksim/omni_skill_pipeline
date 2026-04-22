@@ -391,6 +391,14 @@ class SkillGraphEdge(SerializableMixin):
     metadata: Dict[str, Any] = field(default_factory=dict)
     edge_id: str = field(default_factory=new_id)
 
+    def validate(self) -> None:
+        if not self.source_node_id.strip():
+            raise ValueError('SkillGraphEdge.source_node_id is required.')
+        if not self.target_node_id.strip():
+            raise ValueError('SkillGraphEdge.target_node_id is required.')
+        if self.weight <= 0:
+            raise ValueError('SkillGraphEdge.weight must be > 0.')
+
 
 @dataclass(slots=True)
 class SkillGraph(SerializableMixin):
@@ -418,6 +426,46 @@ class SkillGraph(SerializableMixin):
     review_status: ReviewStatus = ReviewStatus.DRAFT
     created_at: str = field(default_factory=utc_now_iso)
     graph_id: str = field(default_factory=new_id)
+
+    def node_ids(self) -> List[str]:
+        return [item.node_id for item in self.all_nodes()]
+
+    def all_nodes(self) -> List[Any]:
+        return [
+            *self.steps,
+            *self.decisions,
+            *self.verifications,
+            *self.risks,
+            *self.examples,
+            *self.variables,
+        ]
+
+    def validate(self) -> None:
+        if not self.name.strip():
+            raise ValueError('SkillGraph.name is required.')
+        if not self.goal.strip():
+            raise ValueError('SkillGraph.goal is required.')
+        if not self.source_modalities:
+            raise ValueError('SkillGraph.source_modalities cannot be empty.')
+        nodes = self.all_nodes()
+        if not nodes:
+            raise ValueError('SkillGraph requires at least one node.')
+
+        seen: set[str] = set()
+        for node in nodes:
+            node_id = str(getattr(node, 'node_id', '')).strip()
+            if not node_id:
+                raise ValueError('Each SkillGraph node requires node_id.')
+            if node_id in seen:
+                raise ValueError('Duplicate SkillGraph node_id: %s' % node_id)
+            seen.add(node_id)
+
+        for edge in self.edges:
+            edge.validate()
+            if edge.source_node_id not in seen:
+                raise ValueError('Edge source_node_id not found: %s' % edge.source_node_id)
+            if edge.target_node_id not in seen:
+                raise ValueError('Edge target_node_id not found: %s' % edge.target_node_id)
 
 
 @dataclass(slots=True)
@@ -480,6 +528,8 @@ class DistillBundle(SerializableMixin):
     insights: List[Insight]
     skill: SkillDocument
     skill_markdown: str
+    skill_graph: Optional[SkillGraph] = None
+    publications: List[Publication] = field(default_factory=list)
     corpus: Optional[Corpus] = None
     evidence_nodes: List[EvidenceNode] = field(default_factory=list)
     request_payload: Dict[str, Any] = field(default_factory=dict)

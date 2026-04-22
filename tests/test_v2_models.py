@@ -202,6 +202,20 @@ class V2ModelTests(unittest.TestCase):
                     content='Dashboard shows alert banner',
                     evidence_id='ev-scene',
                 ),
+                EvidenceUnit(
+                    asset_id='asset-video',
+                    span_ref='frame:0001@1.00s:event',
+                    content_type=ContentType.EVENT,
+                    content='Rollback button pressed',
+                    evidence_id='ev-event',
+                ),
+                EvidenceUnit(
+                    asset_id='asset-video',
+                    span_ref='frame:0001@1.00s:subtitle:0001',
+                    content_type=ContentType.SPEECH,
+                    content='Decision confirmed.',
+                    evidence_id='ev-subtitle',
+                ),
             ],
             title_hint='demo video',
         )
@@ -209,16 +223,24 @@ class V2ModelTests(unittest.TestCase):
         frame_node = next(item for item in nodes if item.span_ref == 'frame:0001@1.00s')
         ocr_node = next(item for item in nodes if item.evidence_id == 'ev-ocr')
         scene_node = next(item for item in nodes if item.evidence_id == 'ev-scene')
+        event_node = next(item for item in nodes if item.evidence_id == 'ev-event')
+        subtitle_node = next(item for item in nodes if item.evidence_id == 'ev-subtitle')
 
         self.assertIn('lineage:frame_anchor', frame_node.tags)
         self.assertEqual(frame_node.time_range.start_ms, 1000)
         self.assertEqual(frame_node.time_range.end_ms, 1000)
         self.assertIn(ocr_node.evidence_id, frame_node.children)
         self.assertIn(scene_node.evidence_id, frame_node.children)
+        self.assertIn(event_node.evidence_id, frame_node.children)
+        self.assertIn(subtitle_node.evidence_id, frame_node.children)
         self.assertIn(frame_node.evidence_id, ocr_node.parents)
         self.assertIn(frame_node.evidence_id, scene_node.parents)
+        self.assertIn(frame_node.evidence_id, event_node.parents)
+        self.assertIn(frame_node.evidence_id, subtitle_node.parents)
         self.assertIn(frame_node.evidence_id, ocr_node.derived_from)
         self.assertIn(frame_node.evidence_id, scene_node.derived_from)
+        self.assertIn(frame_node.evidence_id, event_node.derived_from)
+        self.assertIn(frame_node.evidence_id, subtitle_node.derived_from)
 
     def test_evidence_builder_links_timeseries_event_to_metric(self) -> None:
         builder = EvidenceBuilder()
