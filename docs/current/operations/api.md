@@ -26,6 +26,16 @@ python -m uvicorn apps.api.main:app --reload
 - `POST /v1/distill/tabular`
 - `POST /v1/distill/video`
 
+## Health / Readiness
+
+- `GET /healthz` returns structured readiness checks.
+- Ready response: `200` with `{"status":"ready","checks":[...]}`.
+- Degraded response: `503` with `{"status":"degraded","checks":[...]}`.
+- Current checks include:
+  - template path readability
+  - draft directory availability
+  - FastAPI required route assembly
+
 ## Authentication
 
 - 默认不鉴权。

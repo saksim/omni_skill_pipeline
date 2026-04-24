@@ -6,6 +6,7 @@ import logging
 import math
 import threading
 import time
+from pathlib import Path
 from typing import Any
 
 from omni_skill_pipeline.api_schemas import (
@@ -48,6 +49,16 @@ except ImportError:  # pragma: no cover
     PlainTextResponse = object
 
 logger = logging.getLogger(__name__)
+
+READINESS_REQUIRED_ROUTES = (
+    '/healthz',
+    '/v1/templates/skill',
+    '/v1/distill/text',
+    '/v1/distill/audio',
+    '/v1/distill/image',
+    '/v1/distill/tabular',
+    '/v1/distill/video',
+)
 
 
 def _goal_from_schema(payload: DistillGoalSchema) -> DistillGoal:
@@ -122,6 +133,70 @@ def _error_response(
             }
         },
     )
+
+
+def _build_readiness_checks(app: Any, settings: Any) -> list[dict[str, Any]]:
+    checks: list[dict[str, Any]] = []
+
+    template_path_raw = getattr(settings, 'template_path', None)
+    template_ok = False
+    template_detail = 'template_path is not configured.'
+    if template_path_raw is not None:
+        template_path = Path(template_path_raw)
+        if not template_path.is_file():
+            template_detail = 'template file is missing: %s' % template_path
+        else:
+            try:
+                with template_path.open('rb') as file_handle:
+                    file_handle.read(1)
+                template_ok = True
+                template_detail = 'template file is readable.'
+            except Exception as exc:
+                template_detail = 'template file is unreadable: %s' % exc
+    checks.append(
+        {
+            'name': 'template_path',
+            'ok': template_ok,
+            'detail': template_detail,
+        }
+    )
+
+    draft_dir_raw = getattr(settings, 'draft_dir', None)
+    draft_ok = False
+    draft_detail = 'draft_dir is not configured.'
+    if draft_dir_raw is not None:
+        draft_dir = Path(draft_dir_raw)
+        if not draft_dir.exists():
+            draft_detail = 'draft directory is missing: %s' % draft_dir
+        elif not draft_dir.is_dir():
+            draft_detail = 'draft path is not a directory: %s' % draft_dir
+        else:
+            draft_ok = True
+            draft_detail = 'draft directory is available.'
+    checks.append(
+        {
+            'name': 'draft_dir',
+            'ok': draft_ok,
+            'detail': draft_detail,
+        }
+    )
+
+    route_paths = {getattr(route, 'path', '') for route in getattr(app, 'routes', [])}
+    missing_routes = [path for path in READINESS_REQUIRED_ROUTES if path not in route_paths]
+    app_ok = not missing_routes
+    if app_ok:
+        app_detail = 'required routes are assembled.'
+    else:
+        app_detail = 'missing required routes: %s' % ','.join(missing_routes)
+    checks.append(
+        {
+            'name': 'app_assembly',
+            'ok': app_ok,
+            'detail': app_detail,
+            'missing_routes': missing_routes,
+        }
+    )
+    return checks
 
 
 def create_app():
@@ -261,7 +336,15 @@ def create_app():
 
     @app.get('/healthz')
     def healthz():
-        return {'status': 'ok'}
+        checks = _build_readiness_checks(app=app, settings=settings)
+        failed_checks = [item for item in checks if not item['ok']]
+        payload = {
+            'status': 'ready' if not failed_checks else 'degraded',
+            'checks': checks,
+        }
+        if failed_checks:
+            return JSONResponse(status_code=503, content=payload)
+        return payload
 
     @app.get('/v1/templates/skill', response_class=PlainTextResponse)
     def get_template():
