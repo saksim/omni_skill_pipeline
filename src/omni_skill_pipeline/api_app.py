@@ -8,6 +8,7 @@ import threading
 import time
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from omni_skill_pipeline.api_schemas import (
     AudioDistillRequestSchema,
@@ -31,6 +32,7 @@ from omni_skill_pipeline.models import (
     VideoDistillRequest,
 )
 from omni_skill_pipeline.config import load_settings
+from omni_skill_pipeline.logging_utils import configure_logging, reset_request_context, set_request_context
 from omni_skill_pipeline.service import build_service
 
 try:
@@ -203,6 +205,7 @@ def create_app():
     if FastAPI is None:
         raise RuntimeError('FastAPI is not installed. Install with `pip install .[api]`.')
 
+    configure_logging(service_name='api')
     app = FastAPI(title='Omni Skill Pipeline', version='0.2.0')
     settings = load_settings()
     expected_api_key = str(settings.api_key or '').strip()
@@ -333,6 +336,49 @@ def create_app():
             message='Internal server error.',
             details=str(exc),
         )
+
+    @app.middleware('http')
+    async def request_log_middleware(request: Request, call_next):
+        request_id = str(request.headers.get('X-Request-ID', '')).strip() or str(uuid4())
+        trace_id = str(request.headers.get('X-Trace-ID', '')).strip() or request_id
+        request_token, trace_token = set_request_context(request_id=request_id, trace_id=trace_id)
+        started_at = time.perf_counter()
+        try:
+            try:
+                response = await call_next(request)
+            except Exception:
+                duration_ms = round((time.perf_counter() - started_at) * 1000.0, 3)
+                logger.exception(
+                    'API request failed.',
+                    extra={
+                        'event': 'api_request_failed',
+                        'method': request.method,
+                        'path': request.url.path,
+                        'duration_ms': duration_ms,
+                        'request_id': request_id,
+                        'trace_id': trace_id,
+                    },
+                )
+                raise
+
+            duration_ms = round((time.perf_counter() - started_at) * 1000.0, 3)
+            response.headers['X-Request-ID'] = request_id
+            response.headers['X-Trace-ID'] = trace_id
+            logger.info(
+                'API request completed.',
+                extra={
+                    'event': 'api_request_completed',
+                    'method': request.method,
+                    'path': request.url.path,
+                    'status_code': response.status_code,
+                    'duration_ms': duration_ms,
+                    'request_id': request_id,
+                    'trace_id': trace_id,
+                },
+            )
+            return response
+        finally:
+            reset_request_context(request_token=request_token, trace_token=trace_token)
 
     @app.get('/healthz')
     def healthz():

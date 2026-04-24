@@ -12,6 +12,7 @@ SRC_ROOT = REPO_ROOT / 'src'
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
+from omni_skill_pipeline.exceptions import ProviderExecutionError
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
     ImageDistillRequest,
@@ -58,20 +59,50 @@ class _CapturingService(object):
         return self._capture('video', request)
 
 
-def _build_settings() -> SimpleNamespace:
+class _FailingService(_CapturingService):
+    def __init__(self, failing_modality: str, failure: Exception) -> None:
+        super().__init__()
+        self.failing_modality = failing_modality
+        self.failure = failure
+
+    def _capture(self, modality: str, request: object) -> _StubBundle:
+        if modality == self.failing_modality:
+            raise self.failure
+        return super()._capture(modality, request)
+
+
+def _build_settings(
+    *,
+    api_key: str = '',
+    rate_limit_requests: int = 0,
+    rate_limit_window_seconds: int = 60,
+) -> SimpleNamespace:
     return SimpleNamespace(
-        api_key='',
-        rate_limit_requests=0,
-        rate_limit_window_seconds=60,
+        api_key=api_key,
+        rate_limit_requests=rate_limit_requests,
+        rate_limit_window_seconds=rate_limit_window_seconds,
         template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
         draft_dir=REPO_ROOT / 'skills' / 'drafts',
     )
 
 
-def _build_client(service: _CapturingService):
+def _build_client(
+    service: _CapturingService,
+    *,
+    api_key: str = '',
+    rate_limit_requests: int = 0,
+    rate_limit_window_seconds: int = 60,
+):
     with (
         patch('omni_skill_pipeline.service.build_service', return_value=service),
-        patch('omni_skill_pipeline.config.load_settings', return_value=_build_settings()),
+        patch(
+            'omni_skill_pipeline.config.load_settings',
+            return_value=_build_settings(
+                api_key=api_key,
+                rate_limit_requests=rate_limit_requests,
+                rate_limit_window_seconds=rate_limit_window_seconds,
+            ),
+        ),
     ):
         module = importlib.import_module('omni_skill_pipeline.api_app')
         module = importlib.reload(module)
@@ -196,6 +227,43 @@ class ApiAppHappyPathTests(unittest.TestCase):
         self.assertAlmostEqual(float(request.scene_threshold), 0.4, places=3)
         self.assertEqual(request.dedupe_distance, 3)
         self.assertEqual(request.goal.domain, 'resilience')
+
+
+@unittest.skipIf(TestClient is None, 'fastapi testclient is not installed')
+class ApiAppErrorPathTests(unittest.TestCase):
+    def test_bad_payload_returns_422_validation_error_shape(self) -> None:
+        client = _build_client(_CapturingService())
+        response = client.post('/v1/distill/text', json={})
+
+        self.assertEqual(response.status_code, 422)
+        payload = response.json()['error']
+        self.assertEqual(payload['type'], 'validation')
+        self.assertEqual(payload['code'], 'validation_error')
+        self.assertIn('Request validation failed', payload['message'])
+
+    def test_missing_auth_returns_401_when_api_key_required(self) -> None:
+        client = _build_client(_CapturingService(), api_key='top-secret')
+        response = client.post('/v1/distill/text', json={'content': 'incident timeline'})
+
+        self.assertEqual(response.status_code, 401)
+        payload = response.json()['error']
+        self.assertEqual(payload['type'], 'http')
+        self.assertEqual(payload['code'], 'http_error')
+        self.assertEqual(payload['message'], 'Missing API key.')
+
+    def test_provider_failure_returns_502_with_stable_error_code(self) -> None:
+        service = _FailingService(
+            failing_modality='audio',
+            failure=ProviderExecutionError('transcription backend failed'),
+        )
+        client = _build_client(service)
+        response = client.post('/v1/distill/audio', json={'transcript': 'rollback complete'})
+
+        self.assertEqual(response.status_code, 502)
+        payload = response.json()['error']
+        self.assertEqual(payload['type'], 'provider')
+        self.assertEqual(payload['code'], 'provider_execution_error')
+        self.assertIn('transcription backend failed', payload['message'])
 
 
 if __name__ == '__main__':

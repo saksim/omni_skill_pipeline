@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote, urlparse
@@ -37,6 +38,7 @@ from omni_skill_pipeline.models import (
     VideoDistillRequest,
 )
 from omni_skill_pipeline.pipeline import HeuristicInsightExtractor, HeuristicSkillComposer
+from omni_skill_pipeline.logging_utils import get_request_context
 from omni_skill_pipeline.providers.fallback import (
     FallbackAudioTranscriber,
     FallbackImageAnalyzer,
@@ -52,6 +54,16 @@ from omni_skill_pipeline.quality.scoring import QualityScorer
 from omni_skill_pipeline.render import render_skill_markdown, render_skill_markdown_compat
 from omni_skill_pipeline.repository import FileArtifactRepository
 from omni_skill_pipeline.utils import unique_preserve_order
+
+logger = logging.getLogger(__name__)
+
+
+def _request_context_extra() -> dict[str, str]:
+    request_id, trace_id = get_request_context()
+    return {
+        'request_id': request_id,
+        'trace_id': trace_id,
+    }
 
 
 class DistillationService(object):
@@ -91,21 +103,31 @@ class DistillationService(object):
         self.review_feedback_engine = review_feedback_engine or ReviewFeedbackEngine()
 
     def distill_text(self, request: TextDistillRequest) -> DistillBundle:
-        return self._distill(request, self.text_adapter)
+        return self._distill_with_logging(modality='text', request=request, adapter=self.text_adapter)
 
     def distill_audio(self, request: AudioDistillRequest) -> DistillBundle:
-        return self._distill(request, self.audio_adapter)
+        return self._distill_with_logging(modality='audio', request=request, adapter=self.audio_adapter)
 
     def distill_image(self, request: ImageDistillRequest) -> DistillBundle:
-        return self._distill(request, self.image_adapter)
+        return self._distill_with_logging(modality='image', request=request, adapter=self.image_adapter)
 
     def distill_tabular(self, request: TabularDistillRequest) -> DistillBundle:
-        return self._distill(request, self.tabular_adapter)
+        return self._distill_with_logging(modality='tabular', request=request, adapter=self.tabular_adapter)
 
     def distill_video(self, request: VideoDistillRequest) -> DistillBundle:
-        return self._distill(request, self.video_adapter)
+        return self._distill_with_logging(modality='video', request=request, adapter=self.video_adapter)
 
     def distill_corpus(self, request: CorpusDistillRequest) -> DistillBundle:
+        logger.info(
+            'Corpus distillation started.',
+            extra={
+                **_request_context_extra(),
+                'event': 'distill_start',
+                'modality': 'corpus',
+                'asset_count': len(request.assets),
+                'goal_domain': request.goal.domain,
+            },
+        )
         loaded_corpus = self.load_corpus(request)
         insights = self.insight_extractor.extract(loaded_corpus.evidence_units)
         primary_index = min(request.primary_asset_index(), max(len(loaded_corpus.loaded_assets) - 1, 0))
@@ -162,6 +184,40 @@ class DistillationService(object):
             },
         )
         self.repository.save_bundle(bundle)
+        logger.info(
+            'Corpus distillation completed.',
+            extra={
+                **_request_context_extra(),
+                'event': 'distill_complete',
+                'modality': 'corpus',
+                'asset_count': len(request.assets),
+                'skill_id': bundle.skill.skill_id,
+                'evidence_count': len(bundle.evidence_units),
+            },
+        )
+        return bundle
+
+    def _distill_with_logging(self, *, modality: str, request, adapter) -> DistillBundle:
+        logger.info(
+            'Distillation started.',
+            extra={
+                **_request_context_extra(),
+                'event': 'distill_start',
+                'modality': modality,
+                'goal_domain': getattr(getattr(request, 'goal', None), 'domain', ''),
+            },
+        )
+        bundle = self._distill(request, adapter)
+        logger.info(
+            'Distillation completed.',
+            extra={
+                **_request_context_extra(),
+                'event': 'distill_complete',
+                'modality': modality,
+                'skill_id': bundle.skill.skill_id,
+                'evidence_count': len(bundle.evidence_units),
+            },
+        )
         return bundle
 
     def load_corpus(self, request: CorpusDistillRequest) -> LoadedCorpus:
@@ -448,7 +504,7 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
         default_dedupe_distance=settings.video_frame_dedupe_distance,
         scratch_root=settings.repo_root / '.tmp_omni_media',
     )
-    return DistillationService(
+    service = DistillationService(
         repository=repository,
         text_adapter=TextAdapter(),
         audio_adapter=audio_adapter,
@@ -458,3 +514,13 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
         insight_extractor=HeuristicInsightExtractor(),
         skill_composer=_build_skill_composer(settings),
     )
+    logger.info(
+        'Distillation service initialized.',
+        extra={
+            **_request_context_extra(),
+            'event': 'service_bootstrap_complete',
+            'draft_dir': str(settings.draft_dir),
+            'template_path': str(settings.template_path),
+        },
+    )
+    return service

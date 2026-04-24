@@ -29,7 +29,8 @@ api = [
   "uvicorn>=0.30,<1.0"
 ]
 dev = [
-  "jsonschema>=4.23,<5.0"
+  "jsonschema>=4.23,<5.0",
+  "coverage>=7.6,<8.0"
 ]
 
 [project.scripts]
@@ -41,3 +42,22 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["omni_skill_pipeline"]
+omit = [
+  "tests/*",
+  "apps/*"
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+precision = 2
+exclude_lines = [
+  "pragma: no cover",
+  "if __name__ == .__main__.:",
+  "raise NotImplementedError"
+]

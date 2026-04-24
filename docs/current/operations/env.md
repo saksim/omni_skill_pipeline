@@ -47,9 +47,25 @@ python -m pip install -r requirements-dev.txt
 
 ## API Variables
 
-- `OMNI_API_KEY`: 可选。设置后 API distill 端点会强制校验 `X-API-Key` 或 `Authorization: Bearer <key>`。
+- `OMNI_API_KEY`: 可选。设置后仅 `POST /v1/distill/*` 端点强制校验 `X-API-Key` 或 `Authorization: Bearer <key>`；`GET /healthz` 与 `GET /v1/templates/skill` 保持免鉴权。
 - `OMNI_RATE_LIMIT_REQUESTS`: 每个窗口允许请求数。`0` 表示关闭限流，默认 `0`。
 - `OMNI_RATE_LIMIT_WINDOW_SECONDS`: 限流窗口秒数，默认 `60`。
+
+## API Ops Contract Defaults
+
+- `OMNI_API_KEY` 为空：distill 接口不鉴权。
+- `OMNI_RATE_LIMIT_REQUESTS=0`：限流关闭。
+- `OMNI_RATE_LIMIT_REQUESTS>0`：按 `OMNI_RATE_LIMIT_WINDOW_SECONDS` 形成滑动窗口，超限返回 `429` 与 `Retry-After` header。
+- 统一错误体见 `docs/current/operations/api.md` 的 `Error Contract`。
+
+## Health / Readiness Inputs
+
+- `GET /healthz` 当前检查三项：
+  - template path readability（`docs/current/contracts/SKILL.template.md`）
+  - draft directory availability（`skills/drafts/`）
+  - required route assembly（`/healthz`、`/v1/templates/skill`、五个 distill 路由）
+- 当前版本未提供独立 env 覆盖 `template_path`/`draft_dir`；它们由 repo root 派生。
+- 当任一检查失败时，`/healthz` 返回 `503` 与 `status=degraded`。
 
 ## Media Variables
 
@@ -75,3 +91,20 @@ python -m pip install -r requirements-dev.txt
 - `docs/current/contracts/` 是模板与 schema 的真相源。
 - `scripts/export_skill_schema.py` 会导出到 `docs/current/contracts/skill.schema.json`。
 - 视频临时文件会落到 `.tmp_omni_media/`；每次任务的临时工作目录会被清理，但根目录仍建议定期 prune。
+
+## Scratch Root Prune Variables
+
+- `OMNI_TMP_MEDIA_ROOT`: scratch-root path for temporary media artifacts (default: `.tmp_omni_media`).
+- `OMNI_TMP_MEDIA_RETENTION_HOURS`: retention window in hours for prune jobs (default: `24`).
+
+## Scratch Root Prune Command
+
+```bash
+python scripts/prune_tmp_media.py --dry-run
+python scripts/prune_tmp_media.py --retention-hours 24
+```
+
+## Logging Variables
+
+- `OMNI_LOG_LEVEL`: global runtime log level for API/service/worker (default: `INFO`).
+- `OMNI_LOG_FORMAT`: `json` or `plain` (default: `json`).

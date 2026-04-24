@@ -32,8 +32,41 @@ python scripts/run_ci.py
 
 该入口会统一执行：
 
-- `python -m unittest discover -s tests -p 'test_*.py'`
+- `python -m coverage run --parallel-mode -m unittest discover -s tests -p 'test_*.py'`
 - `python scripts/run_tp_tests.py --all --python <current-python>`
+- `python -m coverage combine`
+- `python -m coverage report --show-missing --fail-under <threshold>`
+- `python -m coverage xml -o coverage.xml`
+
+默认 coverage fail-under 为 `50`，可通过参数覆盖。
+
+示例：提高阈值到 `65`
+
+```bash
+python scripts/run_ci.py --coverage-fail-under 65
+```
+
+示例：仅在本地快速验逻辑，临时关闭 coverage
+
+```bash
+python scripts/run_ci.py --no-coverage
+```
+
+## 容器烟测脚本
+
+容器基线烟测（构建镜像 + 启动容器 + 轮询 `/healthz`）：
+
+```bash
+python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:local --port 18000
+```
+
+只看执行计划，不真正调用 Docker：
+
+```bash
+python scripts/run_container_smoke.py --dry-run
+```
+
+Linux 统一验测时建议直接使用该脚本，作为 `LC-L1-18` 的容器回归入口。
 
 ## 定向执行
 
@@ -65,7 +98,7 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 ## 当前缺口
 
 - 尚无 FastAPI/ASGI API 层自动化测试
-- 尚无 coverage gate
+- coverage fail-under 仍是保守阈值（`50`），后续应随质量基线提升
 - 尚无 performance benchmark
 - 真实 provider failure-mode 覆盖仍偏薄
 

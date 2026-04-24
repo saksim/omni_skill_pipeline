@@ -33,7 +33,15 @@ jobs:
       - name: Verify dependency graph
         run: python -m pip check
 
-      - name: Run CI test suite
+      - name: Run CI test suite with coverage gate
         env:
           PYTHONPATH: src
-        run: python scripts/run_ci.py
+        run: python scripts/run_ci.py --coverage-fail-under 50 --coverage-xml coverage.xml
+
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: warn
