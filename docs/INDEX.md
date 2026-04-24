@@ -4,33 +4,40 @@
 
 ### Architecture
 
-- [Architecture](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\ARCHITECTURE.md)
-- [Skill Distillation V2](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2.md)
-- [Skill Distillation V2 Roadmap](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-roadmap.md)
-- [Skill Distillation V2 Implementation Backlog](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-implementation-backlog.md)
-- [Skill Distillation V2 Work Orders](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-work-orders.md)
+- [Architecture](current/architecture/ARCHITECTURE.md)
+- [Skill Distillation V2](current/architecture/skill-distillation-v2.md)
+- [Skill Distillation V2 Roadmap](current/architecture/skill-distillation-v2-roadmap.md)
+- [Skill Distillation V2 Implementation Backlog](current/architecture/skill-distillation-v2-implementation-backlog.md)
+- [Skill Distillation V2 Work Orders](current/architecture/skill-distillation-v2-work-orders.md)
 
 ### Contracts
 
-- [Skill Schema](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\contracts\skill.schema.json)
-- [Skill Template](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\contracts\SKILL.template.md)
+- [Skill Schema](current/contracts/skill.schema.json)
+- [Skill Template](current/contracts/SKILL.template.md)
 
 ### Status
 
-- [Current Status](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\CURRENT_STATUS.md)
-- [E0 Baseline Pack](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\baselines\README.md)
+- [Current Status](current/status/CURRENT_STATUS.md)
+- [E0 Baseline Pack](current/status/baselines/README.md)
 
 ### Operations
 
-- [Operations](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\OPERATIONS.md)
-- [Testing](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\testing.md)
+- [Operations](current/operations/OPERATIONS.md)
+- [API](current/operations/api.md)
+- [CLI](current/operations/cli.md)
+- [Environment](current/operations/env.md)
+- [Testing](current/operations/testing.md)
+
+## Assessments
+
+- [GLM-5.1 Project Assessment](glm-5.1-project-assessment.md)
 
 ## History
 
-- [Changelog](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\history\CHANGELOG.md)
+- [Changelog](history/CHANGELOG.md)
 
 ## Rules
 
-- Root directory keeps only [README.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\README.md) as the primary entry document.
+- Root directory keeps only [README.md](../README.md) as the primary entry document.
 - Current project docs are grouped under `docs/current/{architecture,contracts,status,operations}`.
 - Historical records live under `docs/history/`.

@@ -3,72 +3,81 @@
 ## Entry
 
 - CLI module: `src/omni_skill_pipeline/cli.py`
-- Interpreter: `D:\code_environment\anaconda_all_css\py311\python.exe`
+- 推荐前置：先执行 `python -m pip install -r requirements-dev.txt`
+- 运行方式：安装后直接使用 `python -m omni_skill_pipeline.cli ...`
+
+如果你选择不安装 editable package，而是直接从源码树运行，再显式设置 `PYTHONPATH=src`。
 
 ## Base Pattern
 
+```bash
+python -m omni_skill_pipeline.cli <command> ...
+```
+
+PowerShell source-tree fallback:
+
 ```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli <command> ...
+$env:PYTHONPATH = "src"
+python -m omni_skill_pipeline.cli <command> ...
 ```
 
 ## Commands
 
 ### distill-text
 
-```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli distill-text `
-  --file examples\text_note.md `
+```bash
+python -m omni_skill_pipeline.cli distill-text \
+  --file examples/text_note.md \
   --domain database
 ```
 
 ### distill-audio
 
-```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli distill-audio `
-  --audio-path examples\audio_transcript.srt `
+```bash
+python -m omni_skill_pipeline.cli distill-audio \
+  --transcript-path examples/audio_transcript.srt \
   --domain ops
 ```
 
 ### distill-image
 
-```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli distill-image `
-  --image-path examples\demo_image.png `
+```bash
+python -m omni_skill_pipeline.cli distill-image \
+  --image-path examples/demo_image.png \
   --domain observability
 ```
 
 ### distill-tabular
 
-```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli distill-tabular `
-  --file examples\demo_timeseries.csv `
-  --time-column timestamp `
-  --value-column latency_ms `
-  --value-column error_rate `
-  --entity-column service `
+```bash
+python -m omni_skill_pipeline.cli distill-tabular \
+  --file examples/demo_timeseries.csv \
+  --time-column timestamp \
+  --value-column latency_ms \
+  --value-column error_rate \
+  --entity-column service \
   --domain incident_response
 ```
 
 ### distill-video
 
-```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli distill-video `
-  --video-path examples\demo_video.mp4 `
-  --domain incident_response `
-  --max-keyframes 6 `
-  --scene-threshold 0.32 `
+```bash
+python -m omni_skill_pipeline.cli distill-video \
+  --video-path examples/demo_video.mp4 \
+  --domain incident_response \
+  --max-keyframes 6 \
+  --scene-threshold 0.32 \
   --dedupe-distance 5
 ```
 
 ### show-template
 
-```powershell
-$env:PYTHONPATH='src'
-& 'D:\code_environment\anaconda_all_css\py311\python.exe' -m omni_skill_pipeline.cli show-template
+```bash
+python -m omni_skill_pipeline.cli show-template
 ```
+
+## Notes
+
+- CLI 成功执行后会打印生成的 `SKILL.md` 路径。
+- 默认输出目录由 `Settings.draft_dir` 决定，当前默认指向 `skills/drafts/`。
+- 目标与受众可通过 `--goal-type`、`--audience`、`--rigor`、`--granularity`、`--domain` 调整。

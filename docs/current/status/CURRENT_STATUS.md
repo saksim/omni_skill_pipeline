@@ -2,144 +2,68 @@
 
 ## 判词
 
-当前项目已经从“规划文档”推进到“可扩展的多模态蒸馏内核”。
+项目已从“路线图与骨架阶段”推进到“可扩展的多模态蒸馏内核”，但在对外暴露前仍卡在 API 加固、可观测性、repository abstraction 这三道关口。
 
-## 当前已更新
+## 当前已落地
 
-### 文档与契约
+### 文档与入口
 
-- 根入口文档已收敛为 `README.md`
-- 架构文档已细分为：
-  - `docs/current/architecture/ARCHITECTURE.md`
-  - `docs/current/architecture/skill-distillation-v2.md`
-  - `docs/current/architecture/skill-distillation-v2-roadmap.md`
-  - `docs/current/architecture/skill-distillation-v2-implementation-backlog.md`
-  - `docs/current/architecture/system-overview.md`
-  - `docs/current/architecture/data-flow.md`
-  - `docs/current/architecture/providers.md`
-  - `docs/current/architecture/storage.md`
-- 契约文档已迁移到 `docs/current/contracts/`
-- 状态文档已迁移到 `docs/current/status/`
-- E0 基线包已落地到 `docs/current/status/baselines/`
-- 运行文档已细分为：
-  - `docs/current/operations/OPERATIONS.md`
-  - `docs/current/operations/cli.md`
-  - `docs/current/operations/api.md`
-  - `docs/current/operations/worker.md`
-  - `docs/current/operations/env.md`
-- 扩展占位域已建立：
-  - `docs/current/operations/runbooks/`
-  - `docs/current/operations/environments/`
-  - `docs/current/operations/interfaces/`
-- 历史变更文档已迁移到 `docs/history/`
+- 根入口已收束到 `README.md`
+- 当前文档按 `architecture / contracts / status / operations` 分域整理
+- API、CLI、Environment、Testing 已各自拆出独立运行文档
 
 ### Python 工程骨架
 
-- 建立了 `src/omni_skill_pipeline/` 主包
-- 建立了 `apps/api/` 与 `apps/worker/` 入口
-- 建立了 `interfaces.py` 协议层，统一 Adapter / Provider / Composer 接口
-- 建立了 `repository.py`、`render.py`、`service.py` 等基础模块
+- 主包：`src/omni_skill_pipeline/`
+- API 入口：`apps/api/main.py`
+- Worker 入口：`apps/worker/main.py`
+- 协议层：`interfaces.py`
+- 核心模块：`service.py`、`repository.py`、`render.py`、`schema.py`
 
-### 多模态输入链
+### 多模态主链
 
-- 文本：支持 `txt / md / markdown / rst / log / json / html / doc / docx / pdf`
-- 音频：支持 `transcript / transcript_path / sidecar transcript / OpenAI ASR`
-- 图像：支持 `OCR + scene summary -> EvidenceUnit`
-- 视频：支持 `audio + shot/keyframe + OCR + scene summary -> EvidenceUnit`
-- 表格/时间序列：支持 `csv / tsv / txt / json / xlsx / xls -> EvidenceUnit`
+- Text：统一进入 `EvidenceUnit`
+- Audio：支持 transcript、transcript sidecar、OpenAI ASR
+- Image：支持 OCR 与 scene summary
+- Video：支持 audio 抽取、keyframe、OCR、scene summary、时间语义增强
+- Tabular / Time-series：支持 `TABLE / METRIC / EVENT` evidence
 
-## 当前已解决
+### V2 语义层
 
-### 结构性问题
+- 已落地 `Corpus`、`EvidenceNode`、`SemanticAtom`、`SkillGraph`
+- 已落地 `SkillGraph -> SkillDocument -> SKILL.md` 兼容路径
+- 已落地 `Publication`、quality scoring、review policy、review task、review feedback 持久化
+- 已落地 `load_corpus()` 与 `distill_corpus()`
 
-- 解决了 skill 组合器与 provider 直接耦合的问题
-- 解决了核心业务层无法插拔替换模型的问题
-- 解决了文档、契约、代码路径散落根目录的问题
-- 解决了 `docs/current/` 未按场景分域的问题
-- 解决了架构与运行文档过长、不利于定位的问题
+### 测试与 CI
 
-### 功能性问题
+- CI 统一走 `python scripts/run_ci.py`
+- `test_mvp.py` 已覆盖 text / audio / image / video / tabular 主链
+- `test_v2_schema_and_corpus.py` 已覆盖 corpus 组装、publication、quality、review artifacts
+- `test_quality_scoring.py` / `test_review_policy.py` 覆盖质量门禁逻辑
 
-- 解决了音频链只能依赖手工 transcript 的问题
-- 解决了图像链没有统一 EvidenceUnit 入口的问题
-- 解决了视频链只有简单定间隔抽帧的问题
-- 解决了超短视频容易抽不到帧的问题
-- 解决了表格/时间序列无法进入统一主链的问题
+## 本轮确认
 
-### 视频链专项修复
-
-- 增加 `ffprobe` 元数据探测
-- 增加基于 `scene` 的镜头切分采样
-- 增加自适应时间桶采样
-- 增加短视频首帧回退
-- 增加帧级感知哈希去重
-- 增加按时间桶分布式选帧，避免长视频抽样扎堆
-
-### 表格/时间序列专项补全
-
-- 增加 schema evidence
-- 增加 missingness evidence
-- 增加 entity/group evidence
-- 增加 numeric profile evidence
-- 增加 time-series overview / metric / anomaly event evidence
-- 让结构化输入统一落到 `TABLE / METRIC / EVENT` 类型的 `EvidenceUnit`
-
-### E0 基线补齐
-
-- 建立了 E0 样本清单：`docs/current/status/baselines/e0-sample-inventory.md`
-- 建立了 2026-04-20 基线重放记录：`docs/current/status/baselines/e0-baseline-2026-04-20.md`
-- 建立了评估口径：`docs/current/status/baselines/evaluation-rubric.md`
-- 建立了机器可读 manifest：`docs/current/status/baselines/e0-baseline-manifest.json`
-- 实际完成了 text / audio / image / video / tabular 五类样本重放
-- 实际运行了 MVP 测试：`python -m unittest discover -s tests -p 'test_mvp.py'`
-
-### V2 施工准备
-
-- 已把 E1 及后续 Epic 落成施工任务单：`docs/current/architecture/skill-distillation-v2-work-orders.md`
-- 已完成前五刀最小骨架闭环：
-  - `TP-E1-01`：V2 基础 enum/dataclass（`Corpus/EvidenceNode/SemanticAtom/SkillGraph`）已落地
-  - `TP-E1-02`：`EvidenceUnit -> EvidenceNode` 与 `SkillGraph -> SkillDocument -> SKILL.md` 兼容闭环已可跑
-  - `TP-E3-01`：`EvidenceNode` 结构字段覆盖 `time_range/spatial_ref/structural_ref/payload/lineage`
-  - `TP-E5-01`：`AtomExtractor` 主接口与 `LegacyInsightAtomExtractor` 过渡实现已落地
-  - `TP-E6-01`：`SkillGraph` node/edge 模型与序列化测试已补齐
-- 已完成 `TP-E1-03`：
-  - `src/omni_skill_pipeline/schema.py` 新增 `SKILL_GRAPH_SCHEMA`
-  - `docs/current/contracts/skill-graph.schema.json` 已落地并与运行时 schema 对齐
-  - 新增 schema 校验测试，覆盖合法与非法 payload
-- 已完成 `TP-E2-01`：
-  - `CorpusDistillRequest` 多资产请求构造与校验测试补齐
-  - `interfaces.py` 增加多资产请求协议（`CorpusAssetRequestBuilder` / `CorpusLoader`）
-- 已完成 `TP-E2-02`：
-  - `service.py` 新增 `load_corpus` 与 `distill_corpus`
-  - 保持原有 `distill_text/audio/image/tabular/video` 兼容
-  - service 集成测试验证多资产可组装 `Corpus` 并聚合 evidence
-
-## 当前目录分层
-
-```text
-./README.md
-./docs/
-  current/
-    architecture/
-    contracts/
-    status/
-    operations/
-      runbooks/
-      environments/
-      interfaces/
-  history/
-```
+- API 文档存在于 `docs/current/operations/api.md`
+- Environment 文档存在于 `docs/current/operations/env.md`
+- FastAPI app 已存在，但请求体仍是 bare `dict`，尚未引入 Pydantic request models
+- API 层仍无 auth / rate limit / structured logging
+- 视频任务会清理每次运行产生的临时工作目录，但共享 `.tmp_omni_media/` 根目录仍无 retention/prune 策略
+- README 与运行文档已改为可移植命令，不再绑定单机解释器路径
 
 ## 当前待解
 
-- 尚未把文件系统仓储替换为 PostgreSQL Repository
+- 尚未引入 `ArtifactRepository` Protocol，`service.py` 仍直接依赖 `FileArtifactRepository`
+- 尚未接入 PostgreSQL Repository
 - 尚未接入 Qdrant 检索
-- 尚未建立 Review UI / Review Queue 实体流程
-- 时间序列当前还是 heuristic profile，不是完整的统计建模管线
-- 视频链还没有更细粒度的 subtitle track、scene cluster、frame caption cache
+- 尚未建立 Review UI / Review Queue 实体流转
+- 尚未补 API 层自动化测试
+- 尚未建立 coverage gate 与 performance benchmark
+- 尚未补 structured logging / trace ID
 
-## 推荐下一刀
+## 下一刀建议
 
-1. 进入 `TP-E2-03`：统一 corpus artifact 输出（repository 落地 corpus 级产物与 cross-asset 引用）。
-2. 并行准备 `TP-E3-02`：`EvidenceBuilder` 正式接入 service 多资产路径。
-3. 完成后再推进 `TP-E3-03`，补 parent/child/derived_from 链路测试。
+1. 先抽出 `ArtifactRepository` Protocol，降低 E8 迁移阻力
+2. 再补 API request models、auth、rate limiting
+3. 再补 structured logging / trace context
+4. 最后补 FastAPI/ASGI 测试与 coverage gate

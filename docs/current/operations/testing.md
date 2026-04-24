@@ -2,14 +2,23 @@
 
 ## 判词
 
-所有 `TP-*` 功能斩杀后，测试必须绑定到可直接调用的具体 `unittest case id`，并可在 Linux 一次性执行。
+这个仓当前走的是 `unittest` 体系，不是 `pytest` 体系；测试判断要按现有链路验尸，不要拿错刑具。
 
 ## 本地环境对齐
 
-建议始终在隔离虚拟环境内执行测试，避免宿主机的旧版 `pyarrow/numexpr/bottleneck` 污染 `pandas` 导入链。
+PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+. .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+POSIX:
 
 ```bash
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
@@ -17,67 +26,53 @@ python -m pip install -r requirements-dev.txt
 
 ## 全量回归
 
-仓库已经提供统一 CI 入口，先跑全量回归，再按 `TP-*` 定位局部工单：
-
 ```bash
-python3 scripts/run_ci.py
+python scripts/run_ci.py
 ```
 
-## 一键调用（Linux）
+该入口会统一执行：
 
-先查看当前已映射工单与案例：
+- `python -m unittest discover -s tests -p 'test_*.py'`
+- `python scripts/run_tp_tests.py --all --python <current-python>`
 
-```bash
-python3 scripts/run_tp_tests.py --list
-```
+## 定向执行
 
-执行单个工单（示例：`TP-E6-02`）：
-
-```bash
-python3 scripts/run_tp_tests.py TP-E6-02 --python python3
-```
-
-一次执行多个工单：
+查看当前已映射 Task Package:
 
 ```bash
-python3 scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 --python python3
+python scripts/run_tp_tests.py --list
 ```
 
-执行所有已登记工单：
+执行单个工单:
 
 ```bash
-python3 scripts/run_tp_tests.py --all --python python3
+python scripts/run_tp_tests.py TP-E6-02 --python python
 ```
 
-## CI
+执行多个工单:
 
-- GitHub Actions 工作流位于 `.github/workflows/ci.yml`
-- CI 与本地统一复用 `scripts/run_ci.py`
-- CI 安装入口位于 `requirements-dev.txt`
+```bash
+python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 --python python
+```
 
-## 当前已登记工单
+## 当前覆盖重点
 
-- `TP-E4-01`：文档结构解析增强
-- `TP-E4-02`：音频语义增强
-- `TP-E4-03`：图片布局增强
-- `TP-E4-04`：视频时间语义增强
-- `TP-E4-05`：时序 baseline/change point/drift 增强
-- `TP-E5-02`：Heuristic Atom 抽取增强
-- `TP-E5-03`：模态专用 Atom 策略增强
-- `TP-E5-04`：LLM Atom 增强与 fallback 保障
-- `TP-E6-01`：SkillGraph node/edge 模型增强
-- `TP-E6-02`：SkillGraphBuilder 构图与追溯增强
-- `TP-E6-03`：PublicationBuilder 输出与落盘增强
-- `TP-E6-04`：V1 renderer 兼容与 skill_markdown 回归保障
-- `TP-E7-01`：质量评分器与六分项落盘增强
-- `TP-E7-02`：ReviewPolicy 阈值决策与理由码输出
-- `TP-E7-03`：ReviewTask 结构化落地与修正建议持久化
-- `TP-E7-04`：ReviewFeedback 回流到 atom/graph/policy 的修订信号
+- `tests/test_mvp.py`: 覆盖 text / audio / image / video / tabular 主路径
+- `tests/test_v2_schema_and_corpus.py`: 覆盖 corpus 组装、publication、quality、review artifacts
+- `tests/test_quality_scoring.py`: 覆盖质量评分
+- `tests/test_review_policy.py`: 覆盖 review threshold 与 reason codes
+
+## 当前缺口
+
+- 尚无 FastAPI/ASGI API 层自动化测试
+- 尚无 coverage gate
+- 尚无 performance benchmark
+- 真实 provider failure-mode 覆盖仍偏薄
 
 ## 维护规则
 
-每次新增功能工单时，必须同步做三件事：
+每次新增 `TP-*` 工单时，至少同步完成三件事：
 
-1. 在 `tests/` 中落地具体测试函数（case id 可直接执行）。
-2. 在 `scripts/run_tp_tests.py` 的 `TP_TEST_CASES` 里登记该工单与 case id。
-3. 在本文件更新“当前已登记工单”。
+1. 在 `tests/` 落测试 case
+2. 在 `scripts/run_tp_tests.py` 的 `TP_TEST_CASES` 中登记映射
+3. 在本文件更新覆盖范围与新增工单说明
