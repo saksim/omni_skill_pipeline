@@ -40,7 +40,16 @@ python -m pip install -r requirements-dev.txt
 - `OMNI_OPENAI_LLM_MODEL`: LLM composer model，默认 `gpt-4.1`
 - `OMNI_OPENAI_VISION_MODEL`: Vision model，默认 `gpt-4.1-mini`
 - `OMNI_OPENAI_TRANSCRIBE_MODEL`: ASR model，默认 `gpt-4o-transcribe`
+- `OMNI_OPENAI_TIMEOUT_SECONDS`: OpenAI provider request timeout in seconds，默认 `60`
+- `OMNI_OPENAI_RETRY_MAX_ATTEMPTS`: OpenAI provider 总尝试次数（含首次调用），默认 `3`
+- `OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS`: OpenAI provider 退避基数秒数，默认 `0.5`（指数退避）
 - `OMNI_TRANSCRIPTION_LANGUAGE`: 可选，ASR language hint
+
+## API Variables
+
+- `OMNI_API_KEY`: 可选。设置后 API distill 端点会强制校验 `X-API-Key` 或 `Authorization: Bearer <key>`。
+- `OMNI_RATE_LIMIT_REQUESTS`: 每个窗口允许请求数。`0` 表示关闭限流，默认 `0`。
+- `OMNI_RATE_LIMIT_WINDOW_SECONDS`: 限流窗口秒数，默认 `60`。
 
 ## Media Variables
 

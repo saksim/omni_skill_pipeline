@@ -13,8 +13,14 @@ class Settings:
     published_dir: Path
     template_path: Path
     schema_path: Path
+    api_key: Optional[str]
+    rate_limit_requests: int
+    rate_limit_window_seconds: int
     openai_api_key: Optional[str]
     openai_base_url: Optional[str]
+    openai_timeout_seconds: float
+    openai_retry_max_attempts: int
+    openai_retry_base_delay_seconds: float
     llm_model: str
     vision_model: str
     transcription_model: str
@@ -49,8 +55,14 @@ def load_settings(repo_root: Path = None) -> Settings:
         published_dir=root / 'skills' / 'published',
         template_path=root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
         schema_path=root / 'docs' / 'current' / 'contracts' / 'skill.schema.json',
+        api_key=os.getenv('OMNI_API_KEY'),
+        rate_limit_requests=int(os.getenv('OMNI_RATE_LIMIT_REQUESTS', '0')),
+        rate_limit_window_seconds=int(os.getenv('OMNI_RATE_LIMIT_WINDOW_SECONDS', '60')),
         openai_api_key=os.getenv('OPENAI_API_KEY'),
         openai_base_url=os.getenv('OPENAI_BASE_URL'),
+        openai_timeout_seconds=float(os.getenv('OMNI_OPENAI_TIMEOUT_SECONDS', '60')),
+        openai_retry_max_attempts=int(os.getenv('OMNI_OPENAI_RETRY_MAX_ATTEMPTS', '3')),
+        openai_retry_base_delay_seconds=float(os.getenv('OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS', '0.5')),
         llm_model=os.getenv('OMNI_OPENAI_LLM_MODEL', 'gpt-4.1'),
         vision_model=os.getenv('OMNI_OPENAI_VISION_MODEL', 'gpt-4.1-mini'),
         transcription_model=os.getenv('OMNI_OPENAI_TRANSCRIBE_MODEL', 'gpt-4o-transcribe'),

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import base64
 import mimetypes
+import time
 from pathlib import Path
-from typing import Sequence
+from typing import Callable, Sequence, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -26,9 +27,15 @@ from omni_skill_pipeline.providers.base import FrameAnalysis, OCRBlock, OCRResul
 from omni_skill_pipeline.utils import unique_preserve_order
 
 try:  # pragma: no cover - optional import boundary
-    from openai import OpenAI
+    from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI
 except ImportError:  # pragma: no cover - optional import boundary
     OpenAI = None
+    OPENAI_TRANSIENT_EXCEPTIONS: tuple[type[Exception], ...] = ()
+else:  # pragma: no cover - optional import boundary
+    OPENAI_TRANSIENT_EXCEPTIONS = (APIConnectionError, APITimeoutError, APIStatusError)
+
+
+T = TypeVar('T')
 
 
 class SkillDraftStepModel(BaseModel):
@@ -77,7 +84,48 @@ class OpenAIClientMixin(object):
             raise ProviderUnavailableError('openai package is not installed.')
         if not settings.openai_api_key:
             raise ProviderUnavailableError('OPENAI_API_KEY is not configured.')
-        self.client = OpenAI(api_key=settings.openai_api_key, base_url=settings.openai_base_url)
+        self.request_timeout = float(settings.openai_timeout_seconds)
+        self.retry_max_attempts = max(1, int(settings.openai_retry_max_attempts))
+        self.retry_base_delay_seconds = max(0.0, float(settings.openai_retry_base_delay_seconds))
+        self.client = OpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url,
+            timeout=self.request_timeout,
+        )
+
+    def _call_with_retry(self, request_fn: Callable[[], T], *, operation: str) -> T:
+        last_exc: Exception | None = None
+        for attempt in range(1, self.retry_max_attempts + 1):
+            try:
+                return request_fn()
+            except Exception as exc:
+                last_exc = exc
+                should_retry = attempt < self.retry_max_attempts and self._is_retryable_exception(exc)
+                if not should_retry:
+                    raise
+                delay_seconds = self.retry_base_delay_seconds * (2 ** (attempt - 1))
+                if delay_seconds > 0:
+                    time.sleep(delay_seconds)
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError('OpenAI %s retry loop exhausted without exception.' % operation)
+
+    def _is_retryable_exception(self, exc: Exception) -> bool:
+        if OPENAI_TRANSIENT_EXCEPTIONS and isinstance(exc, OPENAI_TRANSIENT_EXCEPTIONS):
+            status_code = getattr(exc, 'status_code', None)
+            if status_code is None:
+                return True
+            return status_code == 429 or status_code >= 500
+
+        status_code = getattr(exc, 'status_code', None)
+        if isinstance(status_code, int):
+            return status_code == 429 or status_code >= 500
+
+        lowered_name = exc.__class__.__name__.lower()
+        lowered_text = str(exc).lower()
+        if 'timeout' in lowered_name or 'connection' in lowered_name:
+            return True
+        return 'temporar' in lowered_text or 'timeout' in lowered_text or 'connection reset' in lowered_text
 
 
 class OpenAIAudioTranscriber(OpenAIClientMixin):
@@ -88,16 +136,20 @@ class OpenAIAudioTranscriber(OpenAIClientMixin):
         language: str | None = None,
         prompt: str | None = None,
     ) -> TranscriptionResult:
-        try:
+        def _request():
             with audio_path.open('rb') as file_handle:
-                response = self.client.audio.transcriptions.create(
+                return self.client.audio.transcriptions.create(
                     file=file_handle,
                     model=self.settings.transcription_model,
                     language=language or self.settings.transcription_language,
                     prompt=prompt,
                     response_format='verbose_json',
                     timestamp_granularities=['segment'],
+                    timeout=self.request_timeout,
                 )
+
+        try:
+            response = self._call_with_retry(_request, operation='transcription')
         except Exception as exc:  # pragma: no cover - network boundary
             raise ProviderExecutionError('OpenAI transcription failed: %s' % exc) from exc
 
@@ -131,7 +183,14 @@ class OpenAIVisionAnalyzer(OpenAIClientMixin):
             prompt or 'Describe the key visible entities, UI state, diagrams, and operational cues in this image.',
         )
         try:
-            response = self.client.responses.create(model=self.settings.vision_model, input=input_payload)
+            response = self._call_with_retry(
+                lambda: self.client.responses.create(
+                    model=self.settings.vision_model,
+                    input=input_payload,
+                    timeout=self.request_timeout,
+                ),
+                operation='vision analysis',
+            )
         except Exception as exc:  # pragma: no cover - network boundary
             raise ProviderExecutionError('OpenAI vision analysis failed: %s' % exc) from exc
 
@@ -146,10 +205,14 @@ class OpenAIVisionAnalyzer(OpenAIClientMixin):
             'Extract all readable text from this image. Return only the text content and preserve line breaks.',
         )
         try:
-            response = self.client.responses.parse(
-                model=self.settings.vision_model,
-                input=input_payload,
-                text_format=OCRTextModel,
+            response = self._call_with_retry(
+                lambda: self.client.responses.parse(
+                    model=self.settings.vision_model,
+                    input=input_payload,
+                    text_format=OCRTextModel,
+                    timeout=self.request_timeout,
+                ),
+                operation='vision ocr',
             )
         except Exception as exc:  # pragma: no cover - network boundary
             raise ProviderExecutionError('OpenAI OCR failed: %s' % exc) from exc
@@ -192,11 +255,15 @@ class OpenAILLMSkillComposer(OpenAIClientMixin):
         evidence_payload = self._build_evidence_payload(evidence_units, insights)
         instructions = self._build_instructions(goal, modality, title_hint)
         try:
-            response = self.client.responses.parse(
-                model=self.settings.llm_model,
-                instructions=instructions,
-                input=evidence_payload,
-                text_format=SkillDraftModel,
+            response = self._call_with_retry(
+                lambda: self.client.responses.parse(
+                    model=self.settings.llm_model,
+                    instructions=instructions,
+                    input=evidence_payload,
+                    text_format=SkillDraftModel,
+                    timeout=self.request_timeout,
+                ),
+                operation='skill composition',
             )
         except Exception as exc:  # pragma: no cover - network boundary
             raise ProviderExecutionError('OpenAI skill composition failed: %s' % exc) from exc
@@ -289,11 +356,15 @@ class OpenAILLMAtomEnhancer(OpenAIClientMixin):
         payload = self._build_payload(evidence_nodes, seed_atoms or [])
         instructions = self._build_instructions()
         try:
-            response = self.client.responses.parse(
-                model=self.settings.llm_model,
-                instructions=instructions,
-                input=payload,
-                text_format=AtomDraftListModel,
+            response = self._call_with_retry(
+                lambda: self.client.responses.parse(
+                    model=self.settings.llm_model,
+                    instructions=instructions,
+                    input=payload,
+                    text_format=AtomDraftListModel,
+                    timeout=self.request_timeout,
+                ),
+                operation='atom enhancement',
             )
         except Exception as exc:  # pragma: no cover - network boundary
             raise ProviderExecutionError('OpenAI atom enhancement failed: %s' % exc) from exc
