@@ -11,6 +11,7 @@
 ## Expansion Zones
 
 - [Runbooks](runbooks/README.md)
+- [Launch Beta Runbook](runbooks/launch-beta.md)
 - [Environments](environments/README.md)
 - [Interfaces](interfaces/README.md)
 

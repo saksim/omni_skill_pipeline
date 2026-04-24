@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from omni_skill_pipeline.api_schemas import (
     AudioDistillRequestSchema,
+    CorpusDistillRequestSchema,
     DistillGoalSchema,
     ImageDistillRequestSchema,
     TabularDistillRequestSchema,
@@ -25,6 +26,7 @@ from omni_skill_pipeline.exceptions import (
 )
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
+    CorpusDistillRequest,
     DistillGoal,
     ImageDistillRequest,
     TabularDistillRequest,
@@ -60,6 +62,7 @@ READINESS_REQUIRED_ROUTES = (
     '/v1/distill/image',
     '/v1/distill/tabular',
     '/v1/distill/video',
+    '/v1/distill/corpus',
 )
 
 
@@ -477,6 +480,15 @@ def create_app():
             goal=_goal_from_schema(payload.goal),
         )
         return service.distill_video(request).to_dict()
+
+    @app.post('/v1/distill/corpus')
+    def distill_corpus(
+        payload: CorpusDistillRequestSchema,
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        request = CorpusDistillRequest.from_dict(payload.model_dump())
+        return service.distill_corpus(request).to_dict()
 
     return app
 

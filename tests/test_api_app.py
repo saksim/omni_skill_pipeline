@@ -15,6 +15,7 @@ if str(SRC_ROOT) not in sys.path:
 from omni_skill_pipeline.exceptions import ProviderExecutionError
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
+    CorpusDistillRequest,
     ImageDistillRequest,
     TabularDistillRequest,
     TextDistillRequest,
@@ -57,6 +58,9 @@ class _CapturingService(object):
 
     def distill_video(self, request):
         return self._capture('video', request)
+
+    def distill_corpus(self, request):
+        return self._capture('corpus', request)
 
 
 class _FailingService(_CapturingService):
@@ -227,6 +231,46 @@ class ApiAppHappyPathTests(unittest.TestCase):
         self.assertAlmostEqual(float(request.scene_threshold), 0.4, places=3)
         self.assertEqual(request.dedupe_distance, 3)
         self.assertEqual(request.goal.domain, 'resilience')
+
+    def test_corpus_endpoint_happy_path_with_two_assets(self) -> None:
+        request = self._post_and_get_request(
+            path='/v1/distill/corpus',
+            modality='corpus',
+            payload={
+                'name': 'beta-ops-corpus',
+                'assets': [
+                    {
+                        'source_uri': 'file://examples/text_note.md',
+                        'modality': 'text',
+                        'title_hint': 'runbook notes',
+                        'role': 'primary',
+                        'metadata': {'team': 'sre'},
+                    },
+                    {
+                        'source_uri': 'file://examples/audio_transcript.srt',
+                        'modality': 'audio',
+                        'title_hint': 'incident call',
+                        'role': 'supporting',
+                        'metadata': {'lang': 'en'},
+                    },
+                ],
+                'tags': ['beta', 'ops'],
+                'metadata': {'source': 'integration-suite'},
+                'goal': {'domain': 'operations'},
+            },
+        )
+        self.assertIsInstance(request, CorpusDistillRequest)
+        self.assertEqual(request.name, 'beta-ops-corpus')
+        self.assertEqual(len(request.assets), 2)
+        self.assertEqual(request.assets[0].source_uri, 'file://examples/text_note.md')
+        self.assertEqual(request.assets[0].modality.value, 'text')
+        self.assertEqual(request.assets[0].role, 'primary')
+        self.assertEqual(request.assets[1].source_uri, 'file://examples/audio_transcript.srt')
+        self.assertEqual(request.assets[1].modality.value, 'audio')
+        self.assertEqual(request.assets[1].role, 'supporting')
+        self.assertEqual(request.tags, ['beta', 'ops'])
+        self.assertEqual(request.metadata, {'source': 'integration-suite'})
+        self.assertEqual(request.goal.domain, 'operations')
 
 
 @unittest.skipIf(TestClient is None, 'fastapi testclient is not installed')

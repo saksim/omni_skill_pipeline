@@ -38,6 +38,9 @@ class _StubService(object):
     def distill_video(self, request):  # pragma: no cover - request shape handled by app validation
         return _StubBundle()
 
+    def distill_corpus(self, request):  # pragma: no cover - request shape handled by app validation
+        return _StubBundle()
+
 
 def _build_client():
     with patch('omni_skill_pipeline.service.build_service', return_value=_StubService()):
@@ -66,6 +69,7 @@ class ApiAppValidationTests(unittest.TestCase):
             ('/v1/distill/image', {}),
             ('/v1/distill/tabular', {'file_path': 'metrics.csv', 'max_series': 0}),
             ('/v1/distill/video', {'video_path': 'capture.mp4', 'scene_threshold': 1.5}),
+            ('/v1/distill/corpus', {}),
         )
         for path, payload in invalid_cases:
             self._assert_4xx(path, payload)
@@ -77,6 +81,7 @@ class ApiAppValidationTests(unittest.TestCase):
             ('/v1/distill/image', {}),
             ('/v1/distill/tabular', {'file_path': 'metrics.csv', 'max_series': 0}),
             ('/v1/distill/video', {'video_path': 'capture.mp4', 'scene_threshold': 1.5}),
+            ('/v1/distill/corpus', {}),
         )
         for path, payload in invalid_cases:
             self.assertEqual(self._assert_4xx(path, payload), 422)
@@ -90,6 +95,7 @@ class ApiAppValidationTests(unittest.TestCase):
             ('/v1/distill/image', 'ImageDistillRequestSchema'),
             ('/v1/distill/tabular', 'TabularDistillRequestSchema'),
             ('/v1/distill/video', 'VideoDistillRequestSchema'),
+            ('/v1/distill/corpus', 'CorpusDistillRequestSchema'),
         )
         for path, schema_name in expected_paths:
             ref = openapi['paths'][path]['post']['requestBody']['content']['application/json']['schema']['$ref']
@@ -102,6 +108,16 @@ class ApiAppValidationTests(unittest.TestCase):
             ('/v1/distill/image', {'image_path': 'artifacts/diagram.png'}),
             ('/v1/distill/tabular', {'file_path': 'artifacts/latency.csv'}),
             ('/v1/distill/video', {'video_path': 'artifacts/demo.mp4'}),
+            (
+                '/v1/distill/corpus',
+                {
+                    'name': 'release-readiness',
+                    'assets': [
+                        {'source_uri': 'file://examples/text_note.md', 'modality': 'text'},
+                        {'source_uri': 'file://examples/audio_transcript.srt', 'modality': 'audio', 'role': 'supporting'},
+                    ],
+                },
+            ),
         )
         for path, payload in valid_cases:
             response = self.client.post(path, json=payload)
