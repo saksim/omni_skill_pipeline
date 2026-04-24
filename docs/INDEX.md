@@ -18,6 +18,7 @@
 ### Status
 
 - [Current Status](current/status/CURRENT_STATUS.md)
+- [Launch Readiness Master Plan](current/status/launch-readiness-master-plan.md)
 - [E0 Baseline Pack](current/status/baselines/README.md)
 
 ### Operations
@@ -30,11 +31,13 @@
 
 ## Assessments
 
-- [GLM-5.1 Project Assessment](glm-5.1-project-assessment.md)
+- [Current Assessment Entry](glm-5.1-project-assessment.md)
 
 ## History
 
 - [Changelog](history/CHANGELOG.md)
+- [Archived GLM-5.1 Assessment](history/assessments/2026-04-22-glm-5.1-project-assessment.md)
+- [Archived Pre-Master Current Status](history/status/2026-04-24-current-status-pre-launch-master-plan.md)
 
 ## Rules
 

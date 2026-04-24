@@ -71,12 +71,13 @@ python scripts/run_ci.py
 - V2 开发拆解: [docs/current/architecture/skill-distillation-v2-implementation-backlog.md](docs/current/architecture/skill-distillation-v2-implementation-backlog.md)
 - V2 施工任务单: [docs/current/architecture/skill-distillation-v2-work-orders.md](docs/current/architecture/skill-distillation-v2-work-orders.md)
 - 当前状态: [docs/current/status/CURRENT_STATUS.md](docs/current/status/CURRENT_STATUS.md)
+- 上线整合总卷: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
 - 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)
 - API: [docs/current/operations/api.md](docs/current/operations/api.md)
 - CLI: [docs/current/operations/cli.md](docs/current/operations/cli.md)
 - Environment: [docs/current/operations/env.md](docs/current/operations/env.md)
 - Testing: [docs/current/operations/testing.md](docs/current/operations/testing.md)
-- 项目评估: [docs/glm-5.1-project-assessment.md](docs/glm-5.1-project-assessment.md)
+- 评估入口: [docs/glm-5.1-project-assessment.md](docs/glm-5.1-project-assessment.md)
 
 ### History
 
