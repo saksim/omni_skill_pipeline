@@ -38,6 +38,18 @@ else:  # pragma: no cover - optional import boundary
 T = TypeVar('T')
 
 
+def _new_provider_call_counter() -> dict[str, int]:
+    return {
+        'calls': 0,
+        'attempts': 0,
+        'retries': 0,
+        'successes': 0,
+        'failures': 0,
+        'retryable_failures': 0,
+        'non_retryable_failures': 0,
+    }
+
+
 class SkillDraftStepModel(BaseModel):
     step: int = Field(ge=1)
     action: str
@@ -107,6 +119,8 @@ class OpenAIClientMixin(object):
         self._failure_timestamps: list[float] = []
         self._circuit_open_until_monotonic = 0.0
         self._circuit_open_reason = ''
+        self._provider_call_totals = _new_provider_call_counter()
+        self._provider_call_operations: dict[str, dict[str, int]] = {}
         self.client = OpenAI(
             api_key=settings.openai_api_key,
             base_url=settings.openai_base_url,
@@ -114,31 +128,95 @@ class OpenAIClientMixin(object):
         )
 
     def _call_with_retry(self, request_fn: Callable[[], T], *, operation: str) -> T:
-        self._guard_circuit(operation)
+        normalized_operation = str(operation).strip() or 'unknown'
+        self._ensure_provider_audit_state()
+        operation_counter = self._provider_call_operations.setdefault(
+            normalized_operation,
+            _new_provider_call_counter(),
+        )
+        self._provider_call_totals['calls'] += 1
+        operation_counter['calls'] += 1
+        try:
+            self._guard_circuit(normalized_operation)
+        except ProviderExecutionError:
+            self._provider_call_totals['failures'] += 1
+            self._provider_call_totals['non_retryable_failures'] += 1
+            operation_counter['failures'] += 1
+            operation_counter['non_retryable_failures'] += 1
+            raise
         last_exc: Exception | None = None
         for attempt in range(1, self.retry_max_attempts + 1):
+            self._provider_call_totals['attempts'] += 1
+            operation_counter['attempts'] += 1
+            if attempt > 1:
+                self._provider_call_totals['retries'] += 1
+                operation_counter['retries'] += 1
             try:
                 result = request_fn()
                 self._record_success()
+                self._provider_call_totals['successes'] += 1
+                operation_counter['successes'] += 1
                 return result
             except Exception as exc:
                 last_exc = exc
                 should_retry = attempt < self.retry_max_attempts and self._is_retryable_exception(exc)
                 if should_retry:
+                    self._provider_call_totals['retryable_failures'] += 1
+                    operation_counter['retryable_failures'] += 1
                     delay_seconds = self.retry_base_delay_seconds * (2 ** (attempt - 1))
                     if delay_seconds > 0:
                         time.sleep(delay_seconds)
                     continue
                 break
         if last_exc is not None:
+            self._provider_call_totals['failures'] += 1
+            operation_counter['failures'] += 1
             if self._is_retryable_exception(last_exc):
+                self._provider_call_totals['retryable_failures'] += 1
+                operation_counter['retryable_failures'] += 1
                 self._record_failure(error=last_exc)
                 if self._is_circuit_open():
-                    raise ProviderExecutionError(self._circuit_open_message(operation)) from last_exc
+                    raise ProviderExecutionError(self._circuit_open_message(normalized_operation)) from last_exc
             else:
+                self._provider_call_totals['non_retryable_failures'] += 1
+                operation_counter['non_retryable_failures'] += 1
                 self._record_success()
             raise last_exc
-        raise RuntimeError('OpenAI %s retry loop exhausted without exception.' % operation)
+        raise RuntimeError('OpenAI %s retry loop exhausted without exception.' % normalized_operation)
+
+    def _ensure_provider_audit_state(self) -> None:
+        if not isinstance(getattr(self, '_provider_call_totals', None), dict):
+            self._provider_call_totals = _new_provider_call_counter()
+        if not isinstance(getattr(self, '_provider_call_operations', None), dict):
+            self._provider_call_operations = {}
+
+    def provider_call_audit_snapshot(self) -> dict[str, object]:
+        self._ensure_provider_audit_state()
+        now = time.monotonic()
+        operations = {
+            name: dict(counter)
+            for name, counter in self._provider_call_operations.items()
+            if isinstance(counter, dict) and counter.get('calls', 0) > 0
+        }
+        return {
+            'provider': 'openai',
+            'component': self.__class__.__name__,
+            'totals': dict(self._provider_call_totals),
+            'operations': operations,
+            'circuit_breaker': {
+                'open': self._circuit_open_until_monotonic > now,
+                'retry_after_seconds': max(0.0, self._circuit_open_until_monotonic - now),
+                'reason': self._circuit_open_reason,
+                'consecutive_failures': self._consecutive_failures,
+                'failure_budget': len(self._failure_timestamps),
+                'failure_budget_max': self.failure_budget_max_failures,
+                'failure_budget_window_seconds': self.failure_budget_window_seconds,
+            },
+        }
+
+    def reset_provider_call_audit(self) -> None:
+        self._provider_call_totals = _new_provider_call_counter()
+        self._provider_call_operations = {}
 
     def _guard_circuit(self, operation: str) -> None:
         if self._circuit_open_until_monotonic <= 0:

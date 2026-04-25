@@ -36,15 +36,45 @@ class ImageAdapter(object):
         title_hint = request.title or image_path.stem.replace('_', ' ')
         evidence_units = []
         adapter_metadata: dict[str, object] = {'frame_count': 1}
+        provider_calls: list[dict[str, object]] = []
 
         if self.ocr_provider is not None:
+            ocr_provider_name = self.ocr_provider.__class__.__name__
             try:
                 ocr_result = self.ocr_provider.extract(image_path)
             except ProviderUnavailableError:
                 ocr_result = None
+                provider_calls.append(
+                    self._provider_call_entry(
+                        channel='image_ocr',
+                        provider=ocr_provider_name,
+                        calls=1,
+                        successes=0,
+                        failures=1,
+                    )
+                )
             except Exception:
                 ocr_result = None
+                provider_calls.append(
+                    self._provider_call_entry(
+                        channel='image_ocr',
+                        provider=ocr_provider_name,
+                        calls=1,
+                        successes=0,
+                        failures=1,
+                    )
+                )
             else:
+                resolved_provider = (ocr_result.engine or '').strip() if ocr_result is not None else ''
+                provider_calls.append(
+                    self._provider_call_entry(
+                        channel='image_ocr',
+                        provider=resolved_provider or ocr_provider_name,
+                        calls=1,
+                        successes=1,
+                        failures=0,
+                    )
+                )
                 if ocr_result and ocr_result.text.strip():
                     evidence_units.append(
                         EvidenceUnit(
@@ -76,13 +106,44 @@ class ImageAdapter(object):
                     adapter_metadata['ocr_layout_roles'] = sorted(layout_roles)
 
         if self.analyzer is not None:
+            analyzer_name = self.analyzer.__class__.__name__
             try:
                 analysis = self.analyzer.analyze(image_path)
             except ProviderUnavailableError:
                 analysis = None
+                provider_calls.append(
+                    self._provider_call_entry(
+                        channel='image_analysis',
+                        provider=analyzer_name,
+                        calls=1,
+                        successes=0,
+                        failures=1,
+                    )
+                )
             except Exception:
                 analysis = None
+                provider_calls.append(
+                    self._provider_call_entry(
+                        channel='image_analysis',
+                        provider=analyzer_name,
+                        calls=1,
+                        successes=0,
+                        failures=1,
+                    )
+                )
             else:
+                resolved_provider = ''
+                if analysis is not None and isinstance(analysis.metadata, dict):
+                    resolved_provider = str(analysis.metadata.get('model', '')).strip()
+                provider_calls.append(
+                    self._provider_call_entry(
+                        channel='image_analysis',
+                        provider=resolved_provider or analyzer_name,
+                        calls=1,
+                        successes=1,
+                        failures=0,
+                    )
+                )
                 if analysis and analysis.summary.strip():
                     evidence_units.append(
                         EvidenceUnit(
@@ -110,6 +171,8 @@ class ImageAdapter(object):
 
         if not evidence_units:
             raise ValueError('Image adapter produced no evidence. Configure OCR or image analysis providers.')
+        if provider_calls:
+            adapter_metadata['provider_calls'] = provider_calls
 
         return LoadedAsset(
             asset=asset,
@@ -126,3 +189,20 @@ class ImageAdapter(object):
                 'height': image.height,
                 'format': image.format,
             }
+
+    def _provider_call_entry(
+        self,
+        *,
+        channel: str,
+        provider: str,
+        calls: int,
+        successes: int,
+        failures: int,
+    ) -> dict[str, object]:
+        return {
+            'channel': channel,
+            'provider': provider,
+            'calls': int(calls),
+            'successes': int(successes),
+            'failures': int(failures),
+        }

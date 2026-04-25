@@ -139,3 +139,38 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 - Added service integration coverage in `tests/test_review_queue_integration.py`.
 - Added API contract coverage in `tests/test_api_review_queue.py` for list/claim/close.
 - Note: the previous API coverage gap statement is superseded for review queue scope; contract tests now exist in `tests/test_api_review_queue.py`.
+
+## TP-E12-01 Additions
+
+- Added structured trace fallback and chain fields in `src/omni_skill_pipeline/service.py`.
+- Added per-job request/trace context propagation in `src/omni_skill_pipeline/worker.py`.
+- Added `tests/test_trace_observability_tp_e12.py` for service/worker trace-chain coverage.
+- Added `TP-E12-01` mapping in `scripts/run_tp_tests.py`.
+- Batch example: `python scripts/run_tp_tests.py TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 --python python`.
+
+## TP-E12-02 Additions
+
+- Added provider call audit counters/snapshots in `src/omni_skill_pipeline/providers/openai_provider.py`.
+- Added adapter-level provider call metadata in `src/omni_skill_pipeline/adapters/audio.py`, `src/omni_skill_pipeline/adapters/image.py`, and `src/omni_skill_pipeline/adapters/video.py`.
+- Added corpus-level provider footprint aggregation in `src/omni_skill_pipeline/service.py`.
+- Added `tests/test_provider_audit_tp_e12.py` for provider audit and corpus footprint assertions.
+- Added `TP-E12-02` mapping in `scripts/run_tp_tests.py`.
+- Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 --python python3`.
+
+## TP-E12-03 Additions
+
+- Added recursive redaction helpers in `src/omni_skill_pipeline/redaction.py` to sanitize sensitive keys and inline bearer/token-like values.
+- Added request/adapter metadata sanitization in `src/omni_skill_pipeline/service.py` before persistence.
+- Added repository-side defense-in-depth redaction in `src/omni_skill_pipeline/repository.py` before writing artifact files.
+- Added `tests/test_security_redaction_tp_e12.py` for service payload redaction and file artifact persistence redaction assertions.
+- Added `TP-E12-03` mapping in `scripts/run_tp_tests.py`.
+- Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 TP-E12-03 --python python3`.
+
+## TP-E12-04 Additions
+
+- Added explicit scratch cleanup status handling in `src/omni_skill_pipeline/adapters/video.py`; cleanup failures now record deferred recovery entries for prune jobs.
+- Added intermediate keyframe candidate cleanup in `src/omni_skill_pipeline/providers/media.py` so only selected frames remain during processing.
+- Added `tests/test_tmp_artifact_governance_tp_e12.py` to cover success cleanup and deferred cleanup-recovery behavior.
+- Added `tests/test_media_provider.py::MediaProcessorTests.test_cleanup_unselected_frames_keeps_selected_only` for intermediate-frame lifecycle cleanup.
+- Added `TP-E12-04` mapping in `scripts/run_tp_tests.py`.
+- Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 --python python3`.

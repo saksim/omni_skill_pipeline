@@ -41,6 +41,7 @@ class AudioAdapter(object):
             adapter_metadata={
                 'transcript_source': transcript_source,
                 'utterance_act_counts': semantic_counts,
+                'provider_calls': self._provider_calls_for_transcript_source(transcript_source),
             },
         )
 
@@ -239,3 +240,18 @@ class AudioAdapter(object):
             return None
         cleaned = str(value).strip()
         return cleaned or None
+
+    def _provider_calls_for_transcript_source(self, transcript_source: str) -> List[Dict[str, object]]:
+        normalized_source = str(transcript_source).strip()
+        if not normalized_source.startswith('provider:'):
+            return []
+        provider_name = normalized_source.split(':', 1)[1].strip() or 'unknown'
+        return [
+            {
+                'channel': 'audio_transcription',
+                'provider': provider_name,
+                'calls': 1,
+                'successes': 1,
+                'failures': 0,
+            }
+        ]

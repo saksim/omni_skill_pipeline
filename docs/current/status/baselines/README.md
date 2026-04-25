@@ -31,3 +31,17 @@
 
 - E0 基线允许包含低质量输出，因为它的职责是反映真相，不是粉饰问题。
 - 当前图片与视频基线故意保留了明显 OCR 噪声，它们正是 V2 必须优先斩断的病灶。
+
+## TP-E11-03 Quality Regression
+
+- Baseline manifest: `docs/current/status/baselines/e11-quality-regression-manifest.json`
+- Runner script: `scripts/run_quality_regression.py`
+- Linux example:
+  - `python scripts/run_quality_regression.py --manifest docs/current/status/baselines/e11-quality-regression-manifest.json --output docs/current/status/baselines/e11-quality-regression-report.json`
+
+## TP-E11-04 Perf-Cost Baseline
+
+- Baseline manifest: `docs/current/status/baselines/e11-perf-cost-baseline-manifest.json`
+- Runner script: `scripts/run_perf_cost_baseline.py`
+- Linux example:
+  - `python scripts/run_perf_cost_baseline.py --manifest docs/current/status/baselines/e11-perf-cost-baseline-manifest.json --output docs/current/status/baselines/e11-perf-cost-baseline-report.json --fail-on-regression`

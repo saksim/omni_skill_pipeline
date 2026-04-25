@@ -1,0 +1,143 @@
+{
+  "manifest_id": "e11-quality-regression-2026-04-25",
+  "manifest_version": "1.0",
+  "created_on": "2026-04-25",
+  "description": "Fixed sample set for TP-E11-03 quality regression checks across traceability and reviewer edit distance.",
+  "samples": [
+    {
+      "sample_id": "T01",
+      "modality": "text",
+      "baseline_metrics": {
+        "traceability_rate": 0.93,
+        "reviewer_edit_distance": {
+          "step_edits": 1,
+          "rule_edits": 0,
+          "verification_edits": 0,
+          "summary_rewritten": false
+        }
+      },
+      "candidate_metrics": {
+        "traceability_rate": 0.93,
+        "reviewer_edit_distance": {
+          "step_edits": 1,
+          "rule_edits": 0,
+          "verification_edits": 0,
+          "summary_rewritten": false
+        }
+      },
+      "thresholds": {
+        "max_traceability_drop": 0.05,
+        "max_reviewer_edit_increase": 2
+      },
+      "notes": "Strong text baseline."
+    },
+    {
+      "sample_id": "A01",
+      "modality": "audio",
+      "baseline_metrics": {
+        "traceability_rate": 0.84,
+        "reviewer_edit_distance": {
+          "step_edits": 1,
+          "rule_edits": 0,
+          "verification_edits": 1,
+          "summary_rewritten": false
+        }
+      },
+      "candidate_metrics": {
+        "traceability_rate": 0.84,
+        "reviewer_edit_distance": {
+          "step_edits": 1,
+          "rule_edits": 0,
+          "verification_edits": 1,
+          "summary_rewritten": false
+        }
+      },
+      "thresholds": {
+        "max_traceability_drop": 0.05,
+        "max_reviewer_edit_increase": 2
+      },
+      "notes": "Audio baseline with minor reviewer intervention."
+    },
+    {
+      "sample_id": "TS01",
+      "modality": "tabular",
+      "baseline_metrics": {
+        "traceability_rate": 0.76,
+        "reviewer_edit_distance": {
+          "step_edits": 2,
+          "rule_edits": 1,
+          "verification_edits": 1,
+          "summary_rewritten": false
+        }
+      },
+      "candidate_metrics": {
+        "traceability_rate": 0.76,
+        "reviewer_edit_distance": {
+          "step_edits": 2,
+          "rule_edits": 1,
+          "verification_edits": 1,
+          "summary_rewritten": false
+        }
+      },
+      "thresholds": {
+        "max_traceability_drop": 0.06,
+        "max_reviewer_edit_increase": 2
+      },
+      "notes": "Timeseries baseline still needs review-driven cleanup."
+    },
+    {
+      "sample_id": "I01",
+      "modality": "image",
+      "baseline_metrics": {
+        "traceability_rate": 0.64,
+        "reviewer_edit_distance": {
+          "step_edits": 3,
+          "rule_edits": 1,
+          "verification_edits": 2,
+          "summary_rewritten": true
+        }
+      },
+      "candidate_metrics": {
+        "traceability_rate": 0.64,
+        "reviewer_edit_distance": {
+          "step_edits": 3,
+          "rule_edits": 1,
+          "verification_edits": 2,
+          "summary_rewritten": true
+        }
+      },
+      "thresholds": {
+        "max_traceability_drop": 0.08,
+        "max_reviewer_edit_increase": 3
+      },
+      "notes": "Image baseline keeps known OCR noise."
+    },
+    {
+      "sample_id": "V01",
+      "modality": "video",
+      "baseline_metrics": {
+        "traceability_rate": 0.18,
+        "reviewer_edit_distance": {
+          "step_edits": 4,
+          "rule_edits": 1,
+          "verification_edits": 2,
+          "summary_rewritten": true
+        }
+      },
+      "candidate_metrics": {
+        "traceability_rate": 0.18,
+        "reviewer_edit_distance": {
+          "step_edits": 4,
+          "rule_edits": 1,
+          "verification_edits": 2,
+          "summary_rewritten": true
+        }
+      },
+      "thresholds": {
+        "max_traceability_drop": 0.1,
+        "max_reviewer_edit_increase": 3
+      },
+      "notes": "Video baseline is intentionally weak for staged improvements."
+    }
+  ]
+}

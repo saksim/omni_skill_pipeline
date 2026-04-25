@@ -410,14 +410,102 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="legacy atom bridge 在 text 为空时应回退 payload.legacy_content。",
         ),
     ],
+    "TP-E11-02": [
+        TestCaseSpec(
+            case_id="tests.test_mvp.PipelineTests.test_text_distillation_creates_artifacts",
+            description="text end-to-end distillation should generate skill graph artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_mvp.PipelineTests.test_audio_distillation_uses_transcriber_when_transcript_missing",
+            description="audio end-to-end distillation should preserve transcription lineage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_mvp.PipelineTests.test_image_distillation_generates_ocr_and_scene_evidence",
+            description="image end-to-end distillation should include OCR and scene evidence.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_mvp.PipelineTests.test_video_distillation_merges_audio_and_keyframe_evidence",
+            description="video end-to-end distillation should keep scene timeline alignment.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_mvp.PipelineTests.test_tabular_distillation_emits_baseline_change_point_and_drift_evidence",
+            description="tabular end-to-end distillation should include baseline and drift evidence.",
+        ),
+    ],
+    "TP-E11-03": [
+        TestCaseSpec(
+            case_id="tests.test_quality_regression_script.QualityRegressionScriptTests.test_script_smoke_compares_traceability_and_edit_distance",
+            description="quality regression harness should report traceability and edit-distance deltas.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_quality_regression_script.QualityRegressionScriptTests.test_script_fail_on_regression_returns_nonzero",
+            description="quality regression harness should return non-zero on regression with fail gate.",
+        ),
+    ],
     "TP-E11-04": [
         TestCaseSpec(
             case_id="tests.test_benchmark_dual_write.BenchmarkDualWriteScriptTests.test_script_smoke_runs_file_only_and_writes_report",
-            description="benchmark harness 烟测：生成 file-only 时延报告。",
+            description="benchmark harness smoke: generate file-only latency report.",
         ),
         TestCaseSpec(
             case_id="tests.test_benchmark_dual_write.BenchmarkDualWriteScriptTests.test_script_rejects_non_positive_iterations",
-            description="benchmark harness 参数保护：iterations<=0 必须报错。",
+            description="benchmark harness guard: iterations<=0 must fail.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_perf_cost_baseline_script.PerfCostBaselineScriptTests.test_script_smoke_compares_duration_token_and_provider_calls",
+            description="perf/cost baseline harness should compare duration, tokens, and provider calls.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_perf_cost_baseline_script.PerfCostBaselineScriptTests.test_script_fail_on_regression_returns_nonzero",
+            description="perf/cost baseline harness should return non-zero on gated regressions.",
+        ),
+    ],
+    "TP-E12-01": [
+        TestCaseSpec(
+            case_id="tests.test_trace_observability_tp_e12.TraceObservabilityTpE12Tests.test_service_generates_context_and_emits_chain_fields",
+            description="service distill logs should emit trace context plus asset->graph->publication chain fields.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_trace_observability_tp_e12.TraceObservabilityTpE12Tests.test_worker_propagates_job_context_to_service_logs",
+            description="worker job trace context should propagate into downstream service log events.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_trace_observability_tp_e12.TraceObservabilityTpE12Tests.test_worker_prefers_payload_context_values",
+            description="worker should honor explicit request_id and trace_id from job payload.",
+        ),
+    ],
+    "TP-E12-02": [
+        TestCaseSpec(
+            case_id="tests.test_provider_audit_tp_e12.ProviderAuditTpE12Tests.test_openai_mixin_emits_provider_call_audit_snapshot",
+            description="openai provider retry wrapper should expose operation-level provider call audit snapshots.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_provider_audit_tp_e12.ProviderAuditTpE12Tests.test_service_distill_corpus_emits_provider_footprint",
+            description="corpus distill should persist provider footprint with per-asset and per-provider call totals.",
+        ),
+    ],
+    "TP-E12-03": [
+        TestCaseSpec(
+            case_id="tests.test_security_redaction_tp_e12.SecurityRedactionTpE12Tests.test_service_redacts_sensitive_fields_in_request_payload",
+            description="service should redact sensitive token/secret/credential fields in request payload snapshots.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_security_redaction_tp_e12.SecurityRedactionTpE12Tests.test_file_repository_redacts_sensitive_strings_before_persisting_artifacts",
+            description="file repository should persist sanitized artifacts without raw credentials or bearer tokens.",
+        ),
+    ],
+    "TP-E12-04": [
+        TestCaseSpec(
+            case_id="tests.test_tmp_artifact_governance_tp_e12.TempArtifactGovernanceTpE12Tests.test_video_adapter_marks_scratch_cleanup_cleaned_on_success",
+            description="video adapter should remove per-job scratch directory when cleanup succeeds.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_tmp_artifact_governance_tp_e12.TempArtifactGovernanceTpE12Tests.test_video_adapter_records_deferred_cleanup_when_rmtree_fails",
+            description="video adapter should record deferred cleanup strategy when work_dir deletion fails.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_media_provider.MediaProcessorTests.test_cleanup_unselected_frames_keeps_selected_only",
+            description="media provider should delete unselected intermediate frames after keyframe selection.",
         ),
     ],
 }

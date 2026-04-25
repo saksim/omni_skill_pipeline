@@ -100,6 +100,7 @@ class FFmpegMediaProcessor(object):
         selected = self._select_distributed_frames(deduped, max_frames=max_frames, duration_seconds=metadata.duration_seconds)
         if not selected:
             raise MediaProcessingError('ffmpeg produced no keyframes.')
+        self._cleanup_unselected_frames(candidates, selected)
         return selected
 
     def _extract_scene_candidates(
@@ -193,6 +194,23 @@ class FFmpegMediaProcessor(object):
             scene_score = scene_scores[index] if scene_scores is not None and index < len(scene_scores) else None
             frames.append(SampledFrame(path=file_path, source=source, timestamp_seconds=timestamp, scene_score=scene_score))
         return frames
+
+    def _cleanup_unselected_frames(self, candidates: list[SampledFrame], selected: list[SampledFrame]) -> None:
+        selected_paths = {str(frame.path.resolve()) for frame in selected}
+        seen_paths: set[str] = set()
+        for frame in candidates:
+            candidate_path = frame.path
+            candidate_key = str(candidate_path.resolve())
+            if candidate_key in seen_paths:
+                continue
+            seen_paths.add(candidate_key)
+            if candidate_key in selected_paths:
+                continue
+            try:
+                if candidate_path.is_file() or candidate_path.is_symlink():
+                    candidate_path.unlink()
+            except OSError:
+                continue
 
     def _dedupe_frames(self, frames: list[SampledFrame], dedupe_distance: int) -> list[SampledFrame]:
         kept: list[SampledFrame] = []

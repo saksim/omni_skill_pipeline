@@ -12,7 +12,7 @@ from typing import Any
 
 from omni_skill_pipeline.exceptions import MediaProcessingError, ProviderExecutionError
 from omni_skill_pipeline.interfaces import ReviewQueueRepository
-from omni_skill_pipeline.logging_utils import configure_logging
+from omni_skill_pipeline.logging_utils import configure_logging, reset_request_context, set_request_context
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
     CorpusDistillRequest,
@@ -128,85 +128,101 @@ class LocalJobWorker(object):
         payload = json.loads(job_file.read_text(encoding='utf-8'))
         idempotency_key = self._job_idempotency_key(payload)
         kind = str(payload.get('kind', 'unknown')) if isinstance(payload, dict) else 'unknown'
-        logger.info(
-            'Worker job processing started.',
-            extra={
-                'event': 'worker_job_start',
-                'job_file': original_job_name,
-                'claimed_file': job_file.name,
-                'job_kind': kind,
-                'max_attempts': self.max_attempts,
-                'idempotency_key': idempotency_key,
-                'worker_id': self.worker_id,
-            },
+        request_id, trace_id = self._resolve_job_context(
+            payload=payload,
+            original_job_name=original_job_name,
+            idempotency_key=idempotency_key,
         )
-        if idempotency_key in self._completed_jobs_by_key:
-            self._write_duplicate_record(
-                job_file=job_file,
-                original_job_name=original_job_name,
-                kind=kind,
-                payload=payload,
-                idempotency_key=idempotency_key,
-                completed_job_file=self._completed_jobs_by_key[idempotency_key],
+        request_token, trace_token = set_request_context(request_id=request_id, trace_id=trace_id)
+        try:
+            logger.info(
+                'Worker job processing started.',
+                extra={
+                    **self._context_extra(request_id, trace_id),
+                    'event': 'worker_job_start',
+                    'job_file': original_job_name,
+                    'claimed_file': job_file.name,
+                    'job_kind': kind,
+                    'max_attempts': self.max_attempts,
+                    'idempotency_key': idempotency_key,
+                    'worker_id': self.worker_id,
+                },
             )
-            return
-
-        attempt = 0
-        while attempt < self.max_attempts:
-            attempt += 1
-            try:
-                self._dispatch_job(kind=kind, payload=payload)
-                completed_path = self.completed_dir / original_job_name
-                shutil.move(str(job_file), str(completed_path))
-                self._completed_jobs_by_key[idempotency_key] = completed_path.name
-                logger.info(
-                    'Worker job completed.',
-                    extra={
-                        'event': 'worker_job_complete',
-                        'job_file': original_job_name,
-                        'claimed_file': job_file.name,
-                        'job_kind': kind,
-                        'status': 'completed',
-                        'attempts': attempt,
-                        'retries': max(0, attempt - 1),
-                        'idempotency_key': idempotency_key,
-                        'worker_id': self.worker_id,
-                    },
-                )
-                return
-            except Exception as exc:
-                transient = self._is_transient_failure(exc)
-                should_retry = transient and attempt < self.max_attempts
-                if should_retry:
-                    delay_seconds = self._retry_delay_seconds(attempt)
-                    logger.warning(
-                        'Worker job attempt failed; retry scheduled.',
-                        extra={
-                            'event': 'worker_job_retry',
-                            'job_file': original_job_name,
-                            'claimed_file': job_file.name,
-                            'job_kind': kind,
-                            'attempt': attempt,
-                            'max_attempts': self.max_attempts,
-                            'retry_in_seconds': delay_seconds,
-                            'error': str(exc),
-                            'worker_id': self.worker_id,
-                        },
-                    )
-                    if delay_seconds > 0:
-                        time.sleep(delay_seconds)
-                    continue
-                self._write_failed_job(
+            if idempotency_key in self._completed_jobs_by_key:
+                self._write_duplicate_record(
                     job_file=job_file,
                     original_job_name=original_job_name,
                     kind=kind,
                     payload=payload,
-                    error=exc,
-                    attempts=attempt,
-                    transient=transient,
                     idempotency_key=idempotency_key,
+                    completed_job_file=self._completed_jobs_by_key[idempotency_key],
+                    request_id=request_id,
+                    trace_id=trace_id,
                 )
                 return
+
+            attempt = 0
+            while attempt < self.max_attempts:
+                attempt += 1
+                try:
+                    self._dispatch_job(kind=kind, payload=payload)
+                    completed_path = self.completed_dir / original_job_name
+                    shutil.move(str(job_file), str(completed_path))
+                    self._completed_jobs_by_key[idempotency_key] = completed_path.name
+                    logger.info(
+                        'Worker job completed.',
+                        extra={
+                            **self._context_extra(request_id, trace_id),
+                            'event': 'worker_job_complete',
+                            'job_file': original_job_name,
+                            'claimed_file': job_file.name,
+                            'job_kind': kind,
+                            'status': 'completed',
+                            'attempts': attempt,
+                            'retries': max(0, attempt - 1),
+                            'idempotency_key': idempotency_key,
+                            'worker_id': self.worker_id,
+                        },
+                    )
+                    return
+                except Exception as exc:
+                    transient = self._is_transient_failure(exc)
+                    should_retry = transient and attempt < self.max_attempts
+                    if should_retry:
+                        delay_seconds = self._retry_delay_seconds(attempt)
+                        logger.warning(
+                            'Worker job attempt failed; retry scheduled.',
+                            extra={
+                                **self._context_extra(request_id, trace_id),
+                                'event': 'worker_job_retry',
+                                'job_file': original_job_name,
+                                'claimed_file': job_file.name,
+                                'job_kind': kind,
+                                'attempt': attempt,
+                                'max_attempts': self.max_attempts,
+                                'retry_in_seconds': delay_seconds,
+                                'error': str(exc),
+                                'worker_id': self.worker_id,
+                            },
+                        )
+                        if delay_seconds > 0:
+                            time.sleep(delay_seconds)
+                        continue
+                    self._write_failed_job(
+                        job_file=job_file,
+                        original_job_name=original_job_name,
+                        kind=kind,
+                        payload=payload,
+                        error=exc,
+                        attempts=attempt,
+                        transient=transient,
+                        idempotency_key=idempotency_key,
+                        request_id=request_id,
+                        trace_id=trace_id,
+                    )
+                    return
+        finally:
+            reset_request_context(request_token=request_token, trace_token=trace_token)
 
     def _load_completed_job_index(self) -> dict:
         index = {}
@@ -242,6 +258,37 @@ class LocalJobWorker(object):
         digest = hashlib.sha256(canonical.encode('utf-8')).hexdigest()
         return 'payload_sha256:%s' % digest
 
+    def _resolve_job_context(
+        self,
+        *,
+        payload: dict[str, Any],
+        original_job_name: str,
+        idempotency_key: str,
+    ) -> tuple[str, str]:
+        request_id = str(payload.get('request_id', '')).strip()
+        trace_id = str(payload.get('trace_id', '')).strip()
+        metadata = payload.get('metadata')
+        if isinstance(metadata, dict):
+            if not request_id:
+                request_id = str(metadata.get('request_id', '')).strip()
+            if not trace_id:
+                trace_id = str(metadata.get('trace_id', '')).strip()
+
+        if not request_id:
+            seed = '%s|%s|%s' % (original_job_name, idempotency_key, self.worker_id)
+            digest = hashlib.sha1(seed.encode('utf-8')).hexdigest()[:16]
+            request_id = 'job-%s' % digest
+        if not trace_id:
+            trace_id = request_id
+        return request_id, trace_id
+
+    @staticmethod
+    def _context_extra(request_id: str, trace_id: str) -> dict[str, str]:
+        return {
+            'request_id': request_id,
+            'trace_id': trace_id,
+        }
+
     def _write_duplicate_record(
         self,
         *,
@@ -251,11 +298,15 @@ class LocalJobWorker(object):
         payload,
         idempotency_key: str,
         completed_job_file: str,
+        request_id: str,
+        trace_id: str,
     ) -> None:
         duplicate_path = self._reserve_duplicate_record_path(original_job_name)
         duplicate_payload = {
             'status': 'duplicate_skipped',
             'idempotency_key': idempotency_key,
+            'request_id': request_id,
+            'trace_id': trace_id,
             'job_file': original_job_name,
             'claimed_file': job_file.name,
             'job_kind': kind,
@@ -271,6 +322,7 @@ class LocalJobWorker(object):
         logger.info(
             'Worker duplicate job skipped.',
             extra={
+                **self._context_extra(request_id, trace_id),
                 'event': 'worker_job_duplicate',
                 'job_file': original_job_name,
                 'claimed_file': job_file.name,
@@ -466,11 +518,15 @@ class LocalJobWorker(object):
         attempts: int,
         transient: bool,
         idempotency_key: str,
+        request_id: str,
+        trace_id: str,
     ) -> None:
         failure_path = self.failed_dir / original_job_name
         failure_payload = {
             'error': str(error),
             'payload': payload,
+            'request_id': request_id,
+            'trace_id': trace_id,
             'job_file': original_job_name,
             'claimed_file': job_file.name,
             'attempts': attempts,
@@ -487,6 +543,7 @@ class LocalJobWorker(object):
         logger.exception(
             'Worker job failed.',
             extra={
+                **self._context_extra(request_id, trace_id),
                 'event': 'worker_job_complete',
                 'job_file': original_job_name,
                 'claimed_file': job_file.name,

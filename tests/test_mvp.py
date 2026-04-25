@@ -166,6 +166,10 @@ Verify the new plan with EXPLAIN ANALYZE and compare latency.
         self.assertGreaterEqual(len(bundle.skill.steps), 2)
         self.assertTrue(bundle.skill.decision_rules)
         self.assertTrue(bundle.skill.anti_patterns)
+        self.assertIsNotNone(bundle.skill_graph)
+        self.assertIn('text', [item.value for item in bundle.skill_graph.source_modalities])
+        self.assertTrue(bundle.skill_graph.steps)
+        self.assertTrue(bundle.skill_graph.evidence_refs)
         self.assertTrue(Path(bundle.artifacts['skill']).exists())
 
     def test_audio_distillation_uses_transcriber_when_transcript_missing(self) -> None:
@@ -181,6 +185,9 @@ Verify the new plan with EXPLAIN ANALYZE and compare latency.
         self.assertEqual(bundle.asset.modality.value, 'audio')
         self.assertGreaterEqual(len(bundle.evidence_units), 3)
         self.assertTrue(bundle.skill.verification)
+        self.assertIsNotNone(bundle.skill_graph)
+        self.assertIn('audio', [item.value for item in bundle.skill_graph.source_modalities])
+        self.assertTrue(bundle.skill_graph.atom_refs)
         self.assertIn('provider:fake-transcriber', bundle.adapter_metadata['transcript_source'])
 
     def test_image_distillation_generates_ocr_and_scene_evidence(self) -> None:

@@ -6,6 +6,7 @@ from typing import Any, Dict, Sequence
 
 from omni_skill_pipeline.interfaces import ArtifactRepository, ReviewQueueRepository
 from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication, ReviewTask, new_id, utc_now_iso
+from omni_skill_pipeline.redaction import redact_sensitive_data
 from omni_skill_pipeline.utils import slugify, unique_preserve_order
 
 
@@ -54,13 +55,22 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         if isinstance(review_policy_payload, dict) and review_policy_payload:
             artifacts["review_policy"] = bundle_dir / "review_policy.json"
 
-        artifacts["asset"].write_text(bundle.asset.to_json() + "\n", encoding="utf-8")
+        artifacts["asset"].write_text(
+            json.dumps(redact_sensitive_data(bundle.asset.to_dict()), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
         self._write_json_array(artifacts["evidence"], bundle.evidence_units)
         self._write_json_array(artifacts["insights"], bundle.insights)
-        artifacts["skill"].write_text(bundle.skill.to_json() + "\n", encoding="utf-8")
-        artifacts["skill_markdown"].write_text(bundle.skill_markdown, encoding="utf-8")
+        artifacts["skill"].write_text(
+            json.dumps(redact_sensitive_data(bundle.skill.to_dict()), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        artifacts["skill_markdown"].write_text(str(redact_sensitive_data(bundle.skill_markdown)), encoding="utf-8")
         if bundle.corpus is not None:
-            artifacts["corpus"].write_text(bundle.corpus.to_json() + "\n", encoding="utf-8")
+            artifacts["corpus"].write_text(
+                json.dumps(redact_sensitive_data(bundle.corpus.to_dict()), ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
             self._write_json_array(artifacts["corpus_assets"], bundle.corpus.assets)
         if bundle.evidence_nodes:
             self._write_json_array(artifacts["evidence_nodes"], bundle.evidence_nodes)
@@ -70,16 +80,25 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             publication_entries = self._write_publications(artifacts["publications_dir"], bundle.publications, artifacts)
             self._write_json_array(artifacts["publication_manifest"], publication_entries)
         if bundle.quality_scores:
-            artifacts["quality_score"].write_text(json.dumps(bundle.quality_scores, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            artifacts["quality_score"].write_text(
+                json.dumps(redact_sensitive_data(bundle.quality_scores), ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
         if "review_task" in artifacts:
-            artifacts["review_task"].write_text(json.dumps(review_task_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            artifacts["review_task"].write_text(
+                json.dumps(redact_sensitive_data(review_task_payload), ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
         if "review_feedback" in artifacts:
             artifacts["review_feedback"].write_text(
-                json.dumps(review_feedback_payload, ensure_ascii=False, indent=2) + "\n",
+                json.dumps(redact_sensitive_data(review_feedback_payload), ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
         if "review_policy" in artifacts:
-            artifacts["review_policy"].write_text(json.dumps(review_policy_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            artifacts["review_policy"].write_text(
+                json.dumps(redact_sensitive_data(review_policy_payload), ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
         queue_item_path = self._enqueue_review_task(
             bundle=bundle,
             review_task_payload=review_task_payload,
@@ -91,7 +110,10 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
 
         artifact_strings = {name: str(path) for name, path in artifacts.items()}
         bundle.artifacts = artifact_strings
-        artifacts["bundle"].write_text(bundle.to_json() + "\n", encoding="utf-8")
+        artifacts["bundle"].write_text(
+            json.dumps(redact_sensitive_data(bundle.to_dict()), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
         return artifact_strings
 
     def list_review_queue(
@@ -199,7 +221,10 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             closed_payload.setdefault('review_notes', '')
 
         closed_path = self.review_queue_closed_dir / ('%s.json' % target_review_task_id)
-        closed_path.write_text(json.dumps(closed_payload, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+        closed_path.write_text(
+            json.dumps(redact_sensitive_data(closed_payload), ensure_ascii=False, indent=2) + "\n",
+            encoding='utf-8',
+        )
         if source_path != closed_path:
             source_path.unlink(missing_ok=True)
         return closed_payload
@@ -257,7 +282,10 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             'review_task_path': str(review_task_path) if review_task_path is not None else '',
             'bundle_path': str(bundle_path),
         }
-        pending_path.write_text(json.dumps(queue_item, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+        pending_path.write_text(
+            json.dumps(redact_sensitive_data(queue_item), ensure_ascii=False, indent=2) + "\n",
+            encoding='utf-8',
+        )
         return pending_path
 
     def _should_enqueue_review_task(self, review_task_payload: dict[str, Any]) -> bool:
@@ -308,9 +336,9 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         payload = []
         for item in items:
             if hasattr(item, 'to_dict'):
-                payload.append(item.to_dict())
+                payload.append(redact_sensitive_data(item.to_dict()))
             else:
-                payload.append(item)
+                payload.append(redact_sensitive_data(item))
         target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     def _write_publications(
@@ -336,7 +364,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
                     'publication_type': publication.publication_type.value,
                     'path': str(output_path),
                     'relative_path': output_path.name,
-                    'metadata': publication.metadata,
+                    'metadata': redact_sensitive_data(publication.metadata),
                     'evidence_refs': unique_preserve_order(publication.metadata.get('evidence_refs', [])),
                 }
             )
@@ -358,9 +386,10 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             text = ''
             if isinstance(publication.content, dict):
                 text = str(publication.content.get('text', '') or '')
-            target.write_text(text, encoding='utf-8')
+            target.write_text(str(redact_sensitive_data(text)), encoding='utf-8')
             return
         payload = publication.content if isinstance(publication.content, dict) else {'content': publication.content}
+        payload = redact_sensitive_data(payload)
         target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     def _build_cross_asset_refs(self, bundle: DistillBundle) -> list[dict[str, Any]]:

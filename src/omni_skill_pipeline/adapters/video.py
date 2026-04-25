@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import shutil
+import time
 from pathlib import Path
 from uuid import uuid4
 
@@ -55,6 +57,15 @@ class VideoAdapter(object):
             raise FileNotFoundError(str(video_path))
 
         video_metadata = self.media_processor.probe(video_path)
+        provider_calls: list[dict[str, object]] = [
+            self._provider_call_entry(
+                channel='video_probe',
+                provider=self.media_processor.__class__.__name__,
+                calls=1,
+                successes=1,
+                failures=0,
+            )
+        ]
         asset = Asset(
             modality=Modality.VIDEO,
             source_uri=str(video_path.resolve()),
@@ -78,14 +89,32 @@ class VideoAdapter(object):
         work_dir = self.scratch_root / ('omni_video_%s' % uuid4().hex)
         work_dir.mkdir(parents=True, exist_ok=True)
         try:
-            self._collect_audio_evidence(asset, request, video_path, work_dir, evidence_units, adapter_metadata)
-            sampled_frames = self._collect_frame_evidence(asset, request, video_path, work_dir, evidence_units, adapter_metadata)
+            self._collect_audio_evidence(
+                asset,
+                request,
+                video_path,
+                work_dir,
+                evidence_units,
+                adapter_metadata,
+                provider_calls,
+            )
+            sampled_frames = self._collect_frame_evidence(
+                asset,
+                request,
+                video_path,
+                work_dir,
+                evidence_units,
+                adapter_metadata,
+                provider_calls,
+            )
             self._collect_timeline_evidence(asset, evidence_units, sampled_frames, adapter_metadata)
         finally:
-            shutil.rmtree(work_dir, ignore_errors=True)
+            self._cleanup_work_dir(work_dir, adapter_metadata)
 
         if not evidence_units:
             raise ValueError('Video adapter produced no evidence units.')
+        if provider_calls:
+            adapter_metadata['provider_calls'] = self._merge_provider_calls(provider_calls)
 
         return LoadedAsset(
             asset=asset,
@@ -102,11 +131,30 @@ class VideoAdapter(object):
         work_dir: Path,
         evidence_units: list[EvidenceUnit],
         adapter_metadata: dict[str, object],
+        provider_calls: list[dict[str, object]],
     ) -> None:
         try:
             audio_path = self.media_processor.extract_audio(video_path, work_dir)
         except (MediaProcessingError, ProviderUnavailableError):
+            provider_calls.append(
+                self._provider_call_entry(
+                    channel='video_audio_extract',
+                    provider=self.media_processor.__class__.__name__,
+                    calls=1,
+                    successes=0,
+                    failures=1,
+                )
+            )
             return
+        provider_calls.append(
+            self._provider_call_entry(
+                channel='video_audio_extract',
+                provider=self.media_processor.__class__.__name__,
+                calls=1,
+                successes=1,
+                failures=0,
+            )
+        )
 
         try:
             loaded_audio = self.audio_adapter.load(
@@ -121,7 +169,37 @@ class VideoAdapter(object):
                 )
             )
         except Exception:
+            provider_calls.append(
+                self._provider_call_entry(
+                    channel='video_audio_parse',
+                    provider=self.audio_adapter.__class__.__name__,
+                    calls=1,
+                    successes=0,
+                    failures=1,
+                )
+            )
             return
+        provider_calls.append(
+            self._provider_call_entry(
+                channel='video_audio_parse',
+                provider=self.audio_adapter.__class__.__name__,
+                calls=1,
+                successes=1,
+                failures=0,
+            )
+        )
+        for item in loaded_audio.adapter_metadata.get('provider_calls', []):
+            if not isinstance(item, dict):
+                continue
+            provider_calls.append(
+                self._provider_call_entry(
+                    channel='video_audio_%s' % str(item.get('channel', 'provider')).strip(),
+                    provider=str(item.get('provider', '')).strip() or 'unknown',
+                    calls=int(item.get('calls', 0) or 0),
+                    successes=int(item.get('successes', 0) or 0),
+                    failures=int(item.get('failures', 0) or 0),
+                )
+            )
 
         adapter_metadata['audio_track_extracted'] = True
         adapter_metadata['audio_evidence_count'] = len(loaded_audio.evidence_units)
@@ -146,6 +224,7 @@ class VideoAdapter(object):
         work_dir: Path,
         evidence_units: list[EvidenceUnit],
         adapter_metadata: dict[str, object],
+        provider_calls: list[dict[str, object]],
     ) -> list[SampledFrame]:
         interval_seconds = request.keyframe_interval_seconds or self.default_interval_seconds
         max_keyframes = request.max_keyframes or self.default_max_keyframes
@@ -158,6 +237,15 @@ class VideoAdapter(object):
             max_frames=max_keyframes,
             scene_threshold=scene_threshold,
             dedupe_distance=dedupe_distance,
+        )
+        provider_calls.append(
+            self._provider_call_entry(
+                channel='video_keyframe_extract',
+                provider=self.media_processor.__class__.__name__,
+                calls=1,
+                successes=1,
+                failures=0,
+            )
         )
         adapter_metadata['keyframes'] = [
             {
@@ -173,11 +261,31 @@ class VideoAdapter(object):
         for index, frame in enumerate(frames, start=1):
             span_base = self._build_frame_span(index, frame)
             if self.ocr_provider is not None:
+                ocr_provider_name = self.ocr_provider.__class__.__name__
                 try:
                     ocr_result = self.ocr_provider.extract(frame.path)
                 except Exception:
                     ocr_result = None
+                    provider_calls.append(
+                        self._provider_call_entry(
+                            channel='video_frame_ocr',
+                            provider=ocr_provider_name,
+                            calls=1,
+                            successes=0,
+                            failures=1,
+                        )
+                    )
                 else:
+                    resolved_provider = (ocr_result.engine or '').strip() if ocr_result is not None else ''
+                    provider_calls.append(
+                        self._provider_call_entry(
+                            channel='video_frame_ocr',
+                            provider=resolved_provider or ocr_provider_name,
+                            calls=1,
+                            successes=1,
+                            failures=0,
+                        )
+                    )
                     if ocr_result and ocr_result.text.strip():
                         evidence_units.append(
                             EvidenceUnit(
@@ -194,6 +302,7 @@ class VideoAdapter(object):
                         )
 
             if self.analyzer is not None:
+                analyzer_name = self.analyzer.__class__.__name__
                 try:
                     analysis = self.analyzer.analyze(
                         frame.path,
@@ -201,7 +310,28 @@ class VideoAdapter(object):
                     )
                 except Exception:
                     analysis = None
+                    provider_calls.append(
+                        self._provider_call_entry(
+                            channel='video_frame_analysis',
+                            provider=analyzer_name,
+                            calls=1,
+                            successes=0,
+                            failures=1,
+                        )
+                    )
                 else:
+                    resolved_provider = ''
+                    if analysis is not None and isinstance(analysis.metadata, dict):
+                        resolved_provider = str(analysis.metadata.get('model', '')).strip()
+                    provider_calls.append(
+                        self._provider_call_entry(
+                            channel='video_frame_analysis',
+                            provider=resolved_provider or analyzer_name,
+                            calls=1,
+                            successes=1,
+                            failures=0,
+                        )
+                    )
                     if analysis and analysis.summary.strip():
                         evidence_units.append(
                             EvidenceUnit(
@@ -239,7 +369,81 @@ class VideoAdapter(object):
         adapter_metadata['frame_event_count'] = parsed.frame_event_count
         adapter_metadata['subtitle_alignment_count'] = parsed.subtitle_alignment_count
 
+    def _cleanup_work_dir(self, work_dir: Path, adapter_metadata: dict[str, object]) -> None:
+        try:
+            shutil.rmtree(work_dir)
+        except OSError as exc:
+            recovery_log = self.scratch_root / '.cleanup_recovery.log'
+            recovery_entry = {
+                'timestamp_epoch': int(time.time()),
+                'work_dir': str(work_dir),
+                'error': str(exc),
+                'strategy': 'prune_tmp_media',
+            }
+            self._append_cleanup_recovery_entry(recovery_log, recovery_entry)
+            adapter_metadata['scratch_cleanup'] = {
+                'status': 'deferred',
+                'work_dir': str(work_dir),
+                'error': str(exc),
+                'strategy': 'prune_tmp_media',
+                'recovery_log': str(recovery_log),
+                'recovery_command': 'python scripts/prune_tmp_media.py --retention-hours 24',
+            }
+            return
+
+        adapter_metadata['scratch_cleanup'] = {
+            'status': 'cleaned',
+            'work_dir': str(work_dir),
+        }
+
+    def _append_cleanup_recovery_entry(self, log_path: Path, entry: dict[str, object]) -> None:
+        try:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            with log_path.open('a', encoding='utf-8') as handle:
+                handle.write(json.dumps(entry, ensure_ascii=True))
+                handle.write('\n')
+        except OSError:
+            return
+
     def _build_frame_span(self, index: int, frame: SampledFrame) -> str:
         if frame.timestamp_seconds is None:
             return 'frame:%04d' % index
         return 'frame:%04d@%.2fs' % (index, frame.timestamp_seconds)
+
+    def _provider_call_entry(
+        self,
+        *,
+        channel: str,
+        provider: str,
+        calls: int,
+        successes: int,
+        failures: int,
+    ) -> dict[str, object]:
+        return {
+            'channel': str(channel).strip() or 'provider',
+            'provider': str(provider).strip() or 'unknown',
+            'calls': max(0, int(calls)),
+            'successes': max(0, int(successes)),
+            'failures': max(0, int(failures)),
+        }
+
+    def _merge_provider_calls(self, provider_calls: list[dict[str, object]]) -> list[dict[str, object]]:
+        merged: dict[tuple[str, str], dict[str, object]] = {}
+        for item in provider_calls:
+            if not isinstance(item, dict):
+                continue
+            channel = str(item.get('channel', '')).strip() or 'provider'
+            provider = str(item.get('provider', '')).strip() or 'unknown'
+            key = (channel, provider)
+            if key not in merged:
+                merged[key] = self._provider_call_entry(
+                    channel=channel,
+                    provider=provider,
+                    calls=0,
+                    successes=0,
+                    failures=0,
+                )
+            merged[key]['calls'] += max(0, int(item.get('calls', 0) or 0))
+            merged[key]['successes'] += max(0, int(item.get('successes', 0) or 0))
+            merged[key]['failures'] += max(0, int(item.get('failures', 0) or 0))
+        return sorted(merged.values(), key=lambda call: (str(call['channel']), str(call['provider'])))
