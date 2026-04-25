@@ -14,7 +14,7 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from omni_skill_pipeline.exceptions import ProviderExecutionError
-from omni_skill_pipeline.models import CorpusDistillRequest
+from omni_skill_pipeline.models import CorpusDistillRequest, TextDistillRequest
 
 
 class _CapturingService(object):
@@ -102,6 +102,130 @@ class _CapturingTextService(object):
 
     def distill_corpus(self, request):  # pragma: no cover - defensive guard
         raise AssertionError('Unexpected distill_corpus call')
+
+    def distill_audio(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_audio call')
+
+    def distill_image(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_image call')
+
+    def distill_tabular(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_tabular call')
+
+    def distill_video(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_video call')
+
+
+class _StubReviewQueueRepository(object):
+    def __init__(self) -> None:
+        self.pending: dict[str, dict[str, str]] = {
+            'task-1': {
+                'review_task_id': 'task-1',
+                'skill_id': 'skill-1',
+                'decision': 'review_required',
+                'status': 'review_pending',
+                'queue_status': 'pending',
+            }
+        }
+        self.consumed: dict[str, dict[str, str]] = {}
+        self.closed: dict[str, dict[str, str]] = {}
+        self.list_calls = 0
+        self.claim_calls = 0
+        self.close_calls = 0
+
+    def list_review_queue(self, *, queue_status: str | None = 'pending', limit: int = 100) -> list[dict[str, str]]:
+        self.list_calls += 1
+        normalized = str(queue_status or '').strip().lower()
+        items: list[dict[str, str]]
+        if normalized in {'', 'pending'}:
+            items = [dict(item) for item in self.pending.values()]
+        elif normalized == 'consumed':
+            items = [dict(item) for item in self.consumed.values()]
+        elif normalized == 'closed':
+            items = [dict(item) for item in self.closed.values()]
+        elif normalized == 'all':
+            items = [*self.pending.values(), *self.consumed.values(), *self.closed.values()]
+            items = [dict(item) for item in items]
+        else:
+            items = []
+        return items[: max(limit, 0)]
+
+    def claim_review_task(self, review_task_id: str | None = None, *, consumer: str = 'review-consumer') -> dict[str, str] | None:
+        self.claim_calls += 1
+        target = str(review_task_id or '').strip()
+        if not target:
+            target = next(iter(sorted(self.pending.keys())), '')
+        if not target:
+            return None
+        pending_item = self.pending.pop(target, None)
+        if pending_item is None:
+            return None
+        claimed = dict(pending_item)
+        claimed['queue_status'] = 'consumed'
+        claimed['claimed_by'] = consumer.strip() or 'review-consumer'
+        self.consumed[target] = claimed
+        return dict(claimed)
+
+    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, str] | None:
+        return self.claim_review_task(consumer=consumer)
+
+    def close_review_task(
+        self,
+        review_task_id: str,
+        *,
+        status: str = 'published',
+        closed_by: str = 'review-operator',
+        review_notes: str = '',
+    ) -> dict[str, str] | None:
+        self.close_calls += 1
+        target = str(review_task_id).strip()
+        if not target:
+            return None
+        source = self.consumed.pop(target, None) or self.pending.pop(target, None)
+        if source is None:
+            return None
+        closed = dict(source)
+        closed['queue_status'] = 'closed'
+        closed['status'] = str(status).strip().lower() or 'published'
+        closed['closed_by'] = closed_by.strip() or 'review-operator'
+        closed['review_notes'] = review_notes.strip()
+        self.closed[target] = closed
+        return dict(closed)
+
+
+class _ReviewQueueOnlyService(object):
+    def __init__(self, repository: _StubReviewQueueRepository) -> None:
+        self.repository = repository
+
+    def distill_text(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_text call')
+
+    def distill_corpus(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_corpus call')
+
+    def distill_audio(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_audio call')
+
+    def distill_image(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_image call')
+
+    def distill_tabular(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_tabular call')
+
+    def distill_video(self, request):  # pragma: no cover - defensive guard
+        raise AssertionError('Unexpected distill_video call')
+
+
+class _ReplayCapturingService(object):
+    def __init__(self) -> None:
+        self.text_requests: list[TextDistillRequest] = []
+        self.corpus_requests: list[CorpusDistillRequest] = []
+
+    def distill_text(self, request) -> None:
+        self.text_requests.append(request)
+
+    def distill_corpus(self, request) -> None:
+        self.corpus_requests.append(request)
 
     def distill_audio(self, request):  # pragma: no cover - defensive guard
         raise AssertionError('Unexpected distill_audio call')
@@ -399,6 +523,180 @@ class WorkerConcurrencyClaimTests(unittest.TestCase):
             self.assertTrue((jobs_root / 'completed' / 'job-race.json').exists())
             self.assertFalse((jobs_root / 'pending' / 'job-race.json').exists())
             self.assertEqual(list((jobs_root / 'inflight').glob('*.json')), [])
+
+
+class WorkerTaskTypeUpgradeTests(unittest.TestCase):
+    def test_review_queue_claim_job_is_supported(self) -> None:
+        from omni_skill_pipeline import worker as worker_module
+
+        queue_repository = _StubReviewQueueRepository()
+        service = _ReviewQueueOnlyService(queue_repository)
+        payload = {
+            'kind': 'review_queue',
+            'action': 'claim',
+            'consumer': 'queue-worker',
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            jobs_root = Path(temp_dir) / 'jobs'
+            _write_pending_job(jobs_root, 'job-review-claim.json', payload)
+
+            with (
+                patch.object(worker_module, 'build_service', return_value=service),
+                patch.object(worker_module, 'configure_logging', return_value=None),
+            ):
+                worker = worker_module.LocalJobWorker(jobs_root)
+                processed = worker.run_once()
+
+            self.assertEqual(processed, 1)
+            self.assertEqual(queue_repository.claim_calls, 1)
+            self.assertEqual(queue_repository.pending, {})
+            self.assertIn('task-1', queue_repository.consumed)
+            self.assertTrue((jobs_root / 'completed' / 'job-review-claim.json').exists())
+
+    def test_rebuild_publication_job_replays_text_request(self) -> None:
+        from omni_skill_pipeline import worker as worker_module
+
+        service = _ReplayCapturingService()
+        payload = {
+            'kind': 'rebuild_publication',
+            'request_kind': 'text',
+            'request': {
+                'content': 'rebuild publication from known request',
+                'goal': {'domain': 'operations'},
+            },
+            'goal_overrides': {'domain': 'sre'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            jobs_root = Path(temp_dir) / 'jobs'
+            _write_pending_job(jobs_root, 'job-rebuild-publication.json', payload)
+
+            with (
+                patch.object(worker_module, 'build_service', return_value=service),
+                patch.object(worker_module, 'configure_logging', return_value=None),
+            ):
+                worker = worker_module.LocalJobWorker(jobs_root)
+                processed = worker.run_once()
+
+            self.assertEqual(processed, 1)
+            self.assertEqual(len(service.text_requests), 1)
+            request = service.text_requests[0]
+            self.assertIsInstance(request, TextDistillRequest)
+            self.assertEqual(request.content, 'rebuild publication from known request')
+            self.assertEqual(request.goal.domain, 'sre')
+            self.assertTrue((jobs_root / 'completed' / 'job-rebuild-publication.json').exists())
+
+    def test_rebuild_publication_can_load_request_payload_from_bundle(self) -> None:
+        from omni_skill_pipeline import worker as worker_module
+
+        service = _ReplayCapturingService()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            jobs_root = root / 'jobs'
+            bundle_path = root / 'bundle.json'
+            bundle_path.write_text(
+                json.dumps(
+                    {
+                        'request_payload': {
+                            'content': 'rebuild from bundle request payload',
+                            'goal': {'domain': 'platform'},
+                        }
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + '\n',
+                encoding='utf-8',
+            )
+            _write_pending_job(
+                jobs_root,
+                'job-rebuild-from-bundle.json',
+                {
+                    'kind': 'rebuild_publication',
+                    'request_kind': 'text',
+                    'bundle_path': str(bundle_path),
+                },
+            )
+
+            with (
+                patch.object(worker_module, 'build_service', return_value=service),
+                patch.object(worker_module, 'configure_logging', return_value=None),
+            ):
+                worker = worker_module.LocalJobWorker(jobs_root)
+                processed = worker.run_once()
+
+            self.assertEqual(processed, 1)
+            self.assertEqual(len(service.text_requests), 1)
+            self.assertEqual(service.text_requests[0].content, 'rebuild from bundle request payload')
+
+    def test_revise_skill_requires_existing_skill_id(self) -> None:
+        from omni_skill_pipeline import worker as worker_module
+
+        service = _ReplayCapturingService()
+        payload = {
+            'kind': 'revise_skill',
+            'request_kind': 'text',
+            'request': {
+                'content': 'revise without explicit skill id',
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            jobs_root = Path(temp_dir) / 'jobs'
+            _write_pending_job(jobs_root, 'job-revise-missing-id.json', payload)
+
+            with (
+                patch.object(worker_module, 'build_service', return_value=service),
+                patch.object(worker_module, 'configure_logging', return_value=None),
+            ):
+                worker = worker_module.LocalJobWorker(jobs_root)
+                processed = worker.run_once()
+
+            self.assertEqual(processed, 1)
+            self.assertEqual(len(service.text_requests), 0)
+            failed_path = jobs_root / 'failed' / 'job-revise-missing-id.json'
+            self.assertTrue(failed_path.exists())
+            failed_payload = json.loads(failed_path.read_text(encoding='utf-8'))
+            self.assertIn('existing_skill_id', failed_payload.get('error', ''))
+
+    def test_revise_skill_injects_existing_skill_id_into_corpus_metadata(self) -> None:
+        from omni_skill_pipeline import worker as worker_module
+
+        service = _ReplayCapturingService()
+        payload = {
+            'kind': 'revise_skill',
+            'existing_skill_id': 'skill-legacy-1',
+            'request_kind': 'corpus',
+            'request': {
+                'name': 'revise-corpus',
+                'assets': [
+                    {'source_uri': 'file://examples/text_note.md', 'modality': 'text', 'role': 'primary'},
+                ],
+                'metadata': {'source': 'review-loop'},
+                'goal': {'domain': 'operations'},
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            jobs_root = Path(temp_dir) / 'jobs'
+            _write_pending_job(jobs_root, 'job-revise-corpus.json', payload)
+
+            with (
+                patch.object(worker_module, 'build_service', return_value=service),
+                patch.object(worker_module, 'configure_logging', return_value=None),
+            ):
+                worker = worker_module.LocalJobWorker(jobs_root)
+                processed = worker.run_once()
+
+            self.assertEqual(processed, 1)
+            self.assertEqual(len(service.corpus_requests), 1)
+            request = service.corpus_requests[0]
+            self.assertIsInstance(request, CorpusDistillRequest)
+            self.assertEqual(request.metadata.get('source'), 'review-loop')
+            self.assertEqual(request.metadata.get('revise_existing_skill_id'), 'skill-legacy-1')
+            self.assertTrue((jobs_root / 'completed' / 'job-revise-corpus.json').exists())
 
 
 if __name__ == '__main__':

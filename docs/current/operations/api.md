@@ -39,11 +39,15 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 
 - `GET /healthz`
 - `GET /v1/templates/skill`
+- `GET /v1/review/queue`
+- `POST /v1/review/queue/claim`
+- `POST /v1/review/queue/{review_task_id}/close`
 - `POST /v1/distill/text`
 - `POST /v1/distill/audio`
 - `POST /v1/distill/image`
 - `POST /v1/distill/tabular`
 - `POST /v1/distill/video`
+- `POST /v1/distill/corpus`
 
 ## Health / Readiness
 
@@ -205,9 +209,28 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 }
 ```
 
+## V2 Distill Response Summary (TP-E10-02)
+
+所有 `POST /v1/distill/*` 端点仍返回历史 `bundle` 字段（如 `skill_markdown`、`skill_graph`、`publications`），同时新增以下顶层摘要字段：
+
+- `graph_metadata`
+  - `graph_id`
+  - `name`
+  - `version`
+  - `review_status`
+  - `node_counts`（`steps/decisions/verifications/risks/examples/variables/edges`）
+- `available_publications`
+  - 列出可用发布视图（`publication_type`、`path`、`publication_id`）
+- `review_status`
+  - 优先取 `review_task.status`，缺失时回退 `skill.review_status`
+- `lifecycle_decision`
+  - 透传 `adapter_metadata.lifecycle_decision`（若存在）
+
+兼容性要求：旧接口消费方仍可直接读取 `skill_markdown`，无需改造。
+
 ## Current Caveats
 
-- 当前仅覆盖单资产 distill 端点，`/v1/distill/corpus` 尚未开放
+- distill API 已开放 corpus 与 V2 摘要字段；worker 任务类型升级仍待 `TP-E10-03`
 - 已启用 structured logging，包含 request_id / trace_id 关联字段
 
 ## Request / Trace Context
@@ -227,3 +250,20 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 - API request completion event: `api_request_completed`.
 - Service distillation events: `distill_start` / `distill_complete`.
 
+
+## Review Queue Operations (LC-R-37)
+
+- `GET /v1/review/queue`
+  - Query: `queue_status` (`pending`/`consumed`/`closed`/`all`), `limit` (`1-1000`).
+  - Response: `{"items": [...]}`.
+- `POST /v1/review/queue/claim`
+  - Body: `{"review_task_id"?: "...", "consumer"?: "review-consumer"}`.
+  - Behavior: claim specific pending task if `review_task_id` provided; otherwise claim oldest pending item.
+  - `404` when no pending review task can be claimed.
+- `POST /v1/review/queue/{review_task_id}/close`
+  - Body: `{"status"?: "published", "closed_by"?: "review-operator", "review_notes"?: "..."}`.
+  - Behavior: move review task into `closed` queue bucket and persist closure metadata.
+  - `404` when review task is not found.
+
+These endpoints follow the same API key and rate-limit middleware used by `/v1/distill/*`.
+If repository does not implement `ReviewQueueRepository`, API returns `503`.

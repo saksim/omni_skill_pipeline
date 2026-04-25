@@ -8,8 +8,10 @@ import shutil
 import time
 import uuid
 from pathlib import Path
+from typing import Any
 
 from omni_skill_pipeline.exceptions import MediaProcessingError, ProviderExecutionError
+from omni_skill_pipeline.interfaces import ReviewQueueRepository
 from omni_skill_pipeline.logging_utils import configure_logging
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
@@ -290,6 +292,18 @@ class LocalJobWorker(object):
         return candidate
 
     def _dispatch_job(self, *, kind: str, payload: dict) -> None:
+        if kind == 'review_queue':
+            self._dispatch_review_queue_job(payload)
+            return
+        if kind == 'rebuild_publication':
+            self._dispatch_rebuild_publication_job(payload)
+            return
+        if kind == 'revise_skill':
+            self._dispatch_revise_skill_job(payload)
+            return
+        self._dispatch_distill_request(kind=kind, payload=payload)
+
+    def _dispatch_distill_request(self, *, kind: str, payload: dict) -> None:
         if kind == 'text':
             self.service.distill_text(TextDistillRequest.from_dict(payload))
             return
@@ -309,6 +323,137 @@ class LocalJobWorker(object):
             self.service.distill_corpus(CorpusDistillRequest.from_dict(payload))
             return
         raise ValueError('Unsupported job kind: %s' % kind)
+
+    def _dispatch_review_queue_job(self, payload: dict[str, Any]) -> None:
+        repository = self._require_review_queue_repository()
+        action = str(payload.get('action', 'claim')).strip().lower() or 'claim'
+        if action == 'list':
+            queue_status = str(payload.get('queue_status', 'pending')).strip() or 'pending'
+            limit_raw = payload.get('limit', 100)
+            limit = int(limit_raw) if str(limit_raw).strip() else 100
+            repository.list_review_queue(queue_status=queue_status, limit=limit)
+            return
+        if action == 'claim':
+            review_task_id = str(payload.get('review_task_id', '')).strip() or None
+            consumer = str(payload.get('consumer', 'review-consumer')).strip() or 'review-consumer'
+            repository.claim_review_task(review_task_id=review_task_id, consumer=consumer)
+            return
+        if action == 'consume':
+            consumer = str(payload.get('consumer', 'review-consumer')).strip() or 'review-consumer'
+            repository.consume_review_task(consumer=consumer)
+            return
+        if action == 'close':
+            review_task_id = str(payload.get('review_task_id', '')).strip()
+            if not review_task_id:
+                raise ValueError('review_queue close action requires review_task_id.')
+            status = str(payload.get('status', 'published')).strip() or 'published'
+            closed_by = str(payload.get('closed_by', 'review-operator')).strip() or 'review-operator'
+            review_notes = str(payload.get('review_notes', '')).strip()
+            repository.close_review_task(
+                review_task_id,
+                status=status,
+                closed_by=closed_by,
+                review_notes=review_notes,
+            )
+            return
+        raise ValueError('Unsupported review_queue action: %s' % action)
+
+    def _dispatch_rebuild_publication_job(self, payload: dict[str, Any]) -> None:
+        request_kind, request_payload = self._resolve_replay_request(payload)
+        self._dispatch_distill_request(kind=request_kind, payload=request_payload)
+
+    def _dispatch_revise_skill_job(self, payload: dict[str, Any]) -> None:
+        existing_skill_id = str(payload.get('existing_skill_id', '')).strip()
+        if not existing_skill_id:
+            raise ValueError('revise_skill job requires existing_skill_id.')
+
+        request_kind, request_payload = self._resolve_replay_request(payload)
+        request_payload = dict(request_payload)
+        if request_kind == 'corpus':
+            metadata = request_payload.get('metadata')
+            metadata_payload = dict(metadata) if isinstance(metadata, dict) else {}
+            metadata_payload.setdefault('revise_existing_skill_id', existing_skill_id)
+            request_payload['metadata'] = metadata_payload
+
+        logger.info(
+            'Worker revise_skill dispatched.',
+            extra={
+                'event': 'worker_revise_skill_dispatch',
+                'existing_skill_id': existing_skill_id,
+                'request_kind': request_kind,
+            },
+        )
+        self._dispatch_distill_request(kind=request_kind, payload=request_payload)
+
+    def _resolve_replay_request(self, payload: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+        request_payload: dict[str, Any]
+        raw_request_payload = payload.get('request')
+        if isinstance(raw_request_payload, dict):
+            request_payload = dict(raw_request_payload)
+        else:
+            bundle_path = str(payload.get('bundle_path', '')).strip()
+            if not bundle_path:
+                raise ValueError('Replay job requires request payload or bundle_path.')
+            request_payload = self._load_request_payload_from_bundle(Path(bundle_path))
+
+        goal_overrides = payload.get('goal_overrides')
+        if isinstance(goal_overrides, dict) and goal_overrides:
+            request_payload = self._apply_goal_overrides(request_payload, goal_overrides)
+
+        request_kind = self._resolve_request_kind(payload=payload, request_payload=request_payload)
+        return request_kind, request_payload
+
+    def _load_request_payload_from_bundle(self, bundle_path: Path) -> dict[str, Any]:
+        if not bundle_path.exists():
+            raise ValueError('bundle_path does not exist: %s' % bundle_path)
+        payload = json.loads(bundle_path.read_text(encoding='utf-8'))
+        if not isinstance(payload, dict):
+            raise ValueError('bundle_path payload must be a JSON object: %s' % bundle_path)
+        request_payload = payload.get('request_payload')
+        if not isinstance(request_payload, dict):
+            raise ValueError('bundle_path payload does not include request_payload: %s' % bundle_path)
+        return dict(request_payload)
+
+    def _apply_goal_overrides(self, request_payload: dict[str, Any], goal_overrides: dict[str, Any]) -> dict[str, Any]:
+        normalized = dict(request_payload)
+        current_goal = normalized.get('goal')
+        goal_payload = dict(current_goal) if isinstance(current_goal, dict) else {}
+        goal_payload.update(goal_overrides)
+        normalized['goal'] = goal_payload
+        return normalized
+
+    def _resolve_request_kind(self, *, payload: dict[str, Any], request_payload: dict[str, Any]) -> str:
+        request_kind = str(payload.get('request_kind', '')).strip().lower()
+        if request_kind:
+            return request_kind
+
+        embedded_kind = str(request_payload.get('kind', '')).strip().lower()
+        if embedded_kind:
+            return embedded_kind
+
+        if isinstance(request_payload.get('assets'), list):
+            return 'corpus'
+        if str(request_payload.get('video_path', '')).strip():
+            return 'video'
+        if str(request_payload.get('image_path', '')).strip():
+            return 'image'
+        if str(request_payload.get('audio_path', '')).strip() or str(request_payload.get('transcript_path', '')).strip():
+            return 'audio'
+        if str(request_payload.get('file_path', '')).strip():
+            value_columns = request_payload.get('value_columns')
+            entity_columns = request_payload.get('entity_columns')
+            if value_columns is not None or entity_columns is not None:
+                return 'tabular'
+            return 'text'
+        if str(request_payload.get('content', '')).strip():
+            return 'text'
+        raise ValueError('Unable to infer request kind for replay job.')
+
+    def _require_review_queue_repository(self) -> ReviewQueueRepository:
+        repository = getattr(self.service, 'repository', None)
+        if not isinstance(repository, ReviewQueueRepository):
+            raise ValueError('Service repository does not implement ReviewQueueRepository.')
+        return repository
 
     def _write_failed_job(
         self,

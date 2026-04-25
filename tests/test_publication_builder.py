@@ -90,6 +90,19 @@ class PublicationBuilderTests(unittest.TestCase):
         decision_tree = publications[1]
         self.assertEqual(decision_tree.content["branches"][0]["condition"], graph.decisions[0].condition)
 
+    def test_builder_emits_default_decision_tree_when_graph_has_no_decisions(self) -> None:
+        graph = self._build_graph()
+        graph.decisions = []
+        builder = PublicationBuilder()
+        publications = builder.build(graph, publication_types=[PublicationType.DECISION_TREE_JSON])
+
+        self.assertEqual(len(publications), 1)
+        decision_tree = publications[0]
+        self.assertEqual(decision_tree.path, "decision_tree.json")
+        default_branch = decision_tree.content["branches"][0]
+        self.assertEqual(default_branch["condition"], "default")
+        self.assertEqual(default_branch["evidence_refs"], [])
+
     def test_builder_dedupes_publication_types(self) -> None:
         graph = self._build_graph()
         builder = PublicationBuilder()

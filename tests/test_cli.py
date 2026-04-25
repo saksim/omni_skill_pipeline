@@ -20,7 +20,28 @@ from omni_skill_pipeline.models import CorpusDistillRequest
 
 class _StubBundle(object):
     def __init__(self) -> None:
-        self.artifacts = {'skill_markdown': 'skills/drafts/demo-corpus/SKILL.md'}
+        self.artifacts = {
+            'skill_markdown': 'skills/drafts/demo-corpus/SKILL.md',
+            'skill': 'skills/drafts/demo-corpus/skill.json',
+            'publication_skill_markdown': 'skills/drafts/demo-corpus/publications/SKILL.md',
+            'publication_skill_json': 'skills/drafts/demo-corpus/publications/skill.json',
+            'publication_decision_tree_json': 'skills/drafts/demo-corpus/publications/decision_tree.json',
+        }
+        self.publications = [
+            {'publication_type': 'skill_markdown'},
+            {'publication_type': 'skill_json'},
+            {'publication_type': 'decision_tree_json'},
+        ]
+        self.adapter_metadata = {
+            'publication_types': ['skill_markdown', 'skill_json', 'decision_tree_json'],
+            'review_task': {
+                'review_task_id': 'review-task-1',
+                'decision': 'review_required',
+                'status': 'review_pending',
+                'reason_codes': ['traceability_low', 'coverage_low'],
+            },
+        }
+        self.review_task = None
 
 
 class _CapturingService(object):
@@ -80,7 +101,7 @@ class CliCorpusCommandTests(unittest.TestCase):
         )
 
         self.assertEqual(exit_code, 0)
-        self.assertIn('skills/drafts/demo-corpus/SKILL.md', output)
+        self.assertIn('skills/drafts/demo-corpus/publications/SKILL.md', output)
         self.assertEqual(len(service.corpus_requests), 1)
         request = service.corpus_requests[0]
         self.assertIsInstance(request, CorpusDistillRequest)
@@ -122,7 +143,7 @@ class CliCorpusCommandTests(unittest.TestCase):
             )
 
         self.assertEqual(exit_code, 0)
-        self.assertIn('skills/drafts/demo-corpus/SKILL.md', output)
+        self.assertIn('skills/drafts/demo-corpus/publications/SKILL.md', output)
         self.assertEqual(len(service.corpus_requests), 1)
         request = service.corpus_requests[0]
         self.assertEqual(request.name, 'payload-corpus')
@@ -132,6 +153,46 @@ class CliCorpusCommandTests(unittest.TestCase):
         self.assertEqual(request.assets[1].modality.value, 'audio')
         self.assertEqual(request.tags, ['payload'])
         self.assertEqual(request.metadata, {'source': 'test'})
+
+    def test_distill_corpus_supports_publication_selection_and_review_status_output(self) -> None:
+        service = _CapturingService()
+        exit_code, output = _run_cli(
+            [
+                'distill-corpus',
+                '--asset',
+                'text=examples/text_note.md',
+                '--publication',
+                'skill_json',
+                '--show-publications',
+            ],
+            service,
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn('skills/drafts/demo-corpus/publications/skill.json', output)
+        self.assertIn('selected_publication=skill_json', output)
+        self.assertIn('available_publications=skill_markdown,skill_json,decision_tree_json', output)
+        self.assertIn(
+            'review_status=review_pending decision=review_required review_task_id=review-task-1 '
+            'reason_codes=traceability_low,coverage_low',
+            output,
+        )
+
+    def test_distill_corpus_accepts_publication_artifact_key_style(self) -> None:
+        service = _CapturingService()
+        exit_code, output = _run_cli(
+            [
+                'distill-corpus',
+                '--asset',
+                'text=examples/text_note.md',
+                '--publication',
+                'publication_decision_tree_json',
+            ],
+            service,
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn('skills/drafts/demo-corpus/publications/decision_tree.json', output)
 
 
 if __name__ == '__main__':

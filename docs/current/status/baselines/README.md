@@ -14,6 +14,8 @@
   - 后续 V2 所有阶段共用的评估口径
 - [e0-baseline-manifest.json](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\baselines\e0-baseline-manifest.json)
   - 机器可读的样本与基线草稿映射
+- `e8-dual-write-benchmark-report.json`（由 `scripts/benchmark_dual_write.py` 生成）
+  - file-only 与 file+postgres dual-write 的基础时延报告
 
 ## 用法
 

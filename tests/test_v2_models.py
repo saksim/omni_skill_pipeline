@@ -34,6 +34,7 @@ from omni_skill_pipeline.models import (
     SemanticAtom,
     SpatialRef,
     StructuralRef,
+    SkillLineageLink,
     SkillGraph,
     SkillGraphEdge,
     StepNode,
@@ -228,6 +229,28 @@ class V2ModelTests(unittest.TestCase):
         payload = task.to_dict()
         self.assertEqual(payload['status'], 'rejected')
         self.assertIn('S_REBUILD_FROM_EVIDENCE', payload['revision_suggestions'])
+
+    def test_skill_lineage_link_can_be_derived_from_lifecycle_decision(self) -> None:
+        links = SkillLineageLink.from_lifecycle_decision(
+            skill_id='skill-new',
+            lifecycle_decision={
+                'decision': 'supersede',
+                'reason': 'Near-identical replacement approved.',
+                'related_graph_ids': ['skill-old-1', 'skill-old-1', '', 'skill-old-2'],
+                'confidence': 0.91,
+                'metadata': {'source': 'unit-test'},
+            },
+        )
+
+        self.assertEqual(len(links), 2)
+        first_payload = links[0].to_dict()
+        second_payload = links[1].to_dict()
+        self.assertEqual(first_payload['skill_id'], 'skill-new')
+        self.assertEqual(first_payload['related_skill_id'], 'skill-old-1')
+        self.assertEqual(first_payload['relation_type'], 'supersede')
+        self.assertEqual(first_payload['confidence'], 0.91)
+        self.assertEqual(first_payload['metadata']['source'], 'unit-test')
+        self.assertEqual(second_payload['related_skill_id'], 'skill-old-2')
 
     def test_evidence_builder_creates_video_frame_lineage(self) -> None:
         builder = EvidenceBuilder()

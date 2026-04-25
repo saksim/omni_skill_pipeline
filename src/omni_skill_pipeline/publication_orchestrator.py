@@ -3,7 +3,7 @@ from __future__ import annotations
 from omni_skill_pipeline.assembly.publication_builder import PublicationBuilder
 from omni_skill_pipeline.assembly.skill_graph_builder import SkillGraphBuilder
 from omni_skill_pipeline.interfaces import AtomExtractor
-from omni_skill_pipeline.models import DistillGoal, Publication, PublicationType, SkillDocument, SkillGraph
+from omni_skill_pipeline.models import DistillGoal, GoalType, Publication, PublicationType, SkillDocument, SkillGraph
 from omni_skill_pipeline.render import render_skill_markdown
 from omni_skill_pipeline.utils import unique_preserve_order
 
@@ -94,5 +94,14 @@ class PublicationOrchestrator(object):
         atoms = self.atom_extractor.extract(evidence_nodes)
         graph_name = skill.name.strip() or title_hint.strip() or 'untitled skill'
         skill_graph = self.skill_graph_builder.build(graph_name, goal, evidence_nodes, atoms)
-        publications = self.publication_builder.build(skill_graph)
+        publication_types = self._resolve_publication_types(goal)
+        publications = self.publication_builder.build(skill_graph, publication_types=publication_types)
         return skill_graph, self.harmonizer.harmonize(publications, skill=skill, skill_graph=skill_graph)
+
+    def _resolve_publication_types(self, goal: DistillGoal) -> list[PublicationType]:
+        publication_types: list[PublicationType] = [PublicationType.SKILL_MARKDOWN, PublicationType.SKILL_JSON]
+        if goal.goal_type == GoalType.EXTRACT_CHECKLIST:
+            publication_types.append(PublicationType.CHECKLIST_JSON)
+        elif goal.goal_type == GoalType.EXTRACT_DECISION_TREE:
+            publication_types.append(PublicationType.DECISION_TREE_JSON)
+        return publication_types

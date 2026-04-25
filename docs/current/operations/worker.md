@@ -23,6 +23,9 @@ data/jobs/
 - `tabular`
 - `video`
 - `corpus`
+- `review_queue`
+- `rebuild_publication`
+- `revise_skill`
 
 ## Job Payload Examples
 
@@ -104,6 +107,71 @@ data/jobs/
   "tags": ["beta", "ops"]
 }
 ```
+
+### Review Queue Claim
+
+```json
+{
+  "kind": "review_queue",
+  "action": "claim",
+  "consumer": "review-worker"
+}
+```
+
+`review_queue` supports:
+
+- `action=list` (`queue_status`, `limit`)
+- `action=claim` (`review_task_id` optional, `consumer` optional)
+- `action=consume` (`consumer` optional; compatibility alias)
+- `action=close` (`review_task_id`, optional `status`, `closed_by`, `review_notes`)
+
+### Rebuild Publication
+
+```json
+{
+  "kind": "rebuild_publication",
+  "request_kind": "text",
+  "request": {
+    "content": "Rebuild publication views from this request.",
+    "goal": {
+      "domain": "operations"
+    }
+  },
+  "goal_overrides": {
+    "goal_type": "extract_checklist"
+  }
+}
+```
+
+Replay source options:
+
+- inline `request` payload
+- `bundle_path` pointing to an existing `bundle.json` containing `request_payload`
+
+### Revise Existing Skill
+
+```json
+{
+  "kind": "revise_skill",
+  "existing_skill_id": "skill-legacy-1",
+  "request_kind": "corpus",
+  "request": {
+    "name": "revise-corpus",
+    "assets": [
+      {
+        "source_uri": "file://examples/text_note.md",
+        "modality": "text",
+        "role": "primary"
+      }
+    ],
+    "goal": {
+      "domain": "operations"
+    }
+  }
+}
+```
+
+For `request_kind=corpus`, worker injects `metadata.revise_existing_skill_id` automatically before replay.
 
 ## Result Layout
 

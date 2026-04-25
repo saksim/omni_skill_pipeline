@@ -63,6 +63,7 @@ DDL 已固化在 [001_init.sql](D:\download\gaming\new_program\data_helper\3_omn
 - `insights`
 - `skills`
 - `skill_versions`
+- `publications`
 - `review_tasks`
 
 ## File Artifact Store
@@ -77,12 +78,21 @@ skills/
       skill.json
       SKILL.md
       bundle.json
+  review_queue/
+    pending/
+      {review_task_id}.json
+    consumed/
+      {review_task_id}.json
 ```
 
 ## Storage Rules
 
 - 当前主仓储是本地文件系统
 - Repository 只负责工件落盘，不负责蒸馏推理
+- `PostgresRepository` 位于 `src/omni_skill_pipeline/persistence/postgres_repository.py`，当前聚焦 skills/review/publications 的最小落库合同
+- `DualWriteArtifactRepository` 位于 `src/omni_skill_pipeline/persistence/dual_write_repository.py`，用于 file + postgres 镜像写入与失败隔离
+- Retrieval 抽象位于 `src/omni_skill_pipeline/retrieval/similarity.py`，当前默认 `inmemory`，并预留 `pgvector/qdrant` 占位 backend
+- Review queue 最小合同支持 `pending` 查询与 `consume` 消费
 - `docs/current/contracts/` 是 schema 与模板真相源
 - Video 临时工坊位于 `.tmp_omni_media/`
 

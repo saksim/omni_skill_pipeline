@@ -109,10 +109,64 @@ class PublicationOrchestratorTests(unittest.TestCase):
 
         atom_extractor.extract.assert_called_once_with(evidence_nodes)
         skill_graph_builder.build.assert_called_once_with('Skill Name', goal, evidence_nodes, ['atom-1'])
-        publication_builder.build.assert_called_once_with(skill_graph)
+        publication_builder.build.assert_called_once_with(
+            skill_graph,
+            publication_types=[PublicationType.SKILL_MARKDOWN, PublicationType.SKILL_JSON],
+        )
         harmonizer.harmonize.assert_called_once_with(base_publications, skill=skill, skill_graph=skill_graph)
         self.assertIs(result_graph, skill_graph)
         self.assertIs(result_publications, harmonized_publications)
+
+    def test_orchestrator_chooses_goal_specific_publication_types(self) -> None:
+        matrix = [
+            ('extract_checklist', PublicationType.CHECKLIST_JSON),
+            ('extract_decision_tree', PublicationType.DECISION_TREE_JSON),
+        ]
+        for goal_type, expected_tail in matrix:
+            with self.subTest(goal_type=goal_type):
+                atom_extractor = Mock()
+                atom_extractor.extract.return_value = ['atom-1']
+                skill_graph = SkillGraph(
+                    graph_id='graph-3',
+                    name='Graph Name',
+                    goal='Goal',
+                    source_modalities=[Modality.TEXT],
+                )
+                skill_graph_builder = Mock()
+                skill_graph_builder.build.return_value = skill_graph
+                publication_builder = Mock()
+                publication_builder.build.return_value = [
+                    Publication(publication_type=PublicationType.SKILL_MARKDOWN, content={'text': 'x'})
+                ]
+                harmonizer = Mock()
+                harmonizer.harmonize.return_value = []
+                orchestrator = PublicationOrchestrator(
+                    atom_extractor=atom_extractor,
+                    skill_graph_builder=skill_graph_builder,
+                    publication_builder=publication_builder,
+                    harmonizer=harmonizer,
+                )
+                goal = DistillGoal.from_dict({'goal_type': goal_type, 'domain': 'ops'})
+                skill = SkillDocument(
+                    name='Skill Name',
+                    goal='Goal',
+                    source_modality=Modality.TEXT,
+                    steps=[SkillStep(step=1, action='Do thing')],
+                )
+                orchestrator.build_publications(
+                    title_hint='title-hint',
+                    goal=goal,
+                    evidence_nodes=[object()],
+                    skill=skill,
+                )
+                publication_builder.build.assert_called_once_with(
+                    skill_graph,
+                    publication_types=[
+                        PublicationType.SKILL_MARKDOWN,
+                        PublicationType.SKILL_JSON,
+                        expected_tail,
+                    ],
+                )
 
 
 if __name__ == '__main__':

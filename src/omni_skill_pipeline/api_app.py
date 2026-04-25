@@ -15,10 +15,13 @@ from omni_skill_pipeline.api_schemas import (
     CorpusDistillRequestSchema,
     DistillGoalSchema,
     ImageDistillRequestSchema,
+    ReviewQueueClaimRequestSchema,
+    ReviewQueueCloseRequestSchema,
     TabularDistillRequestSchema,
     TextDistillRequestSchema,
     VideoDistillRequestSchema,
 )
+from omni_skill_pipeline.interfaces import ReviewQueueRepository
 from omni_skill_pipeline.exceptions import (
     MediaProcessingError,
     ProviderExecutionError,
@@ -38,7 +41,7 @@ from omni_skill_pipeline.logging_utils import configure_logging, reset_request_c
 from omni_skill_pipeline.service import build_service
 
 try:
-    from fastapi import Depends, FastAPI, Header, HTTPException, Request
+    from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
     from fastapi.exceptions import RequestValidationError
     from fastapi.responses import JSONResponse
     from fastapi.responses import PlainTextResponse
@@ -47,6 +50,7 @@ except ImportError:  # pragma: no cover
     FastAPI = None
     Header = None
     HTTPException = Exception
+    Query = None
     Request = object
     RequestValidationError = Exception
     JSONResponse = object
@@ -57,6 +61,9 @@ logger = logging.getLogger(__name__)
 READINESS_REQUIRED_ROUTES = (
     '/healthz',
     '/v1/templates/skill',
+    '/v1/review/queue',
+    '/v1/review/queue/claim',
+    '/v1/review/queue/{review_task_id}/close',
     '/v1/distill/text',
     '/v1/distill/audio',
     '/v1/distill/image',
@@ -140,6 +147,110 @@ def _error_response(
     )
 
 
+def _build_graph_metadata(payload: dict[str, Any]) -> dict[str, Any] | None:
+    skill_graph = payload.get('skill_graph')
+    if not isinstance(skill_graph, dict):
+        return None
+
+    def _count_list(key: str) -> int:
+        value = skill_graph.get(key)
+        return len(value) if isinstance(value, list) else 0
+
+    return {
+        'graph_id': str(skill_graph.get('graph_id') or ''),
+        'name': str(skill_graph.get('name') or ''),
+        'version': str(skill_graph.get('version') or ''),
+        'review_status': str(skill_graph.get('review_status') or ''),
+        'node_counts': {
+            'steps': _count_list('steps'),
+            'decisions': _count_list('decisions'),
+            'verifications': _count_list('verifications'),
+            'risks': _count_list('risks'),
+            'examples': _count_list('examples'),
+            'variables': _count_list('variables'),
+            'edges': _count_list('edges'),
+        },
+    }
+
+
+def _build_available_publications(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    publications = payload.get('publications')
+    if not isinstance(publications, list):
+        return []
+
+    output: list[dict[str, Any]] = []
+    for item in publications:
+        if not isinstance(item, dict):
+            continue
+        publication_type = str(item.get('publication_type') or '').strip()
+        if not publication_type:
+            continue
+        output.append(
+            {
+                'publication_type': publication_type,
+                'path': item.get('path'),
+                'publication_id': item.get('publication_id'),
+            }
+        )
+    return output
+
+
+def _resolve_review_status(payload: dict[str, Any]) -> str | None:
+    review_task = payload.get('review_task')
+    if isinstance(review_task, dict):
+        status = str(review_task.get('status') or '').strip()
+        if status:
+            return status
+
+    skill = payload.get('skill')
+    if isinstance(skill, dict):
+        status = str(skill.get('review_status') or '').strip()
+        if status:
+            return status
+
+    skill_graph = payload.get('skill_graph')
+    if isinstance(skill_graph, dict):
+        status = str(skill_graph.get('review_status') or '').strip()
+        if status:
+            return status
+
+    return None
+
+
+def _resolve_lifecycle_decision(payload: dict[str, Any]) -> dict[str, Any] | None:
+    lifecycle_decision = payload.get('lifecycle_decision')
+    if isinstance(lifecycle_decision, dict):
+        return lifecycle_decision
+
+    adapter_metadata = payload.get('adapter_metadata')
+    if not isinstance(adapter_metadata, dict):
+        return None
+    lifecycle_decision = adapter_metadata.get('lifecycle_decision')
+    if isinstance(lifecycle_decision, dict):
+        return lifecycle_decision
+    return None
+
+
+def _build_distill_response(bundle: Any) -> Any:
+    if not hasattr(bundle, 'to_dict'):
+        return bundle
+
+    payload = bundle.to_dict()
+    if not isinstance(payload, dict):
+        return payload
+
+    if 'skill_markdown' not in payload:
+        return payload
+
+    return {
+        **payload,
+        'graph_metadata': _build_graph_metadata(payload),
+        'available_publications': _build_available_publications(payload),
+        'review_status': _resolve_review_status(payload),
+        'lifecycle_decision': _resolve_lifecycle_decision(payload),
+    }
+
+
 def _build_readiness_checks(app: Any, settings: Any) -> list[dict[str, Any]]:
     checks: list[dict[str, Any]] = []
 
@@ -215,6 +326,12 @@ def create_app():
     rate_limit_requests = int(getattr(settings, 'rate_limit_requests', 0) or 0)
     rate_limit_window_seconds = int(getattr(settings, 'rate_limit_window_seconds', 60) or 60)
     service = build_service()
+    service_repository = getattr(service, 'repository', None)
+    review_queue_repository = (
+        service_repository
+        if isinstance(service_repository, ReviewQueueRepository)
+        else None
+    )
     limiter = (
         InMemoryRateLimiter(
             max_requests=max(rate_limit_requests, 1),
@@ -270,6 +387,11 @@ def create_app():
             detail='Rate limit exceeded.',
             headers={'Retry-After': str(retry_after)},
         )
+
+    def _require_review_queue_repository() -> ReviewQueueRepository:
+        if review_queue_repository is None:
+            raise HTTPException(status_code=503, detail='Review queue repository is not configured.')
+        return review_queue_repository
 
     @app.exception_handler(RequestValidationError)
     async def request_validation_exception_handler(request, exc: RequestValidationError):
@@ -399,6 +521,46 @@ def create_app():
     def get_template():
         return settings.template_path.read_text(encoding='utf-8')
 
+    @app.get('/v1/review/queue')
+    def list_review_queue(
+        queue_status: str | None = Query(default='pending'),
+        limit: int = Query(default=100, ge=1, le=1000),
+        repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        return {'items': repository.list_review_queue(queue_status=queue_status, limit=limit)}
+
+    @app.post('/v1/review/queue/claim')
+    def claim_review_queue_item(
+        payload: ReviewQueueClaimRequestSchema,
+        repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        claimed = repository.claim_review_task(review_task_id=payload.review_task_id, consumer=payload.consumer)
+        if claimed is None:
+            raise HTTPException(status_code=404, detail='No review task available to claim.')
+        return claimed
+
+    @app.post('/v1/review/queue/{review_task_id}/close')
+    def close_review_queue_item(
+        review_task_id: str,
+        payload: ReviewQueueCloseRequestSchema,
+        repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        closed = repository.close_review_task(
+            review_task_id,
+            status=payload.status,
+            closed_by=payload.closed_by,
+            review_notes=payload.review_notes,
+        )
+        if closed is None:
+            raise HTTPException(status_code=404, detail='Review task not found: %s' % review_task_id.strip())
+        return closed
+
     @app.post('/v1/distill/text')
     def distill_text(
         payload: TextDistillRequestSchema,
@@ -411,7 +573,7 @@ def create_app():
             file_path=payload.file_path,
             goal=_goal_from_schema(payload.goal),
         )
-        return service.distill_text(request).to_dict()
+        return _build_distill_response(service.distill_text(request))
 
     @app.post('/v1/distill/audio')
     def distill_audio(
@@ -428,7 +590,7 @@ def create_app():
             prompt=payload.prompt,
             goal=_goal_from_schema(payload.goal),
         )
-        return service.distill_audio(request).to_dict()
+        return _build_distill_response(service.distill_audio(request))
 
     @app.post('/v1/distill/image')
     def distill_image(
@@ -441,7 +603,7 @@ def create_app():
             title=payload.title,
             goal=_goal_from_schema(payload.goal),
         )
-        return service.distill_image(request).to_dict()
+        return _build_distill_response(service.distill_image(request))
 
     @app.post('/v1/distill/tabular')
     def distill_tabular(
@@ -458,7 +620,7 @@ def create_app():
             max_series=payload.max_series,
             goal=_goal_from_schema(payload.goal),
         )
-        return service.distill_tabular(request).to_dict()
+        return _build_distill_response(service.distill_tabular(request))
 
     @app.post('/v1/distill/video')
     def distill_video(
@@ -479,7 +641,7 @@ def create_app():
             dedupe_distance=payload.dedupe_distance,
             goal=_goal_from_schema(payload.goal),
         )
-        return service.distill_video(request).to_dict()
+        return _build_distill_response(service.distill_video(request))
 
     @app.post('/v1/distill/corpus')
     def distill_corpus(
@@ -488,7 +650,7 @@ def create_app():
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
         request = CorpusDistillRequest.from_dict(payload.model_dump())
-        return service.distill_corpus(request).to_dict()
+        return _build_distill_response(service.distill_corpus(request))
 
     return app
 

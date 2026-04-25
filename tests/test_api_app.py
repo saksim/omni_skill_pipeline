@@ -75,6 +75,73 @@ class _FailingService(_CapturingService):
         return super()._capture(modality, request)
 
 
+class _V2StubBundle(object):
+    def __init__(self, *, include_review_task: bool) -> None:
+        self.include_review_task = include_review_task
+
+    def to_dict(self) -> dict[str, object]:
+        payload: dict[str, object] = {
+            'asset': {'asset_id': 'asset-1', 'modality': 'text', 'source_uri': 'file://examples/text_note.md', 'metadata': {}},
+            'evidence_units': [],
+            'insights': [],
+            'skill': {
+                'skill_id': 'skill-1',
+                'name': 'Incident triage',
+                'goal': 'convert signals to action',
+                'source_modality': 'text',
+                'review_status': 'draft',
+            },
+            'skill_markdown': '# Incident triage\n',
+            'skill_graph': {
+                'graph_id': 'graph-1',
+                'name': 'Incident triage graph',
+                'version': '0.1.0',
+                'review_status': 'review_pending',
+                'steps': [{'node_id': 'step-1'}],
+                'decisions': [{'node_id': 'decision-1'}],
+                'verifications': [],
+                'risks': [],
+                'examples': [],
+                'variables': [],
+                'edges': [{'edge_id': 'edge-1'}],
+            },
+            'publications': [
+                {
+                    'publication_type': 'skill_markdown',
+                    'path': 'SKILL.md',
+                    'publication_id': 'pub-1',
+                },
+                {
+                    'publication_type': 'checklist_json',
+                    'path': 'checklist.json',
+                    'publication_id': 'pub-2',
+                },
+            ],
+            'adapter_metadata': {
+                'lifecycle_decision': {
+                    'decision': 'revise',
+                    'reason': 'Found similar graph branch.',
+                    'related_graph_ids': ['graph-existing-1'],
+                    'confidence': 0.91,
+                }
+            },
+            'artifacts': {'skill_markdown': '/tmp/SKILL.md'},
+        }
+        if self.include_review_task:
+            payload['review_task'] = {'status': 'review_pending', 'decision': 'review_required'}
+        return payload
+
+
+class _V2CapturingService(_CapturingService):
+    def __init__(self, *, include_review_task: bool = True) -> None:
+        super().__init__()
+        self.include_review_task = include_review_task
+
+    def distill_corpus(self, request):
+        self.requests['corpus'] = request
+        return _V2StubBundle(include_review_task=self.include_review_task)
+
+
 def _build_settings(
     *,
     api_key: str = '',
@@ -271,6 +338,57 @@ class ApiAppHappyPathTests(unittest.TestCase):
         self.assertEqual(request.tags, ['beta', 'ops'])
         self.assertEqual(request.metadata, {'source': 'integration-suite'})
         self.assertEqual(request.goal.domain, 'operations')
+
+
+@unittest.skipIf(TestClient is None, 'fastapi testclient is not installed')
+class ApiAppV2OutputContractTests(unittest.TestCase):
+    def _post_corpus(self, client: TestClient):
+        return client.post(
+            '/v1/distill/corpus',
+            json={
+                'name': 'v2-contract-corpus',
+                'assets': [{'source_uri': 'file://examples/text_note.md', 'modality': 'text'}],
+                'goal': {'domain': 'incident_response'},
+            },
+        )
+
+    def test_corpus_endpoint_returns_v2_summary_fields_and_keeps_legacy_markdown(self) -> None:
+        client = _build_client(_V2CapturingService(include_review_task=True))
+        response = self._post_corpus(client)
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['skill_markdown'], '# Incident triage\n')
+        self.assertEqual(payload['graph_metadata']['graph_id'], 'graph-1')
+        self.assertEqual(payload['graph_metadata']['node_counts']['steps'], 1)
+        self.assertEqual(payload['graph_metadata']['node_counts']['decisions'], 1)
+        self.assertEqual(payload['graph_metadata']['node_counts']['edges'], 1)
+        self.assertEqual(
+            payload['available_publications'],
+            [
+                {
+                    'publication_type': 'skill_markdown',
+                    'path': 'SKILL.md',
+                    'publication_id': 'pub-1',
+                },
+                {
+                    'publication_type': 'checklist_json',
+                    'path': 'checklist.json',
+                    'publication_id': 'pub-2',
+                },
+            ],
+        )
+        self.assertEqual(payload['review_status'], 'review_pending')
+        self.assertEqual(payload['lifecycle_decision']['decision'], 'revise')
+
+    def test_review_status_falls_back_to_skill_review_status_when_review_task_missing(self) -> None:
+        client = _build_client(_V2CapturingService(include_review_task=False))
+        response = self._post_corpus(client)
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['review_status'], 'draft')
+        self.assertEqual(payload['skill']['review_status'], 'draft')
 
 
 @unittest.skipIf(TestClient is None, 'fastapi testclient is not installed')

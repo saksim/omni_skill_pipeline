@@ -158,6 +158,18 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="PublicationBuilder 默认应输出 SKILL.md 与 skill.json。",
         ),
         TestCaseSpec(
+            case_id="tests.test_publication_builder.PublicationBuilderTests.test_builder_emits_checklist_and_decision_tree",
+            description="PublicationBuilder 应支持输出 checklist.json 与 decision_tree.json。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_publication_builder.PublicationBuilderTests.test_builder_emits_default_decision_tree_when_graph_has_no_decisions",
+            description="无决策节点时 decision_tree 需回退到 default branch。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_publication_orchestrator_split.PublicationOrchestratorTests.test_orchestrator_chooses_goal_specific_publication_types",
+            description="编排层应按 goal_type 选择 checklist/decision_tree publication。",
+        ),
+        TestCaseSpec(
             case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
             description="service/repository 应落盘 publication 与 manifest。",
         ),
@@ -242,6 +254,170 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
         TestCaseSpec(
             case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
             description="service/repository 应落盘 review_feedback 并可用于后续修订链路。",
+        ),
+    ],
+    "TP-E8-02": [
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository.PostgresRepositoryTests.test_save_bundle_writes_skill_review_and_publication_rows",
+            description="PostgresRepository 需写入 skills/skill_versions/review_tasks/publications 核心表。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository.PostgresRepositoryTests.test_save_bundle_rolls_back_on_database_failure",
+            description="写库失败时必须触发 rollback，避免脏事务。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository_integration.PostgresRepositoryIntegrationTests.test_save_bundle_persists_rows_into_postgres",
+            description="真实 Postgres 集成脚本：校验技能、review task、publication 均成功落库。",
+        ),
+    ],
+    "TP-E8-03": [
+        TestCaseSpec(
+            case_id="tests.test_dual_write_repository.DualWriteRepositoryTests.test_dual_write_secondary_failure_does_not_break_primary_file_artifacts",
+            description="dual-write 发生 secondary 失败时，不应破坏 file artifact 输出。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_dual_write_repository.DualWriteRepositoryTests.test_dual_write_success_adds_prefixed_secondary_artifacts",
+            description="dual-write 成功时应保留 primary keys，并附带 secondary 前缀工件引用。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_dual_write_repository_integration.DualWriteRepositoryIntegrationTests.test_file_and_postgres_dual_write_persists_both_targets",
+            description="真实 Postgres 集成脚本：校验 file + postgres 双写均成功。",
+        ),
+    ],
+    "TP-E9-01": [
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_inmemory_backend_returns_relevant_skill_first",
+            description="相似技能检索应优先返回语义最接近的 skill。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_domain_and_tag_boost_breaks_lexical_tie",
+            description="domain/tag 信号应在词面近似时提供稳定排序基线。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_retriever_indexes_skill_document_smoke",
+            description="统一检索接口应支持从 SkillDocument 建索并执行 smoke 检索。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_backend_factory_exposes_pgvector_placeholder",
+            description="backend factory 应暴露 pgvector placeholder，保持接口前向兼容。",
+        ),
+    ],
+    "TP-E9-02": [
+        TestCaseSpec(
+            case_id="tests.test_lifecycle_decision_engine.LifecycleDecisionEngineTests.test_engine_returns_new_when_no_similar_candidates",
+            description="无相似候选时应输出 lifecycle=new。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_lifecycle_decision_engine.LifecycleDecisionEngineTests.test_engine_returns_revise_for_single_high_similarity_match",
+            description="单高相似候选应输出 lifecycle=revise。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_lifecycle_decision_engine.LifecycleDecisionEngineTests.test_engine_returns_merge_for_multiple_high_similarity_matches",
+            description="多高相似候选应输出 lifecycle=merge。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_lifecycle_decision_engine.LifecycleDecisionEngineTests.test_engine_returns_supersede_for_near_identical_high_quality_match",
+            description="近同构高质量候选应输出 lifecycle=supersede。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_lifecycle_decision_engine.LifecycleDecisionEngineTests.test_engine_returns_reject_for_noisy_or_conflicting_signal",
+            description="高噪声或证据冲突时应输出 lifecycle=reject。",
+        ),
+    ],
+    "TP-E9-03": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_skill_lineage_link_can_be_derived_from_lifecycle_decision",
+            description="supersede lifecycle decision 应可转换为结构化 lineage link。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository.PostgresRepositoryTests.test_save_bundle_writes_lineage_links_for_supersede_decision",
+            description="PostgresRepository 应将 supersede lineage_links 持久化并返回 artifact 引用。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository_integration.PostgresRepositoryIntegrationTests.test_save_bundle_persists_lineage_links_into_postgres",
+            description="真实 Postgres 集成场景应能查询到写入的 lineage_links 记录。",
+        ),
+    ],
+    "TP-E10-01": [
+        TestCaseSpec(
+            case_id="tests.test_cli.CliCorpusCommandTests.test_distill_corpus_accepts_multiple_asset_args",
+            description="CLI distill-corpus 应支持多次 --asset 的 corpus 蒸馏输入。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_cli.CliCorpusCommandTests.test_distill_corpus_supports_publication_selection_and_review_status_output",
+            description="CLI 应支持 --publication 选择输出视图，并展示 review status。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_cli.CliCorpusCommandTests.test_distill_corpus_accepts_publication_artifact_key_style",
+            description="CLI --publication 应兼容 publication_* artifact key 风格输入。",
+        ),
+    ],
+    "TP-E10-02": [
+        TestCaseSpec(
+            case_id="tests.test_api_app.ApiAppV2OutputContractTests.test_corpus_endpoint_returns_v2_summary_fields_and_keeps_legacy_markdown",
+            description="API 应输出 graph metadata、available publications、review status，并保留 skill_markdown。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_api_app.ApiAppV2OutputContractTests.test_review_status_falls_back_to_skill_review_status_when_review_task_missing",
+            description="当 review_task 缺失时，review_status 应回退到 skill.review_status。",
+        ),
+    ],
+    "TP-E10-03": [
+        TestCaseSpec(
+            case_id="tests.test_worker.WorkerTaskTypeUpgradeTests.test_review_queue_claim_job_is_supported",
+            description="worker 应支持 review_queue claim 任务并消费 pending review task。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_worker.WorkerTaskTypeUpgradeTests.test_rebuild_publication_job_replays_text_request",
+            description="worker 应支持 rebuild_publication 并重放 distill request。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_worker.WorkerTaskTypeUpgradeTests.test_rebuild_publication_can_load_request_payload_from_bundle",
+            description="worker rebuild_publication 应支持从 bundle.json 读取 request_payload。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_worker.WorkerTaskTypeUpgradeTests.test_revise_skill_requires_existing_skill_id",
+            description="worker revise_skill 缺失 existing_skill_id 时应失败并落 failed job。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_worker.WorkerTaskTypeUpgradeTests.test_revise_skill_injects_existing_skill_id_into_corpus_metadata",
+            description="worker revise_skill 应将 existing_skill_id 注入 corpus metadata 后重放。",
+        ),
+    ],
+    "TP-E11-01": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_v2_core_models_are_json_serializable",
+            description="V2 core models 应保持可序列化，避免 graph/document 契约回归。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_unit_to_node_transforms_legacy_fields",
+            description="legacy EvidenceUnit -> EvidenceNode 转换应保留关键字段。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_skill_graph_to_document_builds_skill_document",
+            description="SkillGraph -> SkillDocument 转换应可稳定回归。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_transformers_regression.TransformersRegressionTests.test_skill_graph_to_document_selects_skill_type_branches",
+            description="skill_graph_to_document 应覆盖 decision/diagnostic/analysis 分支。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_transformers_regression.TransformersRegressionTests.test_skill_graph_to_document_dedupes_evidence_refs_from_all_nodes",
+            description="转换器应对 graph/node evidence_refs 进行顺序去重汇总。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_transformers_regression.TransformersRegressionTests.test_legacy_insight_atom_extractor_uses_payload_legacy_content_when_text_missing",
+            description="legacy atom bridge 在 text 为空时应回退 payload.legacy_content。",
+        ),
+    ],
+    "TP-E11-04": [
+        TestCaseSpec(
+            case_id="tests.test_benchmark_dual_write.BenchmarkDualWriteScriptTests.test_script_smoke_runs_file_only_and_writes_report",
+            description="benchmark harness 烟测：生成 file-only 时延报告。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_benchmark_dual_write.BenchmarkDualWriteScriptTests.test_script_rejects_non_positive_iterations",
+            description="benchmark harness 参数保护：iterations<=0 必须报错。",
         ),
     ],
 }

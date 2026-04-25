@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Protocol, Sequence, TypeAlias, TypeVar, runtime_checkable
+from typing import Any, Protocol, Sequence, TypeAlias, TypeVar, runtime_checkable
 
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
@@ -51,6 +51,38 @@ class DistillAdapter(Protocol[ReqT]):
 @runtime_checkable
 class ArtifactRepository(Protocol):
     def save_bundle(self, bundle: DistillBundle) -> dict[str, str]:
+        ...
+
+
+@runtime_checkable
+class ReviewQueueRepository(Protocol):
+    def list_review_queue(
+        self,
+        *,
+        queue_status: str | None = 'pending',
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        ...
+
+    def claim_review_task(
+        self,
+        review_task_id: str | None = None,
+        *,
+        consumer: str = 'review-consumer',
+    ) -> dict[str, Any] | None:
+        ...
+
+    def close_review_task(
+        self,
+        review_task_id: str,
+        *,
+        status: str = 'published',
+        closed_by: str = 'review-operator',
+        review_notes: str = '',
+    ) -> dict[str, Any] | None:
+        ...
+
+    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, Any] | None:
         ...
 
 

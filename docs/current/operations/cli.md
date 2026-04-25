@@ -77,6 +77,8 @@ python -m omni_skill_pipeline.cli distill-corpus \
   --name beta-corpus \
   --asset text=examples/text_note.md \
   --asset audio=examples/audio_transcript.srt \
+  --publication skill_json \
+  --show-publications \
   --tag beta \
   --tag ops \
   --domain operations
@@ -97,7 +99,9 @@ python -m omni_skill_pipeline.cli show-template
 
 ## Notes
 
-- CLI 成功执行后会打印生成的 `SKILL.md` 路径。
+- `distill-corpus` 默认打印所选 publication 路径（默认 `skill_markdown`，可通过 `--publication` 选择）。
+- `distill-corpus` 会打印 `review_status`、`decision`、`review_task_id` 与 `reason_codes`，便于接 review queue。
+- 使用 `--show-publications` 可额外打印 `selected_publication` 与 `available_publications`。
 - 默认输出目录由 `Settings.draft_dir` 决定，当前默认指向 `skills/drafts/`。
 - 目标与受众可通过 `--goal-type`、`--audience`、`--rigor`、`--granularity`、`--domain` 调整。
 - `distill-corpus` 支持两种输入：

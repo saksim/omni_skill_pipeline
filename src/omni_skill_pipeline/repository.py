@@ -4,15 +4,19 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
-from omni_skill_pipeline.interfaces import ArtifactRepository
-from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication, ReviewTask
+from omni_skill_pipeline.interfaces import ArtifactRepository, ReviewQueueRepository
+from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication, ReviewTask, new_id, utc_now_iso
 from omni_skill_pipeline.utils import slugify, unique_preserve_order
 
 
-class FileArtifactRepository(ArtifactRepository):
+class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
     def __init__(self, base_dir: Path) -> None:
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        self.review_queue_dir = self.base_dir / 'review_queue'
+        self.review_queue_pending_dir = self.review_queue_dir / 'pending'
+        self.review_queue_consumed_dir = self.review_queue_dir / 'consumed'
+        self.review_queue_closed_dir = self.review_queue_dir / 'closed'
 
     def save_bundle(self, bundle: DistillBundle) -> Dict[str, str]:
         slug = slugify(bundle.skill.name)
@@ -76,11 +80,129 @@ class FileArtifactRepository(ArtifactRepository):
             )
         if "review_policy" in artifacts:
             artifacts["review_policy"].write_text(json.dumps(review_policy_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        queue_item_path = self._enqueue_review_task(
+            bundle=bundle,
+            review_task_payload=review_task_payload,
+            review_task_path=artifacts.get('review_task'),
+            bundle_path=artifacts['bundle'],
+        )
+        if queue_item_path is not None:
+            artifacts['review_queue_item'] = queue_item_path
 
         artifact_strings = {name: str(path) for name, path in artifacts.items()}
         bundle.artifacts = artifact_strings
         artifacts["bundle"].write_text(bundle.to_json() + "\n", encoding="utf-8")
         return artifact_strings
+
+    def list_review_queue(
+        self,
+        *,
+        queue_status: str | None = 'pending',
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        if limit <= 0:
+            return []
+        entries: list[dict[str, Any]] = []
+        for item_path in self._iter_review_queue_files(queue_status):
+            payload = self._read_queue_item(item_path)
+            if payload is None:
+                continue
+            entries.append(payload)
+        entries.sort(key=lambda item: (str(item.get('enqueued_at', '')), str(item.get('review_task_id', ''))))
+        return entries[:limit]
+
+    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, Any] | None:
+        return self.claim_review_task(consumer=consumer)
+
+    def claim_review_task(
+        self,
+        review_task_id: str | None = None,
+        *,
+        consumer: str = 'review-consumer',
+    ) -> dict[str, Any] | None:
+        target_review_task_id = str(review_task_id or '').strip()
+        queue_entry: dict[str, Any] | None = None
+        if target_review_task_id:
+            pending_path = self.review_queue_pending_dir / ('%s.json' % target_review_task_id)
+            if not pending_path.exists():
+                return None
+            queue_entry = self._read_queue_item(pending_path)
+        else:
+            queue_entry = next(iter(self.list_review_queue(queue_status='pending', limit=1)), None)
+            if queue_entry is None:
+                return None
+            target_review_task_id = str(queue_entry.get('review_task_id', '')).strip()
+            if not target_review_task_id:
+                return None
+            pending_path = self.review_queue_pending_dir / ('%s.json' % target_review_task_id)
+            if not pending_path.exists():
+                return None
+
+        if queue_entry is None:
+            queue_entry = self._read_queue_item(pending_path)
+            if queue_entry is None:
+                return None
+
+        self._ensure_review_queue_dirs()
+        consumed_path = self.review_queue_consumed_dir / pending_path.name
+        consumed_payload = dict(queue_entry)
+        claimed_at = utc_now_iso()
+        consumed_payload['review_task_id'] = target_review_task_id
+        consumed_payload['queue_status'] = 'consumed'
+        consumed_payload['claimed_at'] = claimed_at
+        consumed_payload['consumed_at'] = claimed_at
+        consumed_payload['claimed_by'] = consumer.strip() or 'review-consumer'
+        consumed_path.write_text(json.dumps(consumed_payload, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+        pending_path.unlink(missing_ok=True)
+        return consumed_payload
+
+    def close_review_task(
+        self,
+        review_task_id: str,
+        *,
+        status: str = 'published',
+        closed_by: str = 'review-operator',
+        review_notes: str = '',
+    ) -> dict[str, Any] | None:
+        target_review_task_id = str(review_task_id).strip()
+        if not target_review_task_id:
+            return None
+
+        self._ensure_review_queue_dirs()
+        source_path: Path | None = None
+        for candidate in (
+            self.review_queue_consumed_dir / ('%s.json' % target_review_task_id),
+            self.review_queue_pending_dir / ('%s.json' % target_review_task_id),
+            self.review_queue_closed_dir / ('%s.json' % target_review_task_id),
+        ):
+            if candidate.exists():
+                source_path = candidate
+                break
+        if source_path is None:
+            return None
+
+        payload = self._read_queue_item(source_path)
+        if payload is None:
+            return None
+
+        closed_payload = dict(payload)
+        closed_payload['review_task_id'] = target_review_task_id
+        closed_payload['queue_status'] = 'closed'
+        normalized_status = str(status).strip().lower()
+        if normalized_status:
+            closed_payload['status'] = normalized_status
+        closed_payload['closed_by'] = closed_by.strip() or 'review-operator'
+        closed_payload['closed_at'] = utc_now_iso()
+        if review_notes.strip():
+            closed_payload['review_notes'] = review_notes.strip()
+        else:
+            closed_payload.setdefault('review_notes', '')
+
+        closed_path = self.review_queue_closed_dir / ('%s.json' % target_review_task_id)
+        closed_path.write_text(json.dumps(closed_payload, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+        if source_path != closed_path:
+            source_path.unlink(missing_ok=True)
+        return closed_payload
 
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
         if isinstance(bundle.review_task, ReviewTask):
@@ -95,6 +217,92 @@ class FileArtifactRepository(ArtifactRepository):
         if isinstance(payload, dict):
             return dict(payload)
         return {}
+
+    def _enqueue_review_task(
+        self,
+        *,
+        bundle: DistillBundle,
+        review_task_payload: dict[str, Any],
+        review_task_path: Path | None,
+        bundle_path: Path,
+    ) -> Path | None:
+        if not self._should_enqueue_review_task(review_task_payload):
+            return None
+        review_task_id = str(review_task_payload.get('review_task_id', '')).strip() or new_id()
+        self._ensure_review_queue_dirs()
+        pending_path = self.review_queue_pending_dir / ('%s.json' % review_task_id)
+        consumed_path = self.review_queue_consumed_dir / pending_path.name
+        closed_path = self.review_queue_closed_dir / pending_path.name
+        if consumed_path.exists():
+            consumed_path.unlink()
+        if closed_path.exists():
+            closed_path.unlink()
+
+        queue_item = {
+            'review_task_id': review_task_id,
+            'skill_id': str(review_task_payload.get('skill_id', '')).strip() or bundle.skill.skill_id,
+            'decision': str(review_task_payload.get('decision', '')).strip(),
+            'status': str(review_task_payload.get('status', '')).strip(),
+            'reason_codes': unique_preserve_order(review_task_payload.get('reason_codes', [])),
+            'revision_suggestions': unique_preserve_order(review_task_payload.get('revision_suggestions', [])),
+            'score_snapshot': dict(review_task_payload.get('score_snapshot', {}))
+            if isinstance(review_task_payload.get('score_snapshot'), dict)
+            else {},
+            'thresholds': dict(review_task_payload.get('thresholds', {}))
+            if isinstance(review_task_payload.get('thresholds'), dict)
+            else {},
+            'review_notes': str(review_task_payload.get('review_notes', '')).strip(),
+            'queue_status': 'pending',
+            'enqueued_at': utc_now_iso(),
+            'review_task_path': str(review_task_path) if review_task_path is not None else '',
+            'bundle_path': str(bundle_path),
+        }
+        pending_path.write_text(json.dumps(queue_item, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+        return pending_path
+
+    def _should_enqueue_review_task(self, review_task_payload: dict[str, Any]) -> bool:
+        if not review_task_payload:
+            return False
+        decision = str(review_task_payload.get('decision', '')).strip().lower()
+        status = str(review_task_payload.get('status', '')).strip().lower()
+        return decision == 'review_required' or status == 'review_pending'
+
+    def _ensure_review_queue_dirs(self) -> None:
+        self.review_queue_pending_dir.mkdir(parents=True, exist_ok=True)
+        self.review_queue_consumed_dir.mkdir(parents=True, exist_ok=True)
+        self.review_queue_closed_dir.mkdir(parents=True, exist_ok=True)
+
+    def _iter_review_queue_files(self, queue_status: str | None) -> list[Path]:
+        normalized = str(queue_status).strip().lower() if queue_status is not None else ''
+        targets: list[Path] = []
+        if not normalized or normalized == 'all':
+            targets.extend([self.review_queue_pending_dir, self.review_queue_consumed_dir, self.review_queue_closed_dir])
+        elif normalized == 'pending':
+            targets.append(self.review_queue_pending_dir)
+        elif normalized == 'consumed':
+            targets.append(self.review_queue_consumed_dir)
+        elif normalized == 'closed':
+            targets.append(self.review_queue_closed_dir)
+        else:
+            return []
+
+        paths: list[Path] = []
+        for directory in targets:
+            if not directory.exists():
+                continue
+            paths.extend(sorted(directory.glob('*.json')))
+        return paths
+
+    def _read_queue_item(self, item_path: Path) -> dict[str, Any] | None:
+        try:
+            payload = json.loads(item_path.read_text(encoding='utf-8'))
+        except (OSError, json.JSONDecodeError):
+            return None
+        if not isinstance(payload, dict):
+            return None
+        payload = dict(payload)
+        payload.setdefault('queue_status', item_path.parent.name)
+        return payload
 
     def _write_json_array(self, target: Path, items: Sequence[Any]) -> None:
         payload = []

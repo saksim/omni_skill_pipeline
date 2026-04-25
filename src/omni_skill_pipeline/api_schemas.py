@@ -12,6 +12,8 @@ __all__ = [
     'CorpusDistillRequestSchema',
     'DistillGoalSchema',
     'ImageDistillRequestSchema',
+    'ReviewQueueClaimRequestSchema',
+    'ReviewQueueCloseRequestSchema',
     'TabularDistillRequestSchema',
     'TextDistillRequestSchema',
     'VideoDistillRequestSchema',
@@ -194,3 +196,43 @@ class VideoDistillRequestSchema(APISchemaBase):
         if not value:
             raise ValueError('Video request requires video_path.')
         return value
+
+
+class ReviewQueueClaimRequestSchema(APISchemaBase):
+    review_task_id: str | None = None
+    consumer: str = 'review-consumer'
+
+    @field_validator('review_task_id', mode='before')
+    @classmethod
+    def _normalize_review_task_id(cls, value: Any) -> str | None:
+        text = str(value or '').strip()
+        return text or None
+
+    @field_validator('consumer', mode='before')
+    @classmethod
+    def _normalize_consumer(cls, value: Any) -> str:
+        text = str(value or '').strip()
+        return text or 'review-consumer'
+
+
+class ReviewQueueCloseRequestSchema(APISchemaBase):
+    status: str = 'published'
+    closed_by: str = 'review-operator'
+    review_notes: str = ''
+
+    @field_validator('status', mode='before')
+    @classmethod
+    def _normalize_status(cls, value: Any) -> str:
+        text = str(value or '').strip().lower()
+        return text or 'published'
+
+    @field_validator('closed_by', mode='before')
+    @classmethod
+    def _normalize_closed_by(cls, value: Any) -> str:
+        text = str(value or '').strip()
+        return text or 'review-operator'
+
+    @field_validator('review_notes', mode='before')
+    @classmethod
+    def _normalize_review_notes(cls, value: Any) -> str:
+        return str(value or '').strip()

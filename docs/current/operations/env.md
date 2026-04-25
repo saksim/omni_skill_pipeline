@@ -96,6 +96,10 @@ python -m pip install -r requirements-dev.txt
 - `scripts/export_skill_schema.py` 会导出到 `docs/current/contracts/skill.schema.json`。
 - 视频临时文件会落到 `.tmp_omni_media/`；每次任务的临时工作目录会被清理，但根目录仍建议定期 prune。
 
+## Postgres Integration Test Variable
+
+- `OMNI_TEST_POSTGRES_DSN`: Postgres DSN，用于 `tests/test_postgres_repository_integration.py`、`tests/test_dual_write_repository_integration.py` 与 `scripts/benchmark_dual_write.py`。
+
 ## Scratch Root Prune Variables
 
 - `OMNI_TMP_MEDIA_ROOT`: scratch-root path for temporary media artifacts (default: `.tmp_omni_media`).

@@ -520,6 +520,69 @@ class LifecycleDecision(SerializableMixin):
 
 
 @dataclass(slots=True)
+class SkillLineageLink(SerializableMixin):
+    skill_id: str
+    related_skill_id: str
+    relation_type: str
+    confidence: float = 0.0
+    reason: str = ''
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=utc_now_iso)
+    lineage_link_id: str = field(default_factory=new_id)
+
+    @classmethod
+    def from_lifecycle_decision(
+        cls,
+        *,
+        skill_id: str,
+        lifecycle_decision: Any,
+    ) -> List['SkillLineageLink']:
+        if hasattr(lifecycle_decision, 'to_dict'):
+            lifecycle_decision = lifecycle_decision.to_dict()
+        if not isinstance(lifecycle_decision, dict):
+            return []
+
+        relation_type = str(lifecycle_decision.get('decision', '')).strip().lower()
+        if relation_type in {'', LifecycleDecisionType.NEW.value, LifecycleDecisionType.REJECT.value}:
+            return []
+
+        related_graph_ids = lifecycle_decision.get('related_graph_ids', [])
+        if not isinstance(related_graph_ids, list):
+            return []
+
+        reason = str(lifecycle_decision.get('reason', '')).strip()
+        confidence = cls._coerce_confidence(lifecycle_decision.get('confidence', 0.0))
+        metadata = lifecycle_decision.get('metadata')
+        metadata_payload = metadata if isinstance(metadata, dict) else {}
+
+        links: List['SkillLineageLink'] = []
+        seen: set[str] = set()
+        for item in related_graph_ids:
+            related_skill_id = str(item).strip()
+            if not related_skill_id or related_skill_id in seen:
+                continue
+            seen.add(related_skill_id)
+            links.append(
+                cls(
+                    skill_id=str(skill_id).strip(),
+                    related_skill_id=related_skill_id,
+                    relation_type=relation_type,
+                    confidence=confidence,
+                    reason=reason,
+                    metadata=dict(metadata_payload),
+                )
+            )
+        return links
+
+    @staticmethod
+    def _coerce_confidence(value: Any) -> float:
+        try:
+            return max(0.0, min(1.0, float(value)))
+        except (TypeError, ValueError):
+            return 0.0
+
+
+@dataclass(slots=True)
 class ReviewTask(SerializableMixin):
     skill_id: str
     decision: ReviewDecision
