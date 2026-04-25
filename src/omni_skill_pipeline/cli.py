@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
 
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
+    CorpusDistillRequest,
     DistillGoal,
     ImageDistillRequest,
     TabularDistillRequest,
@@ -61,6 +64,21 @@ def build_parser() -> argparse.ArgumentParser:
     video_parser.add_argument('--dedupe-distance', type=int)
     _attach_goal_args(video_parser)
 
+    corpus_parser = subparsers.add_parser('distill-corpus', help='Distill a multi-asset corpus')
+    corpus_parser.add_argument('--name', help='Optional corpus name')
+    corpus_parser.add_argument(
+        '--asset',
+        action='append',
+        default=[],
+        help='Corpus asset spec. Use "modality=source_uri" or JSON object string. Repeat for multi-asset input.',
+    )
+    corpus_parser.add_argument('--tag', dest='tags', action='append', default=[])
+    corpus_parser.add_argument('--metadata-json', default='')
+    payload_group = corpus_parser.add_mutually_exclusive_group()
+    payload_group.add_argument('--payload-file', help='Path to JSON payload matching CorpusDistillRequest.')
+    payload_group.add_argument('--payload-json', help='Inline JSON payload matching CorpusDistillRequest.')
+    _attach_goal_args(corpus_parser)
+
     subparsers.add_parser('show-template', help='Print SKILL template path and content')
     return parser
 
@@ -83,6 +101,67 @@ def _goal_from_args(args: argparse.Namespace) -> DistillGoal:
             'domain': args.domain,
         }
     )
+
+
+def _parse_json_object(raw: str, *, field_name: str) -> dict:
+    text = str(raw or '').strip()
+    if not text:
+        return {}
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise ValueError('Invalid JSON for %s: %s' % (field_name, exc)) from exc
+    if not isinstance(payload, dict):
+        raise ValueError('%s must be a JSON object.' % field_name)
+    return payload
+
+
+def _parse_corpus_asset_spec(raw: str, *, index: int) -> dict:
+    text = str(raw or '').strip()
+    if not text:
+        raise ValueError('Corpus asset spec cannot be empty.')
+    if text.startswith('{'):
+        payload = _parse_json_object(text, field_name='asset')
+        payload.setdefault('role', 'primary' if index == 0 else 'supporting')
+        return payload
+    if '=' not in text:
+        raise ValueError('Corpus asset spec must be "modality=source_uri" or JSON object string.')
+    modality, source_uri = text.split('=', 1)
+    modality_text = modality.strip()
+    source_uri_text = source_uri.strip()
+    if not modality_text or not source_uri_text:
+        raise ValueError('Corpus asset spec must include both modality and source_uri.')
+    return {
+        'modality': modality_text,
+        'source_uri': source_uri_text,
+        'role': 'primary' if index == 0 else 'supporting',
+    }
+
+
+def _corpus_request_from_args(args: argparse.Namespace) -> CorpusDistillRequest:
+    if args.payload_file:
+        payload_text = Path(args.payload_file).read_text(encoding='utf-8')
+        return CorpusDistillRequest.from_dict(_parse_json_object(payload_text, field_name='payload-file'))
+
+    if args.payload_json:
+        return CorpusDistillRequest.from_dict(_parse_json_object(args.payload_json, field_name='payload-json'))
+
+    assets_payload = [
+        _parse_corpus_asset_spec(spec, index=index)
+        for index, spec in enumerate(args.asset)
+    ]
+    if not assets_payload:
+        raise ValueError('distill-corpus requires at least one --asset or --payload-file/--payload-json.')
+
+    metadata_payload = _parse_json_object(args.metadata_json, field_name='metadata-json') if args.metadata_json else {}
+    request_payload = {
+        'name': str(args.name or '').strip(),
+        'assets': assets_payload,
+        'goal': _goal_from_args(args).to_dict(),
+        'tags': [str(item).strip() for item in (args.tags or []) if str(item).strip()],
+        'metadata': metadata_payload,
+    }
+    return CorpusDistillRequest.from_dict(request_payload)
 
 
 def main(argv: list = None) -> int:
@@ -159,6 +238,15 @@ def main(argv: list = None) -> int:
                 goal=_goal_from_args(args),
             )
         )
+        print(bundle.artifacts.get('skill_markdown', ''))
+        return 0
+
+    if args.command == 'distill-corpus':
+        try:
+            request = _corpus_request_from_args(args)
+        except ValueError as exc:
+            parser.error(str(exc))
+        bundle = service.distill_corpus(request)
         print(bundle.artifacts.get('skill_markdown', ''))
         return 0
 

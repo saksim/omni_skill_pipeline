@@ -87,6 +87,26 @@ class OpenAIClientMixin(object):
         self.request_timeout = float(settings.openai_timeout_seconds)
         self.retry_max_attempts = max(1, int(settings.openai_retry_max_attempts))
         self.retry_base_delay_seconds = max(0.0, float(settings.openai_retry_base_delay_seconds))
+        self.circuit_breaker_consecutive_failures = max(
+            1,
+            int(getattr(settings, 'openai_circuit_breaker_consecutive_failures', 3)),
+        )
+        self.circuit_breaker_cooldown_seconds = max(
+            0.0,
+            float(getattr(settings, 'openai_circuit_breaker_cooldown_seconds', 30.0)),
+        )
+        self.failure_budget_max_failures = max(
+            1,
+            int(getattr(settings, 'openai_failure_budget_max_failures', 6)),
+        )
+        self.failure_budget_window_seconds = max(
+            1.0,
+            float(getattr(settings, 'openai_failure_budget_window_seconds', 60.0)),
+        )
+        self._consecutive_failures = 0
+        self._failure_timestamps: list[float] = []
+        self._circuit_open_until_monotonic = 0.0
+        self._circuit_open_reason = ''
         self.client = OpenAI(
             api_key=settings.openai_api_key,
             base_url=settings.openai_base_url,
@@ -94,21 +114,93 @@ class OpenAIClientMixin(object):
         )
 
     def _call_with_retry(self, request_fn: Callable[[], T], *, operation: str) -> T:
+        self._guard_circuit(operation)
         last_exc: Exception | None = None
         for attempt in range(1, self.retry_max_attempts + 1):
             try:
-                return request_fn()
+                result = request_fn()
+                self._record_success()
+                return result
             except Exception as exc:
                 last_exc = exc
                 should_retry = attempt < self.retry_max_attempts and self._is_retryable_exception(exc)
-                if not should_retry:
-                    raise
-                delay_seconds = self.retry_base_delay_seconds * (2 ** (attempt - 1))
-                if delay_seconds > 0:
-                    time.sleep(delay_seconds)
+                if should_retry:
+                    delay_seconds = self.retry_base_delay_seconds * (2 ** (attempt - 1))
+                    if delay_seconds > 0:
+                        time.sleep(delay_seconds)
+                    continue
+                break
         if last_exc is not None:
+            if self._is_retryable_exception(last_exc):
+                self._record_failure(error=last_exc)
+                if self._is_circuit_open():
+                    raise ProviderExecutionError(self._circuit_open_message(operation)) from last_exc
+            else:
+                self._record_success()
             raise last_exc
         raise RuntimeError('OpenAI %s retry loop exhausted without exception.' % operation)
+
+    def _guard_circuit(self, operation: str) -> None:
+        if self._circuit_open_until_monotonic <= 0:
+            return
+        now = time.monotonic()
+        if now >= self._circuit_open_until_monotonic:
+            self._circuit_open_until_monotonic = 0.0
+            self._circuit_open_reason = ''
+            self._consecutive_failures = 0
+            self._failure_timestamps = []
+            return
+        raise ProviderExecutionError(self._circuit_open_message(operation))
+
+    def _record_success(self) -> None:
+        self._consecutive_failures = 0
+        self._prune_failure_timestamps(time.monotonic())
+
+    def _record_failure(self, *, error: Exception) -> None:
+        now = time.monotonic()
+        self._consecutive_failures += 1
+        self._failure_timestamps.append(now)
+        self._prune_failure_timestamps(now)
+        failure_budget_exhausted = len(self._failure_timestamps) >= self.failure_budget_max_failures
+        consecutive_failures_exhausted = self._consecutive_failures >= self.circuit_breaker_consecutive_failures
+        if not failure_budget_exhausted and not consecutive_failures_exhausted:
+            return
+        if consecutive_failures_exhausted:
+            reason = 'consecutive_failures=%s threshold=%s' % (
+                self._consecutive_failures,
+                self.circuit_breaker_consecutive_failures,
+            )
+        else:
+            reason = 'failure_budget=%s/%s window_seconds=%s' % (
+                len(self._failure_timestamps),
+                self.failure_budget_max_failures,
+                self.failure_budget_window_seconds,
+            )
+        self._circuit_open_reason = '%s error=%s' % (reason, error)
+        self._circuit_open_until_monotonic = now + self.circuit_breaker_cooldown_seconds
+
+    def _prune_failure_timestamps(self, now: float) -> None:
+        min_timestamp = now - self.failure_budget_window_seconds
+        self._failure_timestamps = [item for item in self._failure_timestamps if item >= min_timestamp]
+
+    def _is_circuit_open(self) -> bool:
+        return self._circuit_open_until_monotonic > time.monotonic()
+
+    def _circuit_open_message(self, operation: str) -> str:
+        now = time.monotonic()
+        retry_after = max(0.0, self._circuit_open_until_monotonic - now)
+        return (
+            'OpenAI circuit breaker open for %s; retry_after_seconds=%.3f, reason=%s, '
+            'consecutive_failures=%s, failure_budget=%s/%s.'
+            % (
+                operation,
+                retry_after,
+                self._circuit_open_reason or 'unknown',
+                self._consecutive_failures,
+                len(self._failure_timestamps),
+                self.failure_budget_max_failures,
+            )
+        )
 
     def _is_retryable_exception(self, exc: Exception) -> bool:
         if OPENAI_TRANSIENT_EXCEPTIONS and isinstance(exc, OPENAI_TRANSIENT_EXCEPTIONS):
@@ -151,6 +243,8 @@ class OpenAIAudioTranscriber(OpenAIClientMixin):
         try:
             response = self._call_with_retry(_request, operation='transcription')
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI transcription failed: %s' % exc) from exc
 
         segments = []
@@ -192,6 +286,8 @@ class OpenAIVisionAnalyzer(OpenAIClientMixin):
                 operation='vision analysis',
             )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI vision analysis failed: %s' % exc) from exc
 
         summary = (response.output_text or '').strip()
@@ -215,6 +311,8 @@ class OpenAIVisionAnalyzer(OpenAIClientMixin):
                 operation='vision ocr',
             )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI OCR failed: %s' % exc) from exc
 
         parsed = response.output_parsed
@@ -266,6 +364,8 @@ class OpenAILLMSkillComposer(OpenAIClientMixin):
                 operation='skill composition',
             )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI skill composition failed: %s' % exc) from exc
 
         parsed = response.output_parsed
@@ -367,6 +467,8 @@ class OpenAILLMAtomEnhancer(OpenAIClientMixin):
                 operation='atom enhancement',
             )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI atom enhancement failed: %s' % exc) from exc
 
         parsed = response.output_parsed

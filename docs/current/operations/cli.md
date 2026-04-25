@@ -70,6 +70,25 @@ python -m omni_skill_pipeline.cli distill-video \
   --dedupe-distance 5
 ```
 
+### distill-corpus (multi `--asset`)
+
+```bash
+python -m omni_skill_pipeline.cli distill-corpus \
+  --name beta-corpus \
+  --asset text=examples/text_note.md \
+  --asset audio=examples/audio_transcript.srt \
+  --tag beta \
+  --tag ops \
+  --domain operations
+```
+
+### distill-corpus (JSON payload)
+
+```bash
+python -m omni_skill_pipeline.cli distill-corpus \
+  --payload-file examples/corpus_payload.json
+```
+
 ### show-template
 
 ```bash
@@ -81,3 +100,6 @@ python -m omni_skill_pipeline.cli show-template
 - CLI 成功执行后会打印生成的 `SKILL.md` 路径。
 - 默认输出目录由 `Settings.draft_dir` 决定，当前默认指向 `skills/drafts/`。
 - 目标与受众可通过 `--goal-type`、`--audience`、`--rigor`、`--granularity`、`--domain` 调整。
+- `distill-corpus` 支持两种输入：
+  - 多次 `--asset`（格式：`modality=source_uri`）
+  - `--payload-file` 或 `--payload-json`（完整 `CorpusDistillRequest` JSON）

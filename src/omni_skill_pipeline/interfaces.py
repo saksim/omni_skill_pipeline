@@ -7,6 +7,7 @@ from omni_skill_pipeline.models import (
     AudioDistillRequest,
     CorpusAssetInput,
     CorpusDistillRequest,
+    DistillBundle,
     DistillGoal,
     EvidenceNode,
     EvidenceUnit,
@@ -44,6 +45,12 @@ AssetDistillRequest: TypeAlias = (
 @runtime_checkable
 class DistillAdapter(Protocol[ReqT]):
     def load(self, request: ReqT) -> LoadedAsset:
+        ...
+
+
+@runtime_checkable
+class ArtifactRepository(Protocol):
+    def save_bundle(self, bundle: DistillBundle) -> dict[str, str]:
         ...
 
 

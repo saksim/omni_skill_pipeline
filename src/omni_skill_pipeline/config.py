@@ -21,6 +21,10 @@ class Settings:
     openai_timeout_seconds: float
     openai_retry_max_attempts: int
     openai_retry_base_delay_seconds: float
+    openai_circuit_breaker_consecutive_failures: int
+    openai_circuit_breaker_cooldown_seconds: float
+    openai_failure_budget_max_failures: int
+    openai_failure_budget_window_seconds: float
     llm_model: str
     vision_model: str
     transcription_model: str
@@ -63,6 +67,14 @@ def load_settings(repo_root: Path = None) -> Settings:
         openai_timeout_seconds=float(os.getenv('OMNI_OPENAI_TIMEOUT_SECONDS', '60')),
         openai_retry_max_attempts=int(os.getenv('OMNI_OPENAI_RETRY_MAX_ATTEMPTS', '3')),
         openai_retry_base_delay_seconds=float(os.getenv('OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS', '0.5')),
+        openai_circuit_breaker_consecutive_failures=int(
+            os.getenv('OMNI_OPENAI_CIRCUIT_BREAKER_CONSECUTIVE_FAILURES', '3')
+        ),
+        openai_circuit_breaker_cooldown_seconds=float(
+            os.getenv('OMNI_OPENAI_CIRCUIT_BREAKER_COOLDOWN_SECONDS', '30')
+        ),
+        openai_failure_budget_max_failures=int(os.getenv('OMNI_OPENAI_FAILURE_BUDGET_MAX_FAILURES', '6')),
+        openai_failure_budget_window_seconds=float(os.getenv('OMNI_OPENAI_FAILURE_BUDGET_WINDOW_SECONDS', '60')),
         llm_model=os.getenv('OMNI_OPENAI_LLM_MODEL', 'gpt-4.1'),
         vision_model=os.getenv('OMNI_OPENAI_VISION_MODEL', 'gpt-4.1-mini'),
         transcription_model=os.getenv('OMNI_OPENAI_TRANSCRIBE_MODEL', 'gpt-4o-transcribe'),

@@ -131,6 +131,16 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 - `OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS` controls backoff base delay (default `0.5` seconds).
 - Retry is only applied to transient failures (`429` or `5xx` style upstream errors).
 
+## Provider Circuit Breaker / Failure Budget
+
+- OpenAI provider tracks consecutive failures and rolling-window failures to prevent failure storms.
+- Consecutive failure threshold: `OMNI_OPENAI_CIRCUIT_BREAKER_CONSECUTIVE_FAILURES` (default `3`).
+- Failure budget window:
+  - `OMNI_OPENAI_FAILURE_BUDGET_MAX_FAILURES` (default `6`)
+  - `OMNI_OPENAI_FAILURE_BUDGET_WINDOW_SECONDS` (default `60`)
+- Cooldown while circuit is open: `OMNI_OPENAI_CIRCUIT_BREAKER_COOLDOWN_SECONDS` (default `30`).
+- When the circuit is open, provider calls fail fast with `ProviderExecutionError` and include `retry_after_seconds` plus the open reason.
+
 ## Payload Examples
 
 ### Text

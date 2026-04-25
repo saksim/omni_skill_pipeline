@@ -4,11 +4,12 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
+from omni_skill_pipeline.interfaces import ArtifactRepository
 from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication, ReviewTask
 from omni_skill_pipeline.utils import slugify, unique_preserve_order
 
 
-class FileArtifactRepository(object):
+class FileArtifactRepository(ArtifactRepository):
     def __init__(self, base_dir: Path) -> None:
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)

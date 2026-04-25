@@ -43,6 +43,10 @@ python -m pip install -r requirements-dev.txt
 - `OMNI_OPENAI_TIMEOUT_SECONDS`: OpenAI provider request timeout in seconds，默认 `60`
 - `OMNI_OPENAI_RETRY_MAX_ATTEMPTS`: OpenAI provider 总尝试次数（含首次调用），默认 `3`
 - `OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS`: OpenAI provider 退避基数秒数，默认 `0.5`（指数退避）
+- `OMNI_OPENAI_CIRCUIT_BREAKER_CONSECUTIVE_FAILURES`: 连续失败熔断阈值，默认 `3`
+- `OMNI_OPENAI_CIRCUIT_BREAKER_COOLDOWN_SECONDS`: 熔断冷却时间（秒），默认 `30`
+- `OMNI_OPENAI_FAILURE_BUDGET_MAX_FAILURES`: failure budget 窗口内最大失败次数，默认 `6`
+- `OMNI_OPENAI_FAILURE_BUDGET_WINDOW_SECONDS`: failure budget 统计窗口（秒），默认 `60`
 - `OMNI_TRANSCRIPTION_LANGUAGE`: 可选，ASR language hint
 
 ## API Variables

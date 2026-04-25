@@ -12,6 +12,7 @@ SRC_ROOT = REPO_ROOT / 'src'
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
+from omni_skill_pipeline.exceptions import ProviderExecutionError
 from omni_skill_pipeline.providers.openai_provider import OpenAIAudioTranscriber, OpenAIVisionAnalyzer
 
 
@@ -28,6 +29,10 @@ def _build_settings() -> SimpleNamespace:
         openai_timeout_seconds=42.0,
         openai_retry_max_attempts=3,
         openai_retry_base_delay_seconds=0.25,
+        openai_circuit_breaker_consecutive_failures=3,
+        openai_circuit_breaker_cooldown_seconds=30.0,
+        openai_failure_budget_max_failures=6,
+        openai_failure_budget_window_seconds=60.0,
         transcription_model='gpt-4o-transcribe',
         transcription_language='en',
         vision_model='gpt-4.1-mini',
@@ -129,6 +134,76 @@ class OpenAIProviderRetryTests(unittest.TestCase):
         self.assertEqual(result.text, 'line-a\nline-b')
         self.assertEqual(calls['count'], 2)
         mocked_sleep.assert_called_once_with(0.25)
+
+    def test_failure_storm_opens_circuit_breaker_and_fast_fails(self) -> None:
+        settings = _build_settings()
+        settings.openai_retry_max_attempts = 1
+        settings.openai_circuit_breaker_consecutive_failures = 2
+        settings.openai_circuit_breaker_cooldown_seconds = 120.0
+        settings.openai_failure_budget_max_failures = 20
+        settings.openai_failure_budget_window_seconds = 60.0
+        calls = {'count': 0}
+
+        def _create(**kwargs):
+            calls['count'] += 1
+            raise _TransientError('provider storm', status_code=503)
+
+        fake_client = SimpleNamespace(
+            responses=SimpleNamespace(
+                create=_create,
+            )
+        )
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as file_handle:
+            file_handle.write(b'\x89PNG\r\n\x1a\n')
+            image_path = Path(file_handle.name)
+        self.addCleanup(lambda: image_path.unlink(missing_ok=True))
+
+        with patch('omni_skill_pipeline.providers.openai_provider.OpenAI', return_value=fake_client):
+            analyzer = OpenAIVisionAnalyzer(settings)
+            with self.assertRaises(ProviderExecutionError):
+                analyzer.analyze(image_path)
+            with self.assertRaises(ProviderExecutionError):
+                analyzer.analyze(image_path)
+            with self.assertRaises(ProviderExecutionError) as circuit_exc:
+                analyzer.analyze(image_path)
+
+        self.assertEqual(calls['count'], 2)
+        self.assertIn('circuit breaker open', str(circuit_exc.exception).lower())
+
+    def test_failure_budget_opens_circuit_even_without_consecutive_threshold(self) -> None:
+        settings = _build_settings()
+        settings.openai_retry_max_attempts = 1
+        settings.openai_circuit_breaker_consecutive_failures = 99
+        settings.openai_circuit_breaker_cooldown_seconds = 120.0
+        settings.openai_failure_budget_max_failures = 2
+        settings.openai_failure_budget_window_seconds = 120.0
+        calls = {'count': 0}
+
+        def _create(**kwargs):
+            calls['count'] += 1
+            raise _TransientError('budget exhausted', status_code=503)
+
+        fake_client = SimpleNamespace(
+            responses=SimpleNamespace(
+                create=_create,
+            )
+        )
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as file_handle:
+            file_handle.write(b'\x89PNG\r\n\x1a\n')
+            image_path = Path(file_handle.name)
+        self.addCleanup(lambda: image_path.unlink(missing_ok=True))
+
+        with patch('omni_skill_pipeline.providers.openai_provider.OpenAI', return_value=fake_client):
+            analyzer = OpenAIVisionAnalyzer(settings)
+            with self.assertRaises(ProviderExecutionError):
+                analyzer.analyze(image_path)
+            with self.assertRaises(ProviderExecutionError):
+                analyzer.analyze(image_path)
+            with self.assertRaises(ProviderExecutionError) as budget_exc:
+                analyzer.analyze(image_path)
+
+        self.assertEqual(calls['count'], 2)
+        self.assertIn('failure_budget', str(budget_exc.exception))
 
 
 if __name__ == '__main__':
