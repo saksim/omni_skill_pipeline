@@ -175,3 +175,14 @@
   - `python scripts/run_release_gate_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-release-gate-validation-plan.json`
 - Linux beta-only dry-run example:
   - `python scripts/run_release_gate_validation.py --python python3 --stages beta_gate --coverage-fail-under 65 --container-image-tag omni-skill-pipeline:beta --dry-run --output -`
+
+## TP-E13-13 Release Switch Decision Validation
+
+- Command plan report: `docs/current/status/baselines/e13-release-switch-validation-plan.json`
+- Decision report: `docs/current/status/baselines/e13-release-switch-decision-report.json`
+- Runner script: `scripts/run_release_switch_validation.py`
+- Default stages: `release_gate`, `release_contract`, `doc_sync`
+- Linux dry-run example:
+  - `python scripts/run_release_switch_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-release-switch-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`
+- Linux decision-only example:
+  - `python scripts/run_release_switch_validation.py --decision-only --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`

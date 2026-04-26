@@ -66,3 +66,9 @@
 
 - Runner script: [../../../scripts/run_release_gate_validation.py](../../../scripts/run_release_gate_validation.py)
 - Stage packs: `beta_gate`, `ga_gate`, `roadmap_gate` (each delegates to [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py) with curated stage groups)
+
+## TP-E13-13 Release Switch Decision Runner
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Stage packs: `release_gate`, `release_contract`, `doc_sync`
+- Decision output: `docs/current/status/baselines/e13-release-switch-decision-report.json` (`GO` / `HOLD`)

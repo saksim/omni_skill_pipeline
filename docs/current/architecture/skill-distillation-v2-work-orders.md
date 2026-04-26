@@ -1,58 +1,44 @@
-# Skill Distillation V2 Work Orders
+﻿# Skill Distillation V2 Work Orders
 
-## 判词
+## 鍒よ瘝
 
-本文件把 `E1` 及之后的全部开发工作压成可直接下发给 `gpt-5.3-codex` 的施工任务单。若 [skill-distillation-v2-implementation-backlog.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-implementation-backlog.md) 是总台账，此文件就是逐包开斩的作战排程。
+鏈枃浠舵妸 `E1` 鍙婁箣鍚庣殑鍏ㄩ儴寮€鍙戝伐浣滃帇鎴愬彲鐩存帴涓嬪彂缁?`gpt-5.3-codex` 鐨勬柦宸ヤ换鍔″崟銆傝嫢 [skill-distillation-v2-implementation-backlog.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-implementation-backlog.md) 鏄€诲彴璐︼紝姝ゆ枃浠跺氨鏄€愬寘寮€鏂╃殑浣滄垬鎺掔▼銆?
+## 1. 鏂藉伐鎬昏鍒?
+- 涓€娆″彧鎵ц涓€涓伐鍗曪紝鎴栧悓涓€鎵规涓槑纭棤鍐欏啿绐佺殑灏戦噺宸ュ崟銆?- 鑻ュ伐鍗曡Е杈?`models.py`銆乣service.py`銆乣repository.py`锛岄粯璁や覆琛屻€?- 姣忎釜宸ュ崟閮藉繀椤诲甫娴嬭瘯涓庢枃妗ｅ悓姝ャ€?- 鏈畬鎴愬墠缃伐鍗曪紝涓嶅緱璺崇骇鏂藉伐銆?- 宸ュ崟鍚嶇О娌跨敤 backlog 涓殑 `TP-*` 缂栧彿锛岄伩鍏嶅悗缁贩涔便€?
+## 2. 宸ュ崟閫氱敤妯℃澘
 
-## 1. 施工总规则
-
-- 一次只执行一个工单，或同一批次中明确无写冲突的少量工单。
-- 若工单触达 `models.py`、`service.py`、`repository.py`，默认串行。
-- 每个工单都必须带测试与文档同步。
-- 未完成前置工单，不得跳级施工。
-- 工单名称沿用 backlog 中的 `TP-*` 编号，避免后续混乱。
-
-## 2. 工单通用模板
-
-每次下发给 `gpt-5.3-codex` 时，统一使用：
-
+姣忔涓嬪彂缁?`gpt-5.3-codex` 鏃讹紝缁熶竴浣跨敤锛?
 ```text
-你现在负责实现工单：TP-EX-YY
+浣犵幇鍦ㄨ礋璐ｅ疄鐜板伐鍗曪細TP-EX-YY
 
-必读文档：
-- docs/current/architecture/skill-distillation-v2.md
+蹇呰鏂囨。锛?- docs/current/architecture/skill-distillation-v2.md
 - docs/current/architecture/skill-distillation-v2-roadmap.md
 - docs/current/architecture/skill-distillation-v2-implementation-backlog.md
 - docs/current/architecture/skill-distillation-v2-work-orders.md
 
-本次目标：
-- <复制工单目标>
+鏈鐩爣锛?- <澶嶅埗宸ュ崟鐩爣>
 
-主要文件：
-- <复制主要文件>
+涓昏鏂囦欢锛?- <澶嶅埗涓昏鏂囦欢>
 
-必须完成：
-- 代码实现
-- 测试补齐
-- 文档同步
+蹇呴』瀹屾垚锛?- 浠ｇ爜瀹炵幇
+- 娴嬭瘯琛ラ綈
+- 鏂囨。鍚屾
 
-验收标准：
-- <复制本工单验收>
+楠屾敹鏍囧噯锛?- <澶嶅埗鏈伐鍗曢獙鏀?
 
-禁止事项：
-- 不要扩大到未列出的 Epic
-- 不要破坏现有 CLI / API 兼容
-- 不要私自引入新的重型基础设施
+绂佹浜嬮」锛?- 涓嶈鎵╁ぇ鍒版湭鍒楀嚭鐨?Epic
+- 涓嶈鐮村潖鐜版湁 CLI / API 鍏煎
+- 涓嶈绉佽嚜寮曞叆鏂扮殑閲嶅瀷鍩虹璁炬柦
 ```
 
-## 3. 推荐执行顺序
+## 3. 鎺ㄨ崘鎵ц椤哄簭
 
 ```text
 Batch A: E1
 Batch B: E2 + E3
 Batch C: E4
-Batch D: E5 + E6(前半)
-Batch E: E6(后半) + E7
+Batch D: E5 + E6(鍓嶅崐)
+Batch E: E6(鍚庡崐) + E7
 Batch F: E8 + E9
 Batch G: E10 + E11 + E12 + E13
 ```
@@ -61,98 +47,97 @@ Batch G: E10 + E11 + E12 + E13
 
 ## Batch A
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E1-01` | E1 | 新增 V2 基础枚举与 dataclass | `src/omni_skill_pipeline/models.py` | E0 | 新模型序列化测试 | `Corpus/EvidenceNode/SemanticAtom/SkillGraph` 等可 `to_dict()/to_json()`，且不破坏 `SkillDocument` |
-| `TP-E1-02` | E1 | 建立兼容转换器 | `src/omni_skill_pipeline/transformers.py`, `src/omni_skill_pipeline/render.py` | `TP-E1-01` | graph/document 转换测试 | `EvidenceUnit -> EvidenceNode` 与 `SkillGraph -> SkillDocument` 最小闭环可跑 |
-| `TP-E1-03` | E1 | 增加 schema v2 草案 | `src/omni_skill_pipeline/schema.py`, `docs/current/contracts/` | `TP-E1-01` | schema 校验测试 | 至少落一份 `skill-graph` 结构 contract，并与 dataclass 字段对齐 |
+| `TP-E1-01` | E1 | 鏂板 V2 鍩虹鏋氫妇涓?dataclass | `src/omni_skill_pipeline/models.py` | E0 | 鏂版ā鍨嬪簭鍒楀寲娴嬭瘯 | `Corpus/EvidenceNode/SemanticAtom/SkillGraph` 绛夊彲 `to_dict()/to_json()`锛屼笖涓嶇牬鍧?`SkillDocument` |
+| `TP-E1-02` | E1 | 寤虹珛鍏煎杞崲鍣?| `src/omni_skill_pipeline/transformers.py`, `src/omni_skill_pipeline/render.py` | `TP-E1-01` | graph/document 杞崲娴嬭瘯 | `EvidenceUnit -> EvidenceNode` 涓?`SkillGraph -> SkillDocument` 鏈€灏忛棴鐜彲璺?|
+| `TP-E1-03` | E1 | 澧炲姞 schema v2 鑽夋 | `src/omni_skill_pipeline/schema.py`, `docs/current/contracts/` | `TP-E1-01` | schema 鏍￠獙娴嬭瘯 | 鑷冲皯钀戒竴浠?`skill-graph` 缁撴瀯 contract锛屽苟涓?dataclass 瀛楁瀵归綈 |
 
 ## Batch B
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E2-01` | E2 | 建立 `CorpusDistillRequest` 与多资产请求模型 | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/interfaces.py` | `TP-E1-01` | request 构造测试 | 单个请求可表达多资产联合蒸馏 |
-| `TP-E2-02` | E2 | Service 支持多资产 load | `src/omni_skill_pipeline/service.py` | `TP-E2-01` | service 集成测试 | 单资产路径兼容，多资产路径可组装 `Corpus` |
-| `TP-E2-03` | E2 | 统一 corpus artifact 输出 | `src/omni_skill_pipeline/repository.py` | `TP-E2-02` | repository 输出测试 | 一次 corpus 蒸馏能保存资产清单与 cross-asset 引用 |
-| `TP-E3-01` | E3 | 定义 `EvidenceNode` 完整结构 | `src/omni_skill_pipeline/models.py` | `TP-E1-01` | model 测试 | 支持 `time_range/spatial_ref/structural_ref/payload/lineage` |
-| `TP-E3-02` | E3 | 建立 `EvidenceBuilder` | `src/omni_skill_pipeline/extraction/evidence_builder.py` | `TP-E3-01` | evidence builder 测试 | 现有 adapter 输出可映射成 `EvidenceNode` |
-| `TP-E3-03` | E3 | 支持 evidence lineage | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/extraction/evidence_builder.py` | `TP-E3-02` | lineage 测试 | parent/child/derived_from 基础链路成立 |
+| `TP-E2-01` | E2 | 寤虹珛 `CorpusDistillRequest` 涓庡璧勪骇璇锋眰妯″瀷 | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/interfaces.py` | `TP-E1-01` | request 鏋勯€犳祴璇?| 鍗曚釜璇锋眰鍙〃杈惧璧勪骇鑱斿悎钂搁 |
+| `TP-E2-02` | E2 | Service 鏀寔澶氳祫浜?load | `src/omni_skill_pipeline/service.py` | `TP-E2-01` | service 闆嗘垚娴嬭瘯 | 鍗曡祫浜ц矾寰勫吋瀹癸紝澶氳祫浜ц矾寰勫彲缁勮 `Corpus` |
+| `TP-E2-03` | E2 | 缁熶竴 corpus artifact 杈撳嚭 | `src/omni_skill_pipeline/repository.py` | `TP-E2-02` | repository 杈撳嚭娴嬭瘯 | 涓€娆?corpus 钂搁鑳戒繚瀛樿祫浜ф竻鍗曚笌 cross-asset 寮曠敤 |
+| `TP-E3-01` | E3 | 瀹氫箟 `EvidenceNode` 瀹屾暣缁撴瀯 | `src/omni_skill_pipeline/models.py` | `TP-E1-01` | model 娴嬭瘯 | 鏀寔 `time_range/spatial_ref/structural_ref/payload/lineage` |
+| `TP-E3-02` | E3 | 寤虹珛 `EvidenceBuilder` | `src/omni_skill_pipeline/extraction/evidence_builder.py` | `TP-E3-01` | evidence builder 娴嬭瘯 | 鐜版湁 adapter 杈撳嚭鍙槧灏勬垚 `EvidenceNode` |
+| `TP-E3-03` | E3 | 鏀寔 evidence lineage | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/extraction/evidence_builder.py` | `TP-E3-02` | lineage 娴嬭瘯 | parent/child/derived_from 鍩虹閾捐矾鎴愮珛 |
 
 ## Batch C
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E4-01` | E4 | 文档结构解析增强 | `src/omni_skill_pipeline/adapters/text.py`, `src/omni_skill_pipeline/extraction/modality/document_parser.py` | `TP-E3-02` | 文档结构测试 | 支持 section/table/code/figure 级 evidence |
-| `TP-E4-02` | E4 | 音频增强：utterance act 与 speaker role | `src/omni_skill_pipeline/adapters/audio.py`, `src/omni_skill_pipeline/extraction/modality/audio_parser.py` | `TP-E3-02` | 音频语义测试 | 至少区分 `question/decision/action_item/context` |
-| `TP-E4-03` | E4 | 图片增强：layout / region / OCR grouping | `src/omni_skill_pipeline/adapters/image.py`, `src/omni_skill_pipeline/extraction/modality/image_parser.py` | `TP-E3-02` | 图片布局测试 | 输出不再只剩平面 OCR 文本 |
-| `TP-E4-04` | E4 | 视频增强：scene timeline / frame event / subtitle alignment | `src/omni_skill_pipeline/adapters/video.py`, `src/omni_skill_pipeline/providers/media.py`, `src/omni_skill_pipeline/extraction/modality/video_parser.py` | `TP-E3-02` | 视频解析测试 | 可输出 scene cluster、frame event、最小 transcript-frame 对齐 |
-| `TP-E4-05` | E4 | 表格/时序增强：baseline / change point / drift | `src/omni_skill_pipeline/adapters/tabular.py`, `src/omni_skill_pipeline/extraction/modality/timeseries_parser.py` | `TP-E3-02` | 时序解析测试 | 至少引入 baseline、change point、异常区间 event |
+| `TP-E4-01` | E4 | 鏂囨。缁撴瀯瑙ｆ瀽澧炲己 | `src/omni_skill_pipeline/adapters/text.py`, `src/omni_skill_pipeline/extraction/modality/document_parser.py` | `TP-E3-02` | 鏂囨。缁撴瀯娴嬭瘯 | 鏀寔 section/table/code/figure 绾?evidence |
+| `TP-E4-02` | E4 | 闊抽澧炲己锛歶tterance act 涓?speaker role | `src/omni_skill_pipeline/adapters/audio.py`, `src/omni_skill_pipeline/extraction/modality/audio_parser.py` | `TP-E3-02` | 闊抽璇箟娴嬭瘯 | 鑷冲皯鍖哄垎 `question/decision/action_item/context` |
+| `TP-E4-03` | E4 | 鍥剧墖澧炲己锛歭ayout / region / OCR grouping | `src/omni_skill_pipeline/adapters/image.py`, `src/omni_skill_pipeline/extraction/modality/image_parser.py` | `TP-E3-02` | 鍥剧墖甯冨眬娴嬭瘯 | 杈撳嚭涓嶅啀鍙墿骞抽潰 OCR 鏂囨湰 |
+| `TP-E4-04` | E4 | 瑙嗛澧炲己锛歴cene timeline / frame event / subtitle alignment | `src/omni_skill_pipeline/adapters/video.py`, `src/omni_skill_pipeline/providers/media.py`, `src/omni_skill_pipeline/extraction/modality/video_parser.py` | `TP-E3-02` | 瑙嗛瑙ｆ瀽娴嬭瘯 | 鍙緭鍑?scene cluster銆乫rame event銆佹渶灏?transcript-frame 瀵归綈 |
+| `TP-E4-05` | E4 | 琛ㄦ牸/鏃跺簭澧炲己锛歜aseline / change point / drift | `src/omni_skill_pipeline/adapters/tabular.py`, `src/omni_skill_pipeline/extraction/modality/timeseries_parser.py` | `TP-E3-02` | 鏃跺簭瑙ｆ瀽娴嬭瘯 | 鑷冲皯寮曞叆 baseline銆乧hange point銆佸紓甯稿尯闂?event |
 
 ## Batch D
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E5-01` | E5 | 新建 `AtomExtractor` 主接口 | `src/omni_skill_pipeline/interfaces.py`, `src/omni_skill_pipeline/extraction/atom_extractor.py` | `TP-E3-02` | 接口与冒烟测试 | 可替代现有 `InsightExtractor` 接口位 |
-| `TP-E5-02` | E5 | 实现 `HeuristicAtomExtractor` | `src/omni_skill_pipeline/extraction/heuristic_atom_extractor.py` | `TP-E5-01` | heuristic atom 测试 | 基于 `EvidenceNode` 能稳定产出 procedure/rule/verification/anti-pattern |
-| `TP-E5-03` | E5 | 建立模态专用 atom 策略 | `src/omni_skill_pipeline/extraction/modality/*.py` | `TP-E5-02`, `TP-E4-*` | 各模态 atom 测试 | 视频优先 event，时序优先 guardrail，音频优先 question/event |
-| `TP-E5-04` | E5 | LLM AtomExtractor 增强 | `src/omni_skill_pipeline/providers/openai_provider.py`, `src/omni_skill_pipeline/extraction/llm_atom_extractor.py` | `TP-E5-02` | fallback 测试 | LLM 失败不影响基础 atom 输出 |
-| `TP-E6-01` | E6 | 定义 `SkillGraph` node/edge 模型 | `src/omni_skill_pipeline/models.py` | `TP-E1-01`, `TP-E5-01` | graph model 测试 | graph 结构完整可序列化 |
-| `TP-E6-02` | E6 | 实现 `SkillGraphBuilder` | `src/omni_skill_pipeline/assembly/skill_graph_builder.py` | `TP-E6-01`, `TP-E5-03` | graph builder 测试 | step 可追到 atom，再追到 evidence |
+| `TP-E5-01` | E5 | 鏂板缓 `AtomExtractor` 涓绘帴鍙?| `src/omni_skill_pipeline/interfaces.py`, `src/omni_skill_pipeline/extraction/atom_extractor.py` | `TP-E3-02` | 鎺ュ彛涓庡啋鐑熸祴璇?| 鍙浛浠ｇ幇鏈?`InsightExtractor` 鎺ュ彛浣?|
+| `TP-E5-02` | E5 | 瀹炵幇 `HeuristicAtomExtractor` | `src/omni_skill_pipeline/extraction/heuristic_atom_extractor.py` | `TP-E5-01` | heuristic atom 娴嬭瘯 | 鍩轰簬 `EvidenceNode` 鑳界ǔ瀹氫骇鍑?procedure/rule/verification/anti-pattern |
+| `TP-E5-03` | E5 | 寤虹珛妯℃€佷笓鐢?atom 绛栫暐 | `src/omni_skill_pipeline/extraction/modality/*.py` | `TP-E5-02`, `TP-E4-*` | 鍚勬ā鎬?atom 娴嬭瘯 | 瑙嗛浼樺厛 event锛屾椂搴忎紭鍏?guardrail锛岄煶棰戜紭鍏?question/event |
+| `TP-E5-04` | E5 | LLM AtomExtractor 澧炲己 | `src/omni_skill_pipeline/providers/openai_provider.py`, `src/omni_skill_pipeline/extraction/llm_atom_extractor.py` | `TP-E5-02` | fallback 娴嬭瘯 | LLM 澶辫触涓嶅奖鍝嶅熀纭€ atom 杈撳嚭 |
+| `TP-E6-01` | E6 | 瀹氫箟 `SkillGraph` node/edge 妯″瀷 | `src/omni_skill_pipeline/models.py` | `TP-E1-01`, `TP-E5-01` | graph model 娴嬭瘯 | graph 缁撴瀯瀹屾暣鍙簭鍒楀寲 |
+| `TP-E6-02` | E6 | 瀹炵幇 `SkillGraphBuilder` | `src/omni_skill_pipeline/assembly/skill_graph_builder.py` | `TP-E6-01`, `TP-E5-03` | graph builder 娴嬭瘯 | step 鍙拷鍒?atom锛屽啀杩藉埌 evidence |
 
 ## Batch E
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E6-03` | E6 | 实现 `PublicationBuilder` | `src/omni_skill_pipeline/assembly/publication_builder.py` | `TP-E6-02` | publication 输出测试 | 至少输出 `SKILL.md` 与另一种结构化 publication |
-| `TP-E6-04` | E6 | 兼容 V1 renderer | `src/omni_skill_pipeline/render.py` | `TP-E6-03` | markdown 回归测试 | 现有外部接口仍能拿到 `skill_markdown` |
-| `TP-E7-01` | E7 | 实现质量评分器 | `src/omni_skill_pipeline/quality/scoring.py` | `TP-E6-02` | score 测试 | 每次蒸馏生成 `traceability/actionability/coverage/consistency/noise/novelty` 评分 |
-| `TP-E7-02` | E7 | 实现 `ReviewPolicy` | `src/omni_skill_pipeline/quality/review_policy.py` | `TP-E7-01` | policy 测试 | 输出 `auto_publish/review_required/reject` 且附理由码 |
-| `TP-E7-03` | E7 | `ReviewTask` 结构化落地 | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/repository.py` | `TP-E7-02` | review task 测试 | review 不再只是一段备注文本 |
-| `TP-E7-04` | E7 | review feedback 回流 | `src/omni_skill_pipeline/quality/feedback.py` | `TP-E7-03` | feedback 测试 | feedback 可进入后续修订链路 |
+| `TP-E6-03` | E6 | 瀹炵幇 `PublicationBuilder` | `src/omni_skill_pipeline/assembly/publication_builder.py` | `TP-E6-02` | publication 杈撳嚭娴嬭瘯 | 鑷冲皯杈撳嚭 `SKILL.md` 涓庡彟涓€绉嶇粨鏋勫寲 publication |
+| `TP-E6-04` | E6 | 鍏煎 V1 renderer | `src/omni_skill_pipeline/render.py` | `TP-E6-03` | markdown 鍥炲綊娴嬭瘯 | 鐜版湁澶栭儴鎺ュ彛浠嶈兘鎷垮埌 `skill_markdown` |
+| `TP-E7-01` | E7 | 瀹炵幇璐ㄩ噺璇勫垎鍣?| `src/omni_skill_pipeline/quality/scoring.py` | `TP-E6-02` | score 娴嬭瘯 | 姣忔钂搁鐢熸垚 `traceability/actionability/coverage/consistency/noise/novelty` 璇勫垎 |
+| `TP-E7-02` | E7 | 瀹炵幇 `ReviewPolicy` | `src/omni_skill_pipeline/quality/review_policy.py` | `TP-E7-01` | policy 娴嬭瘯 | 杈撳嚭 `auto_publish/review_required/reject` 涓旈檮鐞嗙敱鐮?|
+| `TP-E7-03` | E7 | `ReviewTask` 缁撴瀯鍖栬惤鍦?| `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/repository.py` | `TP-E7-02` | review task 娴嬭瘯 | review 涓嶅啀鍙槸涓€娈靛娉ㄦ枃鏈?|
+| `TP-E7-04` | E7 | review feedback 鍥炴祦 | `src/omni_skill_pipeline/quality/feedback.py` | `TP-E7-03` | feedback 娴嬭瘯 | feedback 鍙繘鍏ュ悗缁慨璁㈤摼璺?|
 
 ## Batch F
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E8-01` | E8 | 设计 SQL V2 初始表结构 | `infra/sql/` | `TP-E6-02`, `TP-E7-03` | migration 校验 | schema 能承载 corpus/evidence/atom/graph/publication/review |
-| `TP-E8-02` | E8 | 实现 `PostgresRepository` | `src/omni_skill_pipeline/persistence/postgres_repository.py` | `TP-E8-01` | repository 集成测试 | graph/publication 可持久化与重建 |
-| `TP-E8-03` | E8 | Dual-write 策略 | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/repository.py` | `TP-E8-02` | dual-write 测试 | 文件产物与 PG 可同时写入 |
-| `TP-E8-04` | E8 | 接 pgvector | `src/omni_skill_pipeline/persistence/postgres_repository.py`, `infra/sql/` | `TP-E8-02` | vector 存取测试 | publication 与 atom 向量可存可查 |
-| `TP-E9-01` | E9 | 相似技能检索 | `src/omni_skill_pipeline/retrieval/similarity.py` | `TP-E8-04` | similarity 测试 | 能找出相近 skill |
-| `TP-E9-02` | E9 | `LifecycleDecisionEngine` | `src/omni_skill_pipeline/assembly/lifecycle.py` | `TP-E9-01`, `TP-E7-02` | lifecycle 测试 | 能输出 `new/revise/merge/supersede/reject` |
-| `TP-E9-03` | E9 | 实现 supersede / lineage link | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/persistence/postgres_repository.py` | `TP-E9-02` | lineage 测试 | 新旧 skill 关系可审计追溯 |
+| `TP-E8-01` | E8 | 璁捐 SQL V2 鍒濆琛ㄧ粨鏋?| `infra/sql/` | `TP-E6-02`, `TP-E7-03` | migration 鏍￠獙 | schema 鑳芥壙杞?corpus/evidence/atom/graph/publication/review |
+| `TP-E8-02` | E8 | 瀹炵幇 `PostgresRepository` | `src/omni_skill_pipeline/persistence/postgres_repository.py` | `TP-E8-01` | repository 闆嗘垚娴嬭瘯 | graph/publication 鍙寔涔呭寲涓庨噸寤?|
+| `TP-E8-03` | E8 | Dual-write 绛栫暐 | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/repository.py` | `TP-E8-02` | dual-write 娴嬭瘯 | 鏂囦欢浜х墿涓?PG 鍙悓鏃跺啓鍏?|
+| `TP-E8-04` | E8 | 鎺?pgvector | `src/omni_skill_pipeline/persistence/postgres_repository.py`, `infra/sql/` | `TP-E8-02` | vector 瀛樺彇娴嬭瘯 | publication 涓?atom 鍚戦噺鍙瓨鍙煡 |
+| `TP-E9-01` | E9 | 鐩镐技鎶€鑳芥绱?| `src/omni_skill_pipeline/retrieval/similarity.py` | `TP-E8-04` | similarity 娴嬭瘯 | 鑳芥壘鍑虹浉杩?skill |
+| `TP-E9-02` | E9 | `LifecycleDecisionEngine` | `src/omni_skill_pipeline/assembly/lifecycle.py` | `TP-E9-01`, `TP-E7-02` | lifecycle 娴嬭瘯 | 鑳借緭鍑?`new/revise/merge/supersede/reject` |
+| `TP-E9-03` | E9 | 瀹炵幇 supersede / lineage link | `src/omni_skill_pipeline/models.py`, `src/omni_skill_pipeline/persistence/postgres_repository.py` | `TP-E9-02` | lineage 娴嬭瘯 | 鏂版棫 skill 鍏崇郴鍙璁¤拷婧?|
 
 ## Batch G
 
-| 工单 | Epic | 目标 | 主要文件 | 前置 | 测试 | 验收 |
+| 宸ュ崟 | Epic | 鐩爣 | 涓昏鏂囦欢 | 鍓嶇疆 | 娴嬭瘯 | 楠屾敹 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `TP-E10-01` | E10 | CLI 支持 corpus distill 与 publication 选择 | `src/omni_skill_pipeline/cli.py` | `TP-E6-03`, `TP-E8-03` | CLI 回归测试 | 保留旧命令并新增 corpus 模式 |
-| `TP-E10-02` | E10 | API 支持 V2 输出结构 | `src/omni_skill_pipeline/api_app.py` | `TP-E6-03`, `TP-E7-03` | API 集成测试 | 返回 graph metadata、available publications、review status，旧接口仍兼容 |
-| `TP-E10-03` | E10 | Worker 任务类型升级 | `src/omni_skill_pipeline/worker.py`, `apps/worker/main.py` | `TP-E10-02` | worker 任务测试 | 支持 review queue / rebuild publication / revise existing skill |
-| `TP-E11-01` | E11 | 模型与转换器测试补齐 | `tests/` | `TP-E1-02`, `TP-E6-02` | 单元测试 | graph/document/evidence/atom 转换有回归覆盖 |
-| `TP-E11-02` | E11 | 模态集成测试补齐 | `tests/` | `TP-E4-*`, `TP-E5-*` | 集成测试 | document/audio/image/video/timeseries 均有端到端验证 |
-| `TP-E11-03` | E11 | 质量回归测试 | `tests/`, `docs/current/status/baselines/` | `TP-E7-01` | 基线回归脚本 | 能对比 `traceability` 与 `reviewer_edit_distance` |
-| `TP-E11-04` | E11 | 性能与成本基线 | `tests/`, `docs/current/status/baselines/` | `TP-E8-03` | perf/成本记录 | 记录耗时、token、provider 调用次数 |
-| `TP-E12-01` | E12 | 结构化日志与 trace id | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/worker.py` | `TP-E7-01` | logging 测试 | 一次蒸馏可追踪 asset -> graph -> publication |
-| `TP-E12-02` | E12 | provider 调用审计 | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/providers/` | `TP-E12-01` | audit 测试 | 能按 corpus 查看 provider footprint |
-| `TP-E12-03` | E12 | 安全与敏感信息控制 | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/repository.py` | `TP-E12-01` | redaction 测试 | token/secret/credential 不落盘 |
-| `TP-E12-04` | E12 | 临时工件治理 | `src/omni_skill_pipeline/adapters/video.py`, `src/omni_skill_pipeline/providers/media.py` | `TP-E12-01` | temp cleanup 测试 | `.tmp_omni_media/` 有清理与失败回收策略 |
-| `TP-E13-01` | E13 | 文档持续同步 | `README.md`, `docs/` | 全程 | doc sync 检查 | 对外文档与代码一致 |
-| `TP-E13-02` | E13 | V1 -> V2 迁移指南 | `docs/current/architecture/`, `docs/current/operations/` | `TP-E8-03`, `TP-E10-02` | 文档审阅 | 迁移步骤、回退策略、风险齐全 |
-| `TP-E13-03` | E13 | 发布与切换标准 | `docs/current/status/`, `docs/history/` | `TP-E9-03`, `TP-E11-03` | 发布审查 | 明确何时 V2 可成为主链 |
-| `TP-E13-04` | E13 | Linux 统一验尸编排脚本 | `scripts/run_linux_validation_suite.py`, `tests/test_linux_validation_suite_script.py`, `docs/current/operations/testing.md` | `TP-E11-03`, `TP-E11-04`, `TP-E13-03` | 脚本 smoke 测试 | Linux 可一条命令串起 CI/doc-sync/quality/perf 基线验收 |
-| `TP-E13-05` | E13 | Postgres 长稳验尸脚本 | `scripts/run_postgres_soak_validation.py`, `tests/test_postgres_soak_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-04` | 脚本 smoke 测试 | Linux 可一条命令打包 TP-E8/E9 + review queue + dual-write benchmark 的 Postgres 长稳验收 |
-| `TP-E13-06` | E13 | Worker GA 验证脚本 | `scripts/run_worker_ga_validation.py`, `tests/test_worker_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-05` | 脚本 smoke 测试 | Linux 可一条命令打包 worker corpus/retry/idempotency/claim-lock/task-type 验收 |
-| `TP-E13-07` | E13 | Provider GA 验证脚本 | `scripts/run_provider_ga_validation.py`, `tests/test_provider_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-06` | 脚本 smoke 测试 | Linux 可一条命令打包 provider retry/circuit-breaker/failure-budget/audit 验收 |
-| `TP-E13-08` | E13 | Review Queue GA 验证脚本 | `scripts/run_review_queue_ga_validation.py`, `tests/test_review_queue_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-07` | 脚本 smoke 测试 | Linux 可一条命令打包 review queue repository/service/api/feedback 验收 |
-| `TP-E13-09` | E13 | Calibration GA 验证脚本 | `scripts/run_calibration_ga_validation.py`, `tests/test_calibration_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-08` | 脚本 smoke 测试 | Linux 可一条命令打包阈值契约、review policy 契约与 calibration report 验收 |
-| `TP-E13-10` | E13 | Postgres GA 验证脚本 | `scripts/run_postgres_ga_validation.py`, `tests/test_postgres_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-09` | 脚本 smoke 测试 | Linux 可一条命令打包 postgres repository/dual-write contract + benchmark 验收 |
-| `TP-E13-11` | E13 | Roadmap 扩展验证脚本 | `scripts/run_roadmap_extension_validation.py`, `tests/test_roadmap_extension_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-10` | 脚本 smoke 测试 | Linux 可一条命令打包 LC-R-34~37（retrieval/lifecycle/publication/review queue surface）验收 |
-| `TP-E13-12` | E13 | 发布门禁聚合验证脚本 | `scripts/run_release_gate_validation.py`, `tests/test_release_gate_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-11` | 脚本 smoke 测试 | Linux 可一条命令分批执行 beta/ga/roadmap 三组门禁命令包并输出子计划 JSON |
+| `TP-E10-01` | E10 | CLI 鏀寔 corpus distill 涓?publication 閫夋嫨 | `src/omni_skill_pipeline/cli.py` | `TP-E6-03`, `TP-E8-03` | CLI 鍥炲綊娴嬭瘯 | 淇濈暀鏃у懡浠ゅ苟鏂板 corpus 妯″紡 |
+| `TP-E10-02` | E10 | API 鏀寔 V2 杈撳嚭缁撴瀯 | `src/omni_skill_pipeline/api_app.py` | `TP-E6-03`, `TP-E7-03` | API 闆嗘垚娴嬭瘯 | 杩斿洖 graph metadata銆乤vailable publications銆乺eview status锛屾棫鎺ュ彛浠嶅吋瀹?|
+| `TP-E10-03` | E10 | Worker 浠诲姟绫诲瀷鍗囩骇 | `src/omni_skill_pipeline/worker.py`, `apps/worker/main.py` | `TP-E10-02` | worker 浠诲姟娴嬭瘯 | 鏀寔 review queue / rebuild publication / revise existing skill |
+| `TP-E11-01` | E11 | 妯″瀷涓庤浆鎹㈠櫒娴嬭瘯琛ラ綈 | `tests/` | `TP-E1-02`, `TP-E6-02` | 鍗曞厓娴嬭瘯 | graph/document/evidence/atom 杞崲鏈夊洖褰掕鐩?|
+| `TP-E11-02` | E11 | 妯℃€侀泦鎴愭祴璇曡ˉ榻?| `tests/` | `TP-E4-*`, `TP-E5-*` | 闆嗘垚娴嬭瘯 | document/audio/image/video/timeseries 鍧囨湁绔埌绔獙璇?|
+| `TP-E11-03` | E11 | 璐ㄩ噺鍥炲綊娴嬭瘯 | `tests/`, `docs/current/status/baselines/` | `TP-E7-01` | 鍩虹嚎鍥炲綊鑴氭湰 | 鑳藉姣?`traceability` 涓?`reviewer_edit_distance` |
+| `TP-E11-04` | E11 | 鎬ц兘涓庢垚鏈熀绾?| `tests/`, `docs/current/status/baselines/` | `TP-E8-03` | perf/鎴愭湰璁板綍 | 璁板綍鑰楁椂銆乼oken銆乸rovider 璋冪敤娆℃暟 |
+| `TP-E12-01` | E12 | 缁撴瀯鍖栨棩蹇椾笌 trace id | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/worker.py` | `TP-E7-01` | logging 娴嬭瘯 | 涓€娆¤捀棣忓彲杩借釜 asset -> graph -> publication |
+| `TP-E12-02` | E12 | provider 璋冪敤瀹¤ | `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/providers/` | `TP-E12-01` | audit 娴嬭瘯 | 鑳芥寜 corpus 鏌ョ湅 provider footprint |
+| `TP-E12-03` | E12 | 瀹夊叏涓庢晱鎰熶俊鎭帶鍒?| `src/omni_skill_pipeline/service.py`, `src/omni_skill_pipeline/repository.py` | `TP-E12-01` | redaction 娴嬭瘯 | token/secret/credential 涓嶈惤鐩?|
+| `TP-E12-04` | E12 | 涓存椂宸ヤ欢娌荤悊 | `src/omni_skill_pipeline/adapters/video.py`, `src/omni_skill_pipeline/providers/media.py` | `TP-E12-01` | temp cleanup 娴嬭瘯 | `.tmp_omni_media/` 鏈夋竻鐞嗕笌澶辫触鍥炴敹绛栫暐 |
+| `TP-E13-01` | E13 | 鏂囨。鎸佺画鍚屾 | `README.md`, `docs/` | 鍏ㄧ▼ | doc sync 妫€鏌?| 瀵瑰鏂囨。涓庝唬鐮佷竴鑷?|
+| `TP-E13-02` | E13 | V1 -> V2 杩佺Щ鎸囧崡 | `docs/current/architecture/`, `docs/current/operations/` | `TP-E8-03`, `TP-E10-02` | 鏂囨。瀹￠槄 | 杩佺Щ姝ラ銆佸洖閫€绛栫暐銆侀闄╅綈鍏?|
+| `TP-E13-03` | E13 | 鍙戝竷涓庡垏鎹㈡爣鍑?| `docs/current/status/`, `docs/history/` | `TP-E9-03`, `TP-E11-03` | 鍙戝竷瀹℃煡 | 鏄庣‘浣曟椂 V2 鍙垚涓轰富閾?|
+| `TP-E13-04` | E13 | Linux 缁熶竴楠屽案缂栨帓鑴氭湰 | `scripts/run_linux_validation_suite.py`, `tests/test_linux_validation_suite_script.py`, `docs/current/operations/testing.md` | `TP-E11-03`, `TP-E11-04`, `TP-E13-03` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠や覆璧?CI/doc-sync/quality/perf 鍩虹嚎楠屾敹 |
+| `TP-E13-05` | E13 | Postgres 闀跨ǔ楠屽案鑴氭湰 | `scripts/run_postgres_soak_validation.py`, `tests/test_postgres_soak_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-04` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖?TP-E8/E9 + review queue + dual-write benchmark 鐨?Postgres 闀跨ǔ楠屾敹 |
+| `TP-E13-06` | E13 | Worker GA 楠岃瘉鑴氭湰 | `scripts/run_worker_ga_validation.py`, `tests/test_worker_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-05` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖?worker corpus/retry/idempotency/claim-lock/task-type 楠屾敹 |
+| `TP-E13-07` | E13 | Provider GA 楠岃瘉鑴氭湰 | `scripts/run_provider_ga_validation.py`, `tests/test_provider_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-06` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖?provider retry/circuit-breaker/failure-budget/audit 楠屾敹 |
+| `TP-E13-08` | E13 | Review Queue GA 楠岃瘉鑴氭湰 | `scripts/run_review_queue_ga_validation.py`, `tests/test_review_queue_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-07` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖?review queue repository/service/api/feedback 楠屾敹 |
+| `TP-E13-09` | E13 | Calibration GA 楠岃瘉鑴氭湰 | `scripts/run_calibration_ga_validation.py`, `tests/test_calibration_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-08` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖呴槇鍊煎绾︺€乺eview policy 濂戠害涓?calibration report 楠屾敹 |
+| `TP-E13-10` | E13 | Postgres GA 楠岃瘉鑴氭湰 | `scripts/run_postgres_ga_validation.py`, `tests/test_postgres_ga_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-09` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖?postgres repository/dual-write contract + benchmark 楠屾敹 |
+| `TP-E13-11` | E13 | Roadmap 鎵╁睍楠岃瘉鑴氭湰 | `scripts/run_roadmap_extension_validation.py`, `tests/test_roadmap_extension_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-10` | 鑴氭湰 smoke 娴嬭瘯 | Linux 鍙竴鏉″懡浠ゆ墦鍖?LC-R-34~37锛坮etrieval/lifecycle/publication/review queue surface锛夐獙鏀?|
+| `TP-E13-13` | E13 | Release switch 判定脚本 | `scripts/run_release_switch_validation.py`, `tests/test_release_switch_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-12` | 脚本 smoke 测试 | Linux 可一条命令执行 release-gate + TP 合同 + doc-sync 并输出 `GO/HOLD` 判定 JSON |
 
-## 5. 近战优先级
-
-魔尊若要最快开工，直接按以下顺序下发：
+## 5. 杩戞垬浼樺厛绾?
+榄斿皧鑻ヨ鏈€蹇紑宸ワ紝鐩存帴鎸変互涓嬮『搴忎笅鍙戯細
 
 1. `TP-E1-01`
 2. `TP-E1-02`
@@ -160,4 +145,4 @@ Batch G: E10 + E11 + E12 + E13
 4. `TP-E5-01`
 5. `TP-E6-01`
 
-这是最小骨架五连斩。若连这五刀都未落下，后续 provider、review、PG、检索全都会继续搭在旧 V1 的薄骨上。
+杩欐槸鏈€灏忛鏋朵簲杩炴柀銆傝嫢杩炶繖浜斿垁閮芥湭钀戒笅锛屽悗缁?provider銆乺eview銆丳G銆佹绱㈠叏閮戒細缁х画鎼湪鏃?V1 鐨勮杽楠ㄤ笂銆?

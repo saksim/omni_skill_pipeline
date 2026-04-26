@@ -820,6 +820,20 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="release-gate validation script should forward postgres and calibration options when building ga stage command pack.",
         ),
     ],
+    "TP-E13-13": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_dry_run_emits_default_release_switch_plan",
+            description="release-switch validation script should emit release-gate/tp/doc-sync command pack and write plan+decision reports in dry-run mode.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_respects_stage_selection_and_option_forwarding",
+            description="release-switch validation script should honor selected stages and forward release-gate options into nested command packs.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_emit_go_decision",
+            description="release-switch validation script should evaluate GO decision when all evidence reports satisfy hard-gate conditions.",
+        ),
+    ],
 }
 
 

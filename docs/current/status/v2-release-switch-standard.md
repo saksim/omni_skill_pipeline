@@ -39,6 +39,7 @@ Define objective release gates for promoting V2 to the default mainline while pr
 ## 6. Command Pack
 
 ```bash
+python scripts/run_release_switch_validation.py --python python3 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN" --output docs/current/status/baselines/e13-release-switch-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json
 python scripts/run_tp_tests.py TP-E9-03 TP-E11-03 TP-E13-03 --python python3
 python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
 python scripts/run_postgres_soak_validation.py --python python3 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"

@@ -19,6 +19,8 @@
 - Standard: `docs/current/status/v2-release-switch-standard.md`
 - TP references: `TP-E9-03`, `TP-E11-03`
 - Planned reports:
+  - `docs/current/status/baselines/e13-release-switch-validation-plan.json`
+  - `docs/current/status/baselines/e13-release-switch-decision-report.json`
   - `docs/current/status/baselines/e13-doc-sync-check-report.json`
   - `docs/current/status/baselines/e11-quality-regression-manifest.json`
   - `docs/current/status/baselines/e11-perf-cost-baseline-manifest.json`
@@ -28,5 +30,5 @@
 ## Pending Risks
 
 - Linux full-batch execution is still pending, so no final pass/fail seal can be issued.
-- Postgres long-run soak for publication/review lineage has not been closed (runner ready: `scripts/run_postgres_soak_validation.py`).
+- Postgres long-run soak for publication/review lineage has not been closed (runner ready: `scripts/run_release_switch_validation.py`).
 - Production cutover rehearsal and rollback drill are not yet complete.
