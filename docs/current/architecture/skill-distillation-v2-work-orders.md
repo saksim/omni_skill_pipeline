@@ -140,6 +140,8 @@ Batch G: E10 + E11 + E12 + E13
 | `TP-E13-01` | E13 | 文档持续同步 | `README.md`, `docs/` | 全程 | doc sync 检查 | 对外文档与代码一致 |
 | `TP-E13-02` | E13 | V1 -> V2 迁移指南 | `docs/current/architecture/`, `docs/current/operations/` | `TP-E8-03`, `TP-E10-02` | 文档审阅 | 迁移步骤、回退策略、风险齐全 |
 | `TP-E13-03` | E13 | 发布与切换标准 | `docs/current/status/`, `docs/history/` | `TP-E9-03`, `TP-E11-03` | 发布审查 | 明确何时 V2 可成为主链 |
+| `TP-E13-04` | E13 | Linux 统一验尸编排脚本 | `scripts/run_linux_validation_suite.py`, `tests/test_linux_validation_suite_script.py`, `docs/current/operations/testing.md` | `TP-E11-03`, `TP-E11-04`, `TP-E13-03` | 脚本 smoke 测试 | Linux 可一条命令串起 CI/doc-sync/quality/perf 基线验收 |
+| `TP-E13-05` | E13 | Postgres 长稳验尸脚本 | `scripts/run_postgres_soak_validation.py`, `tests/test_postgres_soak_validation_script.py`, `scripts/run_linux_validation_suite.py`, `docs/current/operations/testing.md` | `TP-E13-04` | 脚本 smoke 测试 | Linux 可一条命令打包 TP-E8/E9 + review queue + dual-write benchmark 的 Postgres 长稳验收 |
 
 ## 5. 近战优先级
 

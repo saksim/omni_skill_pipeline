@@ -21,6 +21,11 @@ class TPRegistryScriptTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("TP-E4-01", completed.stdout)
         self.assertIn("TP-E6-02", completed.stdout)
+        self.assertIn("TP-E13-01", completed.stdout)
+        self.assertIn("TP-E13-02", completed.stdout)
+        self.assertIn("TP-E13-03", completed.stdout)
+        self.assertIn("TP-E13-04", completed.stdout)
+        self.assertIn("TP-E13-05", completed.stdout)
 
     def test_all_dry_run_builds_unittest_command(self) -> None:
         completed = subprocess.run(

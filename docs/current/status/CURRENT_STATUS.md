@@ -21,3 +21,13 @@
 1. 先读总卷中的功能矩阵
 2. 再按任务卡顺序执行 `LC-L1-*`
 3. 完成 Beta 阻断项后，再推进 `LC-L2-*`
+
+## TP-E13-03 Release Switch Standard
+
+- Current standard: [v2-release-switch-standard.md](v2-release-switch-standard.md)
+- Latest decision snapshot: [../../history/status/2026-04-26-v2-release-switch-standard.md](../../history/status/2026-04-26-v2-release-switch-standard.md)
+
+## TP-E13-05 Postgres Soak Runner
+
+- Runner script: [../../../scripts/run_postgres_soak_validation.py](../../../scripts/run_postgres_soak_validation.py)
+- Linux unified suite stage: `postgres_soak` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)

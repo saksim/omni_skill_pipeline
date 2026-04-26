@@ -45,3 +45,58 @@
 - Runner script: `scripts/run_perf_cost_baseline.py`
 - Linux example:
   - `python scripts/run_perf_cost_baseline.py --manifest docs/current/status/baselines/e11-perf-cost-baseline-manifest.json --output docs/current/status/baselines/e11-perf-cost-baseline-report.json --fail-on-regression`
+
+## TP-E13-01 Doc Sync Check
+
+- Output report: `docs/current/status/baselines/e13-doc-sync-check-report.json`
+- Runner script: `scripts/run_doc_sync_check.py`
+- Scope docs:
+  - `docs/current/operations/api.md` (`LC-L1-16`)
+  - `docs/current/operations/runbooks/launch-beta.md` (`LC-L1-19`)
+- Validation checks:
+  - `api_ops_contract_completeness`
+  - `launch_beta_runbook_completeness`
+- Linux example:
+  - `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`
+
+## TP-E13-02 Migration Guide Contract
+
+- Scope docs:
+  - `docs/current/architecture/v1-to-v2-migration-guide.md`
+  - `docs/current/operations/v1-to-v2-migration-runbook.md`
+- Validation check: `migration_guide_completeness` in `scripts/run_doc_sync_check.py`
+- Linux example:
+  - `python scripts/run_tp_tests.py TP-E13-02 --python python3`
+  - `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`
+
+## TP-E13-03 Release Switch Standard Contract
+
+- Scope docs:
+  - `docs/current/status/v2-release-switch-standard.md`
+  - `docs/history/status/2026-04-26-v2-release-switch-standard.md`
+- Validation check: `release_switch_standard_completeness` in `scripts/run_doc_sync_check.py`
+- Linux example:
+  - `python scripts/run_tp_tests.py TP-E13-03 --python python3`
+  - `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`
+
+## TP-E13-04 Linux Validation Suite
+
+- Plan report: `docs/current/status/baselines/e13-linux-validation-suite-plan.json`
+- Runner script: `scripts/run_linux_validation_suite.py`
+- Default stages: `ci`, `container_smoke`, `doc_sync`, `quality_regression`, `perf_cost_baseline`, `postgres_soak`
+- Linux dry-run example:
+  - `python scripts/run_linux_validation_suite.py --python python3 --dry-run --output docs/current/status/baselines/e13-linux-validation-suite-plan.json`
+- Linux container stage dry-run example:
+  - `python scripts/run_linux_validation_suite.py --python python3 --stages container_smoke --container-image-tag omni-skill-pipeline:beta --dry-run --output -`
+- Linux execution example:
+  - `python scripts/run_linux_validation_suite.py --python python3`
+
+## TP-E13-05 Postgres Soak Validation
+
+- Plan report: `docs/current/status/baselines/e13-postgres-soak-plan.json`
+- Benchmark report: `docs/current/status/baselines/e13-postgres-soak-benchmark-report.json`
+- Runner script: `scripts/run_postgres_soak_validation.py`
+- Linux dry-run example:
+  - `python scripts/run_postgres_soak_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-postgres-soak-plan.json`
+- Linux execution example:
+  - `python scripts/run_postgres_soak_validation.py --python python3 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"`

@@ -230,7 +230,7 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 
 ## Current Caveats
 
-- distill API 已开放 corpus 与 V2 摘要字段；worker 任务类型升级仍待 `TP-E10-03`
+- distill API 已开放 corpus 与 V2 摘要字段；worker 已支持 `review_queue` / `rebuild_publication` / `revise_skill` 三类任务。
 - 已启用 structured logging，包含 request_id / trace_id 关联字段
 
 ## Request / Trace Context

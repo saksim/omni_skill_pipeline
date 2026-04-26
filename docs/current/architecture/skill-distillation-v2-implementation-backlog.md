@@ -825,6 +825,33 @@ E12 建议从 E7 后开始持续补
   - PG repository 稳定
   - 基线样本回归优于 V1
 
+#### TP-E13-04 Linux 统一验尸编排脚本
+
+- 目标：将 Linux 批量验收入口收敛为单一命令包，避免手工串命令漏项。
+- 主要文件：
+  - `scripts/run_linux_validation_suite.py`
+  - `tests/test_linux_validation_suite_script.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`ci/doc_sync/quality_regression/perf_cost_baseline`）
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可选关闭回归 fail gate（用于演练场景）
+
+#### TP-E13-05 Postgres 长稳验尸脚本
+
+- 目标：将 Postgres 长稳验证（仓储链路 + review queue + dual-write benchmark）收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_postgres_soak_validation.py`
+  - `tests/test_postgres_soak_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`tp_postgres/review_queue/dual_write_benchmark`）
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 对 runtime 阶段缺失 Postgres DSN 时 fail-fast，避免“假通过”
+
 ## 7. 按代码目录的开发清单
 
 ### `src/omni_skill_pipeline/models.py`

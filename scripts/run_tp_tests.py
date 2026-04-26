@@ -508,6 +508,76 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="media provider should delete unselected intermediate frames after keyframe selection.",
         ),
     ],
+    "TP-E13-01": [
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_smoke_validates_docs_against_code_surfaces",
+            description="doc sync harness should validate README/CLI/API/worker/testing docs against source surfaces.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_reports_incomplete_api_ops_contract_docs",
+            description="doc sync harness should fail when API ops contract misses LC-L1-16 auth/rate-limit/error/health markers.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_reports_stale_pending_tp_markers",
+            description="doc sync harness should fail when docs still mark completed TP IDs as pending.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_reports_incomplete_launch_beta_runbook",
+            description="doc sync harness should fail when launch-beta runbook misses deploy/rollback/acceptance/log/temp-cleanup checklist sections.",
+        ),
+    ],
+    "TP-E13-02": [
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_smoke_validates_docs_against_code_surfaces",
+            description="migration guide check should pass when architecture/operations docs include steps rollback and risk sections.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_reports_incomplete_v1_to_v2_migration_docs",
+            description="migration guide check should fail when required sections or commands are missing.",
+        ),
+    ],
+    "TP-E13-03": [
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_smoke_validates_docs_against_code_surfaces",
+            description="release-switch standard check should pass when current status and history snapshots include all hard-gate criteria.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_reports_incomplete_release_switch_docs",
+            description="release-switch standard check should fail when hard-gate markers or decision snapshot sections are missing.",
+        ),
+    ],
+    "TP-E13-04": [
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_script_dry_run_emits_default_linux_plan",
+            description="linux validation suite script should emit full command pack and plan report in dry-run mode.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_script_respects_stage_selection_and_regression_flag",
+            description="linux validation suite script should honor stage filtering and optional regression gate override.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_container_smoke_stage_forwards_container_options",
+            description="linux validation suite should expose container_smoke stage and forward image/port/timeout options.",
+        ),
+    ],
+    "TP-E13-05": [
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_postgres_soak_stage_forwards_postgres_options",
+            description="linux validation suite should forward postgres soak dsn, iteration, and benchmark output options to the nested stage command.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_soak_validation_script.PostgresSoakValidationScriptTests.test_script_dry_run_emits_default_postgres_soak_plan",
+            description="postgres soak script should emit tp/review/benchmark command pack and write plan json in dry-run mode.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_soak_validation_script.PostgresSoakValidationScriptTests.test_script_respects_stage_selection_and_benchmark_options",
+            description="postgres soak script should honor stage filtering and benchmark options when building command pack.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_soak_validation_script.PostgresSoakValidationScriptTests.test_script_requires_postgres_dsn_for_runtime_stages",
+            description="postgres soak script should fail fast when runtime stages require postgres dsn but none is configured.",
+        ),
+    ],
 }
 
 

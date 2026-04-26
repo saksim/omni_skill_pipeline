@@ -7,6 +7,7 @@
 - [Worker](worker.md)
 - [Environment](env.md)
 - [Testing](testing.md)
+- [V1 -> V2 Migration Runbook](v1-to-v2-migration-runbook.md)
 
 ## Expansion Zones
 

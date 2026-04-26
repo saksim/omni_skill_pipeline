@@ -98,7 +98,7 @@ python scripts/run_tp_tests.py TP-E6-02 --python python
 执行多个工单:
 
 ```bash
-python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-02 TP-E8-03 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-04 --python python
+python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-02 TP-E8-03 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 --python python3
 ```
 
 ## 当前覆盖重点
@@ -116,6 +116,9 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 - `tests/test_api_app.py`: 覆盖 distill API 输入转换、错误映射与 TP-E10-02 的 V2 输出契约字段
 - `tests/test_worker.py`: 覆盖 TP-E10-03 worker 新任务类型（review_queue/rebuild_publication/revise_skill）
 - `tests/test_transformers_regression.py`: 覆盖 TP-E11-01 模型/转换器分支回归（skill_type、evidence 聚合、legacy atom bridge）
+- `tests/test_doc_sync_check_script.py`: 覆盖 TP-E13-01 / TP-E13-02 / TP-E13-03 文档同步检查脚本（源码表面 + 迁移指南 + 发布切换标准 + LC-L1-19 Beta runbook 契约）
+- `tests/test_linux_validation_suite_script.py`: 覆盖 TP-E13-04 Linux 统一验尸编排脚本（阶段筛选、命令打包、dry-run 计划落盘、container smoke 参数透传）
+- `tests/test_postgres_soak_validation_script.py`: 覆盖 TP-E13-05 Postgres 长稳验尸脚本（TP 回归编排、benchmark 参数、dsn fail-fast）
 
 ## 当前缺口
 
@@ -174,3 +177,51 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 - Added `tests/test_media_provider.py::MediaProcessorTests.test_cleanup_unselected_frames_keeps_selected_only` for intermediate-frame lifecycle cleanup.
 - Added `TP-E12-04` mapping in `scripts/run_tp_tests.py`.
 - Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 --python python3`.
+
+## TP-E13-01 Additions
+
+- Added `scripts/run_doc_sync_check.py` to verify README/CLI/API/worker/testing docs stay aligned with source surfaces.
+- Extended `scripts/run_doc_sync_check.py` with `api_ops_contract_completeness` check for `docs/current/operations/api.md` (`LC-L1-16` auth/rate-limit/error/health contract).
+- Extended `scripts/run_doc_sync_check.py` with `launch_beta_runbook_completeness` check for `docs/current/operations/runbooks/launch-beta.md` (`LC-L1-19` checklist contract).
+- Added `tests/test_doc_sync_check_script.py` coverage for API ops-contract incomplete fail-path.
+- Added `tests/test_doc_sync_check_script.py` coverage for launch-beta incomplete-contract fail-path.
+- Added `TP-E13-01` mapping in `scripts/run_tp_tests.py`.
+- Linux doc sync example: `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`.
+- Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 --python python3`.
+
+## TP-E13-02 Additions
+
+- Added `docs/current/architecture/v1-to-v2-migration-guide.md` with migration steps, rollback strategy, and risk register.
+- Added `docs/current/operations/v1-to-v2-migration-runbook.md` with Linux execution and rollback sequence.
+- Extended `scripts/run_doc_sync_check.py` with `migration_guide_completeness` check and migration doc path args.
+- Extended `tests/test_doc_sync_check_script.py` with incomplete-migration-doc fail-path assertions.
+- Added `TP-E13-02` mapping in `scripts/run_tp_tests.py`.
+- Linux batch example: `python scripts/run_tp_tests.py TP-E13-01 TP-E13-02 --python python3`.
+
+## TP-E13-03 Additions
+
+- Added `docs/current/status/v2-release-switch-standard.md` with hard-gate rules and cutover/rollback criteria.
+- Added `docs/history/status/2026-04-26-v2-release-switch-standard.md` as the first decision snapshot baseline.
+- Extended `scripts/run_doc_sync_check.py` with `release_switch_standard_completeness` check and release status doc path args.
+- Extended `tests/test_doc_sync_check_script.py` with release-switch incomplete-doc fail-path assertions.
+- Added `TP-E13-03` mapping in `scripts/run_tp_tests.py`.
+- Linux batch example: `python scripts/run_tp_tests.py TP-E13-01 TP-E13-02 TP-E13-03 --python python3`.
+
+## TP-E13-04 Additions
+
+- Added `scripts/run_linux_validation_suite.py` to orchestrate Linux unified validation stages (`ci`, `container_smoke`, `doc_sync`, `quality_regression`, `perf_cost_baseline`, `postgres_soak`).
+- Added `tests/test_linux_validation_suite_script.py` for dry-run plan output, stage-filter behavior, and `container_smoke` option forwarding coverage.
+- Added `TP-E13-04` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_linux_validation_suite.py --python python3 --dry-run --output docs/current/status/baselines/e13-linux-validation-suite-plan.json`.
+- Linux container-only dry-run example: `python scripts/run_linux_validation_suite.py --python python3 --stages container_smoke --container-image-tag omni-skill-pipeline:beta --dry-run --output -`.
+- Linux execution example: `python scripts/run_linux_validation_suite.py --python python3`.
+
+## TP-E13-05 Additions
+
+- Added `scripts/run_postgres_soak_validation.py` to orchestrate Postgres soak command pack (`tp_postgres`, `review_queue`, `dual_write_benchmark`).
+- Extended `scripts/run_linux_validation_suite.py` with `postgres_soak` stage so Linux full-pack can include Postgres long-run validation.
+- Added `tests/test_postgres_soak_validation_script.py` for dry-run plan output, stage filtering, benchmark args, and DSN fail-fast behavior.
+- Updated `tests/test_linux_validation_suite_script.py` for the new `postgres_soak` stage in default command pack and postgres option forwarding coverage.
+- Added `TP-E13-05` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_postgres_soak_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-postgres-soak-plan.json`.
+- Linux execution example: `python scripts/run_postgres_soak_validation.py --python python3 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"`.
