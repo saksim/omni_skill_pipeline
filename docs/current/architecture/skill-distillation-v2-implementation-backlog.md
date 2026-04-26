@@ -852,6 +852,109 @@ E12 建议从 E7 后开始持续补
   - 支持 dry-run 输出计划并落盘 JSON
   - 对 runtime 阶段缺失 Postgres DSN 时 fail-fast，避免“假通过”
 
+#### TP-E13-06 Worker GA 验证脚本
+
+- 目标：把 worker GA 硬化验证收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_worker_ga_validation.py`
+  - `tests/test_worker_ga_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`worker_corpus/worker_retry/worker_idempotency/worker_claim_lock/worker_task_types`）
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可通过 Linux 统一编排脚本的 `worker_ga` stage 直接调用
+
+#### TP-E13-07 Provider GA 验证脚本
+
+- 目标：把 provider GA 硬化验证收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_provider_ga_validation.py`
+  - `tests/test_provider_ga_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`provider_retry/provider_circuit_breaker/provider_failure_budget/provider_config_contract/provider_call_audit/provider_footprint`）
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可通过 Linux 统一编排脚本的 `provider_ga` stage 直接调用
+
+#### TP-E13-08 Review Queue GA 验证脚本
+
+- 目标：把 review queue GA 硬化验证收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_review_queue_ga_validation.py`
+  - `tests/test_review_queue_ga_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`review_queue_repository/review_queue_service/review_queue_api/review_feedback/review_feedback_consumer`）
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可通过 Linux 统一编排脚本的 `review_queue_ga` stage 直接调用
+
+#### TP-E13-09 Calibration GA 验证脚本
+
+- 目标：把 calibration GA 验证收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_calibration_ga_validation.py`
+  - `tests/test_calibration_ga_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`calibration_contract/review_policy_contract/calibration_report`）
+  - 支持 `manifest/calibration-report-output/margin/fail-on-mismatch` 参数透传
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可通过 Linux 统一编排脚本的 `calibration_ga` stage 直接调用
+
+#### TP-E13-10 Postgres GA 验证脚本
+
+- 目标：把 LC-L2-32/33 的 Postgres repository + dual-write GA 验证收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_postgres_ga_validation.py`
+  - `tests/test_postgres_ga_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `tests/test_linux_validation_suite_script.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`postgres_repository_contract/postgres_repository_integration/dual_write_contract/dual_write_integration/dual_write_benchmark`）
+  - 支持 `postgres-dsn/benchmark-iterations/benchmark-output/allow-secondary-failures` 参数透传
+  - 对 runtime 阶段缺失 Postgres DSN 时 fail-fast
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可通过 Linux 统一编排脚本的 `postgres_ga` stage 直接调用
+
+#### TP-E13-11 Roadmap 扩展验证脚本
+
+- 目标：把 LC-R-34~37（retrieval/lifecycle/publication/review queue surface）验证收敛为 Linux 可直接执行的单命令包。
+- 主要文件：
+  - `scripts/run_roadmap_extension_validation.py`
+  - `tests/test_roadmap_extension_validation_script.py`
+  - `scripts/run_linux_validation_suite.py`
+  - `tests/test_linux_validation_suite_script.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`retrieval_layer/lifecycle_engine/publication_expansion/review_queue_surface`）
+  - 支持 dry-run 输出计划并落盘 JSON
+  - 可通过 Linux 统一编排脚本的 `roadmap_extension` stage 直接调用
+
+#### TP-E13-12 发布门禁聚合验证脚本
+
+- 目标：把 Beta/GA/Roadmap 三组发布门禁收敛成 Linux 可直接执行的聚合命令包，减少人工切阶段时的漏检风险。
+- 主要文件：
+  - `scripts/run_release_gate_validation.py`
+  - `tests/test_release_gate_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`beta_gate/ga_gate/roadmap_gate`）
+  - 复用 `scripts/run_linux_validation_suite.py` 并透传 coverage/container/postgres/calibration 关键参数
+  - 支持 dry-run 输出总计划并落盘 JSON，同时为每个子门禁包落盘独立计划 JSON
+
 ## 7. 按代码目录的开发清单
 
 ### `src/omni_skill_pipeline/models.py`

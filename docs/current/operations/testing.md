@@ -98,7 +98,7 @@ python scripts/run_tp_tests.py TP-E6-02 --python python
 执行多个工单:
 
 ```bash
-python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-02 TP-E8-03 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 --python python3
+python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 --python python3
 ```
 
 ## 当前覆盖重点
@@ -117,8 +117,16 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 - `tests/test_worker.py`: 覆盖 TP-E10-03 worker 新任务类型（review_queue/rebuild_publication/revise_skill）
 - `tests/test_transformers_regression.py`: 覆盖 TP-E11-01 模型/转换器分支回归（skill_type、evidence 聚合、legacy atom bridge）
 - `tests/test_doc_sync_check_script.py`: 覆盖 TP-E13-01 / TP-E13-02 / TP-E13-03 文档同步检查脚本（源码表面 + 迁移指南 + 发布切换标准 + LC-L1-19 Beta runbook 契约）
-- `tests/test_linux_validation_suite_script.py`: 覆盖 TP-E13-04 Linux 统一验尸编排脚本（阶段筛选、命令打包、dry-run 计划落盘、container smoke 参数透传）
+- `tests/test_linux_validation_suite_script.py`: 覆盖 TP-E13-04 Linux 统一验尸编排脚本（阶段筛选、命令打包、dry-run 计划落盘、container smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 参数透传）
 - `tests/test_postgres_soak_validation_script.py`: 覆盖 TP-E13-05 Postgres 长稳验尸脚本（TP 回归编排、benchmark 参数、dsn fail-fast）
+- `tests/test_worker_ga_validation_script.py`: 覆盖 TP-E13-06 worker GA 验证脚本（阶段筛选、dry-run 计划落盘）
+- `tests/test_provider_ga_validation_script.py`: 覆盖 TP-E13-07 provider GA 验证脚本（retry/circuit-breaker/failure-budget/audit 计划编排）
+- `tests/test_review_queue_ga_validation_script.py`: 覆盖 TP-E13-08 review queue GA 验证脚本（repository/service/api/feedback 阶段编排与筛选）
+- `tests/test_calibration_ga_validation_script.py`: 覆盖 TP-E13-09 calibration GA 验证脚本（阈值契约、调参报告、manifest/report 参数透传）
+- `tests/test_postgres_ga_validation_script.py`: 覆盖 TP-E13-10 Postgres GA 验证脚本（repository/dual-write/benchmark 阶段编排、dsn fail-fast、benchmark 参数透传）
+- `tests/test_roadmap_extension_validation_script.py`: 覆盖 TP-E13-11 roadmap extension 验证脚本（LC-R-34~37 的 retrieval/lifecycle/publication/review queue surface 阶段编排与筛选）
+- `tests/test_release_gate_validation_script.py`: 覆盖 TP-E13-12 发布门禁聚合脚本（beta/ga/roadmap 阶段筛选与 coverage/container/postgres/calibration 参数透传）
+- `tests/test_tp_registry.py`: 覆盖 TP 注册表与 `skill-distillation-v2-work-orders.md` 的完整性对齐，防止新工单漏映射
 
 ## 当前缺口
 
@@ -133,7 +141,7 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 
 1. 在 `tests/` 落测试 case
 2. 在 `scripts/run_tp_tests.py` 的 `TP_TEST_CASES` 中登记映射
-3. 在本文件更新覆盖范围与新增工单说明
+3. 在本文件更新覆盖范围与新增工单说明（并确保 `tests/test_tp_registry.py` 对齐 work-orders）
 
 ## LC-R-37 Additions
 
@@ -225,3 +233,71 @@ python scripts/run_tp_tests.py TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E
 - Added `TP-E13-05` mapping in `scripts/run_tp_tests.py`.
 - Linux dry-run example: `python scripts/run_postgres_soak_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-postgres-soak-plan.json`.
 - Linux execution example: `python scripts/run_postgres_soak_validation.py --python python3 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"`.
+
+## TP-E13-06 Additions
+
+- Added `scripts/run_worker_ga_validation.py` to orchestrate worker GA-hardening command pack (`worker_corpus`, `worker_retry`, `worker_idempotency`, `worker_claim_lock`, `worker_task_types`).
+- Added `tests/test_worker_ga_validation_script.py` for dry-run plan output and stage-filter behavior.
+- Extended `scripts/run_linux_validation_suite.py` with `worker_ga` stage so Linux full-pack can include worker GA hardening validation.
+- Updated `tests/test_linux_validation_suite_script.py` with worker_ga stage forwarding coverage.
+- Added `TP-E13-06` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_worker_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-worker-ga-validation-plan.json`.
+- Linux stage-only dry-run example: `python scripts/run_worker_ga_validation.py --python python3 --stages worker_retry worker_claim_lock --dry-run --output -`.
+
+## TP-E13-07 Additions
+
+- Added `scripts/run_provider_ga_validation.py` to orchestrate provider GA-hardening command pack (`provider_retry`, `provider_circuit_breaker`, `provider_failure_budget`, `provider_config_contract`, `provider_call_audit`, `provider_footprint`).
+- Added `tests/test_provider_ga_validation_script.py` for default dry-run plan output and stage-filter behavior.
+- Extended `scripts/run_linux_validation_suite.py` with `provider_ga` stage so Linux full-pack can include provider GA hardening validation.
+- Updated `tests/test_linux_validation_suite_script.py` with provider_ga stage forwarding coverage.
+- Added `TP-E13-07` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_provider_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-provider-ga-validation-plan.json`.
+- Linux stage-only dry-run example: `python scripts/run_provider_ga_validation.py --python python3 --stages provider_circuit_breaker provider_call_audit --dry-run --output -`.
+
+## TP-E13-08 Additions
+
+- Added `scripts/run_review_queue_ga_validation.py` to orchestrate review queue GA-hardening command pack (`review_queue_repository`, `review_queue_service`, `review_queue_api`, `review_feedback`, `review_feedback_consumer`).
+- Added `tests/test_review_queue_ga_validation_script.py` for default dry-run plan output and stage-filter behavior.
+- Extended `scripts/run_linux_validation_suite.py` with `review_queue_ga` stage so Linux full-pack can include review queue hardening validation.
+- Updated `tests/test_linux_validation_suite_script.py` with review_queue_ga stage forwarding coverage.
+- Added `TP-E13-08` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_review_queue_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-review-queue-ga-validation-plan.json`.
+- Linux stage-only dry-run example: `python scripts/run_review_queue_ga_validation.py --python python3 --stages review_queue_api review_feedback_consumer --dry-run --output -`.
+
+## TP-E13-09 Additions
+
+- Added `scripts/run_calibration_ga_validation.py` to orchestrate calibration GA-hardening command pack (`calibration_contract`, `review_policy_contract`, `calibration_report`).
+- Added `tests/test_calibration_ga_validation_script.py` for default dry-run plan output and calibration option-forwarding behavior.
+- Extended `scripts/run_linux_validation_suite.py` with `calibration_ga` stage so Linux full-pack can include LC-L2-31 threshold calibration validation.
+- Updated `tests/test_linux_validation_suite_script.py` with calibration_ga stage forwarding coverage.
+- Added `TP-E13-09` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_calibration_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-calibration-ga-validation-plan.json`.
+- Linux stage-only dry-run example: `python scripts/run_calibration_ga_validation.py --python python3 --stages calibration_report --manifest docs/current/status/baselines/e7-calibration-manifest.json --calibration-report-output docs/current/status/baselines/e7-calibration-report.json --margin 0.03 --dry-run --output -`.
+
+## TP-E13-10 Additions
+
+- Added `scripts/run_postgres_ga_validation.py` to orchestrate Postgres GA-hardening command pack (`postgres_repository_contract`, `postgres_repository_integration`, `dual_write_contract`, `dual_write_integration`, `dual_write_benchmark`).
+- Added `tests/test_postgres_ga_validation_script.py` for default dry-run plan output, stage filtering, benchmark option-forwarding, and DSN fail-fast behavior.
+- Extended `scripts/run_linux_validation_suite.py` with `postgres_ga` stage and forwarding for `postgres-dsn`, `postgres-ga-iterations`, `postgres-ga-output`, and benchmark output options.
+- Updated `tests/test_linux_validation_suite_script.py` with postgres_ga stage forwarding coverage.
+- Added `TP-E13-10` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_postgres_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-postgres-ga-validation-plan.json`.
+- Linux stage-only dry-run example: `python scripts/run_postgres_ga_validation.py --python python3 --stages dual_write_contract dual_write_benchmark --postgres-dsn "$OMNI_TEST_POSTGRES_DSN" --benchmark-iterations 120 --benchmark-output docs/current/status/baselines/e13-postgres-ga-benchmark-report.json --dry-run --output -`.
+
+## TP-E13-11 Additions
+
+- Added `scripts/run_roadmap_extension_validation.py` to orchestrate LC-R-34~37 command pack (`retrieval_layer`, `lifecycle_engine`, `publication_expansion`, `review_queue_surface`).
+- Added `tests/test_roadmap_extension_validation_script.py` for default dry-run plan output and stage-filter behavior.
+- Extended `scripts/run_linux_validation_suite.py` with `roadmap_extension` stage and forwarding for `--roadmap-extension-output`.
+- Updated `tests/test_linux_validation_suite_script.py` with roadmap_extension stage forwarding coverage.
+- Added `TP-E13-11` mapping in `scripts/run_tp_tests.py`.
+- Linux dry-run example: `python scripts/run_roadmap_extension_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-roadmap-extension-validation-plan.json`.
+- Linux stage-only dry-run example: `python scripts/run_roadmap_extension_validation.py --python python3 --stages retrieval_layer review_queue_surface --dry-run --output -`.
+
+## TP-E13-12 Additions
+
+- Added `scripts/run_release_gate_validation.py` to orchestrate release gate command packs (`beta_gate`, `ga_gate`, `roadmap_gate`) by delegating to `scripts/run_linux_validation_suite.py`.
+- Added `tests/test_release_gate_validation_script.py` for default dry-run plan output, beta-only stage forwarding, and ga-stage postgres/calibration option forwarding.
+- Added `TP-E13-12` mapping in `scripts/run_tp_tests.py` and synced `tests/test_tp_registry.py` known-work-order assertions.
+- Linux dry-run example: `python scripts/run_release_gate_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-release-gate-validation-plan.json`.
+- Linux beta-only dry-run example: `python scripts/run_release_gate_validation.py --python python3 --stages beta_gate --coverage-fail-under 65 --container-image-tag omni-skill-pipeline:beta --dry-run --output -`.

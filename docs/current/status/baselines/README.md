@@ -83,7 +83,7 @@
 
 - Plan report: `docs/current/status/baselines/e13-linux-validation-suite-plan.json`
 - Runner script: `scripts/run_linux_validation_suite.py`
-- Default stages: `ci`, `container_smoke`, `doc_sync`, `quality_regression`, `perf_cost_baseline`, `postgres_soak`
+- Default stages: `ci`, `container_smoke`, `doc_sync`, `quality_regression`, `perf_cost_baseline`, `postgres_soak`, `postgres_ga`, `worker_ga`, `review_queue_ga`, `provider_ga`, `calibration_ga`, `roadmap_extension`
 - Linux dry-run example:
   - `python scripts/run_linux_validation_suite.py --python python3 --dry-run --output docs/current/status/baselines/e13-linux-validation-suite-plan.json`
 - Linux container stage dry-run example:
@@ -100,3 +100,78 @@
   - `python scripts/run_postgres_soak_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-postgres-soak-plan.json`
 - Linux execution example:
   - `python scripts/run_postgres_soak_validation.py --python python3 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"`
+
+## TP-E13-06 Worker GA Validation
+
+- Plan report: `docs/current/status/baselines/e13-worker-ga-validation-plan.json`
+- Runner script: `scripts/run_worker_ga_validation.py`
+- Default stages: `worker_corpus`, `worker_retry`, `worker_idempotency`, `worker_claim_lock`, `worker_task_types`
+- Linux dry-run example:
+  - `python scripts/run_worker_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-worker-ga-validation-plan.json`
+- Linux stage-filter dry-run example:
+  - `python scripts/run_worker_ga_validation.py --python python3 --stages worker_retry worker_claim_lock --dry-run --output -`
+
+## TP-E13-07 Provider GA Validation
+
+- Plan report: `docs/current/status/baselines/e13-provider-ga-validation-plan.json`
+- Runner script: `scripts/run_provider_ga_validation.py`
+- Default stages: `provider_retry`, `provider_circuit_breaker`, `provider_failure_budget`, `provider_config_contract`, `provider_call_audit`, `provider_footprint`
+- Linux dry-run example:
+  - `python scripts/run_provider_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-provider-ga-validation-plan.json`
+- Linux stage-filter dry-run example:
+  - `python scripts/run_provider_ga_validation.py --python python3 --stages provider_circuit_breaker provider_call_audit --dry-run --output -`
+
+## TP-E13-08 Review Queue GA Validation
+
+- Plan report: `docs/current/status/baselines/e13-review-queue-ga-validation-plan.json`
+- Runner script: `scripts/run_review_queue_ga_validation.py`
+- Default stages: `review_queue_repository`, `review_queue_service`, `review_queue_api`, `review_feedback`, `review_feedback_consumer`
+- Linux dry-run example:
+  - `python scripts/run_review_queue_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-review-queue-ga-validation-plan.json`
+- Linux stage-filter dry-run example:
+  - `python scripts/run_review_queue_ga_validation.py --python python3 --stages review_queue_api review_feedback_consumer --dry-run --output -`
+
+## TP-E13-09 Calibration GA Validation
+
+- Plan report: `docs/current/status/baselines/e13-calibration-ga-validation-plan.json`
+- Calibration report: `docs/current/status/baselines/e7-calibration-report.json`
+- Runner script: `scripts/run_calibration_ga_validation.py`
+- Default stages: `calibration_contract`, `review_policy_contract`, `calibration_report`
+- Linux dry-run example:
+  - `python scripts/run_calibration_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-calibration-ga-validation-plan.json`
+- Linux stage-filter dry-run example:
+  - `python scripts/run_calibration_ga_validation.py --python python3 --stages calibration_report --manifest docs/current/status/baselines/e7-calibration-manifest.json --calibration-report-output docs/current/status/baselines/e7-calibration-report.json --margin 0.03 --dry-run --output -`
+
+## TP-E13-10 Postgres GA Validation
+
+- Plan report: `docs/current/status/baselines/e13-postgres-ga-validation-plan.json`
+- Benchmark report: `docs/current/status/baselines/e13-postgres-ga-benchmark-report.json`
+- Runner script: `scripts/run_postgres_ga_validation.py`
+- Default stages: `postgres_repository_contract`, `postgres_repository_integration`, `dual_write_contract`, `dual_write_integration`, `dual_write_benchmark`
+- Linux dry-run example:
+  - `python scripts/run_postgres_ga_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-postgres-ga-validation-plan.json`
+- Linux stage-filter dry-run example:
+  - `python scripts/run_postgres_ga_validation.py --python python3 --stages dual_write_contract dual_write_benchmark --postgres-dsn "$OMNI_TEST_POSTGRES_DSN" --benchmark-iterations 120 --benchmark-output docs/current/status/baselines/e13-postgres-ga-benchmark-report.json --dry-run --output -`
+
+## TP-E13-11 Roadmap Extension Validation
+
+- Plan report: `docs/current/status/baselines/e13-roadmap-extension-validation-plan.json`
+- Runner script: `scripts/run_roadmap_extension_validation.py`
+- Default stages: `retrieval_layer`, `lifecycle_engine`, `publication_expansion`, `review_queue_surface`
+- Linux dry-run example:
+  - `python scripts/run_roadmap_extension_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-roadmap-extension-validation-plan.json`
+- Linux stage-filter dry-run example:
+  - `python scripts/run_roadmap_extension_validation.py --python python3 --stages retrieval_layer review_queue_surface --dry-run --output -`
+
+## TP-E13-12 Release Gate Validation
+
+- Top-level plan report: `docs/current/status/baselines/e13-release-gate-validation-plan.json`
+- Nested beta gate plan report: `docs/current/status/baselines/e13-release-gate-beta-suite-plan.json`
+- Nested GA gate plan report: `docs/current/status/baselines/e13-release-gate-ga-suite-plan.json`
+- Nested roadmap gate plan report: `docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json`
+- Runner script: `scripts/run_release_gate_validation.py`
+- Default stages: `beta_gate`, `ga_gate`, `roadmap_gate`
+- Linux dry-run example:
+  - `python scripts/run_release_gate_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-release-gate-validation-plan.json`
+- Linux beta-only dry-run example:
+  - `python scripts/run_release_gate_validation.py --python python3 --stages beta_gate --coverage-fail-under 65 --container-image-tag omni-skill-pipeline:beta --dry-run --output -`

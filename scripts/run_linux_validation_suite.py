@@ -39,6 +39,33 @@ DEFAULT_POSTGRES_SOAK_OUTPUT = (
 DEFAULT_POSTGRES_SOAK_BENCHMARK_OUTPUT = (
     REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
 )
+DEFAULT_POSTGRES_GA_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-ga-validation-plan.json'
+)
+DEFAULT_POSTGRES_GA_BENCHMARK_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-ga-benchmark-report.json'
+)
+DEFAULT_WORKER_GA_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-worker-ga-validation-plan.json'
+)
+DEFAULT_REVIEW_QUEUE_GA_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-review-queue-ga-validation-plan.json'
+)
+DEFAULT_PROVIDER_GA_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-provider-ga-validation-plan.json'
+)
+DEFAULT_CALIBRATION_MANIFEST = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
+)
+DEFAULT_CALIBRATION_REPORT_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-report.json'
+)
+DEFAULT_CALIBRATION_GA_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-calibration-ga-validation-plan.json'
+)
+DEFAULT_ROADMAP_EXTENSION_OUTPUT = (
+    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-roadmap-extension-validation-plan.json'
+)
 DEFAULT_PLAN_OUTPUT = (
     REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-linux-validation-suite-plan.json'
 )
@@ -49,6 +76,12 @@ DEFAULT_STAGES = (
     'quality_regression',
     'perf_cost_baseline',
     'postgres_soak',
+    'postgres_ga',
+    'worker_ga',
+    'review_queue_ga',
+    'provider_ga',
+    'calibration_ga',
+    'roadmap_extension',
 )
 ALL_STAGES = tuple(sorted(DEFAULT_STAGES))
 
@@ -182,9 +215,71 @@ def _parse_args() -> argparse.Namespace:
         help='Postgres soak benchmark output path.',
     )
     parser.add_argument(
+        '--postgres-ga-iterations',
+        type=int,
+        default=120,
+        help='Iterations passed to scripts/run_postgres_ga_validation.py benchmark stage.',
+    )
+    parser.add_argument(
+        '--postgres-ga-output',
+        default=str(DEFAULT_POSTGRES_GA_OUTPUT),
+        help='Postgres GA validation stage plan output path.',
+    )
+    parser.add_argument(
+        '--postgres-ga-benchmark-output',
+        default=str(DEFAULT_POSTGRES_GA_BENCHMARK_OUTPUT),
+        help='Postgres GA benchmark output path.',
+    )
+    parser.add_argument(
         '--allow-secondary-failures',
         action='store_true',
         help='Forward --allow-secondary-failures to postgres soak benchmark stage.',
+    )
+    parser.add_argument(
+        '--worker-ga-output',
+        default=str(DEFAULT_WORKER_GA_OUTPUT),
+        help='Worker GA validation stage plan output path.',
+    )
+    parser.add_argument(
+        '--review-queue-ga-output',
+        default=str(DEFAULT_REVIEW_QUEUE_GA_OUTPUT),
+        help='Review-queue GA validation stage plan output path.',
+    )
+    parser.add_argument(
+        '--provider-ga-output',
+        default=str(DEFAULT_PROVIDER_GA_OUTPUT),
+        help='Provider GA validation stage plan output path.',
+    )
+    parser.add_argument(
+        '--calibration-manifest',
+        default=str(DEFAULT_CALIBRATION_MANIFEST),
+        help='Calibration manifest path forwarded to calibration GA stage.',
+    )
+    parser.add_argument(
+        '--calibration-report-output',
+        default=str(DEFAULT_CALIBRATION_REPORT_OUTPUT),
+        help='Calibration report output path forwarded to calibration GA stage.',
+    )
+    parser.add_argument(
+        '--calibration-margin',
+        type=float,
+        default=0.03,
+        help='Margin forwarded to calibration GA stage.',
+    )
+    parser.add_argument(
+        '--calibration-fail-on-mismatch',
+        action='store_true',
+        help='Forward --fail-on-mismatch to calibration GA stage.',
+    )
+    parser.add_argument(
+        '--calibration-ga-output',
+        default=str(DEFAULT_CALIBRATION_GA_OUTPUT),
+        help='Calibration GA validation stage plan output path.',
+    )
+    parser.add_argument(
+        '--roadmap-extension-output',
+        default=str(DEFAULT_ROADMAP_EXTENSION_OUTPUT),
+        help='Roadmap extension validation stage plan output path.',
     )
     parser.add_argument(
         '--dry-run',
@@ -287,6 +382,73 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
     if args.allow_secondary_failures:
         postgres_soak_command.append('--allow-secondary-failures')
 
+    postgres_ga_command = [
+        *python_cmd,
+        'scripts/run_postgres_ga_validation.py',
+        '--python',
+        str(args.python),
+        '--benchmark-iterations',
+        str(int(args.postgres_ga_iterations)),
+        '--benchmark-output',
+        str(Path(args.postgres_ga_benchmark_output).resolve()),
+        '--output',
+        str(Path(args.postgres_ga_output).resolve()),
+    ]
+    if postgres_dsn:
+        postgres_ga_command.extend(['--postgres-dsn', postgres_dsn])
+    if args.allow_secondary_failures:
+        postgres_ga_command.append('--allow-secondary-failures')
+
+    worker_ga_command = [
+        *python_cmd,
+        'scripts/run_worker_ga_validation.py',
+        '--python',
+        str(args.python),
+        '--output',
+        str(Path(args.worker_ga_output).resolve()),
+    ]
+    review_queue_ga_command = [
+        *python_cmd,
+        'scripts/run_review_queue_ga_validation.py',
+        '--python',
+        str(args.python),
+        '--output',
+        str(Path(args.review_queue_ga_output).resolve()),
+    ]
+    provider_ga_command = [
+        *python_cmd,
+        'scripts/run_provider_ga_validation.py',
+        '--python',
+        str(args.python),
+        '--output',
+        str(Path(args.provider_ga_output).resolve()),
+    ]
+    calibration_ga_command = [
+        *python_cmd,
+        'scripts/run_calibration_ga_validation.py',
+        '--python',
+        str(args.python),
+        '--manifest',
+        str(Path(args.calibration_manifest).resolve()),
+        '--calibration-report-output',
+        str(Path(args.calibration_report_output).resolve()),
+        '--margin',
+        str(float(args.calibration_margin)),
+        '--output',
+        str(Path(args.calibration_ga_output).resolve()),
+    ]
+    if args.calibration_fail_on_mismatch:
+        calibration_ga_command.append('--fail-on-mismatch')
+
+    roadmap_extension_command = [
+        *python_cmd,
+        'scripts/run_roadmap_extension_validation.py',
+        '--python',
+        str(args.python),
+        '--output',
+        str(Path(args.roadmap_extension_output).resolve()),
+    ]
+
     return {
         'ci': StageSpec(
             name='ci',
@@ -317,6 +479,36 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
             name='postgres_soak',
             description='Run Postgres soak pack (TP pg cases + review queue + dual-write benchmark).',
             command=postgres_soak_command,
+        ),
+        'postgres_ga': StageSpec(
+            name='postgres_ga',
+            description='Run Postgres GA-hardening pack (repository + dual-write contracts and benchmark).',
+            command=postgres_ga_command,
+        ),
+        'worker_ga': StageSpec(
+            name='worker_ga',
+            description='Run worker GA-hardening command pack (corpus + retry + idempotency + claim-lock).',
+            command=worker_ga_command,
+        ),
+        'review_queue_ga': StageSpec(
+            name='review_queue_ga',
+            description='Run review-queue GA-hardening command pack (queue transitions + feedback consumer).',
+            command=review_queue_ga_command,
+        ),
+        'provider_ga': StageSpec(
+            name='provider_ga',
+            description='Run provider GA-hardening command pack (retry + circuit-breaker + audit footprint).',
+            command=provider_ga_command,
+        ),
+        'calibration_ga': StageSpec(
+            name='calibration_ga',
+            description='Run calibration GA-hardening command pack (threshold contract + tuning report).',
+            command=calibration_ga_command,
+        ),
+        'roadmap_extension': StageSpec(
+            name='roadmap_extension',
+            description='Run roadmap-extension command pack (retrieval + lifecycle + publication + review-queue surface).',
+            command=roadmap_extension_command,
         ),
     }
 

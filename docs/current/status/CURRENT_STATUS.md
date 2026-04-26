@@ -31,3 +31,38 @@
 
 - Runner script: [../../../scripts/run_postgres_soak_validation.py](../../../scripts/run_postgres_soak_validation.py)
 - Linux unified suite stage: `postgres_soak` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-06 Worker GA Runner
+
+- Runner script: [../../../scripts/run_worker_ga_validation.py](../../../scripts/run_worker_ga_validation.py)
+- Linux unified suite stage: `worker_ga` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-07 Provider GA Runner
+
+- Runner script: [../../../scripts/run_provider_ga_validation.py](../../../scripts/run_provider_ga_validation.py)
+- Linux unified suite stage: `provider_ga` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-08 Review Queue GA Runner
+
+- Runner script: [../../../scripts/run_review_queue_ga_validation.py](../../../scripts/run_review_queue_ga_validation.py)
+- Linux unified suite stage: `review_queue_ga` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-09 Calibration GA Runner
+
+- Runner script: [../../../scripts/run_calibration_ga_validation.py](../../../scripts/run_calibration_ga_validation.py)
+- Linux unified suite stage: `calibration_ga` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-10 Postgres GA Runner
+
+- Runner script: [../../../scripts/run_postgres_ga_validation.py](../../../scripts/run_postgres_ga_validation.py)
+- Linux unified suite stage: `postgres_ga` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-11 Roadmap Extension Runner
+
+- Runner script: [../../../scripts/run_roadmap_extension_validation.py](../../../scripts/run_roadmap_extension_validation.py)
+- Linux unified suite stage: `roadmap_extension` in [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py)
+
+## TP-E13-12 Release Gate Runner
+
+- Runner script: [../../../scripts/run_release_gate_validation.py](../../../scripts/run_release_gate_validation.py)
+- Stage packs: `beta_gate`, `ga_gate`, `roadmap_gate` (each delegates to [../../../scripts/run_linux_validation_suite.py](../../../scripts/run_linux_validation_suite.py) with curated stage groups)

@@ -16,6 +16,146 @@ class TestCaseSpec:
 
 
 TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
+    "TP-E1-01": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_v2_core_models_are_json_serializable",
+            description="V2 核心 dataclass/enum 应保持 to_dict/to_json 可序列化并兼容现有 SkillDocument。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_node_serialization_keeps_structured_fields",
+            description="EvidenceNode 序列化需保留结构化字段（time/spatial/structural/payload/lineage）。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_skill_graph_models.SkillGraphModelTests.test_skill_graph_validate_and_serialize_with_all_min_nodes_and_edges",
+            description="SkillGraph 最小 node/edge 结构需可校验且可序列化。",
+        ),
+    ],
+    "TP-E1-02": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_unit_to_node_transforms_legacy_fields",
+            description="EvidenceUnit -> EvidenceNode 兼容转换应保留 legacy 关键字段。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_skill_graph_to_document_builds_skill_document",
+            description="SkillGraph -> SkillDocument 兼容转换应可稳定产出。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_render_compat.RenderCompatibilityTests.test_render_skill_markdown_compat_supports_graph_fallback",
+            description="兼容渲染链需支持 graph/document 回退并保持对外 markdown 入口稳定。",
+        ),
+    ],
+    "TP-E1-03": [
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.SkillGraphSchemaTests.test_skill_graph_contract_file_matches_runtime_schema",
+            description="skill-graph contract 文件应与 runtime schema 一致。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.SkillGraphSchemaTests.test_skill_graph_required_fields_align_with_dataclass",
+            description="schema required 字段应与 dataclass 必填字段对齐。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.SkillGraphSchemaTests.test_skill_graph_schema_validation_accepts_and_rejects_payloads",
+            description="schema 校验应能区分合法与非法 payload。",
+        ),
+    ],
+    "TP-E2-01": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_corpus_request_can_represent_multi_asset_distillation",
+            description="CorpusDistillRequest 应能表达多资产联合蒸馏。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_corpus_request_requires_at_least_one_asset",
+            description="CorpusDistillRequest 缺失 assets 时应被模型约束拦截。",
+        ),
+    ],
+    "TP-E2-02": [
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_load_corpus_assembles_multi_asset_corpus",
+            description="service load_corpus 应能组装多资产 Corpus 并产出跨模态证据。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="distill_corpus 在多资产路径生效时仍需保持单资产兼容语义。",
+        ),
+    ],
+    "TP-E2-03": [
+        TestCaseSpec(
+            case_id="tests.test_v2_schema_and_corpus.CorpusServiceTests.test_distill_corpus_keeps_single_asset_paths_compatible",
+            description="corpus artifact 应落盘资产清单、cross-asset 引用与 publication/review 产物。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_repository_contract.ArtifactRepositoryContractTests.test_save_bundle_protocol_contract_writes_required_artifacts",
+            description="repository contract 应保证核心 artifact key 稳定输出。",
+        ),
+    ],
+    "TP-E3-01": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_node_serialization_keeps_structured_fields",
+            description="EvidenceNode 应具备结构化字段并可序列化。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_unit_to_node_transforms_legacy_fields",
+            description="legacy evidence 向 EvidenceNode 迁移时需保留结构化语义。",
+        ),
+    ],
+    "TP-E3-02": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_builder_creates_video_frame_lineage",
+            description="EvidenceBuilder 应把视频适配器输出构造成带 lineage 的 EvidenceNode。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_builder_links_timeseries_event_to_metric",
+            description="EvidenceBuilder 应把时序 event 与 metric 建立可追溯链路。",
+        ),
+    ],
+    "TP-E3-03": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_builder_creates_video_frame_lineage",
+            description="video frame lineage 需保留 parent/child/derived-from 证据链。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_evidence_builder_links_timeseries_event_to_metric",
+            description="timeseries event lineage 需能追溯到上游 metric 证据。",
+        ),
+    ],
+    "TP-E5-01": [
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_atom_extractor_protocol_runtime_check",
+            description="AtomExtractor 主接口应提供 runtime protocol 检查能力。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_v2_models.V2ModelTests.test_legacy_insight_atom_extractor_is_atom_extractor_compatible",
+            description="legacy InsightExtractor 兼容桥应满足 AtomExtractor 协议。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_heuristic_atom_extractor.HeuristicAtomExtractorTests.test_extractor_is_atom_extractor_protocol_compatible",
+            description="HeuristicAtomExtractor 应可作为 AtomExtractor 主接口实现。",
+        ),
+    ],
+    "TP-E8-01": [
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository.PostgresRepositoryTests.test_repository_declares_artifact_protocol_compatibility",
+            description="PostgresRepository 应满足 ArtifactRepository 协议基线。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository.PostgresRepositoryTests.test_save_bundle_writes_skill_review_and_publication_rows",
+            description="SQL 初始表结构应可承载 skill/review/publication 核心写入。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_repository.PostgresRepositoryTests.test_save_bundle_rolls_back_on_database_failure",
+            description="持久层迁移场景下失败事务应可安全回滚。",
+        ),
+    ],
+    "TP-E8-04": [
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_backend_factory_exposes_pgvector_placeholder",
+            description="检索后端工厂应暴露 pgvector 占位并保持接口前向兼容。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_retriever_indexes_skill_document_smoke",
+            description="向量检索链的统一入口应至少具备可索引/可查询 smoke 能力。",
+        ),
+    ],
     "TP-E4-01": [
         TestCaseSpec(
             case_id="tests.test_document_parser.DocumentParserTests.test_parser_extracts_section_table_code_and_figure_blocks",
@@ -576,6 +716,108 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
         TestCaseSpec(
             case_id="tests.test_postgres_soak_validation_script.PostgresSoakValidationScriptTests.test_script_requires_postgres_dsn_for_runtime_stages",
             description="postgres soak script should fail fast when runtime stages require postgres dsn but none is configured.",
+        ),
+    ],
+    "TP-E13-06": [
+        TestCaseSpec(
+            case_id="tests.test_worker_ga_validation_script.WorkerGaValidationScriptTests.test_script_dry_run_emits_default_worker_ga_plan",
+            description="worker GA validation script should emit default stage command pack for LC-L2-20~23 worker hardening coverage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_worker_ga_validation_script.WorkerGaValidationScriptTests.test_script_respects_stage_selection",
+            description="worker GA validation script should honor selected stage filtering when building command pack.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_worker_ga_stage_forwards_worker_options",
+            description="linux validation suite should expose worker_ga stage and forward worker-ga plan output options.",
+        ),
+    ],
+    "TP-E13-07": [
+        TestCaseSpec(
+            case_id="tests.test_provider_ga_validation_script.ProviderGaValidationScriptTests.test_script_dry_run_emits_default_provider_ga_plan",
+            description="provider GA validation script should emit default stage command pack for retry/circuit-breaker/failure-budget hardening coverage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_provider_ga_validation_script.ProviderGaValidationScriptTests.test_script_respects_stage_selection",
+            description="provider GA validation script should honor selected stage filtering when building command pack.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_provider_ga_stage_forwards_provider_options",
+            description="linux validation suite should expose provider_ga stage and forward provider-ga plan output options.",
+        ),
+    ],
+    "TP-E13-08": [
+        TestCaseSpec(
+            case_id="tests.test_review_queue_ga_validation_script.ReviewQueueGaValidationScriptTests.test_script_dry_run_emits_default_review_queue_ga_plan",
+            description="review-queue GA validation script should emit default stage command pack for repository/service/api/feedback hardening coverage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_review_queue_ga_validation_script.ReviewQueueGaValidationScriptTests.test_script_respects_stage_selection",
+            description="review-queue GA validation script should honor selected stage filtering when building command pack.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_review_queue_ga_stage_forwards_review_queue_options",
+            description="linux validation suite should expose review_queue_ga stage and forward review-queue plan output options.",
+        ),
+    ],
+    "TP-E13-09": [
+        TestCaseSpec(
+            case_id="tests.test_calibration_ga_validation_script.CalibrationGaValidationScriptTests.test_script_dry_run_emits_default_calibration_ga_plan",
+            description="calibration GA validation script should emit default stage command pack for LC-L2-31 threshold tuning contract coverage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_calibration_ga_validation_script.CalibrationGaValidationScriptTests.test_script_respects_stage_selection_and_calibration_options",
+            description="calibration GA validation script should honor stage selection and calibration manifest/report option forwarding.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_calibration_ga_stage_forwards_calibration_options",
+            description="linux validation suite should expose calibration_ga stage and forward calibration manifest/report/margin options.",
+        ),
+    ],
+    "TP-E13-10": [
+        TestCaseSpec(
+            case_id="tests.test_postgres_ga_validation_script.PostgresGaValidationScriptTests.test_script_dry_run_emits_default_postgres_ga_plan",
+            description="postgres GA validation script should emit default repository/dual-write/benchmark command pack for LC-L2-32/33 hardening coverage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_ga_validation_script.PostgresGaValidationScriptTests.test_script_respects_stage_selection_and_benchmark_options",
+            description="postgres GA validation script should honor stage filtering and benchmark option forwarding.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_postgres_ga_validation_script.PostgresGaValidationScriptTests.test_script_requires_postgres_dsn_for_runtime_stages",
+            description="postgres GA validation script should fail fast when integration stages require postgres dsn but none is configured.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_postgres_ga_stage_forwards_postgres_options",
+            description="linux validation suite should expose postgres_ga stage and forward dsn/iteration/benchmark options.",
+        ),
+    ],
+    "TP-E13-11": [
+        TestCaseSpec(
+            case_id="tests.test_roadmap_extension_validation_script.RoadmapExtensionValidationScriptTests.test_script_dry_run_emits_default_roadmap_extension_plan",
+            description="roadmap extension validation script should emit retrieval/lifecycle/publication/review-queue command pack for LC-R-34~37 coverage.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_roadmap_extension_validation_script.RoadmapExtensionValidationScriptTests.test_script_respects_stage_selection",
+            description="roadmap extension validation script should honor selected stage filtering when building command pack.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_linux_validation_suite_script.LinuxValidationSuiteScriptTests.test_roadmap_extension_stage_forwards_output_options",
+            description="linux validation suite should expose roadmap_extension stage and forward roadmap-extension plan output options.",
+        ),
+    ],
+    "TP-E13-12": [
+        TestCaseSpec(
+            case_id="tests.test_release_gate_validation_script.ReleaseGateValidationScriptTests.test_script_dry_run_emits_default_release_gate_plan",
+            description="release-gate validation script should emit beta/ga/roadmap command packs and write top-level plan json in dry-run mode.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_gate_validation_script.ReleaseGateValidationScriptTests.test_script_respects_beta_stage_selection_and_option_forwarding",
+            description="release-gate validation script should honor beta-only stage selection and forward coverage/container options.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_gate_validation_script.ReleaseGateValidationScriptTests.test_script_forwards_ga_stage_options",
+            description="release-gate validation script should forward postgres and calibration options when building ga stage command pack.",
         ),
     ],
 }
