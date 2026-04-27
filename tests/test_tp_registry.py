@@ -35,6 +35,12 @@ class TPRegistryScriptTests(unittest.TestCase):
         listed_tp_ids = self._extract_tp_ids(completed.stdout)
         missing = sorted(work_order_tp_ids - listed_tp_ids)
         self.assertFalse(missing, "Missing TP mappings in run_tp_tests.py: %s" % ", ".join(missing))
+        extra = sorted(listed_tp_ids - work_order_tp_ids)
+        self.assertFalse(
+            extra,
+            "Undocumented TP mappings in run_tp_tests.py (not found in work-orders): %s"
+            % ", ".join(extra),
+        )
 
     def test_all_dry_run_builds_unittest_command(self) -> None:
         completed = subprocess.run(

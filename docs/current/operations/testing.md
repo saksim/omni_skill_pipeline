@@ -1,10 +1,9 @@
-# Testing
+﻿# Testing
 
-## 判词
+## 鍒よ瘝
 
-这个仓当前走的是 `unittest` 体系，不是 `pytest` 体系；测试判断要按现有链路验尸，不要拿错刑具。
-
-## 本地环境对齐
+杩欎釜浠撳綋鍓嶈蛋鐨勬槸 `unittest` 浣撶郴锛屼笉鏄?`pytest` 浣撶郴锛涙祴璇曞垽鏂鎸夌幇鏈夐摼璺獙灏革紝涓嶈鎷块敊鍒戝叿銆?
+## 鏈湴鐜瀵归綈
 
 PowerShell:
 
@@ -24,126 +23,100 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
 ```
 
-## 全量回归
+## 鍏ㄩ噺鍥炲綊
 
 ```bash
 python scripts/run_ci.py
 ```
 
-该入口会统一执行：
-
+璇ュ叆鍙ｄ細缁熶竴鎵ц锛?
 - `python -m coverage run --parallel-mode -m unittest discover -s tests -p 'test_*.py'`
 - `python scripts/run_tp_tests.py --all --python <current-python>`
 - `python -m coverage combine`
 - `python -m coverage report --show-missing --fail-under <threshold>`
 - `python -m coverage xml -o coverage.xml`
 
-默认 coverage fail-under 为 `50`，可通过参数覆盖。
-
-示例：提高阈值到 `65`
+榛樿 coverage fail-under 涓?`50`锛屽彲閫氳繃鍙傛暟瑕嗙洊銆?
+绀轰緥锛氭彁楂橀槇鍊煎埌 `65`
 
 ```bash
 python scripts/run_ci.py --coverage-fail-under 65
 ```
 
-示例：仅在本地快速验逻辑，临时关闭 coverage
+绀轰緥锛氫粎鍦ㄦ湰鍦板揩閫熼獙閫昏緫锛屼复鏃跺叧闂?coverage
 
 ```bash
 python scripts/run_ci.py --no-coverage
 ```
 
-## 容器烟测脚本
+## 瀹瑰櫒鐑熸祴鑴氭湰
 
-容器基线烟测（构建镜像 + 启动容器 + 轮询 `/healthz`）：
+瀹瑰櫒鍩虹嚎鐑熸祴锛堟瀯寤洪暅鍍?+ 鍚姩瀹瑰櫒 + 杞 `/healthz`锛夛細
 
 ```bash
 python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:local --port 18000
 ```
 
-只看执行计划，不真正调用 Docker：
-
+鍙湅鎵ц璁″垝锛屼笉鐪熸璋冪敤 Docker锛?
 ```bash
 python scripts/run_container_smoke.py --dry-run
 ```
 
-Linux 统一验测时建议直接使用该脚本，作为 `LC-L1-18` 的容器回归入口。
-
+Linux 缁熶竴楠屾祴鏃跺缓璁洿鎺ヤ娇鐢ㄨ鑴氭湰锛屼綔涓?`LC-L1-18` 鐨勫鍣ㄥ洖褰掑叆鍙ｃ€?
 ## Dual-Write Benchmark Harness
 
-`LC-L2-33` 引入 dual-write 基准脚本：
-
+`LC-L2-33` 寮曞叆 dual-write 鍩哄噯鑴氭湰锛?
 ```bash
 python scripts/benchmark_dual_write.py --iterations 20 --skip-postgres
 python scripts/benchmark_dual_write.py --iterations 20 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
 ```
 
-- 第一个命令只测 file repository baseline。
-- 第二个命令测 file + Postgres dual-write 时延。
-- 默认报告落盘：`docs/current/status/baselines/e8-dual-write-benchmark-report.json`。
+- 绗竴涓懡浠ゅ彧娴?file repository baseline銆?- 绗簩涓懡浠ゆ祴 file + Postgres dual-write 鏃跺欢銆?- 榛樿鎶ュ憡钀界洏锛歚docs/current/status/baselines/e8-dual-write-benchmark-report.json`銆?
+## 瀹氬悜鎵ц
 
-## 定向执行
-
-查看当前已映射 Task Package:
+鏌ョ湅褰撳墠宸叉槧灏?Task Package:
 
 ```bash
 python scripts/run_tp_tests.py --list
 ```
 
-执行单个工单:
+鎵ц鍗曚釜宸ュ崟:
 
 ```bash
 python scripts/run_tp_tests.py TP-E6-02 --python python
 ```
 
-执行多个工单:
+鎵ц澶氫釜宸ュ崟:
 
 ```bash
-python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 --python python3
+python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 TP-E13-14 TP-E13-15 TP-E13-16 TP-E13-17 TP-E13-18 --python python3
 ```
 
-## 当前覆盖重点
+## 褰撳墠瑕嗙洊閲嶇偣
 
-- `tests/test_mvp.py`: 覆盖 text / audio / image / video / tabular 主路径
-- `tests/test_v2_schema_and_corpus.py`: 覆盖 corpus 组装、publication、quality、review artifacts
-- `tests/test_quality_scoring.py`: 覆盖质量评分
-- `tests/test_review_policy.py`: 覆盖 review threshold 与 reason codes
-- `tests/test_dual_write_repository.py`: 覆盖 dual-write 主/从仓储行为与失败保护
-- `tests/test_benchmark_dual_write.py`: 覆盖 dual-write benchmark 脚本烟测
-- `tests/test_similarity_retrieval.py`: 覆盖检索抽象、inmemory baseline 排序、backend 选型占位行为
-- `tests/test_lifecycle_decision_engine.py`: 覆盖 lifecycle `new/revise/merge/supersede/reject` 决策分流
-- `tests/test_publication_builder.py`: 覆盖 checklist/decision_tree 输出与无 decision 场景 fallback
-- `tests/test_publication_orchestrator_split.py`: 覆盖 goal_type 驱动的 publication type 选择
-- `tests/test_api_app.py`: 覆盖 distill API 输入转换、错误映射与 TP-E10-02 的 V2 输出契约字段
-- `tests/test_worker.py`: 覆盖 TP-E10-03 worker 新任务类型（review_queue/rebuild_publication/revise_skill）
-- `tests/test_transformers_regression.py`: 覆盖 TP-E11-01 模型/转换器分支回归（skill_type、evidence 聚合、legacy atom bridge）
-- `tests/test_doc_sync_check_script.py`: 覆盖 TP-E13-01 / TP-E13-02 / TP-E13-03 文档同步检查脚本（源码表面 + 迁移指南 + 发布切换标准 + LC-L1-19 Beta runbook 契约）
-- `tests/test_linux_validation_suite_script.py`: 覆盖 TP-E13-04 Linux 统一验尸编排脚本（阶段筛选、命令打包、dry-run 计划落盘、container smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 参数透传）
-- `tests/test_postgres_soak_validation_script.py`: 覆盖 TP-E13-05 Postgres 长稳验尸脚本（TP 回归编排、benchmark 参数、dsn fail-fast）
-- `tests/test_worker_ga_validation_script.py`: 覆盖 TP-E13-06 worker GA 验证脚本（阶段筛选、dry-run 计划落盘）
-- `tests/test_provider_ga_validation_script.py`: 覆盖 TP-E13-07 provider GA 验证脚本（retry/circuit-breaker/failure-budget/audit 计划编排）
-- `tests/test_review_queue_ga_validation_script.py`: 覆盖 TP-E13-08 review queue GA 验证脚本（repository/service/api/feedback 阶段编排与筛选）
-- `tests/test_calibration_ga_validation_script.py`: 覆盖 TP-E13-09 calibration GA 验证脚本（阈值契约、调参报告、manifest/report 参数透传）
-- `tests/test_postgres_ga_validation_script.py`: 覆盖 TP-E13-10 Postgres GA 验证脚本（repository/dual-write/benchmark 阶段编排、dsn fail-fast、benchmark 参数透传）
-- `tests/test_roadmap_extension_validation_script.py`: 覆盖 TP-E13-11 roadmap extension 验证脚本（LC-R-34~37 的 retrieval/lifecycle/publication/review queue surface 阶段编排与筛选）
-- `tests/test_release_gate_validation_script.py`: 覆盖 TP-E13-12 发布门禁聚合脚本（beta/ga/roadmap 阶段筛选与 coverage/container/postgres/calibration 参数透传）
-- `tests/test_release_switch_validation_script.py`: 覆盖 TP-E13-13 发布切换判定脚本（release-gate/TP/doc-sync 编排、判定报告与 decision-only GO/HOLD 逻辑）
-- `tests/test_tp_registry.py`: 覆盖 TP 注册表与 `skill-distillation-v2-work-orders.md` 的完整性对齐，防止新工单漏映射
+- `tests/test_mvp.py`: 瑕嗙洊 text / audio / image / video / tabular 涓昏矾寰?- `tests/test_v2_schema_and_corpus.py`: 瑕嗙洊 corpus 缁勮銆乸ublication銆乹uality銆乺eview artifacts
+- `tests/test_quality_scoring.py`: 瑕嗙洊璐ㄩ噺璇勫垎
+- `tests/test_review_policy.py`: 瑕嗙洊 review threshold 涓?reason codes
+- `tests/test_dual_write_repository.py`: 瑕嗙洊 dual-write 涓?浠庝粨鍌ㄨ涓轰笌澶辫触淇濇姢
+- `tests/test_benchmark_dual_write.py`: 瑕嗙洊 dual-write benchmark 鑴氭湰鐑熸祴
+- `tests/test_similarity_retrieval.py`: 瑕嗙洊妫€绱㈡娊璞°€乮nmemory baseline 鎺掑簭銆乥ackend 閫夊瀷鍗犱綅琛屼负
+- `tests/test_lifecycle_decision_engine.py`: 瑕嗙洊 lifecycle `new/revise/merge/supersede/reject` 鍐崇瓥鍒嗘祦
+- `tests/test_publication_builder.py`: 瑕嗙洊 checklist/decision_tree 杈撳嚭涓庢棤 decision 鍦烘櫙 fallback
+- `tests/test_publication_orchestrator_split.py`: 瑕嗙洊 goal_type 椹卞姩鐨?publication type 閫夋嫨
+- `tests/test_api_app.py`: 瑕嗙洊 distill API 杈撳叆杞崲銆侀敊璇槧灏勪笌 TP-E10-02 鐨?V2 杈撳嚭濂戠害瀛楁
+- `tests/test_worker.py`: 瑕嗙洊 TP-E10-03 worker 鏂颁换鍔＄被鍨嬶紙review_queue/rebuild_publication/revise_skill锛?- `tests/test_transformers_regression.py`: 瑕嗙洊 TP-E11-01 妯″瀷/杞崲鍣ㄥ垎鏀洖褰掞紙skill_type銆乪vidence 鑱氬悎銆乴egacy atom bridge锛?- `tests/test_doc_sync_check_script.py`: 瑕嗙洊 TP-E13-01 / TP-E13-02 / TP-E13-03 鏂囨。鍚屾妫€鏌ヨ剼鏈紙婧愮爜琛ㄩ潰 + 杩佺Щ鎸囧崡 + 鍙戝竷鍒囨崲鏍囧噯 + LC-L1-19 Beta runbook 濂戠害锛?- `tests/test_linux_validation_suite_script.py`: 瑕嗙洊 TP-E13-04 Linux 缁熶竴楠屽案缂栨帓鑴氭湰锛堥樁娈电瓫閫夈€佸懡浠ゆ墦鍖呫€乨ry-run 璁″垝钀界洏銆乧ontainer smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 鍙傛暟閫忎紶锛?- `tests/test_postgres_soak_validation_script.py`: 瑕嗙洊 TP-E13-05 Postgres 闀跨ǔ楠屽案鑴氭湰锛圱P 鍥炲綊缂栨帓銆乥enchmark 鍙傛暟銆乨sn fail-fast锛?- `tests/test_worker_ga_validation_script.py`: 瑕嗙洊 TP-E13-06 worker GA 楠岃瘉鑴氭湰锛堥樁娈电瓫閫夈€乨ry-run 璁″垝钀界洏锛?- `tests/test_provider_ga_validation_script.py`: 瑕嗙洊 TP-E13-07 provider GA 楠岃瘉鑴氭湰锛坮etry/circuit-breaker/failure-budget/audit 璁″垝缂栨帓锛?- `tests/test_review_queue_ga_validation_script.py`: 瑕嗙洊 TP-E13-08 review queue GA 楠岃瘉鑴氭湰锛坮epository/service/api/feedback 闃舵缂栨帓涓庣瓫閫夛級
+- `tests/test_calibration_ga_validation_script.py`: 瑕嗙洊 TP-E13-09 calibration GA 楠岃瘉鑴氭湰锛堥槇鍊煎绾︺€佽皟鍙傛姤鍛娿€乵anifest/report 鍙傛暟閫忎紶锛?- `tests/test_postgres_ga_validation_script.py`: 瑕嗙洊 TP-E13-10 Postgres GA 楠岃瘉鑴氭湰锛坮epository/dual-write/benchmark 闃舵缂栨帓銆乨sn fail-fast銆乥enchmark 鍙傛暟閫忎紶锛?- `tests/test_roadmap_extension_validation_script.py`: 瑕嗙洊 TP-E13-11 roadmap extension 楠岃瘉鑴氭湰锛圠C-R-34~37 鐨?retrieval/lifecycle/publication/review queue surface 闃舵缂栨帓涓庣瓫閫夛級
+- `tests/test_release_gate_validation_script.py`: 瑕嗙洊 TP-E13-12 鍙戝竷闂ㄧ鑱氬悎鑴氭湰锛坆eta/ga/roadmap 闃舵绛涢€変笌 coverage/container/postgres/calibration 鍙傛暟閫忎紶锛?- `tests/test_release_switch_validation_script.py`: 瑕嗙洊 TP-E13-13 / TP-E13-14 / TP-E13-15 / TP-E13-16 / TP-E13-17 / TP-E13-18 鍙戝竷鍒囨崲鍒ゅ畾鑴氭湰锛坮elease-gate/TP/doc-sync 缂栨帓銆乨ecision-only GO/HOLD銆佽瘉鎹寘鈥滃畬鏁存€?+ 鍙墽琛屽懡浠よ鍒掆€濋棬绂併€乪vidence freshness 鏃舵晥闂ㄧ銆乫uture timestamp skew 闂ㄧ銆乧ohort skew 闂ㄧ涓巖elease-gate output binding 闂ㄧ锛?- `tests/test_tp_registry.py`: 瑕嗙洊 TP 娉ㄥ唽琛ㄤ笌 `skill-distillation-v2-work-orders.md` 鐨勫弻鍚戝畬鏁存€у榻愶紙婕忔槧灏?+ 骞界伒鏄犲皠锛?
+## 褰撳墠缂哄彛
 
-## 当前缺口
+- FastAPI/ASGI API 鑷姩鍖栨祴璇曞凡瑕嗙洊鏍稿績濂戠害锛涗粛缂虹湡瀹?provider 鏁呴殰娉ㄥ叆涓庤礋杞藉満鏅?- coverage fail-under 浠嶆槸淇濆畧闃堝€硷紙`50`锛夛紝鍚庣画搴旈殢璐ㄩ噺鍩虹嚎鎻愬崌
+- 灏氭棤鐢熶骇绾ц礋杞藉帇娴嬶紙褰撳墠浠呮湁 dual-write benchmark smoke harness锛?- 鐪熷疄 provider failure-mode 瑕嗙洊浠嶅亸钖?
+## 缁存姢瑙勫垯
 
-- FastAPI/ASGI API 自动化测试已覆盖核心契约；仍缺真实 provider 故障注入与负载场景
-- coverage fail-under 仍是保守阈值（`50`），后续应随质量基线提升
-- 尚无生产级负载压测（当前仅有 dual-write benchmark smoke harness）
-- 真实 provider failure-mode 覆盖仍偏薄
+姣忔鏂板 `TP-*` 宸ュ崟鏃讹紝鑷冲皯鍚屾瀹屾垚涓変欢浜嬶細
 
-## 维护规则
-
-每次新增 `TP-*` 工单时，至少同步完成三件事：
-
-1. 在 `tests/` 落测试 case
-2. 在 `scripts/run_tp_tests.py` 的 `TP_TEST_CASES` 中登记映射
-3. 在本文件更新覆盖范围与新增工单说明（并确保 `tests/test_tp_registry.py` 对齐 work-orders）
-
+1. 鍦?`tests/` 钀芥祴璇?case
+2. 鍦?`scripts/run_tp_tests.py` 鐨?`TP_TEST_CASES` 涓櫥璁版槧灏?3. 鍦ㄦ湰鏂囦欢鏇存柊瑕嗙洊鑼冨洿涓庢柊澧炲伐鍗曡鏄庯紙骞剁‘淇?`tests/test_tp_registry.py` 瀵归綈 work-orders锛?
 ## LC-R-37 Additions
 
 - Added `TP-E9-03` for review queue operations surface.
@@ -194,7 +167,8 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - Extended `scripts/run_doc_sync_check.py` with `launch_beta_runbook_completeness` check for `docs/current/operations/runbooks/launch-beta.md` (`LC-L1-19` checklist contract).
 - Added `tests/test_doc_sync_check_script.py` coverage for API ops-contract incomplete fail-path.
 - Added `tests/test_doc_sync_check_script.py` coverage for launch-beta incomplete-contract fail-path.
-- Added `TP-E13-01` mapping in `scripts/run_tp_tests.py`.
+- Extended `tests/test_tp_registry.py` with reverse-parity assertion so undocumented TP IDs in `run_tp_tests --list` fail fast.
+- Added `TP-E13-01` mapping in `scripts/run_tp_tests.py`, including the TP registry parity check testcase.
 - Linux doc sync example: `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`.
 - Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 --python python3`.
 
@@ -306,7 +280,49 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 ## TP-E13-13 Additions
 
 - Added `scripts/run_release_switch_validation.py` to orchestrate release-gate + TP contract + doc-sync command packs and emit `GO/HOLD` decision report from evidence files.
-- Added `tests/test_release_switch_validation_script.py` for dry-run plan output, release-gate option forwarding, and `--decision-only` GO decision coverage.
+- Added `tests/test_release_switch_validation_script.py` for dry-run plan output, release-gate option forwarding, `--decision-only` GO coverage, and HOLD exit-code contract (`1` by default, `0` with `--allow-hold`).
 - Added `TP-E13-13` mapping in `scripts/run_tp_tests.py` and synced work-order registry checks via `tests/test_tp_registry.py`.
 - Linux dry-run example: `python scripts/run_release_switch_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-release-switch-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
 - Linux decision-only example: `python scripts/run_release_switch_validation.py --decision-only --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+- Linux decision-only HOLD-allow example: `python scripts/run_release_switch_validation.py --decision-only --allow-hold --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-14 Additions
+
+- Extended `scripts/run_release_switch_validation.py` decision evaluation to require full release-gate evidence packs (`release_gate_output` + `beta/ga/roadmap` suite plans) before emitting `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_pack_evidence_missing` to assert missing gate-pack evidence forces `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_pack_stage_commands_missing` to assert non-executable stage packs (missing `command`) force `HOLD`.
+- Added `TP-E13-14` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only full-evidence example: `python scripts/run_release_switch_validation.py --decision-only --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-15 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with evidence freshness gate: `--max-evidence-age-hours` (default `24`) now guards decision evidence files against stale reuse.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_evidence_files_are_stale` to assert stale evidence forces `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_evidence_freshness_gate` to assert `--max-evidence-age-hours 0` disables freshness gate for recovery scenarios.
+- Added `TP-E13-15` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with freshness gate example: `python scripts/run_release_switch_validation.py --decision-only --max-evidence-age-hours 24 --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-16 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with future-skew gate: `--max-evidence-future-skew-hours` (default `0.25`) now guards decision evidence against future timestamp drift.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_evidence_files_are_future_skewed` to assert future-skewed evidence forces `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_future_skew_gate` to assert `--max-evidence-future-skew-hours 0` disables future-skew gate for recovery scenarios.
+- Added `TP-E13-16` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with future-skew gate example: `python scripts/run_release_switch_validation.py --decision-only --max-evidence-future-skew-hours 0.25 --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-17 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with cohort-skew gate: `--max-evidence-cohort-skew-hours` (default `12`) now guards decision evidence against mixed-batch timestamp spread.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_evidence_cohort_age_spread_is_too_large` to assert oversized evidence age spread forces `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_evidence_cohort_skew_gate` to assert `--max-evidence-cohort-skew-hours 0` disables cohort-skew gate for recovery scenarios.
+- Added `TP-E13-17` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with cohort-skew gate example: `python scripts/run_release_switch_validation.py --decision-only --max-evidence-cohort-skew-hours 12 --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-18 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate output-binding gate: release-gate stage `--output` paths must match `--beta-suite-output/--ga-suite-output/--roadmap-suite-output` evidence inputs before `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_outputs_do_not_match_evidence_paths` to assert path-binding drift forces `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_output_binding_gate` to assert `--skip-release-gate-output-binding-check` disables the binding gate for emergency recovery.
+- Added `TP-E13-18` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with binding gate example: `python scripts/run_release_switch_validation.py --decision-only --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+

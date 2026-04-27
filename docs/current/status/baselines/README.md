@@ -56,6 +56,7 @@
 - Validation checks:
   - `api_ops_contract_completeness`
   - `launch_beta_runbook_completeness`
+  - `tests/test_tp_registry.py::TPRegistryScriptTests.test_list_command_exposes_known_work_orders` (TP mapping parity: missing + undocumented IDs)
 - Linux example:
   - `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`
 
@@ -182,7 +183,69 @@
 - Decision report: `docs/current/status/baselines/e13-release-switch-decision-report.json`
 - Runner script: `scripts/run_release_switch_validation.py`
 - Default stages: `release_gate`, `release_contract`, `doc_sync`
+- Exit code contract: decision `HOLD` returns non-zero by default; use `--allow-hold` to force zero.
+- Gate-pack evidence contract: `release-gate-output` + `beta-suite-output` + `ga-suite-output` + `roadmap-suite-output` must all be present, stage-complete, include executable `command` plans, and keep release-gate stage `--output` bindings aligned with provided nested evidence paths before `GO`.
 - Linux dry-run example:
   - `python scripts/run_release_switch_validation.py --python python3 --dry-run --output docs/current/status/baselines/e13-release-switch-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`
 - Linux decision-only example:
-  - `python scripts/run_release_switch_validation.py --decision-only --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`
+  - `python scripts/run_release_switch_validation.py --decision-only --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`
+- Linux HOLD-allow example:
+  - `python scripts/run_release_switch_validation.py --decision-only --allow-hold --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`
+
+## TP-E13-14 Release Switch Evidence Pack Hardening
+
+- Validation focus: missing or incomplete release-gate pack evidence must force decision `HOLD`.
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_pack_evidence_missing`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_pack_stage_commands_missing`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-14`
+
+## TP-E13-15 Release Switch Evidence Freshness Gate
+
+- Validation focus: stale decision evidence files must force `HOLD` by default.
+- Freshness contract:
+  - `--max-evidence-age-hours` defaults to `24`
+  - `--max-evidence-age-hours 0` disables freshness gate for manual override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_evidence_files_are_stale`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_evidence_freshness_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-15`
+
+## TP-E13-16 Release Switch Future-Skew Gate
+
+- Validation focus: decision evidence files with future timestamps beyond skew threshold must force `HOLD`.
+- Future-skew contract:
+  - `--max-evidence-future-skew-hours` defaults to `0.25`
+  - `--max-evidence-future-skew-hours 0` disables future-skew gate for manual override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_evidence_files_are_future_skewed`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_future_skew_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-16`
+
+## TP-E13-17 Release Switch Cohort-Skew Gate
+
+- Validation focus: decision evidence files with oversized cross-file timestamp spread must force `HOLD`.
+- Cohort-skew contract:
+  - `--max-evidence-cohort-skew-hours` defaults to `12`
+  - `--max-evidence-cohort-skew-hours 0` disables cohort-skew gate for manual override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_evidence_cohort_age_spread_is_too_large`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_evidence_cohort_skew_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-17`
+
+## TP-E13-18 Release Switch Output-Binding Gate
+
+- Validation focus: release-gate stage `--output` paths must stay bound to the same nested evidence files passed into release-switch decision evaluation.
+- Output-binding contract:
+  - default behavior enforces release-gate `beta_gate/ga_gate/roadmap_gate` output-path alignment
+  - stage output mismatch forces `HOLD`
+  - `--skip-release-gate-output-binding-check` disables binding gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_outputs_do_not_match_evidence_paths`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_output_binding_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-18`

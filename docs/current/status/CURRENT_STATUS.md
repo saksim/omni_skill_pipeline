@@ -72,3 +72,33 @@
 - Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
 - Stage packs: `release_gate`, `release_contract`, `doc_sync`
 - Decision output: `docs/current/status/baselines/e13-release-switch-decision-report.json` (`GO` / `HOLD`)
+
+## TP-E13-14 Release Switch Evidence Pack Hardening
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: `GO` now requires complete release-gate evidence pack (`release-gate` top-level + beta/ga/roadmap suite plans)
+- New guard testcase: [../../../tests/test_release_switch_validation_script.py](../../../tests/test_release_switch_validation_script.py) `test_script_decision_only_holds_when_release_gate_pack_evidence_missing`
+
+## TP-E13-15 Release Switch Evidence Freshness Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default `--max-evidence-age-hours=24` enforces evidence freshness; stale reports force `HOLD`
+- Escape hatch: set `--max-evidence-age-hours 0` to disable freshness gate for manual recovery/forensics runs
+
+## TP-E13-16 Release Switch Future-Skew Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default `--max-evidence-future-skew-hours=0.25` enforces future timestamp skew guard; over-skewed evidence forces `HOLD`
+- Escape hatch: set `--max-evidence-future-skew-hours 0` to disable future-skew gate for manual recovery/forensics runs
+
+## TP-E13-17 Release Switch Cohort-Skew Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default `--max-evidence-cohort-skew-hours=12` enforces evidence cohort consistency; mixed-batch evidence age spread forces `HOLD`
+- Escape hatch: set `--max-evidence-cohort-skew-hours 0` to disable cohort-skew gate for manual recovery/forensics runs
+
+## TP-E13-18 Release Switch Output-Binding Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces release-gate `beta_gate/ga_gate/roadmap_gate` stage `--output` bindings to exactly match `--beta-suite-output/--ga-suite-output/--roadmap-suite-output`; mismatches force `HOLD`
+- Escape hatch: set `--skip-release-gate-output-binding-check` to bypass binding gate for manual recovery/forensics runs

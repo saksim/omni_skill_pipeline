@@ -57,6 +57,8 @@ DEFAULT_CONTAINER_HOST = '127.0.0.1'
 DEFAULT_CONTAINER_PORT = 18000
 DEFAULT_CONTAINER_TIMEOUT_SECONDS = 30.0
 DEFAULT_CONTAINER_INTERVAL_SECONDS = 1.0
+DEFAULT_MAX_EVIDENCE_FUTURE_SKEW_HOURS = 0.25
+DEFAULT_MAX_EVIDENCE_COHORT_SKEW_HOURS = 12.0
 DEFAULT_STAGES = ('release_gate', 'release_contract', 'doc_sync')
 ALL_STAGES = tuple(DEFAULT_STAGES)
 RELEASE_GATE_MARKERS = (
@@ -196,22 +198,22 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         '--beta-suite-output',
         default=str(DEFAULT_BETA_SUITE_OUTPUT),
-        help='Nested release-gate beta suite output path.',
+        help='Nested release-gate beta suite output path used for decision evaluation.',
     )
     parser.add_argument(
         '--ga-suite-output',
         default=str(DEFAULT_GA_SUITE_OUTPUT),
-        help='Nested release-gate GA suite output path.',
+        help='Nested release-gate GA suite output path used for decision evaluation.',
     )
     parser.add_argument(
         '--roadmap-suite-output',
         default=str(DEFAULT_ROADMAP_SUITE_OUTPUT),
-        help='Nested release-gate roadmap suite output path.',
+        help='Nested release-gate roadmap suite output path used for decision evaluation.',
     )
     parser.add_argument(
         '--release-gate-output',
         default=str(DEFAULT_RELEASE_GATE_OUTPUT),
-        help='Release-gate top-level plan output path.',
+        help='Release-gate top-level plan output path used for decision evaluation.',
     )
     parser.add_argument(
         '--doc-sync-report',
@@ -247,6 +249,29 @@ def _parse_args() -> argparse.Namespace:
         '--allow-hold',
         action='store_true',
         help='Return exit code 0 even when decision is HOLD.',
+    )
+    parser.add_argument(
+        '--max-evidence-age-hours',
+        type=float,
+        default=24.0,
+        help='Maximum allowed age in hours for evidence files used by decision gates. Set <=0 to disable freshness check.',
+    )
+    parser.add_argument(
+        '--max-evidence-future-skew-hours',
+        type=float,
+        default=DEFAULT_MAX_EVIDENCE_FUTURE_SKEW_HOURS,
+        help='Maximum allowed future timestamp skew in hours for evidence files. Set <=0 to disable future-skew gate.',
+    )
+    parser.add_argument(
+        '--max-evidence-cohort-skew-hours',
+        type=float,
+        default=DEFAULT_MAX_EVIDENCE_COHORT_SKEW_HOURS,
+        help='Maximum allowed timestamp spread across decision evidence files in hours. Set <=0 to disable cohort-skew gate.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-output-binding-check',
+        action='store_true',
+        help='Disable release-gate stage output path binding gate in decision evaluation.',
     )
     parser.add_argument(
         '--dry-run',
@@ -449,8 +474,8 @@ def _extract_doc_sync_release_check_status(doc_sync_report: dict[str, Any]) -> s
     return 'unknown'
 
 
-def _ga_suite_has_stage(ga_suite_report: dict[str, Any], stage_name: str) -> bool:
-    stages = ga_suite_report.get('stages')
+def _plan_has_stage(plan_report: dict[str, Any], stage_name: str) -> bool:
+    stages = plan_report.get('stages')
     if not isinstance(stages, list):
         return False
     for item in stages:
@@ -461,19 +486,143 @@ def _ga_suite_has_stage(ga_suite_report: dict[str, Any], stage_name: str) -> boo
     return False
 
 
+def _plan_stage_has_command(plan_report: dict[str, Any], stage_name: str) -> bool:
+    stages = plan_report.get('stages')
+    if not isinstance(stages, list):
+        return False
+    for item in stages:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get('name', '')).strip() != stage_name:
+            continue
+        command = item.get('command')
+        if not isinstance(command, list) or not command:
+            return False
+        for token in command:
+            if not isinstance(token, str) or not token.strip():
+                return False
+        return True
+    return False
+
+
+def _plan_stage_count_matches(plan_report: dict[str, Any], expected_count: int) -> bool:
+    value = plan_report.get('stage_count')
+    try:
+        return int(value) == int(expected_count)
+    except (TypeError, ValueError):
+        return False
+
+
+def _plan_stage_pack_complete(plan_report: dict[str, Any], required_stages: tuple[str, ...]) -> bool:
+    return _plan_stage_count_matches(plan_report, len(required_stages)) and all(
+        _plan_has_stage(plan_report, stage_name) for stage_name in required_stages
+    )
+
+
+def _plan_stage_pack_executable(plan_report: dict[str, Any], required_stages: tuple[str, ...]) -> bool:
+    return all(
+        _plan_stage_has_command(plan_report, stage_name) for stage_name in required_stages
+    )
+
+
+def _normalize_cli_path(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = str(value).strip()
+    if not normalized or normalized == '-':
+        return normalized
+    return str(Path(normalized).resolve())
+
+
+def _plan_stage_option_value(
+    plan_report: dict[str, Any],
+    stage_name: str,
+    option_name: str,
+) -> str | None:
+    stages = plan_report.get('stages')
+    if not isinstance(stages, list):
+        return None
+    for item in stages:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get('name', '')).strip() != stage_name:
+            continue
+        command = item.get('command')
+        if not isinstance(command, list) or not command:
+            return None
+        for index, token in enumerate(command):
+            if not isinstance(token, str):
+                continue
+            if token.strip() != option_name:
+                continue
+            if index + 1 >= len(command):
+                return None
+            raw_value = command[index + 1]
+            if not isinstance(raw_value, str):
+                return None
+            return raw_value
+        return None
+    return None
+
+
+def _release_gate_stage_output_mismatches(
+    release_gate_plan: dict[str, Any],
+    expected_stage_outputs: dict[str, Path],
+) -> list[dict[str, Any]]:
+    mismatches: list[dict[str, Any]] = []
+    for stage_name, expected_path in expected_stage_outputs.items():
+        actual_output = _plan_stage_option_value(release_gate_plan, stage_name, '--output')
+        normalized_actual = _normalize_cli_path(actual_output)
+        normalized_expected = str(expected_path.resolve())
+        if normalized_actual == normalized_expected:
+            continue
+        mismatches.append(
+            {
+                'stage': stage_name,
+                'option': '--output',
+                'expected': normalized_expected,
+                'actual': normalized_actual,
+            }
+        )
+    return mismatches
+
+
+def _resolve_file_age_delta_hours(path: Path) -> float | None:
+    try:
+        modified_at = float(path.stat().st_mtime)
+    except (OSError, ValueError):
+        return None
+    now_ts = datetime.now(timezone.utc).timestamp()
+    age_seconds = now_ts - modified_at
+    return age_seconds / 3600.0
+
+
 def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     doc_sync_path = Path(args.doc_sync_report).resolve()
     quality_path = Path(args.quality_report).resolve()
     perf_path = Path(args.perf_report).resolve()
     postgres_soak_benchmark_path = Path(args.postgres_soak_benchmark_report).resolve()
+    beta_suite_path = Path(args.beta_suite_output).resolve()
     ga_suite_path = Path(args.ga_suite_output).resolve()
+    roadmap_suite_path = Path(args.roadmap_suite_output).resolve()
+    release_gate_path = Path(args.release_gate_output).resolve()
     release_standard_path = Path(args.release_standard_doc).resolve()
+    max_evidence_age_hours = float(args.max_evidence_age_hours)
+    max_evidence_future_skew_hours = float(args.max_evidence_future_skew_hours)
+    max_evidence_cohort_skew_hours = float(args.max_evidence_cohort_skew_hours)
+    release_gate_binding_check_enabled = not bool(args.skip_release_gate_output_binding_check)
+    freshness_check_enabled = max_evidence_age_hours > 0
+    future_skew_check_enabled = max_evidence_future_skew_hours > 0
+    cohort_skew_check_enabled = max_evidence_cohort_skew_hours > 0
 
     doc_sync_report, doc_sync_error = _load_json_file(doc_sync_path)
     quality_report, quality_error = _load_json_file(quality_path)
     perf_report, perf_error = _load_json_file(perf_path)
     postgres_soak_report, postgres_soak_error = _load_json_file(postgres_soak_benchmark_path)
+    beta_suite_report, beta_suite_error = _load_json_file(beta_suite_path)
     ga_suite_report, ga_suite_error = _load_json_file(ga_suite_path)
+    roadmap_suite_report, roadmap_suite_error = _load_json_file(roadmap_suite_path)
+    release_gate_report, release_gate_error = _load_json_file(release_gate_path)
     release_standard_text, release_standard_error = _read_text_file(release_standard_path)
 
     doc_sync_pass = bool(
@@ -521,98 +670,329 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
                     except (TypeError, ValueError):
                         dual_write_count = 0
 
+    beta_required_stages = ('ci', 'container_smoke', 'doc_sync', 'quality_regression', 'perf_cost_baseline')
+    ga_required_stages = (
+        'postgres_soak',
+        'postgres_ga',
+        'worker_ga',
+        'review_queue_ga',
+        'provider_ga',
+        'calibration_ga',
+    )
+    roadmap_required_stages = ('roadmap_extension',)
+    release_gate_required_stages = ('beta_gate', 'ga_gate', 'roadmap_gate')
+
+    beta_suite_stage_pack_complete = bool(
+        beta_suite_report is not None and _plan_stage_pack_complete(beta_suite_report, beta_required_stages)
+    )
+    beta_suite_stage_pack_executable = bool(
+        beta_suite_report is not None and _plan_stage_pack_executable(beta_suite_report, beta_required_stages)
+    )
+    ga_suite_stage_pack_complete = bool(
+        ga_suite_report is not None and _plan_stage_pack_complete(ga_suite_report, ga_required_stages)
+    )
+    ga_suite_stage_pack_executable = bool(
+        ga_suite_report is not None and _plan_stage_pack_executable(ga_suite_report, ga_required_stages)
+    )
+    roadmap_suite_stage_pack_complete = bool(
+        roadmap_suite_report is not None
+        and _plan_stage_pack_complete(roadmap_suite_report, roadmap_required_stages)
+    )
+    roadmap_suite_stage_pack_executable = bool(
+        roadmap_suite_report is not None
+        and _plan_stage_pack_executable(roadmap_suite_report, roadmap_required_stages)
+    )
+    release_gate_stage_pack_complete = bool(
+        release_gate_report is not None
+        and _plan_stage_pack_complete(release_gate_report, release_gate_required_stages)
+    )
+    release_gate_stage_pack_executable = bool(
+        release_gate_report is not None
+        and _plan_stage_pack_executable(release_gate_report, release_gate_required_stages)
+    )
+    release_gate_binding_mismatches: list[dict[str, Any]] = []
+    if release_gate_binding_check_enabled and release_gate_report is not None:
+        release_gate_binding_mismatches = _release_gate_stage_output_mismatches(
+            release_gate_report,
+            {
+                'beta_gate': beta_suite_path,
+                'ga_gate': ga_suite_path,
+                'roadmap_gate': roadmap_suite_path,
+            },
+        )
+    release_gate_output_binding_pass = (
+        (not release_gate_binding_check_enabled) or (not release_gate_binding_mismatches)
+    )
+    beta_suite_evidence_pack_complete = beta_suite_stage_pack_complete and beta_suite_stage_pack_executable
+    ga_suite_evidence_pack_complete = ga_suite_stage_pack_complete and ga_suite_stage_pack_executable
+    roadmap_suite_evidence_pack_complete = roadmap_suite_stage_pack_complete and roadmap_suite_stage_pack_executable
+    release_gate_evidence_pack_complete = (
+        release_gate_stage_pack_complete
+        and release_gate_stage_pack_executable
+        and release_gate_output_binding_pass
+    )
     review_queue_stage_present = bool(
-        ga_suite_report is not None and _ga_suite_has_stage(ga_suite_report, 'review_queue_ga')
+        ga_suite_report is not None
+        and _plan_has_stage(ga_suite_report, 'review_queue_ga')
+        and _plan_stage_has_command(ga_suite_report, 'review_queue_ga')
+    )
+    freshness_target_paths = (
+        doc_sync_path,
+        quality_path,
+        perf_path,
+        postgres_soak_benchmark_path,
+        beta_suite_path,
+        ga_suite_path,
+        roadmap_suite_path,
+        release_gate_path,
+    )
+    evidence_age_hours: dict[str, float] = {}
+    evidence_age_hours_raw: dict[str, float] = {}
+    stale_evidence_files: list[str] = []
+    future_evidence_files: list[str] = []
+    for target_path in freshness_target_paths:
+        age_hours = _resolve_file_age_delta_hours(target_path)
+        if age_hours is None:
+            continue
+        normalized_age_hours = round(age_hours, 3)
+        evidence_age_hours_raw[str(target_path)] = age_hours
+        evidence_age_hours[str(target_path)] = normalized_age_hours
+        if freshness_check_enabled and age_hours > max_evidence_age_hours:
+            stale_evidence_files.append(str(target_path))
+        if future_skew_check_enabled and age_hours < (0.0 - max_evidence_future_skew_hours):
+            future_evidence_files.append(str(target_path))
+    stale_evidence_files = sorted(set(stale_evidence_files))
+    future_evidence_files = sorted(set(future_evidence_files))
+    stale_evidence_file_set = set(stale_evidence_files)
+    future_evidence_file_set = set(future_evidence_files)
+    evidence_freshness_gate_pass = (
+        ((not freshness_check_enabled) or (not stale_evidence_files))
+        and ((not future_skew_check_enabled) or (not future_evidence_files))
+    )
+    oldest_evidence_file = ''
+    newest_evidence_file = ''
+    evidence_cohort_age_spread_hours: float | None = None
+    cohort_skew_violation_files: list[str] = []
+    if evidence_age_hours_raw:
+        oldest_evidence_file = max(evidence_age_hours_raw, key=evidence_age_hours_raw.__getitem__)
+        newest_evidence_file = min(evidence_age_hours_raw, key=evidence_age_hours_raw.__getitem__)
+    if len(evidence_age_hours_raw) >= 2:
+        oldest_age_hours = evidence_age_hours_raw[oldest_evidence_file]
+        newest_age_hours = evidence_age_hours_raw[newest_evidence_file]
+        evidence_cohort_age_spread_hours = round(oldest_age_hours - newest_age_hours, 3)
+        if cohort_skew_check_enabled and (oldest_age_hours - newest_age_hours) > max_evidence_cohort_skew_hours:
+            cohort_skew_violation_files = sorted({oldest_evidence_file, newest_evidence_file})
+    cohort_skew_gate_pass = (
+        (not cohort_skew_check_enabled)
+        or len(evidence_age_hours_raw) <= 1
+        or (
+            evidence_cohort_age_spread_hours is not None
+            and evidence_cohort_age_spread_hours <= max_evidence_cohort_skew_hours
+        )
     )
 
     gate_graph_source = (
         doc_sync_pass
         and release_contract_check == 'pass'
+        and release_gate_evidence_pack_complete
+        and beta_suite_evidence_pack_complete
         and standard_markers.get('graph_is_source_of_truth', False)
     )
     gate_review_queue = (
         review_queue_stage_present
+        and release_gate_evidence_pack_complete
+        and ga_suite_evidence_pack_complete
         and standard_markers.get('review_queue_operational', False)
     )
     gate_publication_views = (
         doc_sync_pass
         and release_contract_check == 'pass'
+        and release_gate_evidence_pack_complete
+        and roadmap_suite_evidence_pack_complete
         and standard_markers.get('publication_view_count>=2', False)
     )
     gate_postgres = (
         postgres_run_enabled
         and dual_write_count > 0
+        and release_gate_evidence_pack_complete
+        and ga_suite_evidence_pack_complete
         and standard_markers.get('postgres_repository_stable', False)
     )
     gate_regression = (
         quality_regressed_count == 0
         and perf_regressed_count == 0
+        and release_gate_evidence_pack_complete
+        and beta_suite_evidence_pack_complete
         and standard_markers.get('regression_beats_v1', False)
     )
 
     gates = [
         {
+            'name': 'evidence_freshness',
+            'status': 'pass' if evidence_freshness_gate_pass else 'hold',
+            'reason': (
+                'all decision evidence files are within freshness threshold (hours <= %.3f) and future-skew threshold (hours <= %.3f)'
+                % (max_evidence_age_hours, max_evidence_future_skew_hours)
+                if evidence_freshness_gate_pass and freshness_check_enabled and future_skew_check_enabled
+                else (
+                    'all decision evidence files are within freshness threshold (hours <= %.3f); future-skew gate disabled (--max-evidence-future-skew-hours <= 0)'
+                    % max_evidence_age_hours
+                    if evidence_freshness_gate_pass and freshness_check_enabled and not future_skew_check_enabled
+                    else (
+                        'freshness check disabled (--max-evidence-age-hours <= 0) and future-skew gate disabled (--max-evidence-future-skew-hours <= 0)'
+                        if evidence_freshness_gate_pass
+                        and not freshness_check_enabled
+                        and not future_skew_check_enabled
+                        else (
+                            'freshness check disabled (--max-evidence-age-hours <= 0); future-skew threshold enforced (hours <= %.3f)'
+                            % max_evidence_future_skew_hours
+                            if evidence_freshness_gate_pass and not freshness_check_enabled and future_skew_check_enabled
+                            else 'decision evidence violates freshness/future-skew thresholds'
+                        )
+                    )
+                )
+            ),
+            'evidence': (
+                sorted(set(stale_evidence_files + future_evidence_files))
+                if (stale_evidence_files or future_evidence_files)
+                else (
+                    [str(path) for path in freshness_target_paths]
+                )
+            ),
+        },
+        {
+            'name': 'evidence_cohort_skew',
+            'status': 'pass' if cohort_skew_gate_pass else 'hold',
+            'reason': (
+                'decision evidence timestamps stay within cohort skew threshold (hours <= %.3f)'
+                % max_evidence_cohort_skew_hours
+                if cohort_skew_gate_pass and cohort_skew_check_enabled and len(evidence_age_hours_raw) >= 2
+                else (
+                    'cohort skew check disabled (--max-evidence-cohort-skew-hours <= 0)'
+                    if cohort_skew_gate_pass and not cohort_skew_check_enabled
+                    else (
+                        'cohort skew check skipped (fewer than two evidence files with readable timestamps)'
+                        if cohort_skew_gate_pass
+                        else 'decision evidence timestamps exceed cohort skew threshold (hours > %.3f)'
+                        % max_evidence_cohort_skew_hours
+                    )
+                )
+            ),
+            'evidence': (
+                cohort_skew_violation_files
+                if cohort_skew_violation_files
+                else (
+                    [str(path) for path in freshness_target_paths]
+                )
+            ),
+        },
+        {
+            'name': 'release_gate_evidence_binding',
+            'status': 'pass' if release_gate_output_binding_pass else 'hold',
+            'reason': (
+                'release-gate beta/ga/roadmap stage outputs are bound to the provided nested evidence paths'
+                if release_gate_output_binding_pass and release_gate_binding_check_enabled
+                else (
+                    'release-gate output binding gate disabled (--skip-release-gate-output-binding-check)'
+                    if release_gate_output_binding_pass
+                    else 'release-gate stage output paths do not match provided nested evidence paths'
+                )
+            ),
+            'evidence': (
+                [
+                    str(release_gate_path),
+                    str(beta_suite_path),
+                    str(ga_suite_path),
+                    str(roadmap_suite_path),
+                ]
+                if not release_gate_binding_mismatches
+                else release_gate_binding_mismatches
+            ),
+        },
+        {
             'name': 'graph_is_source_of_truth',
             'status': 'pass' if gate_graph_source else 'hold',
             'reason': (
-                'doc_sync pass + release switch contract pass'
+                'doc_sync/release-contract pass + release gate evidence pack complete and executable'
                 if gate_graph_source
-                else 'missing or failing release-switch doc/evidence contract'
+                else 'missing/failing release-switch contract or incomplete/non-executable release-gate evidence pack'
             ),
-            'evidence': [str(doc_sync_path), str(release_standard_path)],
+            'evidence': [str(doc_sync_path), str(beta_suite_path), str(release_gate_path), str(release_standard_path)],
         },
         {
             'name': 'review_queue_operational',
             'status': 'pass' if gate_review_queue else 'hold',
             'reason': (
-                'ga suite includes review_queue_ga stage'
+                'release gate and ga suite include executable review_queue hardening stages'
                 if gate_review_queue
-                else 'ga suite plan missing review_queue_ga stage or marker'
+                else 'ga suite/release-gate evidence missing review_queue executable stage contract or marker'
             ),
-            'evidence': [str(ga_suite_path), str(release_standard_path)],
+            'evidence': [str(ga_suite_path), str(release_gate_path), str(release_standard_path)],
         },
         {
             'name': 'publication_view_count>=2',
             'status': 'pass' if gate_publication_views else 'hold',
             'reason': (
-                'release-switch contract checks passed'
+                'release-switch docs contract + roadmap evidence pack complete and executable'
                 if gate_publication_views
-                else 'release-switch contract/doc check not passed'
+                else 'release-switch contract/doc check or roadmap evidence pack incomplete/non-executable'
             ),
-            'evidence': [str(doc_sync_path), str(release_standard_path)],
+            'evidence': [str(doc_sync_path), str(roadmap_suite_path), str(release_gate_path), str(release_standard_path)],
         },
         {
             'name': 'postgres_repository_stable',
             'status': 'pass' if gate_postgres else 'hold',
             'reason': (
-                'postgres soak benchmark recorded dual_write run'
+                'postgres soak benchmark recorded dual_write run with complete and executable ga gate evidence pack'
                 if gate_postgres
-                else 'postgres soak benchmark missing or did not execute dual_write'
+                else 'postgres soak evidence missing/incomplete, ga gate non-executable, or dual_write did not execute'
             ),
-            'evidence': [str(postgres_soak_benchmark_path), str(release_standard_path)],
+            'evidence': [str(postgres_soak_benchmark_path), str(ga_suite_path), str(release_gate_path), str(release_standard_path)],
         },
         {
             'name': 'regression_beats_v1',
             'status': 'pass' if gate_regression else 'hold',
             'reason': (
-                'quality/perf regression counts are zero'
+                'quality/perf regression counts are zero and beta gate evidence pack complete and executable'
                 if gate_regression
-                else 'quality/perf regression report missing or regressed'
+                else 'quality/perf report missing/regressed or beta gate evidence pack incomplete/non-executable'
             ),
-            'evidence': [str(quality_path), str(perf_path), str(release_standard_path)],
+            'evidence': [str(quality_path), str(perf_path), str(beta_suite_path), str(release_gate_path), str(release_standard_path)],
         },
     ]
     hold_count = sum(1 for item in gates if item['status'] != 'pass')
     pass_count = len(gates) - hold_count
 
-    evidence_files = [
-        {'path': str(doc_sync_path), 'status': doc_sync_error or 'ok'},
-        {'path': str(quality_path), 'status': quality_error or 'ok'},
-        {'path': str(perf_path), 'status': perf_error or 'ok'},
-        {'path': str(postgres_soak_benchmark_path), 'status': postgres_soak_error or 'ok'},
-        {'path': str(ga_suite_path), 'status': ga_suite_error or 'ok'},
-        {'path': str(release_standard_path), 'status': release_standard_error or 'ok'},
-    ]
+    cohort_skew_violation_file_set = set(cohort_skew_violation_files)
+    evidence_files = []
+    for path, status in (
+        (doc_sync_path, doc_sync_error or 'ok'),
+        (quality_path, quality_error or 'ok'),
+        (perf_path, perf_error or 'ok'),
+        (postgres_soak_benchmark_path, postgres_soak_error or 'ok'),
+        (beta_suite_path, beta_suite_error or 'ok'),
+        (ga_suite_path, ga_suite_error or 'ok'),
+        (roadmap_suite_path, roadmap_suite_error or 'ok'),
+        (release_gate_path, release_gate_error or 'ok'),
+        (release_standard_path, release_standard_error or 'ok'),
+    ):
+        payload: dict[str, Any] = {'path': str(path), 'status': status}
+        age_hours = evidence_age_hours.get(str(path))
+        if age_hours is not None:
+            payload['age_hours'] = age_hours
+        if status == 'ok' and str(path) in future_evidence_file_set:
+            payload['freshness'] = 'future_skewed'
+        elif freshness_check_enabled and status == 'ok' and str(path) in stale_evidence_file_set:
+            payload['freshness'] = 'stale'
+        elif cohort_skew_check_enabled and status == 'ok' and str(path) in cohort_skew_violation_file_set:
+            payload['freshness'] = 'cohort_skewed'
+        elif (
+            freshness_check_enabled
+            or future_skew_check_enabled
+            or cohort_skew_check_enabled
+        ) and status == 'ok' and str(path) in evidence_age_hours:
+            payload['freshness'] = 'fresh'
+        evidence_files.append(payload)
     missing_or_invalid = [item for item in evidence_files if item['status'] != 'ok']
 
     decision = 'GO' if hold_count == 0 else 'HOLD'
@@ -632,6 +1012,39 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
             'perf_regressed_count': perf_regressed_count,
             'postgres_run_postgres': postgres_run_enabled,
             'postgres_dual_write_count': dual_write_count,
+            'freshness_check_enabled': freshness_check_enabled,
+            'max_evidence_age_hours': max_evidence_age_hours,
+            'future_skew_check_enabled': future_skew_check_enabled,
+            'max_evidence_future_skew_hours': max_evidence_future_skew_hours,
+            'cohort_skew_check_enabled': cohort_skew_check_enabled,
+            'max_evidence_cohort_skew_hours': max_evidence_cohort_skew_hours,
+            'evidence_freshness_gate_pass': evidence_freshness_gate_pass,
+            'evidence_cohort_skew_gate_pass': cohort_skew_gate_pass,
+            'release_gate_binding_check_enabled': release_gate_binding_check_enabled,
+            'release_gate_output_binding_pass': release_gate_output_binding_pass,
+            'release_gate_binding_mismatch_count': len(release_gate_binding_mismatches),
+            'release_gate_binding_mismatches': release_gate_binding_mismatches,
+            'evidence_cohort_age_spread_hours': evidence_cohort_age_spread_hours,
+            'oldest_evidence_file': oldest_evidence_file or None,
+            'newest_evidence_file': newest_evidence_file or None,
+            'cohort_skew_violation_count': len(cohort_skew_violation_files),
+            'cohort_skew_violation_files': cohort_skew_violation_files,
+            'stale_evidence_count': len(stale_evidence_files),
+            'stale_evidence_files': stale_evidence_files,
+            'future_evidence_count': len(future_evidence_files),
+            'future_evidence_files': future_evidence_files,
+            'beta_suite_stage_pack_complete': beta_suite_stage_pack_complete,
+            'beta_suite_stage_pack_executable': beta_suite_stage_pack_executable,
+            'beta_suite_evidence_pack_complete': beta_suite_evidence_pack_complete,
+            'ga_suite_stage_pack_complete': ga_suite_stage_pack_complete,
+            'ga_suite_stage_pack_executable': ga_suite_stage_pack_executable,
+            'ga_suite_evidence_pack_complete': ga_suite_evidence_pack_complete,
+            'roadmap_suite_stage_pack_complete': roadmap_suite_stage_pack_complete,
+            'roadmap_suite_stage_pack_executable': roadmap_suite_stage_pack_executable,
+            'roadmap_suite_evidence_pack_complete': roadmap_suite_evidence_pack_complete,
+            'release_gate_stage_pack_complete': release_gate_stage_pack_complete,
+            'release_gate_stage_pack_executable': release_gate_stage_pack_executable,
+            'release_gate_evidence_pack_complete': release_gate_evidence_pack_complete,
             'ga_suite_has_review_queue_ga': review_queue_stage_present,
             'release_standard_markers': standard_markers,
         },

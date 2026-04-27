@@ -665,6 +665,10 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             case_id="tests.test_doc_sync_check_script.DocSyncCheckScriptTests.test_script_reports_incomplete_launch_beta_runbook",
             description="doc sync harness should fail when launch-beta runbook misses deploy/rollback/acceptance/log/temp-cleanup checklist sections.",
         ),
+        TestCaseSpec(
+            case_id="tests.test_tp_registry.TPRegistryScriptTests.test_list_command_exposes_known_work_orders",
+            description="tp registry should stay bidirectionally aligned with work-orders (missing and undocumented IDs both fail).",
+        ),
     ],
     "TP-E13-02": [
         TestCaseSpec(
@@ -832,6 +836,60 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
         TestCaseSpec(
             case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_emit_go_decision",
             description="release-switch validation script should evaluate GO decision when all evidence reports satisfy hard-gate conditions.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_hold_is_nonzero_unless_allow_hold",
+            description="release-switch validation script should return non-zero on HOLD by default and allow override via --allow-hold.",
+        ),
+    ],
+    "TP-E13-14": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_pack_evidence_missing",
+            description="release-switch validation script should HOLD when release-gate beta/ga/roadmap evidence packs are missing or incomplete.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_pack_stage_commands_missing",
+            description="release-switch validation script should HOLD when release-gate stage packs are present but not executable command plans.",
+        ),
+    ],
+    "TP-E13-15": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_evidence_files_are_stale",
+            description="release-switch validation script should HOLD when decision evidence files are older than freshness threshold.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_evidence_freshness_gate",
+            description="release-switch validation script should allow disabling freshness gate via --max-evidence-age-hours 0.",
+        ),
+    ],
+    "TP-E13-16": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_evidence_files_are_future_skewed",
+            description="release-switch validation script should HOLD when evidence timestamps are skewed too far into the future.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_future_skew_gate",
+            description="release-switch validation script should allow disabling future-skew gate via --max-evidence-future-skew-hours 0.",
+        ),
+    ],
+    "TP-E13-17": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_evidence_cohort_age_spread_is_too_large",
+            description="release-switch validation script should HOLD when decision evidence timestamps drift beyond cohort skew threshold.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_evidence_cohort_skew_gate",
+            description="release-switch validation script should allow disabling cohort-skew gate via --max-evidence-cohort-skew-hours 0.",
+        ),
+    ],
+    "TP-E13-18": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_outputs_do_not_match_evidence_paths",
+            description="release-switch validation script should HOLD when release-gate stage --output bindings drift from the provided beta/ga/roadmap evidence paths.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_output_binding_gate",
+            description="release-switch validation script should allow emergency bypass of release-gate output binding checks via --skip-release-gate-output-binding-check.",
         ),
     ],
 }

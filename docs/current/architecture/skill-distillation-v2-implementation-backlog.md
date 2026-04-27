@@ -687,6 +687,20 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
 
 
 
+#### TP-E13-12 Release gate 聚合脚本
+
+- 目标：将 beta/ga/roadmap 三个 gate 的 Linux 验证入口聚合为单命令编排，统一 dry-run 计划与参数透传。
+- 主要文件：
+  - `scripts/run_release_gate_validation.py`
+  - `tests/test_release_gate_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持阶段筛选（`beta_gate/ga_gate/roadmap_gate`）
+  - 支持 coverage/container/postgres/calibration 参数透传到下游 Linux suite
+  - 支持 dry-run 输出 `e13-release-gate-validation-plan.json` 与 nested suite 计划
+
 #### TP-E13-13 Release switch 判定脚本
 
 - 目标：将 release gate、TP 合同校验、doc-sync 与证据判定收敛成 Linux 单命令入口，输出 `GO/HOLD` 判定报告。
@@ -700,7 +714,77 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
   - 支持阶段筛选（`release_gate/release_contract/doc_sync`）
   - 支持 `--decision-only` 直接基于已落盘报告输出判定
   - 支持输出 `e13-release-switch-decision-report.json`，并在 HOLD 时默认返回非零退出码
- 鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
+
+#### TP-E13-14 Release switch 证据闭环加固
+
+- 目标：将 release switch 的判定门槛升级为必须包含 release-gate 顶层计划与 beta/ga/roadmap 子计划的完整证据包，避免缺包误判 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - decision 评估纳入 `release-gate-output`、`beta-suite-output`、`ga-suite-output`、`roadmap-suite-output`
+  - 证据包缺失或阶段不完整时，判定强制 `HOLD`
+  - 完整证据包场景可稳定输出 `GO`
+
+#### TP-E13-15 Release switch 证据时效门禁
+
+- 目标：在 release switch 判定中加入 evidence freshness 守门，避免复用陈旧报告误判 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持 `--max-evidence-age-hours`（默认开启 freshness 门禁）
+  - evidence 文件超时效窗口时，判定强制 `HOLD`
+  - 支持 `--max-evidence-age-hours 0` 显式关闭 freshness 门禁
+
+#### TP-E13-16 Release switch 未来时间偏移门禁
+
+- 目标：在 release switch 判定中加入 future timestamp skew 守门，防止证据文件时间被调到未来导致 freshness 绕过。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持 `--max-evidence-future-skew-hours`（默认开启 future-skew 门禁）
+  - evidence 文件未来偏移超过阈值时，判定强制 `HOLD`
+  - 支持 `--max-evidence-future-skew-hours 0` 显式关闭 future-skew 门禁
+
+#### TP-E13-17 Release switch 证据批次一致性门禁
+
+- 目标：在 release switch 判定中加入 evidence cohort skew 守门，避免混用跨批次报告导致 `GO` 误判。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 支持 `--max-evidence-cohort-skew-hours`（默认开启 cohort-skew 门禁）
+  - evidence 文件时间跨度超过阈值时，判定强制 `HOLD`
+  - 支持 `--max-evidence-cohort-skew-hours 0` 显式关闭 cohort-skew 门禁
+
+#### TP-E13-18 Release switch 证据绑定一致性门禁
+
+- 目标：在 release switch 判定中加入 release-gate 证据绑定守门，确保 `release-gate-output` 内部 beta/ga/roadmap stage 的 `--output` 指向与本次判定传入证据路径一致，避免混包误判 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage `--output` 与 `--beta-suite-output/--ga-suite-output/--roadmap-suite-output` 一致性
+  - 任一 stage 输出绑定错配时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-output-binding-check` 显式关闭绑定门禁
+鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
 ### `src/omni_skill_pipeline/models.py`
 
 - 鏂板 V2 dataclass 涓?enum
