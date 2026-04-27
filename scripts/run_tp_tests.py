@@ -892,6 +892,106 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="release-switch validation script should allow emergency bypass of release-gate output binding checks via --skip-release-gate-output-binding-check.",
         ),
     ],
+    "TP-E13-19": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_contract_mismatches",
+            description="release-switch validation script should HOLD when release-gate stage commands drift from the expected linux-suite stage contract.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_stage_contract_gate",
+            description="release-switch validation script should allow emergency bypass of release-gate stage-contract checks via --skip-release-gate-stage-contract-check.",
+        ),
+    ],
+    "TP-E13-20": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_options_are_ambiguous",
+            description="release-switch validation script should HOLD when release-gate stage commands contain repeated --stages/--output options with override ambiguity.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_option_override_gate",
+            description="release-switch validation script should allow emergency bypass of release-gate option-override checks via --skip-release-gate-option-override-check.",
+        ),
+    ],
+    "TP-E13-21": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_relaxed_flags",
+            description="release-switch validation script should HOLD when release-gate stage commands include relaxed flags that bypass strict release criteria.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_relaxed_flags_gate",
+            description="release-switch validation script should allow emergency bypass of relaxed-flag checks via --skip-release-gate-relaxed-flags-check.",
+        ),
+    ],
+    "TP-E13-22": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_dry_run_flag",
+            description="release-switch validation script should HOLD when release-gate stage commands include --dry-run and can bypass real execution.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_dry_run_gate",
+            description="release-switch validation script should allow emergency bypass of dry-run checks via --skip-release-gate-dry-run-check.",
+        ),
+    ],
+    "TP-E13-23": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_script_position_is_decoy",
+            description="release-switch validation script should HOLD when release-gate command only carries linux-suite script as decoy token instead of executed script.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_script_position_gate",
+            description="release-switch validation script should allow emergency bypass of script-position checks via --skip-release-gate-script-position-check.",
+        ),
+    ],
+    "TP-E13-24": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_inline_exec_flag",
+            description="release-switch validation script should HOLD when release-gate stage commands insert -c/-m inline-dispatch before linux-suite script token.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_inline_exec_gate",
+            description="release-switch validation script should allow emergency bypass of inline-dispatch checks via --skip-release-gate-inline-exec-check.",
+        ),
+    ],
+    "TP-E13-25": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_script_path_is_not_repo_canonical",
+            description="release-switch validation script should HOLD when release-gate stage scripts resolve outside repository canonical linux-suite path.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_script_anchor_gate",
+            description="release-switch validation script should allow emergency bypass of script-anchor checks via --skip-release-gate-script-anchor-check.",
+        ),
+    ],
+    "TP-E13-26": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_python_binding_mismatches",
+            description="release-switch validation script should HOLD when release-gate stage commands drift from the expected --python launcher binding.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_binding_gate",
+            description="release-switch validation script should allow emergency bypass of python-binding checks via --skip-release-gate-python-binding-check.",
+        ),
+    ],
+    "TP-E13-27": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_coverage_floor_is_downgraded",
+            description="release-switch validation script should HOLD when release-gate beta stage coverage floor drifts below release-switch expectations.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_coverage_floor_gate",
+            description="release-switch validation script should allow emergency bypass of coverage-floor checks via --skip-release-gate-coverage-floor-check.",
+        ),
+    ],
+    "TP-E13-28": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_optimization_flag",
+            description="release-switch validation script should HOLD when release-gate stage launchers use python optimization flags (-O/-OO) that may bypass assertions.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_optimization_gate",
+            description="release-switch validation script should allow emergency bypass of python-optimization checks via --skip-release-gate-python-optimization-check.",
+        ),
+    ],
 }
 
 

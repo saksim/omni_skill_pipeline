@@ -784,6 +784,149 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
   - 默认校验 release-gate stage `--output` 与 `--beta-suite-output/--ga-suite-output/--roadmap-suite-output` 一致性
   - 任一 stage 输出绑定错配时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-output-binding-check` 显式关闭绑定门禁
+
+#### TP-E13-19 Release switch stage 合同一致性门禁
+
+- 目标：在 release switch 判定中加入 release-gate stage 合同守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令持续指向 `scripts/run_linux_validation_suite.py` 且 `--stages` 组合保持约定，防止“路径一致但执行计划漂移”误判 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 命令必须匹配 `scripts/run_linux_validation_suite.py + --stages` 合同
+  - 任一 stage 命令或 `--stages` 漂移时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-stage-contract-check` 显式关闭 stage 合同门禁
+
+#### TP-E13-20 Release switch 参数覆盖歧义门禁
+
+- 目标：在 release switch 判定中加入 release-gate 参数覆盖歧义守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令中的 `--stages` 与 `--output` 仅出现一次，防止重复参数覆盖绕过合同校验误判 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate 各 stage 命令 `--stages/--output` 参数出现次数必须为 `1`
+  - 任一 stage 存在重复参数覆盖歧义时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-option-override-check` 显式关闭参数覆盖门禁
+
+#### TP-E13-21 Release switch 宽松开关绕过门禁
+
+- 目标：在 release switch 判定中加入 release-gate 宽松开关守门，阻断通过 `--allow-regression/--no-coverage/--container-skip-build/--container-skip-run/--allow-secondary-failures` 等降级参数“带病放行”的 `GO` 误判。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 命令不得包含宽松开关参数
+  - 任一 stage 命中宽松开关时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-relaxed-flags-check` 显式关闭宽松开关门禁
+
+#### TP-E13-22 Release switch dry-run 绕过门禁
+
+- 目标：在 release switch 判定中加入 release-gate dry-run 守门，阻断通过 `--dry-run` 伪执行 stage 命令导致“证据看似完整但未真实执行”的 `GO` 误判。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 命令不得包含 `--dry-run`
+  - 任一 stage 命中 `--dry-run` 时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-dry-run-check` 显式关闭 dry-run 门禁
+
+#### TP-E13-23 Release switch 脚本定位伪装门禁
+
+- 目标：在 release switch 判定中加入 release-gate 脚本定位守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令真正执行的是 `scripts/run_linux_validation_suite.py`，而不是“命令中仅携带同名 token”的伪装路径。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 命令中第一个 script token 必须是 `scripts/run_linux_validation_suite.py`
+  - 若预期脚本仅作为附带 token 出现（未实际执行）时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-script-position-check` 显式关闭脚本定位门禁
+
+#### TP-E13-24 Release switch inline-exec 绕过门禁
+
+- 目标：在 release switch 判定中加入 release-gate inline-dispatch 守门，阻断通过 `-c/-m/-` 让 python 在预期 linux-suite script token 前切换执行模式的绕过路径。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 命令在 `scripts/run_linux_validation_suite.py` token 之前不得出现 `-c/-m/-`
+  - 任一 stage 命中 inline-dispatch 绕过模式时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-inline-exec-check` 显式关闭 inline-dispatch 门禁
+
+#### TP-E13-25 Release switch 脚本路径锚定门禁
+
+- 目标：在 release switch 判定中加入 release-gate script anchor 守门，确保 stage 命令解析后的执行脚本必须锚定仓库内 canonical `scripts/run_linux_validation_suite.py`，阻断同名外部路径伪装绕过。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 首个 script token 解析后的 canonical path 必须等于仓库内 `scripts/run_linux_validation_suite.py`
+  - 任一 stage 命中同名外部路径伪装时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-script-anchor-check` 显式关闭 script-anchor 门禁
+
+#### TP-E13-26 Release switch Python 绑定一致性门禁
+
+- 目标：在 release switch 判定中加入 release-gate python-binding 守门，确保 stage 命令的 `--python` 与实际 launcher 前缀、以及 release-switch 输入值三方一致，阻断执行器覆盖或漂移导致的伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate stage 命令 `--python` 仅出现一次，且值必须等于 release-switch 输入 `--python`
+  - 默认校验 release-gate stage 命令脚本前 launcher token 串必须与 `--python` 值绑定一致
+  - 任一 stage 命中 python-binding 漂移时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-binding-check` 显式关闭 python-binding 门禁
+
+#### TP-E13-27 Release switch 覆盖率阈值绑定门禁
+
+- 目标：在 release switch 判定中加入 release-gate coverage-floor 守门，确保 beta stage 的 `--coverage-fail-under` 既与 release-switch 输入绑定一致，也不低于最低发布阈值，阻断“降阈值放行”导致的伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate` 命令 `--coverage-fail-under` 仅出现一次且为可解析浮点值
+  - 默认校验该值必须等于 release-switch 输入 `--coverage-fail-under` 且不低于 `50`
+  - 任一命中 coverage 阈值漂移或降级时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-coverage-floor-check` 显式关闭 coverage-floor 门禁
+
+#### TP-E13-28 Release switch Python 优化旗标门禁
+
+- 目标：在 release switch 判定中加入 release-gate python-optimization 守门，禁止 stage launcher 使用 `-O/-OO` 优化旗标，避免 assert 校验被跳过导致伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `-O/-OO`
+  - 任一 stage 命中 python 优化旗标时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-optimization-check` 显式关闭 python-optimization 门禁
+
 鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
 ### `src/omni_skill_pipeline/models.py`
 

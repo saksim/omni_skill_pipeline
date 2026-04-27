@@ -59,6 +59,8 @@ DEFAULT_CONTAINER_TIMEOUT_SECONDS = 30.0
 DEFAULT_CONTAINER_INTERVAL_SECONDS = 1.0
 DEFAULT_MAX_EVIDENCE_FUTURE_SKEW_HOURS = 0.25
 DEFAULT_MAX_EVIDENCE_COHORT_SKEW_HOURS = 12.0
+DEFAULT_RELEASE_GATE_COVERAGE_FLOOR = 50.0
+FORBIDDEN_PYTHON_OPTIMIZATION_FLAGS = ('-O', '-OO')
 DEFAULT_STAGES = ('release_gate', 'release_contract', 'doc_sync')
 ALL_STAGES = tuple(DEFAULT_STAGES)
 RELEASE_GATE_MARKERS = (
@@ -272,6 +274,56 @@ def _parse_args() -> argparse.Namespace:
         '--skip-release-gate-output-binding-check',
         action='store_true',
         help='Disable release-gate stage output path binding gate in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-stage-contract-check',
+        action='store_true',
+        help='Disable release-gate stage contract gate (script path + --stages set) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-script-position-check',
+        action='store_true',
+        help='Disable release-gate script-position gate (enforce linux-suite script as executed script token) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-script-anchor-check',
+        action='store_true',
+        help='Disable release-gate script-anchor gate (enforce linux-suite script resolves to repository canonical path) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-binding-check',
+        action='store_true',
+        help='Disable release-gate python-binding gate (--python consistency checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-optimization-check',
+        action='store_true',
+        help='Disable release-gate python-optimization gate (-O/-OO assert-bypass checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-coverage-floor-check',
+        action='store_true',
+        help='Disable release-gate coverage-floor gate (--coverage-fail-under binding + minimum floor) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-inline-exec-check',
+        action='store_true',
+        help='Disable release-gate inline-exec gate (-c/-m/- dispatch bypass checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-option-override-check',
+        action='store_true',
+        help='Disable release-gate option override gate (--stages/--output ambiguity checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-dry-run-check',
+        action='store_true',
+        help='Disable release-gate dry-run gate (--dry-run bypass checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-relaxed-flags-check',
+        action='store_true',
+        help='Disable release-gate relaxed-flags gate (--allow-regression/--no-coverage/etc.) in decision evaluation.',
     )
     parser.add_argument(
         '--dry-run',
@@ -565,6 +617,111 @@ def _plan_stage_option_value(
     return None
 
 
+def _plan_stage_command(plan_report: dict[str, Any], stage_name: str) -> list[str] | None:
+    stages = plan_report.get('stages')
+    if not isinstance(stages, list):
+        return None
+    for item in stages:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get('name', '')).strip() != stage_name:
+            continue
+        command = item.get('command')
+        if not isinstance(command, list) or not command:
+            return None
+        if not all(isinstance(token, str) and token.strip() for token in command):
+            return None
+        return [str(token) for token in command]
+    return None
+
+
+def _command_contains_script_token(command: list[str], script_relpath: str) -> bool:
+    expected = script_relpath.replace('\\', '/').lower()
+    for token in command:
+        normalized = str(token).strip().replace('\\', '/').lower()
+        if normalized == expected or normalized.endswith('/' + expected):
+            return True
+    return False
+
+
+def _command_script_token_index(command: list[str], script_relpath: str) -> int | None:
+    expected = script_relpath.replace('\\', '/').lower()
+    for index, token in enumerate(command):
+        normalized = str(token).strip().replace('\\', '/').lower()
+        if normalized == expected or normalized.endswith('/' + expected):
+            return index
+    return None
+
+
+def _command_first_script_like_index(command: list[str]) -> int | None:
+    for index, token in enumerate(command):
+        stripped = str(token).strip()
+        if not stripped or stripped.startswith('--'):
+            continue
+        normalized = stripped.replace('\\', '/').lower()
+        if normalized.endswith('.py'):
+            return index
+    return None
+
+
+def _resolve_command_script_token_path(token: str) -> Path | None:
+    raw = str(token).strip()
+    if not raw:
+        return None
+    candidate = Path(raw)
+    try:
+        if candidate.is_absolute():
+            return candidate.resolve()
+        return (REPO_ROOT / candidate).resolve()
+    except (OSError, RuntimeError):
+        return None
+
+
+def _command_option_values(command: list[str], option_name: str) -> list[str] | None:
+    for index, token in enumerate(command):
+        if str(token).strip() != option_name:
+            continue
+        values: list[str] = []
+        cursor = index + 1
+        while cursor < len(command):
+            value = command[cursor]
+            if not isinstance(value, str):
+                break
+            stripped = value.strip()
+            if not stripped:
+                break
+            if stripped.startswith('--'):
+                break
+            values.append(stripped)
+            cursor += 1
+        return values
+    return None
+
+
+def _command_option_occurrence_count(command: list[str], option_name: str) -> int:
+    return sum(1 for token in command if str(token).strip() == option_name)
+
+
+def _command_forbidden_inline_exec_flag(token: str) -> str | None:
+    stripped = str(token).strip()
+    if stripped in ('-c', '-m', '-'):
+        return stripped
+    if stripped.startswith('-c') and len(stripped) > 2:
+        return '-c'
+    if stripped.startswith('-m') and len(stripped) > 2:
+        return '-m'
+    return None
+
+
+def _command_forbidden_python_optimization_flag(token: str) -> str | None:
+    stripped = str(token).strip()
+    if stripped in FORBIDDEN_PYTHON_OPTIMIZATION_FLAGS:
+        return stripped
+    if stripped.startswith('-O') and not stripped.startswith('--') and len(stripped) > 2:
+        return '-O*'
+    return None
+
+
 def _release_gate_stage_output_mismatches(
     release_gate_plan: dict[str, Any],
     expected_stage_outputs: dict[str, Path],
@@ -584,6 +741,541 @@ def _release_gate_stage_output_mismatches(
                 'actual': normalized_actual,
             }
         )
+    return mismatches
+
+
+def _release_gate_option_override_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        for option_name in ('--stages', '--output'):
+            occurrence_count = _command_option_occurrence_count(command, option_name)
+            if occurrence_count == 1:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '%s-occurrence' % option_name,
+                    'expected': 1,
+                    'actual': occurrence_count,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_relaxed_flag_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    forbidden_flags: dict[str, tuple[str, ...]] = {
+        'beta_gate': (
+            '--allow-regression',
+            '--no-coverage',
+            '--container-skip-build',
+            '--container-skip-run',
+        ),
+        'ga_gate': (
+            '--allow-secondary-failures',
+        ),
+        'roadmap_gate': (),
+    }
+    mismatches: list[dict[str, Any]] = []
+    for stage_name, stage_flags in forbidden_flags.items():
+        if not stage_flags:
+            continue
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        for option_name in stage_flags:
+            occurrence_count = _command_option_occurrence_count(command, option_name)
+            if occurrence_count == 0:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-flag',
+                    'option': option_name,
+                    'expected': 0,
+                    'actual': occurrence_count,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_dry_run_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        occurrence_count = _command_option_occurrence_count(command, '--dry-run')
+        if occurrence_count == 0:
+            continue
+        mismatches.append(
+            {
+                'stage': stage_name,
+                'check': 'forbidden-flag',
+                'option': '--dry-run',
+                'expected': 0,
+                'actual': occurrence_count,
+            }
+        )
+    return mismatches
+
+
+def _release_gate_stage_contract_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected: dict[str, tuple[str, ...]] = {
+        'beta_gate': ('ci', 'container_smoke', 'doc_sync', 'quality_regression', 'perf_cost_baseline'),
+        'ga_gate': (
+            'postgres_soak',
+            'postgres_ga',
+            'worker_ga',
+            'review_queue_ga',
+            'provider_ga',
+            'calibration_ga',
+        ),
+        'roadmap_gate': ('roadmap_extension',),
+    }
+    mismatches: list[dict[str, Any]] = []
+    for stage_name, expected_stages in expected.items():
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        if not _command_contains_script_token(command, 'scripts/run_linux_validation_suite.py'):
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'script',
+                    'expected': 'scripts/run_linux_validation_suite.py',
+                    'actual': command,
+                }
+            )
+        actual_stages = _command_option_values(command, '--stages')
+        if tuple(actual_stages or ()) != expected_stages:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--stages',
+                    'expected': list(expected_stages),
+                    'actual': actual_stages,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_script_position_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        expected_index = _command_script_token_index(command, expected_script)
+        if expected_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        first_script_index = _command_first_script_like_index(command)
+        if first_script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'first-script-token',
+                    'expected': expected_script,
+                    'actual': None,
+                }
+            )
+            continue
+        if first_script_index != expected_index:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'script-position',
+                    'expected': expected_script,
+                    'actual': command[first_script_index],
+                    'expected_index': expected_index,
+                    'actual_index': first_script_index,
+                }
+            )
+        first_option_index: int | None = None
+        for index, token in enumerate(command):
+            if str(token).strip().startswith('--'):
+                first_option_index = index
+                break
+        if first_option_index is not None and expected_index > first_option_index:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'script-before-options',
+                    'expected': '< option_index %s' % first_option_index,
+                    'actual': expected_index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_inline_exec_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        expected_index = _command_script_token_index(command, expected_script)
+        if expected_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:expected_index]):
+            forbidden_flag = _command_forbidden_inline_exec_flag(str(token))
+            if forbidden_flag is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-inline-exec-flag',
+                    'option': forbidden_flag,
+                    'actual': str(token),
+                    'index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_script_anchor_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    expected_script_path = (REPO_ROOT / expected_script).resolve()
+    expected_normalized_path = str(expected_script_path).replace('\\', '/').casefold()
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        first_script_index = _command_first_script_like_index(command)
+        if first_script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'first-script-token',
+                    'expected': expected_script,
+                    'actual': None,
+                }
+            )
+            continue
+        actual_token = str(command[first_script_index])
+        actual_script_path = _resolve_command_script_token_path(actual_token)
+        if actual_script_path is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'script-anchor',
+                    'expected': str(expected_script_path),
+                    'actual': None,
+                    'actual_token': actual_token,
+                    'actual_index': first_script_index,
+                }
+            )
+            continue
+        actual_normalized_path = str(actual_script_path).replace('\\', '/').casefold()
+        if actual_normalized_path == expected_normalized_path:
+            continue
+        mismatches.append(
+            {
+                'stage': stage_name,
+                'check': 'script-anchor',
+                'expected': str(expected_script_path),
+                'actual': str(actual_script_path),
+                'actual_token': actual_token,
+                'actual_index': first_script_index,
+            }
+        )
+    return mismatches
+
+
+def _release_gate_python_binding_mismatches(
+    release_gate_plan: dict[str, Any],
+    *,
+    expected_python: str,
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    expected_python_value = str(expected_python).strip()
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        actual_python_value = str(python_values[0]).strip()
+        if actual_python_value != expected_python_value:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value',
+                    'expected': expected_python_value,
+                    'actual': actual_python_value,
+                }
+            )
+        launcher_tokens = [
+            str(token).strip()
+            for token in command[:script_index]
+            if str(token).strip()
+        ]
+        launcher_value = ' '.join(launcher_tokens)
+        if launcher_value != expected_python_value:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'python-launcher-binding',
+                    'expected': expected_python_value,
+                    'actual': launcher_value or None,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_coverage_floor_mismatches(
+    release_gate_plan: dict[str, Any],
+    *,
+    expected_coverage_fail_under: float,
+    minimum_coverage_fail_under: float,
+) -> list[dict[str, Any]]:
+    stage_name = 'beta_gate'
+    option_name = '--coverage-fail-under'
+    expected_value = float(expected_coverage_fail_under)
+    minimum_value = float(minimum_coverage_fail_under)
+    mismatches: list[dict[str, Any]] = []
+    command = _plan_stage_command(release_gate_plan, stage_name)
+    if command is None:
+        return [
+            {
+                'stage': stage_name,
+                'check': 'command',
+                'expected': 'non-empty command',
+                'actual': None,
+            }
+        ]
+    option_occurrence_count = _command_option_occurrence_count(command, option_name)
+    if option_occurrence_count != 1:
+        return [
+            {
+                'stage': stage_name,
+                'check': '%s-occurrence' % option_name,
+                'expected': 1,
+                'actual': option_occurrence_count,
+            }
+        ]
+    option_values = _command_option_values(command, option_name) or []
+    if len(option_values) != 1:
+        return [
+            {
+                'stage': stage_name,
+                'check': '%s-value-shape' % option_name,
+                'expected': 'single value',
+                'actual': option_values,
+            }
+        ]
+    raw_value = str(option_values[0]).strip()
+    try:
+        actual_value = float(raw_value)
+    except ValueError:
+        return [
+            {
+                'stage': stage_name,
+                'check': '%s-value-parse' % option_name,
+                'expected': 'float',
+                'actual': raw_value or None,
+            }
+        ]
+    if abs(actual_value - expected_value) > 1e-9:
+        mismatches.append(
+            {
+                'stage': stage_name,
+                'check': '%s-binding' % option_name,
+                'expected': expected_value,
+                'actual': actual_value,
+            }
+        )
+    if actual_value < minimum_value:
+        mismatches.append(
+            {
+                'stage': stage_name,
+                'check': '%s-floor' % option_name,
+                'expected': '>= %.3f' % minimum_value,
+                'actual': actual_value,
+            }
+        )
+    return mismatches
+
+
+def _release_gate_python_optimization_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_flag = _command_forbidden_python_optimization_flag(str(token))
+            if forbidden_flag is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-optimization-flag',
+                    'option': forbidden_flag,
+                    'actual': str(token),
+                    'index': index,
+                }
+            )
     return mismatches
 
 
@@ -611,6 +1303,34 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     max_evidence_future_skew_hours = float(args.max_evidence_future_skew_hours)
     max_evidence_cohort_skew_hours = float(args.max_evidence_cohort_skew_hours)
     release_gate_binding_check_enabled = not bool(args.skip_release_gate_output_binding_check)
+    release_gate_stage_contract_check_enabled = not bool(args.skip_release_gate_stage_contract_check)
+    release_gate_script_position_check_enabled = not bool(
+        args.skip_release_gate_script_position_check
+    )
+    release_gate_script_anchor_check_enabled = not bool(
+        args.skip_release_gate_script_anchor_check
+    )
+    release_gate_python_binding_check_enabled = not bool(
+        args.skip_release_gate_python_binding_check
+    )
+    release_gate_python_optimization_check_enabled = not bool(
+        args.skip_release_gate_python_optimization_check
+    )
+    release_gate_coverage_floor_check_enabled = not bool(
+        args.skip_release_gate_coverage_floor_check
+    )
+    release_gate_inline_exec_check_enabled = not bool(
+        args.skip_release_gate_inline_exec_check
+    )
+    release_gate_option_override_check_enabled = not bool(
+        args.skip_release_gate_option_override_check
+    )
+    release_gate_dry_run_check_enabled = not bool(
+        args.skip_release_gate_dry_run_check
+    )
+    release_gate_relaxed_flags_check_enabled = not bool(
+        args.skip_release_gate_relaxed_flags_check
+    )
     freshness_check_enabled = max_evidence_age_hours > 0
     future_skew_check_enabled = max_evidence_future_skew_hours > 0
     cohort_skew_check_enabled = max_evidence_cohort_skew_hours > 0
@@ -723,6 +1443,95 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     release_gate_output_binding_pass = (
         (not release_gate_binding_check_enabled) or (not release_gate_binding_mismatches)
     )
+    release_gate_stage_contract_mismatches: list[dict[str, Any]] = []
+    if release_gate_stage_contract_check_enabled and release_gate_report is not None:
+        release_gate_stage_contract_mismatches = _release_gate_stage_contract_mismatches(
+            release_gate_report
+        )
+    release_gate_stage_contract_pass = (
+        (not release_gate_stage_contract_check_enabled) or (not release_gate_stage_contract_mismatches)
+    )
+    release_gate_script_position_mismatches: list[dict[str, Any]] = []
+    if release_gate_script_position_check_enabled and release_gate_report is not None:
+        release_gate_script_position_mismatches = _release_gate_script_position_mismatches(
+            release_gate_report
+        )
+    release_gate_script_position_pass = (
+        (not release_gate_script_position_check_enabled)
+        or (not release_gate_script_position_mismatches)
+    )
+    release_gate_script_anchor_mismatches: list[dict[str, Any]] = []
+    if release_gate_script_anchor_check_enabled and release_gate_report is not None:
+        release_gate_script_anchor_mismatches = _release_gate_script_anchor_mismatches(
+            release_gate_report
+        )
+    release_gate_script_anchor_pass = (
+        (not release_gate_script_anchor_check_enabled)
+        or (not release_gate_script_anchor_mismatches)
+    )
+    release_gate_python_binding_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_binding_check_enabled and release_gate_report is not None:
+        release_gate_python_binding_mismatches = _release_gate_python_binding_mismatches(
+            release_gate_report,
+            expected_python=str(args.python),
+        )
+    release_gate_python_binding_pass = (
+        (not release_gate_python_binding_check_enabled)
+        or (not release_gate_python_binding_mismatches)
+    )
+    release_gate_python_optimization_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_optimization_check_enabled and release_gate_report is not None:
+        release_gate_python_optimization_mismatches = _release_gate_python_optimization_mismatches(
+            release_gate_report
+        )
+    release_gate_python_optimization_pass = (
+        (not release_gate_python_optimization_check_enabled)
+        or (not release_gate_python_optimization_mismatches)
+    )
+    release_gate_coverage_floor_mismatches: list[dict[str, Any]] = []
+    if release_gate_coverage_floor_check_enabled and release_gate_report is not None:
+        release_gate_coverage_floor_mismatches = _release_gate_coverage_floor_mismatches(
+            release_gate_report,
+            expected_coverage_fail_under=float(args.coverage_fail_under),
+            minimum_coverage_fail_under=DEFAULT_RELEASE_GATE_COVERAGE_FLOOR,
+        )
+    release_gate_coverage_floor_pass = (
+        (not release_gate_coverage_floor_check_enabled)
+        or (not release_gate_coverage_floor_mismatches)
+    )
+    release_gate_inline_exec_mismatches: list[dict[str, Any]] = []
+    if release_gate_inline_exec_check_enabled and release_gate_report is not None:
+        release_gate_inline_exec_mismatches = _release_gate_inline_exec_mismatches(
+            release_gate_report
+        )
+    release_gate_inline_exec_pass = (
+        (not release_gate_inline_exec_check_enabled)
+        or (not release_gate_inline_exec_mismatches)
+    )
+    release_gate_option_override_mismatches: list[dict[str, Any]] = []
+    if release_gate_option_override_check_enabled and release_gate_report is not None:
+        release_gate_option_override_mismatches = _release_gate_option_override_mismatches(
+            release_gate_report
+        )
+    release_gate_option_override_pass = (
+        (not release_gate_option_override_check_enabled) or (not release_gate_option_override_mismatches)
+    )
+    release_gate_dry_run_mismatches: list[dict[str, Any]] = []
+    if release_gate_dry_run_check_enabled and release_gate_report is not None:
+        release_gate_dry_run_mismatches = _release_gate_dry_run_mismatches(
+            release_gate_report
+        )
+    release_gate_dry_run_pass = (
+        (not release_gate_dry_run_check_enabled) or (not release_gate_dry_run_mismatches)
+    )
+    release_gate_relaxed_flag_mismatches: list[dict[str, Any]] = []
+    if release_gate_relaxed_flags_check_enabled and release_gate_report is not None:
+        release_gate_relaxed_flag_mismatches = _release_gate_relaxed_flag_mismatches(
+            release_gate_report
+        )
+    release_gate_relaxed_flags_pass = (
+        (not release_gate_relaxed_flags_check_enabled) or (not release_gate_relaxed_flag_mismatches)
+    )
     beta_suite_evidence_pack_complete = beta_suite_stage_pack_complete and beta_suite_stage_pack_executable
     ga_suite_evidence_pack_complete = ga_suite_stage_pack_complete and ga_suite_stage_pack_executable
     roadmap_suite_evidence_pack_complete = roadmap_suite_stage_pack_complete and roadmap_suite_stage_pack_executable
@@ -730,6 +1539,16 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
         release_gate_stage_pack_complete
         and release_gate_stage_pack_executable
         and release_gate_output_binding_pass
+        and release_gate_stage_contract_pass
+        and release_gate_script_position_pass
+        and release_gate_script_anchor_pass
+        and release_gate_python_binding_pass
+        and release_gate_python_optimization_pass
+        and release_gate_coverage_floor_pass
+        and release_gate_inline_exec_pass
+        and release_gate_option_override_pass
+        and release_gate_dry_run_pass
+        and release_gate_relaxed_flags_pass
     )
     review_queue_stage_present = bool(
         ga_suite_report is not None
@@ -910,6 +1729,188 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
             ),
         },
         {
+            'name': 'release_gate_stage_contract',
+            'status': 'pass' if release_gate_stage_contract_pass else 'hold',
+            'reason': (
+                'release-gate stage commands target scripts/run_linux_validation_suite.py and expected --stages packs'
+                if release_gate_stage_contract_pass and release_gate_stage_contract_check_enabled
+                else (
+                    'release-gate stage contract gate disabled (--skip-release-gate-stage-contract-check)'
+                    if release_gate_stage_contract_pass
+                    else 'release-gate stage command contract does not match expected linux suite stage packs'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_stage_contract_mismatches
+                else release_gate_stage_contract_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_script_position',
+            'status': 'pass' if release_gate_script_position_pass else 'hold',
+            'reason': (
+                'release-gate stage commands execute scripts/run_linux_validation_suite.py as the first script token'
+                if release_gate_script_position_pass and release_gate_script_position_check_enabled
+                else (
+                    'release-gate script-position gate disabled (--skip-release-gate-script-position-check)'
+                    if release_gate_script_position_pass
+                    else 'release-gate stage commands do not execute scripts/run_linux_validation_suite.py as the first script token'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_script_position_mismatches
+                else release_gate_script_position_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_script_anchor',
+            'status': 'pass' if release_gate_script_anchor_pass else 'hold',
+            'reason': (
+                'release-gate stage commands resolve scripts/run_linux_validation_suite.py to repository canonical path'
+                if release_gate_script_anchor_pass and release_gate_script_anchor_check_enabled
+                else (
+                    'release-gate script-anchor gate disabled (--skip-release-gate-script-anchor-check)'
+                    if release_gate_script_anchor_pass
+                    else 'release-gate stage commands resolve linux-suite script token to non-canonical path'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_script_anchor_mismatches
+                else release_gate_script_anchor_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_binding',
+            'status': 'pass' if release_gate_python_binding_pass else 'hold',
+            'reason': (
+                'release-gate stage commands keep --python and launcher prefix bound to release-switch --python input'
+                if release_gate_python_binding_pass and release_gate_python_binding_check_enabled
+                else (
+                    'release-gate python-binding gate disabled (--skip-release-gate-python-binding-check)'
+                    if release_gate_python_binding_pass
+                    else 'release-gate stage commands contain --python/launcher binding drift'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_binding_mismatches
+                else release_gate_python_binding_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_coverage_floor',
+            'status': 'pass' if release_gate_coverage_floor_pass else 'hold',
+            'reason': (
+                'release-gate beta stage keeps --coverage-fail-under bound to release-switch input and >= %.1f'
+                % DEFAULT_RELEASE_GATE_COVERAGE_FLOOR
+                if release_gate_coverage_floor_pass and release_gate_coverage_floor_check_enabled
+                else (
+                    'release-gate coverage-floor gate disabled (--skip-release-gate-coverage-floor-check)'
+                    if release_gate_coverage_floor_pass
+                    else 'release-gate beta stage --coverage-fail-under is missing, drifted, or below floor'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_coverage_floor_mismatches
+                else release_gate_coverage_floor_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_optimization',
+            'status': 'pass' if release_gate_python_optimization_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers do not include python optimization flags (-O/-OO) that can bypass assertions'
+                if release_gate_python_optimization_pass
+                and release_gate_python_optimization_check_enabled
+                else (
+                    'release-gate python-optimization gate disabled (--skip-release-gate-python-optimization-check)'
+                    if release_gate_python_optimization_pass
+                    else 'release-gate stage launchers include forbidden python optimization flags (-O/-OO)'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_optimization_mismatches
+                else release_gate_python_optimization_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_inline_exec',
+            'status': 'pass' if release_gate_inline_exec_pass else 'hold',
+            'reason': (
+                'release-gate stage commands do not use inline-dispatch flags (-c/-m/-) before linux-suite script token'
+                if release_gate_inline_exec_pass and release_gate_inline_exec_check_enabled
+                else (
+                    'release-gate inline-exec gate disabled (--skip-release-gate-inline-exec-check)'
+                    if release_gate_inline_exec_pass
+                    else 'release-gate stage commands include forbidden inline-dispatch flags before linux-suite script token'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_inline_exec_mismatches
+                else release_gate_inline_exec_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_option_override',
+            'status': 'pass' if release_gate_option_override_pass else 'hold',
+            'reason': (
+                'release-gate stage commands contain single --stages and --output options (no override ambiguity)'
+                if release_gate_option_override_pass and release_gate_option_override_check_enabled
+                else (
+                    'release-gate option-override gate disabled (--skip-release-gate-option-override-check)'
+                    if release_gate_option_override_pass
+                    else 'release-gate stage commands contain ambiguous repeated --stages/--output options'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_option_override_mismatches
+                else release_gate_option_override_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_dry_run',
+            'status': 'pass' if release_gate_dry_run_pass else 'hold',
+            'reason': (
+                'release-gate stage commands do not include --dry-run bypass flag'
+                if release_gate_dry_run_pass and release_gate_dry_run_check_enabled
+                else (
+                    'release-gate dry-run gate disabled (--skip-release-gate-dry-run-check)'
+                    if release_gate_dry_run_pass
+                    else 'release-gate stage commands include forbidden --dry-run bypass flag'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_dry_run_mismatches
+                else release_gate_dry_run_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_relaxed_flags',
+            'status': 'pass' if release_gate_relaxed_flags_pass else 'hold',
+            'reason': (
+                'release-gate stage commands do not include relaxed gate-bypass flags'
+                if release_gate_relaxed_flags_pass and release_gate_relaxed_flags_check_enabled
+                else (
+                    'release-gate relaxed-flags gate disabled (--skip-release-gate-relaxed-flags-check)'
+                    if release_gate_relaxed_flags_pass
+                    else 'release-gate stage commands include forbidden relaxed flags'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_relaxed_flag_mismatches
+                else release_gate_relaxed_flag_mismatches
+            ),
+        },
+        {
             'name': 'graph_is_source_of_truth',
             'status': 'pass' if gate_graph_source else 'hold',
             'reason': (
@@ -1024,6 +2025,64 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
             'release_gate_output_binding_pass': release_gate_output_binding_pass,
             'release_gate_binding_mismatch_count': len(release_gate_binding_mismatches),
             'release_gate_binding_mismatches': release_gate_binding_mismatches,
+            'release_gate_stage_contract_check_enabled': release_gate_stage_contract_check_enabled,
+            'release_gate_stage_contract_pass': release_gate_stage_contract_pass,
+            'release_gate_stage_contract_mismatch_count': len(release_gate_stage_contract_mismatches),
+            'release_gate_stage_contract_mismatches': release_gate_stage_contract_mismatches,
+            'release_gate_script_position_check_enabled': release_gate_script_position_check_enabled,
+            'release_gate_script_position_pass': release_gate_script_position_pass,
+            'release_gate_script_position_mismatch_count': len(
+                release_gate_script_position_mismatches
+            ),
+            'release_gate_script_position_mismatches': release_gate_script_position_mismatches,
+            'release_gate_script_anchor_check_enabled': release_gate_script_anchor_check_enabled,
+            'release_gate_script_anchor_pass': release_gate_script_anchor_pass,
+            'release_gate_script_anchor_mismatch_count': len(
+                release_gate_script_anchor_mismatches
+            ),
+            'release_gate_script_anchor_mismatches': release_gate_script_anchor_mismatches,
+            'release_gate_python_binding_check_enabled': release_gate_python_binding_check_enabled,
+            'release_gate_python_binding_pass': release_gate_python_binding_pass,
+            'release_gate_python_binding_mismatch_count': len(
+                release_gate_python_binding_mismatches
+            ),
+            'release_gate_python_binding_mismatches': release_gate_python_binding_mismatches,
+            'release_gate_python_optimization_check_enabled': release_gate_python_optimization_check_enabled,
+            'release_gate_python_optimization_pass': release_gate_python_optimization_pass,
+            'release_gate_python_optimization_mismatch_count': len(
+                release_gate_python_optimization_mismatches
+            ),
+            'release_gate_python_optimization_mismatches': release_gate_python_optimization_mismatches,
+            'release_gate_coverage_floor_check_enabled': release_gate_coverage_floor_check_enabled,
+            'release_gate_coverage_floor_pass': release_gate_coverage_floor_pass,
+            'release_gate_coverage_floor_mismatch_count': len(
+                release_gate_coverage_floor_mismatches
+            ),
+            'release_gate_coverage_floor_mismatches': release_gate_coverage_floor_mismatches,
+            'release_gate_inline_exec_check_enabled': release_gate_inline_exec_check_enabled,
+            'release_gate_inline_exec_pass': release_gate_inline_exec_pass,
+            'release_gate_inline_exec_mismatch_count': len(
+                release_gate_inline_exec_mismatches
+            ),
+            'release_gate_inline_exec_mismatches': release_gate_inline_exec_mismatches,
+            'release_gate_option_override_check_enabled': release_gate_option_override_check_enabled,
+            'release_gate_option_override_pass': release_gate_option_override_pass,
+            'release_gate_option_override_mismatch_count': len(
+                release_gate_option_override_mismatches
+            ),
+            'release_gate_option_override_mismatches': release_gate_option_override_mismatches,
+            'release_gate_dry_run_check_enabled': release_gate_dry_run_check_enabled,
+            'release_gate_dry_run_pass': release_gate_dry_run_pass,
+            'release_gate_dry_run_mismatch_count': len(
+                release_gate_dry_run_mismatches
+            ),
+            'release_gate_dry_run_mismatches': release_gate_dry_run_mismatches,
+            'release_gate_relaxed_flags_check_enabled': release_gate_relaxed_flags_check_enabled,
+            'release_gate_relaxed_flags_pass': release_gate_relaxed_flags_pass,
+            'release_gate_relaxed_flags_mismatch_count': len(
+                release_gate_relaxed_flag_mismatches
+            ),
+            'release_gate_relaxed_flags_mismatches': release_gate_relaxed_flag_mismatches,
             'evidence_cohort_age_spread_hours': evidence_cohort_age_spread_hours,
             'oldest_evidence_file': oldest_evidence_file or None,
             'newest_evidence_file': newest_evidence_file or None,

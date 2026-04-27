@@ -102,3 +102,62 @@
 - Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
 - Decision gate upgrade: default behavior enforces release-gate `beta_gate/ga_gate/roadmap_gate` stage `--output` bindings to exactly match `--beta-suite-output/--ga-suite-output/--roadmap-suite-output`; mismatches force `HOLD`
 - Escape hatch: set `--skip-release-gate-output-binding-check` to bypass binding gate for manual recovery/forensics runs
+## TP-E13-19 Release Switch Stage-Contract Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces release-gate stage commands must stay on `scripts/run_linux_validation_suite.py` and preserve expected `--stages` packs; contract drift forces `HOLD`
+- Escape hatch: set `--skip-release-gate-stage-contract-check` to bypass stage-contract gate for manual recovery/forensics runs
+
+## TP-E13-20 Release Switch Option-Override Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces each release-gate stage command keeps single `--stages` and `--output` occurrences; repeated options causing override ambiguity force `HOLD`
+- Escape hatch: set `--skip-release-gate-option-override-check` to bypass option-override gate for manual recovery/forensics runs
+
+## TP-E13-21 Release Switch Relaxed-Flags Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects release-gate stage commands containing relaxed flags (`--allow-regression`, `--no-coverage`, `--container-skip-build`, `--container-skip-run`, `--allow-secondary-failures`); any hit forces `HOLD`
+- Escape hatch: set `--skip-release-gate-relaxed-flags-check` to bypass relaxed-flags gate for manual recovery/forensics runs
+
+## TP-E13-22 Release Switch Dry-Run Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects release-gate stage commands containing `--dry-run`; any pseudo-execution flag hit forces `HOLD`
+- Escape hatch: set `--skip-release-gate-dry-run-check` to bypass dry-run gate for manual recovery/forensics runs
+
+## TP-E13-23 Release Switch Script-Position Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces each release-gate stage command executes `scripts/run_linux_validation_suite.py` as the first script token; decoy token-only spoofing forces `HOLD`
+- Escape hatch: set `--skip-release-gate-script-position-check` to bypass script-position gate for manual recovery/forensics runs
+
+## TP-E13-24 Release Switch Inline-Exec Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces release-gate stage commands cannot include python inline-dispatch flags (`-c`, `-m`, `-`) before the linux-suite script token; bypass attempts force `HOLD`
+- Escape hatch: set `--skip-release-gate-inline-exec-check` to bypass inline-exec gate for manual recovery/forensics runs
+
+## TP-E13-25 Release Switch Script-Anchor Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces release-gate stage commands resolve the executed linux-suite script token to repository canonical path (`scripts/run_linux_validation_suite.py`); same-name external path spoofing forces `HOLD`
+- Escape hatch: set `--skip-release-gate-script-anchor-check` to bypass script-anchor gate for manual recovery/forensics runs
+
+## TP-E13-26 Release Switch Python-Binding Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces release-gate stage commands keep `--python` single-occurrence, value-equal to release-switch input `--python`, and launcher-prefix bound to that same value; any python-binding drift forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-binding-check` to bypass python-binding gate for manual recovery/forensics runs
+
+## TP-E13-27 Release Switch Coverage-Floor Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior enforces release-gate `beta_gate` keeps `--coverage-fail-under` bound to release-switch input and at/above release floor (`50`); threshold drift/downgrade forces `HOLD`
+- Escape hatch: set `--skip-release-gate-coverage-floor-check` to bypass coverage-floor gate for manual recovery/forensics runs
+
+## TP-E13-28 Release Switch Python-Optimization Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects release-gate stage launchers containing python optimization flags (`-O`, `-OO`) before the linux-suite script token; assert-bypass launchers force `HOLD`
+- Escape hatch: set `--skip-release-gate-python-optimization-check` to bypass python-optimization gate for manual recovery/forensics runs

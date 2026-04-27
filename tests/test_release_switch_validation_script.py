@@ -19,20 +19,77 @@ def _plan_payload(
     *,
     include_command: bool = True,
     stage_output_paths: dict[str, Path] | None = None,
+    stage_commands: dict[str, list[str]] | None = None,
 ) -> dict[str, object]:
     stages: list[dict[str, object]] = []
     for stage_name in stage_names:
         stage_payload: dict[str, object] = {'name': stage_name}
         if include_command:
-            command: list[str] = ['python3', '-m', 'unittest', stage_name]
-            output_path = (stage_output_paths or {}).get(stage_name)
-            if output_path is not None:
-                command.extend(['--output', str(output_path.resolve())])
+            command: list[str]
+            if stage_commands and stage_name in stage_commands:
+                command = list(stage_commands[stage_name])
+            else:
+                command = ['python3', '-m', 'unittest', stage_name]
+                output_path = (stage_output_paths or {}).get(stage_name)
+                if output_path is not None:
+                    command.extend(['--output', str(output_path.resolve())])
             stage_payload['command'] = command
         stages.append(stage_payload)
     return {
         'stage_count': len(stages),
         'stages': stages,
+    }
+
+
+def _release_gate_stage_contract_commands(
+    *,
+    beta_output: Path,
+    ga_output: Path,
+    roadmap_output: Path,
+    coverage_fail_under: float = 50.0,
+) -> dict[str, list[str]]:
+    return {
+        'beta_gate': [
+            'python3',
+            'scripts/run_linux_validation_suite.py',
+            '--python',
+            'python3',
+            '--stages',
+            'ci',
+            'container_smoke',
+            'doc_sync',
+            'quality_regression',
+            'perf_cost_baseline',
+            '--coverage-fail-under',
+            str(float(coverage_fail_under)),
+            '--output',
+            str(beta_output.resolve()),
+        ],
+        'ga_gate': [
+            'python3',
+            'scripts/run_linux_validation_suite.py',
+            '--python',
+            'python3',
+            '--stages',
+            'postgres_soak',
+            'postgres_ga',
+            'worker_ga',
+            'review_queue_ga',
+            'provider_ga',
+            'calibration_ga',
+            '--output',
+            str(ga_output.resolve()),
+        ],
+        'roadmap_gate': [
+            'python3',
+            'scripts/run_linux_validation_suite.py',
+            '--python',
+            'python3',
+            '--stages',
+            'roadmap_extension',
+            '--output',
+            str(roadmap_output.resolve()),
+        ],
     }
 
 
@@ -140,6 +197,11 @@ def _write_go_decision_evidence_bundle(tmp_path: Path) -> dict[str, Path]:
                     'ga_gate': ga_suite_path,
                     'roadmap_gate': roadmap_suite_path,
                 },
+                stage_commands=_release_gate_stage_contract_commands(
+                    beta_output=beta_suite_path,
+                    ga_output=ga_suite_path,
+                    roadmap_output=roadmap_suite_path,
+                ),
             ),
             ensure_ascii=False,
             indent=2,
@@ -402,6 +464,11 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                             'ga_gate': ga_suite_path,
                             'roadmap_gate': roadmap_suite_path,
                         },
+                        stage_commands=_release_gate_stage_contract_commands(
+                            beta_output=beta_suite_path,
+                            ga_output=ga_suite_path,
+                            roadmap_output=roadmap_suite_path,
+                        ),
                     ),
                     ensure_ascii=False,
                     indent=2,
@@ -461,10 +528,19 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             decision = json.loads(decision_path.read_text(encoding='utf-8'))
             self.assertEqual(decision.get('decision'), 'GO')
             self.assertEqual(decision.get('hold_count'), 0)
-            self.assertEqual(decision.get('pass_count'), 8)
+            self.assertEqual(decision.get('pass_count'), 17)
             summary = decision.get('evidence_summary', {})
             self.assertTrue(summary.get('release_gate_stage_pack_complete'))
             self.assertTrue(summary.get('release_gate_output_binding_pass'))
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_script_position_pass'))
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_optimization_pass'))
+            self.assertTrue(summary.get('release_gate_coverage_floor_pass'))
+            self.assertTrue(summary.get('release_gate_inline_exec_pass'))
+            self.assertTrue(summary.get('release_gate_option_override_pass'))
+            self.assertTrue(summary.get('release_gate_dry_run_pass'))
+            self.assertTrue(summary.get('release_gate_relaxed_flags_pass'))
             self.assertTrue(summary.get('beta_suite_stage_pack_complete'))
             self.assertTrue(summary.get('ga_suite_stage_pack_complete'))
             self.assertTrue(summary.get('roadmap_suite_stage_pack_complete'))
@@ -1134,8 +1210,14 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                 stage['command'] = [
                     'python3',
                     'scripts/run_linux_validation_suite.py',
+                    '--python',
+                    'python3',
                     '--stages',
                     'ci',
+                    'container_smoke',
+                    'doc_sync',
+                    'quality_regression',
+                    'perf_cost_baseline',
                     '--output',
                     str(wrong_beta_output.resolve()),
                 ]
@@ -1213,8 +1295,14 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                 stage['command'] = [
                     'python3',
                     'scripts/run_linux_validation_suite.py',
+                    '--python',
+                    'python3',
                     '--stages',
                     'ci',
+                    'container_smoke',
+                    'doc_sync',
+                    'quality_regression',
+                    'perf_cost_baseline',
                     '--output',
                     str(wrong_beta_output.resolve()),
                 ]
@@ -1265,6 +1353,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             self.assertFalse(summary.get('release_gate_binding_check_enabled'))
             self.assertTrue(summary.get('release_gate_output_binding_pass'))
             self.assertEqual(int(summary.get('release_gate_binding_mismatch_count', 0)), 0)
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
             binding_gate = next(
                 (
                     item
@@ -1275,6 +1364,1545 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             )
             self.assertIsNotNone(binding_gate)
             self.assertEqual(binding_gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_contract_mismatches(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                stage['command'] = [
+                    'python3',
+                    'scripts/run_linux_validation_suite.py',
+                    '--python',
+                    'python3',
+                    '--stages',
+                    'ci',
+                    '--output',
+                    str(bundle['beta_suite_path'].resolve()),
+                ]
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_check_enabled'))
+            self.assertFalse(summary.get('release_gate_stage_contract_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_stage_contract_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_stage_contract_mismatches', [])
+            self.assertTrue(any(item.get('check') == '--stages' for item in mismatches))
+            stage_contract_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_stage_contract'
+                ),
+                None,
+            )
+            self.assertIsNotNone(stage_contract_gate)
+            self.assertEqual(stage_contract_gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_stage_contract_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                stage['command'] = [
+                    'python3',
+                    'scripts/run_linux_validation_suite.py',
+                    '--python',
+                    'python3',
+                    '--stages',
+                    'ci',
+                    '--output',
+                    str(bundle['beta_suite_path'].resolve()),
+                ]
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-stage-contract-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_stage_contract_check_enabled'))
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertEqual(int(summary.get('release_gate_stage_contract_mismatch_count', 0)), 0)
+            stage_contract_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_stage_contract'
+                ),
+                None,
+            )
+            self.assertIsNotNone(stage_contract_gate)
+            self.assertEqual(stage_contract_gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_script_position_is_decoy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                stage['command'] = [
+                    'python3',
+                    'scripts/run_release_gate_validation.py',
+                    'scripts/run_linux_validation_suite.py',
+                    *command[2:],
+                ]
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_script_position_check_enabled'))
+            self.assertFalse(summary.get('release_gate_script_position_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_script_position_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_script_position_mismatches', [])
+            self.assertTrue(any(item.get('check') == 'script-position' for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_script_position'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_script_position_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                stage['command'] = [
+                    'python3',
+                    'scripts/run_release_gate_validation.py',
+                    'scripts/run_linux_validation_suite.py',
+                    *command[2:],
+                ]
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-script-position-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_script_position_check_enabled'))
+            self.assertTrue(summary.get('release_gate_script_position_pass'))
+            self.assertEqual(int(summary.get('release_gate_script_position_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_script_position'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_script_path_is_not_repo_canonical(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            decoy_script = str(
+                (tmp_path / 'decoy' / 'scripts' / 'run_linux_validation_suite.py').resolve()
+            )
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list) or len(command) < 2:
+                    break
+                command[1] = decoy_script
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_script_position_pass'))
+            self.assertTrue(summary.get('release_gate_script_anchor_check_enabled'))
+            self.assertFalse(summary.get('release_gate_script_anchor_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_script_anchor_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_script_anchor_mismatches', [])
+            self.assertTrue(
+                any(
+                    item.get('stage') == 'beta_gate' and item.get('check') == 'script-anchor'
+                    for item in mismatches
+                )
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_script_anchor'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_script_anchor_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            decoy_script = str(
+                (tmp_path / 'decoy' / 'scripts' / 'run_linux_validation_suite.py').resolve()
+            )
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list) or len(command) < 2:
+                    break
+                command[1] = decoy_script
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-script-anchor-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_script_anchor_check_enabled'))
+            self.assertTrue(summary.get('release_gate_script_anchor_pass'))
+            self.assertEqual(int(summary.get('release_gate_script_anchor_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_script_anchor'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_python_binding_mismatches(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3.11'
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_script_anchor_pass'))
+            self.assertTrue(summary.get('release_gate_python_binding_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_binding_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_binding_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_binding_mismatches', [])
+            self.assertTrue(any(item.get('check') == '--python-value' for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_binding'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_binding_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3.11'
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-python-binding-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_binding_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_binding_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_binding'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_optimization_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list) or not command:
+                    continue
+                command.insert(1, '-O')
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3 -O'
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    'python3 -O',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_optimization_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_optimization_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_optimization_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_optimization_mismatches', [])
+            self.assertTrue(any(item.get('option') in ('-O', '-OO', '-O*') for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_optimization'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_optimization_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list) or not command:
+                    continue
+                command.insert(1, '-O')
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3 -O'
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    'python3 -O',
+                    '--skip-release-gate-python-optimization-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_optimization_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_optimization_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_optimization_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_optimization'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_coverage_floor_is_downgraded(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                coverage_option_index = command.index('--coverage-fail-under')
+                command[coverage_option_index + 1] = '0'
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_coverage_floor_check_enabled'))
+            self.assertFalse(summary.get('release_gate_coverage_floor_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_coverage_floor_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_coverage_floor_mismatches', [])
+            self.assertTrue(
+                any(
+                    item.get('check')
+                    in ('--coverage-fail-under-floor', '--coverage-fail-under-binding')
+                    for item in mismatches
+                )
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_coverage_floor'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_coverage_floor_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                coverage_option_index = command.index('--coverage-fail-under')
+                command[coverage_option_index + 1] = '0'
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-coverage-floor-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_coverage_floor_check_enabled'))
+            self.assertTrue(summary.get('release_gate_coverage_floor_pass'))
+            self.assertEqual(int(summary.get('release_gate_coverage_floor_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_coverage_floor'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_inline_exec_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                stage['command'] = [
+                    command[0],
+                    '-c',
+                    'print("decoy-runner")',
+                    *command[1:],
+                ]
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_script_position_pass'))
+            self.assertTrue(summary.get('release_gate_inline_exec_check_enabled'))
+            self.assertFalse(summary.get('release_gate_inline_exec_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_inline_exec_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_inline_exec_mismatches', [])
+            self.assertTrue(any(item.get('option') == '-c' for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_inline_exec'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_inline_exec_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                stage['command'] = [
+                    command[0],
+                    '-c',
+                    'print("decoy-runner")',
+                    *command[1:],
+                ]
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-inline-exec-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_inline_exec_check_enabled'))
+            self.assertTrue(summary.get('release_gate_inline_exec_pass'))
+            self.assertEqual(int(summary.get('release_gate_inline_exec_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_inline_exec'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_options_are_ambiguous(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                output_index = command.index('--output')
+                command[output_index:output_index] = ['--stages', 'ci']
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_output_binding_pass'))
+            self.assertTrue(summary.get('release_gate_option_override_check_enabled'))
+            self.assertFalse(summary.get('release_gate_option_override_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_option_override_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_option_override_mismatches', [])
+            self.assertTrue(any(item.get('check') == '--stages-occurrence' for item in mismatches))
+            option_override_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_option_override'
+                ),
+                None,
+            )
+            self.assertIsNotNone(option_override_gate)
+            self.assertEqual(option_override_gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_option_override_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                output_index = command.index('--output')
+                command[output_index:output_index] = ['--stages', 'ci']
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-option-override-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_option_override_check_enabled'))
+            self.assertTrue(summary.get('release_gate_option_override_pass'))
+            self.assertEqual(int(summary.get('release_gate_option_override_mismatch_count', 0)), 0)
+            option_override_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_option_override'
+                ),
+                None,
+            )
+            self.assertIsNotNone(option_override_gate)
+            self.assertEqual(option_override_gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_dry_run_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                command.append('--dry-run')
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_stage_contract_pass'))
+            self.assertTrue(summary.get('release_gate_option_override_pass'))
+            self.assertTrue(summary.get('release_gate_dry_run_check_enabled'))
+            self.assertFalse(summary.get('release_gate_dry_run_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_dry_run_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_dry_run_mismatches', [])
+            self.assertTrue(any(item.get('option') == '--dry-run' for item in mismatches))
+            dry_run_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_dry_run'
+                ),
+                None,
+            )
+            self.assertIsNotNone(dry_run_gate)
+            self.assertEqual(dry_run_gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_dry_run_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                command.append('--dry-run')
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-dry-run-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_dry_run_check_enabled'))
+            self.assertTrue(summary.get('release_gate_dry_run_pass'))
+            self.assertEqual(int(summary.get('release_gate_dry_run_mismatch_count', 0)), 0)
+            dry_run_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_dry_run'
+                ),
+                None,
+            )
+            self.assertIsNotNone(dry_run_gate)
+            self.assertEqual(dry_run_gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_relaxed_flags(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                command.append('--allow-regression')
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_relaxed_flags_check_enabled'))
+            self.assertFalse(summary.get('release_gate_relaxed_flags_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_relaxed_flags_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_relaxed_flags_mismatches', [])
+            self.assertTrue(any(item.get('option') == '--allow-regression' for item in mismatches))
+            relaxed_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_relaxed_flags'
+                ),
+                None,
+            )
+            self.assertIsNotNone(relaxed_gate)
+            self.assertEqual(relaxed_gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_relaxed_flags_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                if stage.get('name') != 'beta_gate':
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    break
+                command.append('--allow-regression')
+                break
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-relaxed-flags-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_relaxed_flags_check_enabled'))
+            self.assertTrue(summary.get('release_gate_relaxed_flags_pass'))
+            self.assertEqual(int(summary.get('release_gate_relaxed_flags_mismatch_count', 0)), 0)
+            relaxed_gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_relaxed_flags'
+                ),
+                None,
+            )
+            self.assertIsNotNone(relaxed_gate)
+            self.assertEqual(relaxed_gate.get('status'), 'pass')
 
     def test_script_decision_only_hold_is_nonzero_unless_allow_hold(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

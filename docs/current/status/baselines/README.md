@@ -249,3 +249,138 @@
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_output_binding_gate`
 - TP mapping:
   - `scripts/run_tp_tests.py` -> `TP-E13-18`
+## TP-E13-19 Release Switch Stage-Contract Gate
+
+- Validation focus: release-gate stage commands must stay bound to the expected linux-suite execution contract before decision `GO`.
+- Stage-contract contract:
+  - default behavior enforces each release-gate stage command targets `scripts/run_linux_validation_suite.py`
+  - default behavior enforces expected `--stages` packs for `beta_gate/ga_gate/roadmap_gate`
+  - stage command drift forces `HOLD`
+  - `--skip-release-gate-stage-contract-check` disables stage-contract gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_contract_mismatches`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_stage_contract_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-19`
+
+## TP-E13-20 Release Switch Option-Override Gate
+
+- Validation focus: release-gate stage commands must avoid repeated option tokens that can override execution intent before decision `GO`.
+- Option-override contract:
+  - default behavior enforces each release-gate stage command contains exactly one `--stages`
+  - default behavior enforces each release-gate stage command contains exactly one `--output`
+  - repeated `--stages/--output` options force `HOLD`
+  - `--skip-release-gate-option-override-check` disables option-override gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_options_are_ambiguous`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_option_override_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-20`
+
+## TP-E13-21 Release Switch Relaxed-Flags Gate
+
+- Validation focus: release-gate stage commands must stay in strict mode and cannot include bypass flags before decision `GO`.
+- Relaxed-flags contract:
+  - default behavior forbids `--allow-regression`, `--no-coverage`, `--container-skip-build`, `--container-skip-run`, `--allow-secondary-failures` in release-gate stage commands
+  - any forbidden flag hit forces `HOLD`
+  - `--skip-release-gate-relaxed-flags-check` disables relaxed-flags gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_relaxed_flags`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_relaxed_flags_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-21`
+
+## TP-E13-22 Release Switch Dry-Run Gate
+
+- Validation focus: release-gate stage commands must not carry `--dry-run` pseudo-execution flags before decision `GO`.
+- Dry-run contract:
+  - default behavior forbids `--dry-run` in release-gate stage commands
+  - any `--dry-run` hit forces `HOLD`
+  - `--skip-release-gate-dry-run-check` disables dry-run gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_dry_run_flag`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_dry_run_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-22`
+
+## TP-E13-23 Release Switch Script-Position Gate
+
+- Validation focus: release-gate stage commands must execute the linux-suite script in the real script slot, not carry it as a decoy token.
+- Script-position contract:
+  - default behavior enforces each release-gate stage command uses `scripts/run_linux_validation_suite.py` as the first script token
+  - if expected script appears only as a non-executed decoy token, decision forces `HOLD`
+  - `--skip-release-gate-script-position-check` disables script-position gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_script_position_is_decoy`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_script_position_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-23`
+
+## TP-E13-24 Release Switch Inline-Exec Gate
+
+- Validation focus: release-gate stage commands must not use python inline-dispatch modes before linux-suite script execution.
+- Inline-exec contract:
+  - default behavior forbids `-c`, `-m`, and `-` before the `scripts/run_linux_validation_suite.py` script token
+  - any inline-dispatch hit forces `HOLD`
+  - `--skip-release-gate-inline-exec-check` disables inline-exec gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_inline_exec_flag`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_inline_exec_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-24`
+
+## TP-E13-25 Release Switch Script-Anchor Gate
+
+- Validation focus: release-gate stage commands must resolve linux-suite script token to repository canonical path and cannot spoof same-name external script locations.
+- Script-anchor contract:
+  - default behavior enforces each release-gate stage first script token resolves to canonical `scripts/run_linux_validation_suite.py` under repository root
+  - same-name external path spoofing forces `HOLD`
+  - `--skip-release-gate-script-anchor-check` disables script-anchor gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_script_path_is_not_repo_canonical`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_script_anchor_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-25`
+
+## TP-E13-26 Release Switch Python-Binding Gate
+
+- Validation focus: release-gate stage commands must keep python launcher intent immutable and bound to release-switch input before decision `GO`.
+- Python-binding contract:
+  - default behavior enforces each release-gate stage command contains exactly one `--python`
+  - default behavior enforces stage `--python` value equals release-switch `--python` input
+  - default behavior enforces script launcher prefix before `scripts/run_linux_validation_suite.py` equals the same python value
+  - any python-binding drift forces `HOLD`
+  - `--skip-release-gate-python-binding-check` disables python-binding gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_python_binding_mismatches`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_binding_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-26`
+
+## TP-E13-27 Release Switch Coverage-Floor Gate
+
+- Validation focus: release-gate beta stage must keep release coverage threshold immutable and above the minimum release floor before decision `GO`.
+- Coverage-floor contract:
+  - default behavior enforces `beta_gate` contains exactly one `--coverage-fail-under` with a parseable float value
+  - default behavior enforces stage `--coverage-fail-under` equals release-switch input `--coverage-fail-under`
+  - default behavior enforces stage `--coverage-fail-under` is not lower than `50`
+  - any coverage-threshold drift or downgrade forces `HOLD`
+  - `--skip-release-gate-coverage-floor-check` disables coverage-floor gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_coverage_floor_is_downgraded`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_coverage_floor_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-27`
+
+## TP-E13-28 Release Switch Python-Optimization Gate
+
+- Validation focus: release-gate stage launchers must avoid python optimization flags that can bypass assert-driven contract checks before decision `GO`.
+- Python-optimization contract:
+  - default behavior forbids `-O` and `-OO` in launcher tokens before `scripts/run_linux_validation_suite.py` script token
+  - any forbidden optimization flag hit forces `HOLD`
+  - `--skip-release-gate-python-optimization-check` disables python-optimization gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_optimization_flag`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_optimization_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-28`
