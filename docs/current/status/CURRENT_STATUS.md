@@ -161,3 +161,63 @@
 - Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
 - Decision gate upgrade: default behavior rejects release-gate stage launchers containing python optimization flags (`-O`, `-OO`) before the linux-suite script token; assert-bypass launchers force `HOLD`
 - Escape hatch: set `--skip-release-gate-python-optimization-check` to bypass python-optimization gate for manual recovery/forensics runs
+
+## TP-E13-29 Release Switch Python-Option Optimization Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects release-gate stage `--python` relay values containing optimization flags (`-O`, `-OO`); relay optimization drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-option-optimization-check` to bypass python-option-optimization gate for manual recovery/forensics runs
+
+## TP-E13-30 Release Switch Python-Optimize Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONOPTIMIZE=*` env assignments in release-gate stage launchers and stage `--python` relay values; env-based assert-bypass drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-optimize-env-check` to bypass python-optimize-env gate for manual recovery/forensics runs
+
+## TP-E13-31 Release Switch Python-Option Inline-Exec Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects release-gate stage `--python` relay values containing inline-dispatch flags (`-c`, `-m`, `-`); relay dispatch drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-option-inline-exec-check` to bypass python-option-inline-exec gate for manual recovery/forensics runs
+
+## TP-E13-32 Release Switch Python-Path Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONPATH=*` env assignments in release-gate stage launchers and stage `--python` relay values; module-resolution redirection drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-path-env-check` to bypass python-path-env gate for manual recovery/forensics runs
+
+## TP-E13-33 Release Switch Python-Home Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONHOME=*` env assignments in release-gate stage launchers and stage `--python` relay values; runtime-home redirection drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-home-env-check` to bypass python-home-env gate for manual recovery/forensics runs
+
+## TP-E13-34 Release Switch Python-User-Base Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONUSERBASE=*` env assignments in release-gate stage launchers and stage `--python` relay values; user-site package redirection drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-user-base-env-check` to bypass python-user-base-env gate for manual recovery/forensics runs
+
+## TP-E13-35 Release Switch Python-Breakpoint Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONBREAKPOINT=*` env assignments in release-gate stage launchers and stage `--python` relay values; breakpoint-dispatch hook drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-breakpoint-env-check` to bypass python-breakpoint-env gate for manual recovery/forensics runs
+
+## TP-E13-36 Release Switch Python-Startup Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONSTARTUP=*` env assignments in release-gate stage launchers and stage `--python` relay values; startup-hook injection drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-startup-env-check` to bypass python-startup-env gate for manual recovery/forensics runs
+
+## TP-E13-37 Release Switch Python-Inspect Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONINSPECT=*` env assignments in release-gate stage launchers and stage `--python` relay values; interactive-dispatch drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-inspect-env-check` to bypass python-inspect-env gate for manual recovery/forensics runs
+
+## TP-E13-38 Release Switch Python-Warnings Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PYTHONWARNINGS=*` env assignments in release-gate stage launchers and stage `--python` relay values; warning-filter drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-warnings-env-check` to bypass python-warnings-env gate for manual recovery/forensics runs

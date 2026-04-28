@@ -384,3 +384,143 @@
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_optimization_gate`
 - TP mapping:
   - `scripts/run_tp_tests.py` -> `TP-E13-28`
+
+## TP-E13-29 Release Switch Python-Option Optimization Gate
+
+- Validation focus: release-gate stage `--python` relay values must avoid optimization flags that can bypass downstream assert-driven checks before decision `GO`.
+- Python-option-optimization contract:
+  - default behavior requires each release-gate stage command contains exactly one parseable `--python` value
+  - default behavior forbids `-O` and `-OO` in tokens relayed through `--python` values
+  - any forbidden optimization flag hit in `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-option-optimization-check` disables python-option-optimization gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_python_option_uses_optimization_flag`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_option_optimization_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-29`
+
+## TP-E13-30 Release Switch Python-Optimize Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONOPTIMIZE=*` env assignments that can bypass assert-driven checks before decision `GO`.
+- Python-optimize-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONOPTIMIZE=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONOPTIMIZE=*` assignments within that relay value
+  - any `PYTHONOPTIMIZE` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-optimize-env-check` disables python-optimize-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_optimize_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_optimize_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-30`
+
+## TP-E13-31 Release Switch Python-Option Inline-Exec Gate
+
+- Validation focus: release-gate stage `--python` relay values must avoid inline-dispatch flags that can bypass downstream script execution contracts before decision `GO`.
+- Python-option-inline-exec contract:
+  - default behavior requires each release-gate stage command contains exactly one parseable `--python` value
+  - default behavior forbids `-c`, `-m`, and `-` in tokens relayed through `--python` values
+  - any forbidden inline-dispatch flag hit in `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-option-inline-exec-check` disables python-option-inline-exec gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_python_option_uses_inline_exec_flag`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_option_inline_exec_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-31`
+
+## TP-E13-32 Release Switch Python-Path Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONPATH=*` env assignments that can redirect module resolution before decision `GO`.
+- Python-path-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONPATH=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONPATH=*` assignments within that relay value
+  - any `PYTHONPATH` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-path-env-check` disables python-path-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_path_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_path_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-32`
+
+## TP-E13-33 Release Switch Python-Home Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONHOME=*` env assignments that can redirect interpreter runtime-home resolution before decision `GO`.
+- Python-home-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONHOME=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONHOME=*` assignments within that relay value
+  - any `PYTHONHOME` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-home-env-check` disables python-home-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_home_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_home_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-33`
+
+## TP-E13-34 Release Switch Python-User-Base Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONUSERBASE=*` env assignments that can redirect user-site package resolution before decision `GO`.
+- Python-user-base-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONUSERBASE=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONUSERBASE=*` assignments within that relay value
+  - any `PYTHONUSERBASE` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-user-base-env-check` disables python-user-base-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_user_base_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_user_base_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-34`
+
+## TP-E13-35 Release Switch Python-Breakpoint Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONBREAKPOINT=*` env assignments that can hook breakpoint dispatch behavior before decision `GO`.
+- Python-breakpoint-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONBREAKPOINT=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONBREAKPOINT=*` assignments within that relay value
+  - any `PYTHONBREAKPOINT` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-breakpoint-env-check` disables python-breakpoint-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_breakpoint_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_breakpoint_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-35`
+
+## TP-E13-36 Release Switch Python-Startup Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONSTARTUP=*` env assignments that can inject startup hooks before decision `GO`.
+- Python-startup-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONSTARTUP=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONSTARTUP=*` assignments within that relay value
+  - any `PYTHONSTARTUP` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-startup-env-check` disables python-startup-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_startup_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_startup_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-36`
+
+## TP-E13-37 Release Switch Python-Inspect Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONINSPECT=*` env assignments that can trigger interactive-dispatch drift before decision `GO`.
+- Python-inspect-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONINSPECT=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONINSPECT=*` assignments within that relay value
+  - any `PYTHONINSPECT` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-inspect-env-check` disables python-inspect-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_inspect_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_inspect_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-37`
+
+## TP-E13-38 Release Switch Python-Warnings Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PYTHONWARNINGS=*` env assignments that can suppress release-critical warning contracts before decision `GO`.
+- Python-warnings-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PYTHONWARNINGS=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PYTHONWARNINGS=*` assignments within that relay value
+  - any `PYTHONWARNINGS` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-warnings-env-check` disables python-warnings-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_warnings_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_warnings_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-38`

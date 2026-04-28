@@ -528,7 +528,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             decision = json.loads(decision_path.read_text(encoding='utf-8'))
             self.assertEqual(decision.get('decision'), 'GO')
             self.assertEqual(decision.get('hold_count'), 0)
-            self.assertEqual(decision.get('pass_count'), 17)
+            self.assertEqual(decision.get('pass_count'), 27)
             summary = decision.get('evidence_summary', {})
             self.assertTrue(summary.get('release_gate_stage_pack_complete'))
             self.assertTrue(summary.get('release_gate_output_binding_pass'))
@@ -536,6 +536,16 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             self.assertTrue(summary.get('release_gate_script_position_pass'))
             self.assertTrue(summary.get('release_gate_python_binding_pass'))
             self.assertTrue(summary.get('release_gate_python_optimization_pass'))
+            self.assertTrue(summary.get('release_gate_python_option_optimization_pass'))
+            self.assertTrue(summary.get('release_gate_python_optimize_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_path_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_home_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_user_base_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_breakpoint_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_startup_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_inspect_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_warnings_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_option_inline_exec_pass'))
             self.assertTrue(summary.get('release_gate_coverage_floor_pass'))
             self.assertTrue(summary.get('release_gate_inline_exec_pass'))
             self.assertTrue(summary.get('release_gate_option_override_pass'))
@@ -2137,6 +2147,1517 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     item
                     for item in decision.get('gates', [])
                     if item.get('name') == 'release_gate_python_optimization'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_python_option_uses_optimization_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3 -O'
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-python-binding-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_binding_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_optimization_pass'))
+            self.assertTrue(summary.get('release_gate_python_option_optimization_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_option_optimization_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_option_optimization_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_option_optimization_mismatches', [])
+            self.assertTrue(any(item.get('option') in ('-O', '-OO', '-O*') for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_option_optimization'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_option_optimization_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3 -O'
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-python-binding-check',
+                    '--skip-release-gate-python-option-optimization-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_binding_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_option_optimization_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_option_optimization_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_option_optimization_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_option_optimization'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_optimize_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONOPTIMIZE=2 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONOPTIMIZE=2', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_optimize_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_optimize_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_optimize_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_optimize_env_mismatches', [])
+            self.assertTrue(any('PYTHONOPTIMIZE=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_optimize_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_optimize_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONOPTIMIZE=2 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONOPTIMIZE=2', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-optimize-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_optimize_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_optimize_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_optimize_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_optimize_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_path_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONPATH=/tmp/rogue python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONPATH=/tmp/rogue', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_path_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_path_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_path_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_path_env_mismatches', [])
+            self.assertTrue(any('PYTHONPATH=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_path_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_path_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONPATH=/tmp/rogue python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONPATH=/tmp/rogue', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-path-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_path_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_path_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_path_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_path_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_home_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONHOME=/tmp/rogue-home python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONHOME=/tmp/rogue-home', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_home_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_home_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_home_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_home_env_mismatches', [])
+            self.assertTrue(any('PYTHONHOME=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_home_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_home_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONHOME=/tmp/rogue-home python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONHOME=/tmp/rogue-home', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-home-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_home_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_home_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_home_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_home_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_user_base_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONUSERBASE=/tmp/rogue-userbase python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONUSERBASE=/tmp/rogue-userbase', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_user_base_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_user_base_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_user_base_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_user_base_env_mismatches', [])
+            self.assertTrue(any('PYTHONUSERBASE=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_user_base_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_user_base_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONUSERBASE=/tmp/rogue-userbase python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONUSERBASE=/tmp/rogue-userbase', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-user-base-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_user_base_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_user_base_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_user_base_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_user_base_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_breakpoint_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONBREAKPOINT=evil.hook python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONBREAKPOINT=evil.hook', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_breakpoint_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_breakpoint_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_breakpoint_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_breakpoint_env_mismatches', [])
+            self.assertTrue(any('PYTHONBREAKPOINT=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_breakpoint_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_breakpoint_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONBREAKPOINT=evil.hook python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONBREAKPOINT=evil.hook', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-breakpoint-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_breakpoint_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_breakpoint_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_breakpoint_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_breakpoint_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_startup_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONSTARTUP=/tmp/evil-startup.py python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONSTARTUP=/tmp/evil-startup.py', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_startup_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_startup_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_startup_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_startup_env_mismatches', [])
+            self.assertTrue(any('PYTHONSTARTUP=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_startup_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_startup_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONSTARTUP=/tmp/evil-startup.py python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONSTARTUP=/tmp/evil-startup.py', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-startup-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_startup_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_startup_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_startup_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_startup_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_inspect_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONINSPECT=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONINSPECT=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_inspect_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_inspect_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_inspect_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_inspect_env_mismatches', [])
+            self.assertTrue(any('PYTHONINSPECT=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_inspect_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_inspect_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONINSPECT=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONINSPECT=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-inspect-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_inspect_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_inspect_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_inspect_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_inspect_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_python_warnings_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONWARNINGS=ignore python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONWARNINGS=ignore', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_warnings_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_warnings_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_warnings_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_warnings_env_mismatches', [])
+            self.assertTrue(any('PYTHONWARNINGS=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_warnings_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_warnings_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONWARNINGS=ignore python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONWARNINGS=ignore', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-warnings-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_warnings_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_warnings_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_warnings_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_warnings_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_python_option_uses_inline_exec_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3 -m site'
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-python-binding-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_binding_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_option_inline_exec_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_option_inline_exec_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_option_inline_exec_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_option_inline_exec_mismatches', [])
+            self.assertTrue(any(item.get('option') in ('-c', '-m', '-') for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_option_inline_exec'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_option_inline_exec_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = 'python3 -m site'
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--skip-release-gate-python-binding-check',
+                    '--skip-release-gate-python-option-inline-exec-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_binding_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_option_inline_exec_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_option_inline_exec_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_option_inline_exec_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_option_inline_exec'
                 ),
                 None,
             )

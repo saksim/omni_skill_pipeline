@@ -992,6 +992,106 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="release-switch validation script should allow emergency bypass of python-optimization checks via --skip-release-gate-python-optimization-check.",
         ),
     ],
+    "TP-E13-29": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_python_option_uses_optimization_flag",
+            description="release-switch validation script should HOLD when release-gate stage --python relay values include optimization flags (-O/-OO).",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_option_optimization_gate",
+            description="release-switch validation script should allow emergency bypass of python-option optimization checks via --skip-release-gate-python-option-optimization-check.",
+        ),
+    ],
+    "TP-E13-30": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_optimize_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONOPTIMIZE env flags.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_optimize_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-optimize-env checks via --skip-release-gate-python-optimize-env-check.",
+        ),
+    ],
+    "TP-E13-31": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_python_option_uses_inline_exec_flag",
+            description="release-switch validation script should HOLD when release-gate stage --python relay values include inline-dispatch flags (-c/-m/-).",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_option_inline_exec_gate",
+            description="release-switch validation script should allow emergency bypass of python-option inline-exec checks via --skip-release-gate-python-option-inline-exec-check.",
+        ),
+    ],
+    "TP-E13-32": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_path_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONPATH env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_path_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-path-env checks via --skip-release-gate-python-path-env-check.",
+        ),
+    ],
+    "TP-E13-33": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_home_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONHOME env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_home_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-home-env checks via --skip-release-gate-python-home-env-check.",
+        ),
+    ],
+    "TP-E13-34": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_user_base_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONUSERBASE env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_user_base_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-user-base-env checks via --skip-release-gate-python-user-base-env-check.",
+        ),
+    ],
+    "TP-E13-35": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_breakpoint_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONBREAKPOINT env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_breakpoint_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-breakpoint-env checks via --skip-release-gate-python-breakpoint-env-check.",
+        ),
+    ],
+    "TP-E13-36": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_startup_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONSTARTUP env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_startup_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-startup-env checks via --skip-release-gate-python-startup-env-check.",
+        ),
+    ],
+    "TP-E13-37": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_inspect_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONINSPECT env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_inspect_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-inspect-env checks via --skip-release-gate-python-inspect-env-check.",
+        ),
+    ],
+    "TP-E13-38": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_python_warnings_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PYTHONWARNINGS env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_warnings_env_gate",
+            description="release-switch validation script should allow emergency bypass of python-warnings-env checks via --skip-release-gate-python-warnings-env-check.",
+        ),
+    ],
 }
 
 

@@ -61,6 +61,14 @@ DEFAULT_MAX_EVIDENCE_FUTURE_SKEW_HOURS = 0.25
 DEFAULT_MAX_EVIDENCE_COHORT_SKEW_HOURS = 12.0
 DEFAULT_RELEASE_GATE_COVERAGE_FLOOR = 50.0
 FORBIDDEN_PYTHON_OPTIMIZATION_FLAGS = ('-O', '-OO')
+FORBIDDEN_PYTHON_OPTIMIZE_ENV_KEYS = ('PYTHONOPTIMIZE',)
+FORBIDDEN_PYTHON_PATH_ENV_KEYS = ('PYTHONPATH',)
+FORBIDDEN_PYTHON_HOME_ENV_KEYS = ('PYTHONHOME',)
+FORBIDDEN_PYTHON_USER_BASE_ENV_KEYS = ('PYTHONUSERBASE',)
+FORBIDDEN_PYTHON_BREAKPOINT_ENV_KEYS = ('PYTHONBREAKPOINT',)
+FORBIDDEN_PYTHON_STARTUP_ENV_KEYS = ('PYTHONSTARTUP',)
+FORBIDDEN_PYTHON_INSPECT_ENV_KEYS = ('PYTHONINSPECT',)
+FORBIDDEN_PYTHON_WARNINGS_ENV_KEYS = ('PYTHONWARNINGS',)
 DEFAULT_STAGES = ('release_gate', 'release_contract', 'doc_sync')
 ALL_STAGES = tuple(DEFAULT_STAGES)
 RELEASE_GATE_MARKERS = (
@@ -299,6 +307,56 @@ def _parse_args() -> argparse.Namespace:
         '--skip-release-gate-python-optimization-check',
         action='store_true',
         help='Disable release-gate python-optimization gate (-O/-OO assert-bypass checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-option-optimization-check',
+        action='store_true',
+        help='Disable release-gate python-option optimization gate (--python relay -O/-OO checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-optimize-env-check',
+        action='store_true',
+        help='Disable release-gate python-optimize-env gate (PYTHONOPTIMIZE env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-path-env-check',
+        action='store_true',
+        help='Disable release-gate python-path-env gate (PYTHONPATH env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-home-env-check',
+        action='store_true',
+        help='Disable release-gate python-home-env gate (PYTHONHOME env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-user-base-env-check',
+        action='store_true',
+        help='Disable release-gate python-user-base-env gate (PYTHONUSERBASE env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-breakpoint-env-check',
+        action='store_true',
+        help='Disable release-gate python-breakpoint-env gate (PYTHONBREAKPOINT env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-startup-env-check',
+        action='store_true',
+        help='Disable release-gate python-startup-env gate (PYTHONSTARTUP env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-inspect-env-check',
+        action='store_true',
+        help='Disable release-gate python-inspect-env gate (PYTHONINSPECT env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-warnings-env-check',
+        action='store_true',
+        help='Disable release-gate python-warnings-env gate (PYTHONWARNINGS env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-option-inline-exec-check',
+        action='store_true',
+        help='Disable release-gate python-option inline-exec gate (--python relay -c/-m/- checks) in decision evaluation.',
     )
     parser.add_argument(
         '--skip-release-gate-coverage-floor-check',
@@ -720,6 +778,94 @@ def _command_forbidden_python_optimization_flag(token: str) -> str | None:
     if stripped.startswith('-O') and not stripped.startswith('--') and len(stripped) > 2:
         return '-O*'
     return None
+
+
+def _command_forbidden_python_optimize_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_OPTIMIZE_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_path_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_PATH_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_home_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_HOME_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_user_base_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_USER_BASE_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_breakpoint_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_BREAKPOINT_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_startup_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_STARTUP_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_inspect_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_INSPECT_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_warnings_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PYTHON_WARNINGS_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
 
 
 def _release_gate_stage_output_mismatches(
@@ -1279,6 +1425,924 @@ def _release_gate_python_optimization_mismatches(
     return mismatches
 
 
+def _release_gate_python_option_optimization_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        if len(python_parts) <= 1:
+            continue
+        for index, token in enumerate(python_parts[1:], start=1):
+            forbidden_flag = _command_forbidden_python_optimization_flag(str(token))
+            if forbidden_flag is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-option-optimization-flag',
+                    'option': forbidden_flag,
+                    'actual': str(token),
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_optimize_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_optimize_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-optimize-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_optimize_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-optimize-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_option_inline_exec_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        if len(python_parts) <= 1:
+            continue
+        for index, token in enumerate(python_parts[1:], start=1):
+            forbidden_flag = _command_forbidden_inline_exec_flag(str(token))
+            if forbidden_flag is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-option-inline-exec-flag',
+                    'option': forbidden_flag,
+                    'actual': str(token),
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_path_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_path_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-path-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_path_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-path-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_home_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_home_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-home-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_home_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-home-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_user_base_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_user_base_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-user-base-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_user_base_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-user-base-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_breakpoint_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_breakpoint_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-breakpoint-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_breakpoint_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-breakpoint-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_startup_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_startup_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-startup-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_startup_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-startup-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_inspect_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_inspect_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-inspect-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_inspect_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-inspect-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_python_warnings_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_warnings_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-warnings-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_warnings_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-warnings-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
 def _resolve_file_age_delta_hours(path: Path) -> float | None:
     try:
         modified_at = float(path.stat().st_mtime)
@@ -1315,6 +2379,36 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     )
     release_gate_python_optimization_check_enabled = not bool(
         args.skip_release_gate_python_optimization_check
+    )
+    release_gate_python_option_optimization_check_enabled = not bool(
+        args.skip_release_gate_python_option_optimization_check
+    )
+    release_gate_python_optimize_env_check_enabled = not bool(
+        args.skip_release_gate_python_optimize_env_check
+    )
+    release_gate_python_path_env_check_enabled = not bool(
+        args.skip_release_gate_python_path_env_check
+    )
+    release_gate_python_home_env_check_enabled = not bool(
+        args.skip_release_gate_python_home_env_check
+    )
+    release_gate_python_user_base_env_check_enabled = not bool(
+        args.skip_release_gate_python_user_base_env_check
+    )
+    release_gate_python_breakpoint_env_check_enabled = not bool(
+        args.skip_release_gate_python_breakpoint_env_check
+    )
+    release_gate_python_startup_env_check_enabled = not bool(
+        args.skip_release_gate_python_startup_env_check
+    )
+    release_gate_python_inspect_env_check_enabled = not bool(
+        args.skip_release_gate_python_inspect_env_check
+    )
+    release_gate_python_warnings_env_check_enabled = not bool(
+        args.skip_release_gate_python_warnings_env_check
+    )
+    release_gate_python_option_inline_exec_check_enabled = not bool(
+        args.skip_release_gate_python_option_inline_exec_check
     )
     release_gate_coverage_floor_check_enabled = not bool(
         args.skip_release_gate_coverage_floor_check
@@ -1488,6 +2582,103 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
         (not release_gate_python_optimization_check_enabled)
         or (not release_gate_python_optimization_mismatches)
     )
+    release_gate_python_option_optimization_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_option_optimization_check_enabled and release_gate_report is not None:
+        release_gate_python_option_optimization_mismatches = (
+            _release_gate_python_option_optimization_mismatches(
+                release_gate_report
+            )
+        )
+    release_gate_python_option_optimization_pass = (
+        (not release_gate_python_option_optimization_check_enabled)
+        or (not release_gate_python_option_optimization_mismatches)
+    )
+    release_gate_python_optimize_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_optimize_env_check_enabled and release_gate_report is not None:
+        release_gate_python_optimize_env_mismatches = (
+            _release_gate_python_optimize_env_mismatches(
+                release_gate_report
+            )
+        )
+    release_gate_python_optimize_env_pass = (
+        (not release_gate_python_optimize_env_check_enabled)
+        or (not release_gate_python_optimize_env_mismatches)
+    )
+    release_gate_python_path_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_path_env_check_enabled and release_gate_report is not None:
+        release_gate_python_path_env_mismatches = _release_gate_python_path_env_mismatches(
+            release_gate_report
+        )
+    release_gate_python_path_env_pass = (
+        (not release_gate_python_path_env_check_enabled)
+        or (not release_gate_python_path_env_mismatches)
+    )
+    release_gate_python_home_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_home_env_check_enabled and release_gate_report is not None:
+        release_gate_python_home_env_mismatches = _release_gate_python_home_env_mismatches(
+            release_gate_report
+        )
+    release_gate_python_home_env_pass = (
+        (not release_gate_python_home_env_check_enabled)
+        or (not release_gate_python_home_env_mismatches)
+    )
+    release_gate_python_user_base_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_user_base_env_check_enabled and release_gate_report is not None:
+        release_gate_python_user_base_env_mismatches = (
+            _release_gate_python_user_base_env_mismatches(release_gate_report)
+        )
+    release_gate_python_user_base_env_pass = (
+        (not release_gate_python_user_base_env_check_enabled)
+        or (not release_gate_python_user_base_env_mismatches)
+    )
+    release_gate_python_breakpoint_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_breakpoint_env_check_enabled and release_gate_report is not None:
+        release_gate_python_breakpoint_env_mismatches = (
+            _release_gate_python_breakpoint_env_mismatches(release_gate_report)
+        )
+    release_gate_python_breakpoint_env_pass = (
+        (not release_gate_python_breakpoint_env_check_enabled)
+        or (not release_gate_python_breakpoint_env_mismatches)
+    )
+    release_gate_python_startup_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_startup_env_check_enabled and release_gate_report is not None:
+        release_gate_python_startup_env_mismatches = (
+            _release_gate_python_startup_env_mismatches(release_gate_report)
+        )
+    release_gate_python_startup_env_pass = (
+        (not release_gate_python_startup_env_check_enabled)
+        or (not release_gate_python_startup_env_mismatches)
+    )
+    release_gate_python_inspect_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_inspect_env_check_enabled and release_gate_report is not None:
+        release_gate_python_inspect_env_mismatches = (
+            _release_gate_python_inspect_env_mismatches(release_gate_report)
+        )
+    release_gate_python_inspect_env_pass = (
+        (not release_gate_python_inspect_env_check_enabled)
+        or (not release_gate_python_inspect_env_mismatches)
+    )
+    release_gate_python_warnings_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_warnings_env_check_enabled and release_gate_report is not None:
+        release_gate_python_warnings_env_mismatches = (
+            _release_gate_python_warnings_env_mismatches(release_gate_report)
+        )
+    release_gate_python_warnings_env_pass = (
+        (not release_gate_python_warnings_env_check_enabled)
+        or (not release_gate_python_warnings_env_mismatches)
+    )
+    release_gate_python_option_inline_exec_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_python_option_inline_exec_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_python_option_inline_exec_mismatches = (
+            _release_gate_python_option_inline_exec_mismatches(release_gate_report)
+        )
+    release_gate_python_option_inline_exec_pass = (
+        (not release_gate_python_option_inline_exec_check_enabled)
+        or (not release_gate_python_option_inline_exec_mismatches)
+    )
     release_gate_coverage_floor_mismatches: list[dict[str, Any]] = []
     if release_gate_coverage_floor_check_enabled and release_gate_report is not None:
         release_gate_coverage_floor_mismatches = _release_gate_coverage_floor_mismatches(
@@ -1544,6 +2735,15 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
         and release_gate_script_anchor_pass
         and release_gate_python_binding_pass
         and release_gate_python_optimization_pass
+        and release_gate_python_option_optimization_pass
+        and release_gate_python_optimize_env_pass
+        and release_gate_python_path_env_pass
+        and release_gate_python_home_env_pass
+        and release_gate_python_user_base_env_pass
+        and release_gate_python_breakpoint_env_pass
+        and release_gate_python_startup_env_pass
+        and release_gate_python_inspect_env_pass
+        and release_gate_python_option_inline_exec_pass
         and release_gate_coverage_floor_pass
         and release_gate_inline_exec_pass
         and release_gate_option_override_pass
@@ -1839,6 +3039,196 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
             ),
         },
         {
+            'name': 'release_gate_python_option_optimization',
+            'status': 'pass' if release_gate_python_option_optimization_pass else 'hold',
+            'reason': (
+                'release-gate stage --python values do not include python optimization flags (-O/-OO) that can bypass downstream assertions'
+                if release_gate_python_option_optimization_pass
+                and release_gate_python_option_optimization_check_enabled
+                else (
+                    'release-gate python-option-optimization gate disabled (--skip-release-gate-python-option-optimization-check)'
+                    if release_gate_python_option_optimization_pass
+                    else 'release-gate stage --python values include forbidden python optimization flags (-O/-OO)'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_option_optimization_mismatches
+                else release_gate_python_option_optimization_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_optimize_env',
+            'status': 'pass' if release_gate_python_optimize_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONOPTIMIZE env flags that can bypass assertions'
+                if release_gate_python_optimize_env_pass
+                and release_gate_python_optimize_env_check_enabled
+                else (
+                    'release-gate python-optimize-env gate disabled (--skip-release-gate-python-optimize-env-check)'
+                    if release_gate_python_optimize_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONOPTIMIZE env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_optimize_env_mismatches
+                else release_gate_python_optimize_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_path_env',
+            'status': 'pass' if release_gate_python_path_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONPATH env values that can redirect module resolution'
+                if release_gate_python_path_env_pass
+                and release_gate_python_path_env_check_enabled
+                else (
+                    'release-gate python-path-env gate disabled (--skip-release-gate-python-path-env-check)'
+                    if release_gate_python_path_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONPATH env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_path_env_mismatches
+                else release_gate_python_path_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_home_env',
+            'status': 'pass' if release_gate_python_home_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONHOME env values that can redirect runtime home resolution'
+                if release_gate_python_home_env_pass
+                and release_gate_python_home_env_check_enabled
+                else (
+                    'release-gate python-home-env gate disabled (--skip-release-gate-python-home-env-check)'
+                    if release_gate_python_home_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONHOME env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_home_env_mismatches
+                else release_gate_python_home_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_user_base_env',
+            'status': 'pass' if release_gate_python_user_base_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONUSERBASE env values that can redirect user-site package resolution'
+                if release_gate_python_user_base_env_pass
+                and release_gate_python_user_base_env_check_enabled
+                else (
+                    'release-gate python-user-base-env gate disabled (--skip-release-gate-python-user-base-env-check)'
+                    if release_gate_python_user_base_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONUSERBASE env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_user_base_env_mismatches
+                else release_gate_python_user_base_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_breakpoint_env',
+            'status': 'pass' if release_gate_python_breakpoint_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONBREAKPOINT env values that can hook breakpoint dispatch'
+                if release_gate_python_breakpoint_env_pass
+                and release_gate_python_breakpoint_env_check_enabled
+                else (
+                    'release-gate python-breakpoint-env gate disabled (--skip-release-gate-python-breakpoint-env-check)'
+                    if release_gate_python_breakpoint_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONBREAKPOINT env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_breakpoint_env_mismatches
+                else release_gate_python_breakpoint_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_startup_env',
+            'status': 'pass' if release_gate_python_startup_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONSTARTUP env values that can inject startup hooks'
+                if release_gate_python_startup_env_pass
+                and release_gate_python_startup_env_check_enabled
+                else (
+                    'release-gate python-startup-env gate disabled (--skip-release-gate-python-startup-env-check)'
+                    if release_gate_python_startup_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONSTARTUP env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_startup_env_mismatches
+                else release_gate_python_startup_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_inspect_env',
+            'status': 'pass' if release_gate_python_inspect_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONINSPECT env values that can trigger interactive-dispatch drift'
+                if release_gate_python_inspect_env_pass
+                and release_gate_python_inspect_env_check_enabled
+                else (
+                    'release-gate python-inspect-env gate disabled (--skip-release-gate-python-inspect-env-check)'
+                    if release_gate_python_inspect_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONINSPECT env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_inspect_env_mismatches
+                else release_gate_python_inspect_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_warnings_env',
+            'status': 'pass' if release_gate_python_warnings_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PYTHONWARNINGS env values that can suppress release-critical warning contracts'
+                if release_gate_python_warnings_env_pass
+                and release_gate_python_warnings_env_check_enabled
+                else (
+                    'release-gate python-warnings-env gate disabled (--skip-release-gate-python-warnings-env-check)'
+                    if release_gate_python_warnings_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PYTHONWARNINGS env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_warnings_env_mismatches
+                else release_gate_python_warnings_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_python_option_inline_exec',
+            'status': 'pass' if release_gate_python_option_inline_exec_pass else 'hold',
+            'reason': (
+                'release-gate stage --python values do not include inline-dispatch flags (-c/-m/-) that can bypass downstream script execution'
+                if release_gate_python_option_inline_exec_pass
+                and release_gate_python_option_inline_exec_check_enabled
+                else (
+                    'release-gate python-option-inline-exec gate disabled (--skip-release-gate-python-option-inline-exec-check)'
+                    if release_gate_python_option_inline_exec_pass
+                    else 'release-gate stage --python values include forbidden inline-dispatch flags (-c/-m/-)'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_option_inline_exec_mismatches
+                else release_gate_python_option_inline_exec_mismatches
+            ),
+        },
+        {
             'name': 'release_gate_inline_exec',
             'status': 'pass' if release_gate_inline_exec_pass else 'hold',
             'reason': (
@@ -2053,6 +3443,66 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
                 release_gate_python_optimization_mismatches
             ),
             'release_gate_python_optimization_mismatches': release_gate_python_optimization_mismatches,
+            'release_gate_python_option_optimization_check_enabled': release_gate_python_option_optimization_check_enabled,
+            'release_gate_python_option_optimization_pass': release_gate_python_option_optimization_pass,
+            'release_gate_python_option_optimization_mismatch_count': len(
+                release_gate_python_option_optimization_mismatches
+            ),
+            'release_gate_python_option_optimization_mismatches': release_gate_python_option_optimization_mismatches,
+            'release_gate_python_optimize_env_check_enabled': release_gate_python_optimize_env_check_enabled,
+            'release_gate_python_optimize_env_pass': release_gate_python_optimize_env_pass,
+            'release_gate_python_optimize_env_mismatch_count': len(
+                release_gate_python_optimize_env_mismatches
+            ),
+            'release_gate_python_optimize_env_mismatches': release_gate_python_optimize_env_mismatches,
+            'release_gate_python_path_env_check_enabled': release_gate_python_path_env_check_enabled,
+            'release_gate_python_path_env_pass': release_gate_python_path_env_pass,
+            'release_gate_python_path_env_mismatch_count': len(
+                release_gate_python_path_env_mismatches
+            ),
+            'release_gate_python_path_env_mismatches': release_gate_python_path_env_mismatches,
+            'release_gate_python_home_env_check_enabled': release_gate_python_home_env_check_enabled,
+            'release_gate_python_home_env_pass': release_gate_python_home_env_pass,
+            'release_gate_python_home_env_mismatch_count': len(
+                release_gate_python_home_env_mismatches
+            ),
+            'release_gate_python_home_env_mismatches': release_gate_python_home_env_mismatches,
+            'release_gate_python_user_base_env_check_enabled': release_gate_python_user_base_env_check_enabled,
+            'release_gate_python_user_base_env_pass': release_gate_python_user_base_env_pass,
+            'release_gate_python_user_base_env_mismatch_count': len(
+                release_gate_python_user_base_env_mismatches
+            ),
+            'release_gate_python_user_base_env_mismatches': release_gate_python_user_base_env_mismatches,
+            'release_gate_python_breakpoint_env_check_enabled': release_gate_python_breakpoint_env_check_enabled,
+            'release_gate_python_breakpoint_env_pass': release_gate_python_breakpoint_env_pass,
+            'release_gate_python_breakpoint_env_mismatch_count': len(
+                release_gate_python_breakpoint_env_mismatches
+            ),
+            'release_gate_python_breakpoint_env_mismatches': release_gate_python_breakpoint_env_mismatches,
+            'release_gate_python_startup_env_check_enabled': release_gate_python_startup_env_check_enabled,
+            'release_gate_python_startup_env_pass': release_gate_python_startup_env_pass,
+            'release_gate_python_startup_env_mismatch_count': len(
+                release_gate_python_startup_env_mismatches
+            ),
+            'release_gate_python_startup_env_mismatches': release_gate_python_startup_env_mismatches,
+            'release_gate_python_inspect_env_check_enabled': release_gate_python_inspect_env_check_enabled,
+            'release_gate_python_inspect_env_pass': release_gate_python_inspect_env_pass,
+            'release_gate_python_inspect_env_mismatch_count': len(
+                release_gate_python_inspect_env_mismatches
+            ),
+            'release_gate_python_inspect_env_mismatches': release_gate_python_inspect_env_mismatches,
+            'release_gate_python_warnings_env_check_enabled': release_gate_python_warnings_env_check_enabled,
+            'release_gate_python_warnings_env_pass': release_gate_python_warnings_env_pass,
+            'release_gate_python_warnings_env_mismatch_count': len(
+                release_gate_python_warnings_env_mismatches
+            ),
+            'release_gate_python_warnings_env_mismatches': release_gate_python_warnings_env_mismatches,
+            'release_gate_python_option_inline_exec_check_enabled': release_gate_python_option_inline_exec_check_enabled,
+            'release_gate_python_option_inline_exec_pass': release_gate_python_option_inline_exec_pass,
+            'release_gate_python_option_inline_exec_mismatch_count': len(
+                release_gate_python_option_inline_exec_mismatches
+            ),
+            'release_gate_python_option_inline_exec_mismatches': release_gate_python_option_inline_exec_mismatches,
             'release_gate_coverage_floor_check_enabled': release_gate_coverage_floor_check_enabled,
             'release_gate_coverage_floor_pass': release_gate_coverage_floor_pass,
             'release_gate_coverage_floor_mismatch_count': len(

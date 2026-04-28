@@ -927,6 +927,156 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
   - 任一 stage 命中 python 优化旗标时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-python-optimization-check` 显式关闭 python-optimization 门禁
 
+#### TP-E13-29 Release switch Python 传递链优化旗标门禁
+
+- 目标：在 release switch 判定中加入 release-gate `--python` 传递链 optimization 守门，禁止 stage `--python` 值携带 `-O/-OO`，避免下游执行链被隐式优化导致 assert 合同被绕过。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令 `--python` 仅出现一次且可解析
+  - 默认校验 `--python` 传递值中不允许出现 `-O/-OO`
+  - 任一 stage 命中 `--python` 传递优化旗标时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-option-optimization-check` 显式关闭该门禁
+
+#### TP-E13-30 Release switch PYTHONOPTIMIZE 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONOPTIMIZE` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 env 赋值绕过 assert 合同校验。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONOPTIMIZE=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONOPTIMIZE=*`
+  - 任一 stage 命中 `PYTHONOPTIMIZE` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-optimize-env-check` 显式关闭该门禁
+
+#### TP-E13-31 Release switch Python 传递链 inline-exec 门禁
+
+- 目标：在 release switch 判定中加入 release-gate `--python` 传递链 inline-dispatch 守门，禁止 stage `--python` 值携带 `-c/-m/-`，避免下游执行链切换成 inline 模式绕过脚本合同。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令 `--python` 仅出现一次且可解析
+  - 默认校验 `--python` 传递值中不允许出现 `-c/-m/-`
+  - 任一 stage 命中 `--python` 传递 inline-dispatch 旗标时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-option-inline-exec-check` 显式关闭该门禁
+
+#### TP-E13-32 Release switch PYTHONPATH 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONPATH` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 path 注入重定向模块解析，避免绕过预期 runtime 合同。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONPATH=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONPATH=*`
+  - 任一 stage 命中 `PYTHONPATH` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-path-env-check` 显式关闭该门禁
+
+#### TP-E13-33 Release switch PYTHONHOME 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONHOME` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 home 注入重定向解释器运行时根路径，避免绕过预期 runtime 合同。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONHOME=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONHOME=*`
+  - 任一 stage 命中 `PYTHONHOME` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-home-env-check` 显式关闭该门禁
+
+#### TP-E13-34 Release switch PYTHONUSERBASE 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONUSERBASE` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 user-base 注入重定向 user-site 包解析路径，避免绕过预期 runtime 合同。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONUSERBASE=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONUSERBASE=*`
+  - 任一 stage 命中 `PYTHONUSERBASE` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-user-base-env-check` 显式关闭该门禁
+
+#### TP-E13-35 Release switch PYTHONBREAKPOINT 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONBREAKPOINT` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 breakpoint hook 注入改变调试分发行为，避免绕过预期 runtime 合同。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONBREAKPOINT=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONBREAKPOINT=*`
+  - 任一 stage 命中 `PYTHONBREAKPOINT` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-breakpoint-env-check` 显式关闭该门禁
+
+#### TP-E13-36 Release switch PYTHONSTARTUP 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONSTARTUP` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 startup hook 注入启动脚本，避免绕过预期 runtime 合同。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONSTARTUP=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONSTARTUP=*`
+  - 任一 stage 命中 `PYTHONSTARTUP` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-startup-env-check` 显式关闭该门禁
+
+#### TP-E13-37 Release switch PYTHONINSPECT 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONINSPECT` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 inspect hook 切入交互模式，避免执行链漂移误判 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONINSPECT=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONINSPECT=*`
+  - 任一 stage 命中 `PYTHONINSPECT` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-inspect-env-check` 显式关闭该门禁
+
+#### TP-E13-38 Release switch PYTHONWARNINGS 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PYTHONWARNINGS` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 warning filter 注入掩盖发布期间的告警契约漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PYTHONWARNINGS=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PYTHONWARNINGS=*`
+  - 任一 stage 命中 `PYTHONWARNINGS` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-warnings-env-check` 显式关闭该门禁
+
 鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
 ### `src/omni_skill_pipeline/models.py`
 
