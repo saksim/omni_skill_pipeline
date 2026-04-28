@@ -1092,6 +1092,226 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="release-switch validation script should allow emergency bypass of python-warnings-env checks via --skip-release-gate-python-warnings-env-check.",
         ),
     ],
+    "TP-E13-39": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_python_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign unknown PYTHON* env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_env_wildcard_gate",
+            description="release-switch validation script should allow emergency bypass of python-env-wildcard checks via --skip-release-gate-python-env-wildcard-check.",
+        ),
+    ],
+    "TP-E13-40": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_path_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign PATH env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_path_env_gate",
+            description="release-switch validation script should allow emergency bypass of path-env checks via --skip-release-gate-path-env-check.",
+        ),
+    ],
+    "TP-E13-41": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_ld_preload_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign LD_PRELOAD env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_preload_env_gate",
+            description="release-switch validation script should allow emergency bypass of ld-preload-env checks via --skip-release-gate-ld-preload-env-check.",
+        ),
+    ],
+    "TP-E13-42": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_ld_library_path_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign LD_LIBRARY_PATH env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_library_path_env_gate",
+            description="release-switch validation script should allow emergency bypass of ld-library-path-env checks via --skip-release-gate-ld-library-path-env-check.",
+        ),
+    ],
+    "TP-E13-43": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_ld_audit_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign LD_AUDIT env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_audit_env_gate",
+            description="release-switch validation script should allow emergency bypass of ld-audit-env checks via --skip-release-gate-ld-audit-env-check.",
+        ),
+    ],
+    "TP-E13-44": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_ld_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign unknown LD_* env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_env_wildcard_gate",
+            description="release-switch validation script should allow emergency bypass of ld-env-wildcard checks via --skip-release-gate-ld-env-wildcard-check.",
+        ),
+    ],
+    "TP-E13-45": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_glibc_tunables_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign GLIBC_TUNABLES env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_glibc_tunables_env_gate",
+            description="release-switch validation script should allow emergency bypass of glibc-tunables-env checks via --skip-release-gate-glibc-tunables-env-check.",
+        ),
+    ],
+    "TP-E13-46": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_glibc_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign unknown GLIBC_* env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_glibc_env_wildcard_gate",
+            description="release-switch validation script should allow emergency bypass of glibc-env-wildcard checks via --skip-release-gate-glibc-env-wildcard-check.",
+        ),
+    ],
+    "TP-E13-47": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_malloc_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign unknown MALLOC_* env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_env_wildcard_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-env-wildcard checks via --skip-release-gate-malloc-env-wildcard-check.",
+        ),
+    ],
+    "TP-E13-48": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trace_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_TRACE env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_trace_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-trace-env checks via --skip-release-gate-malloc-trace-env-check.",
+        ),
+    ],
+    "TP-E13-49": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_check_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_CHECK_ env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_check_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-check-env checks via --skip-release-gate-malloc-check-env-check.",
+        ),
+    ],
+    "TP-E13-50": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_perturb_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_PERTURB_ env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_perturb_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-perturb-env checks via --skip-release-gate-malloc-perturb-env-check.",
+        ),
+    ],
+    "TP-E13-51": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_max_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_ARENA_MAX env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_arena_max_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-arena-max-env checks via --skip-release-gate-malloc-arena-max-env-check.",
+        ),
+    ],
+    "TP-E13-52": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_threshold_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_MMAP_THRESHOLD_ env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_mmap_threshold_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-mmap-threshold-env checks via --skip-release-gate-malloc-mmap-threshold-env-check.",
+        ),
+    ],
+    "TP-E13-53": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_max_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_MMAP_MAX_ env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_mmap_max_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-mmap-max-env checks via --skip-release-gate-malloc-mmap-max-env-check.",
+        ),
+    ],
+    "TP-E13-54": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_top_pad_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_TOP_PAD_ env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_top_pad_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-top-pad-env checks via --skip-release-gate-malloc-top-pad-env-check.",
+        ),
+    ],
+    "TP-E13-55": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trim_threshold_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_TRIM_THRESHOLD_ env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_trim_threshold_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-trim-threshold-env checks via --skip-release-gate-malloc-trim-threshold-env-check.",
+        ),
+    ],
+    "TP-E13-56": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_test_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_ARENA_TEST env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_arena_test_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-arena-test-env checks via --skip-release-gate-malloc-arena-test-env-check.",
+        ),
+    ],
+    "TP-E13-57": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_per_thread_env_assignment",
+            description="release-switch validation script should HOLD when release-gate stage launchers or --python relays assign MALLOC_PER_THREAD env values.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_per_thread_env_gate",
+            description="release-switch validation script should allow emergency bypass of malloc-per-thread-env checks via --skip-release-gate-malloc-per-thread-env-check.",
+        ),
+    ],
+    "TP-E13-58": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_view_for_go_decision",
+            description="release-switch validation script should emit bulk_strategy_view analytics schema for GO decisions.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_view_for_hold_decision",
+            description="release-switch validation script should emit bulk_strategy_view analytics schema for HOLD decisions.",
+        ),
+    ],
+    "TP-E13-59": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_domain_rollup_for_go_decision",
+            description="release-switch validation script should emit bulk_strategy_view domain rollup and GO signature for large-scale aggregation.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_domain_rollup_for_hold_decision",
+            description="release-switch validation script should emit bulk_strategy_view domain rollup and HOLD signature/indices for large-scale aggregation.",
+        ),
+    ],
+    "TP-E13-60": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_signature_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic hold/signature sha256 fields for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_signature_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic hold/signature sha256 fields for HOLD bulk strategy artifacts.",
+        ),
+    ],
 }
 
 

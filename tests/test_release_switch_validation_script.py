@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -91,6 +92,19 @@ def _release_gate_stage_contract_commands(
             str(roadmap_output.resolve()),
         ],
     }
+
+
+def _expected_bulk_strategy_signature_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'decision': str(bulk_view.get('decision') or ''),
+        'gate_status_bitmap': list(bulk_view.get('gate_status_bitmap') or []),
+        'pass_gate_indices': list(bulk_view.get('pass_gate_indices') or []),
+        'hold_gate_indices': list(bulk_view.get('hold_gate_indices') or []),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
 
 
 def _write_go_decision_evidence_bundle(tmp_path: Path) -> dict[str, Path]:
@@ -528,7 +542,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             decision = json.loads(decision_path.read_text(encoding='utf-8'))
             self.assertEqual(decision.get('decision'), 'GO')
             self.assertEqual(decision.get('hold_count'), 0)
-            self.assertEqual(decision.get('pass_count'), 27)
+            self.assertEqual(decision.get('pass_count'), 46)
             summary = decision.get('evidence_summary', {})
             self.assertTrue(summary.get('release_gate_stage_pack_complete'))
             self.assertTrue(summary.get('release_gate_output_binding_pass'))
@@ -545,6 +559,25 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             self.assertTrue(summary.get('release_gate_python_startup_env_pass'))
             self.assertTrue(summary.get('release_gate_python_inspect_env_pass'))
             self.assertTrue(summary.get('release_gate_python_warnings_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_path_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_preload_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_library_path_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_audit_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_glibc_tunables_env_pass'))
+            self.assertTrue(summary.get('release_gate_glibc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_top_pad_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trim_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_test_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_per_thread_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
             self.assertTrue(summary.get('release_gate_python_option_inline_exec_pass'))
             self.assertTrue(summary.get('release_gate_coverage_floor_pass'))
             self.assertTrue(summary.get('release_gate_inline_exec_pass'))
@@ -555,6 +588,379 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             self.assertTrue(summary.get('ga_suite_stage_pack_complete'))
             self.assertTrue(summary.get('roadmap_suite_stage_pack_complete'))
             self.assertTrue(summary.get('evidence_cohort_skew_gate_pass'))
+
+    def test_script_decision_only_emits_bulk_strategy_view_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(bulk_view.get('schema_version'), 'release_switch_bulk_strategy.v2')
+            self.assertEqual(bulk_view.get('decision'), 'GO')
+            self.assertEqual(bulk_view.get('gate_count'), decision.get('gate_count'))
+            self.assertEqual(bulk_view.get('pass_count'), decision.get('pass_count'))
+            self.assertEqual(bulk_view.get('hold_count'), decision.get('hold_count'))
+            self.assertEqual(len(bulk_view.get('gate_rows', [])), int(decision.get('gate_count', 0)))
+            self.assertEqual(len(bulk_view.get('gate_status_bitmap', [])), int(decision.get('gate_count', 0)))
+            self.assertEqual(
+                bulk_view.get('gate_status_index', {}).get('release_gate_malloc_per_thread_env'),
+                1,
+            )
+            check_enablement = bulk_view.get('check_enablement', {})
+            self.assertEqual(
+                int(check_enablement.get('enabled_count', 0)),
+                len(check_enablement.get('enabled_keys', [])),
+            )
+            self.assertEqual(
+                int(check_enablement.get('disabled_count', 0)),
+                len(check_enablement.get('disabled_keys', [])),
+            )
+
+    def test_script_decision_only_emits_bulk_strategy_view_for_hold_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(bulk_view.get('schema_version'), 'release_switch_bulk_strategy.v2')
+            self.assertEqual(bulk_view.get('decision'), 'HOLD')
+            self.assertGreaterEqual(int(bulk_view.get('hold_count', 0)), 1)
+            self.assertEqual(
+                bulk_view.get('gate_status_index', {}).get('release_gate_malloc_per_thread_env'),
+                0,
+            )
+            self.assertIn(
+                'release_gate_malloc_per_thread_env',
+                bulk_view.get('hold_gate_names', []),
+            )
+
+    def test_script_decision_only_emits_bulk_strategy_domain_rollup_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(bulk_view.get('decision_code'), 1)
+            self.assertEqual(bulk_view.get('hold_signature'), 'GO')
+            domain_rollup = bulk_view.get('domain_rollup', {})
+            self.assertIn('release_gate', domain_rollup)
+            self.assertGreaterEqual(int(domain_rollup['release_gate'].get('gate_count', 0)), 1)
+            self.assertEqual(int(domain_rollup['release_gate'].get('hold_count', 0)), 0)
+            self.assertEqual(
+                int(domain_rollup['release_gate'].get('pass_count', 0)),
+                int(domain_rollup['release_gate'].get('gate_count', 0)),
+            )
+            self.assertEqual(len(bulk_view.get('hold_gate_indices', [])), 0)
+
+    def test_script_decision_only_emits_bulk_strategy_domain_rollup_for_hold_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(bulk_view.get('decision_code'), 0)
+            self.assertIn('release_gate_malloc_per_thread_env', str(bulk_view.get('hold_signature', '')))
+            domain_rollup = bulk_view.get('domain_rollup', {})
+            self.assertIn('release_gate', domain_rollup)
+            self.assertGreaterEqual(int(domain_rollup['release_gate'].get('hold_count', 0)), 1)
+            hold_indices = bulk_view.get('hold_gate_indices', [])
+            self.assertGreaterEqual(len(hold_indices), 1)
+            gate_rows = bulk_view.get('gate_rows', [])
+            per_thread_row = next(
+                (
+                    row
+                    for row in gate_rows
+                    if row.get('name') == 'release_gate_malloc_per_thread_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(per_thread_row)
+            self.assertIn(int(per_thread_row.get('idx')), hold_indices)
+
+    def test_script_decision_only_emits_bulk_strategy_signature_hash_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            bulk_view = decision.get('bulk_strategy_view', {})
+            hold_signature = str(bulk_view.get('hold_signature') or '')
+            self.assertEqual(hold_signature, 'GO')
+            self.assertEqual(
+                bulk_view.get('hold_signature_sha256'),
+                hashlib.sha256(hold_signature.encode('utf-8')).hexdigest(),
+            )
+            self.assertEqual(
+                bulk_view.get('strategy_signature_sha256'),
+                _expected_bulk_strategy_signature_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('hold_signature_sha256') or '')), 64)
+            self.assertEqual(len(str(bulk_view.get('strategy_signature_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_signature_hash_for_hold_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            bulk_view = decision.get('bulk_strategy_view', {})
+            hold_signature = str(bulk_view.get('hold_signature') or '')
+            self.assertIn('release_gate_malloc_per_thread_env', hold_signature)
+            self.assertEqual(
+                bulk_view.get('hold_signature_sha256'),
+                hashlib.sha256(hold_signature.encode('utf-8')).hexdigest(),
+            )
+            self.assertEqual(
+                bulk_view.get('strategy_signature_sha256'),
+                _expected_bulk_strategy_signature_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('hold_signature_sha256') or '')), 64)
+            self.assertEqual(len(str(bulk_view.get('strategy_signature_sha256') or '')), 64)
 
     def test_script_decision_only_holds_when_release_gate_pack_evidence_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -3511,6 +3917,3110 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     item
                     for item in decision.get('gates', [])
                     if item.get('name') == 'release_gate_python_warnings_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_unknown_python_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONUNBUFFERED=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONUNBUFFERED=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_warnings_env_pass'))
+            self.assertTrue(summary.get('release_gate_python_env_wildcard_check_enabled'))
+            self.assertFalse(summary.get('release_gate_python_env_wildcard_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_python_env_wildcard_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_python_env_wildcard_mismatches', [])
+            self.assertTrue(any('PYTHONUNBUFFERED=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_python_env_wildcard_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PYTHONUNBUFFERED=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PYTHONUNBUFFERED=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-python-env-wildcard-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_python_env_wildcard_check_enabled'))
+            self.assertTrue(summary.get('release_gate_python_env_wildcard_pass'))
+            self.assertEqual(int(summary.get('release_gate_python_env_wildcard_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_python_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_path_env_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PATH=/tmp/rogue python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PATH=/tmp/rogue', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_python_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_path_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_path_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_path_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_path_env_mismatches', [])
+            self.assertTrue(any('PATH=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_path_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_path_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env PATH=/tmp/rogue python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'PATH=/tmp/rogue', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-path-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_path_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_path_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_path_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_path_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_ld_preload_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_PRELOAD=/tmp/evil.so python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_PRELOAD=/tmp/evil.so', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_path_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_preload_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_ld_preload_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_ld_preload_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_ld_preload_env_mismatches', [])
+            self.assertTrue(any('LD_PRELOAD=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_preload_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_ld_preload_env_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_PRELOAD=/tmp/evil.so python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_PRELOAD=/tmp/evil.so', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-ld-preload-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_ld_preload_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_ld_preload_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_ld_preload_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_preload_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_ld_library_path_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_LIBRARY_PATH=/tmp/evil-lib python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_LIBRARY_PATH=/tmp/evil-lib', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_python_binding_pass'))
+            self.assertTrue(summary.get('release_gate_ld_preload_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_library_path_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_ld_library_path_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_ld_library_path_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_ld_library_path_env_mismatches', [])
+            self.assertTrue(
+                any('LD_LIBRARY_PATH=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_library_path_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_ld_library_path_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_LIBRARY_PATH=/tmp/evil-lib python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_LIBRARY_PATH=/tmp/evil-lib', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-ld-library-path-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_ld_library_path_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_ld_library_path_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_ld_library_path_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_library_path_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_ld_audit_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_AUDIT=/tmp/evil.audit.so python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_AUDIT=/tmp/evil.audit.so', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_ld_library_path_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_audit_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_ld_audit_env_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_ld_audit_env_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_ld_audit_env_mismatches', [])
+            self.assertTrue(any('LD_AUDIT=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_audit_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_ld_audit_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_AUDIT=/tmp/evil.audit.so python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_AUDIT=/tmp/evil.audit.so', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-ld-audit-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_ld_audit_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_ld_audit_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_ld_audit_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_audit_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_unknown_ld_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_DEBUG=files python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_DEBUG=files', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_ld_audit_env_pass'))
+            self.assertTrue(summary.get('release_gate_ld_env_wildcard_check_enabled'))
+            self.assertFalse(summary.get('release_gate_ld_env_wildcard_pass'))
+            self.assertGreaterEqual(int(summary.get('release_gate_ld_env_wildcard_mismatch_count', 0)), 1)
+            mismatches = summary.get('release_gate_ld_env_wildcard_mismatches', [])
+            self.assertTrue(any('LD_DEBUG=' in str(item.get('actual')) for item in mismatches))
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_ld_env_wildcard_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env LD_DEBUG=files python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'LD_DEBUG=files', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-ld-env-wildcard-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_ld_env_wildcard_check_enabled'))
+            self.assertTrue(summary.get('release_gate_ld_env_wildcard_pass'))
+            self.assertEqual(int(summary.get('release_gate_ld_env_wildcard_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_ld_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_glibc_tunables_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env GLIBC_TUNABLES=glibc.malloc.check=3 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'GLIBC_TUNABLES=glibc.malloc.check=3', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_ld_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_glibc_tunables_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_glibc_tunables_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_glibc_tunables_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_glibc_tunables_env_mismatches', [])
+            self.assertTrue(
+                any('GLIBC_TUNABLES=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_glibc_tunables_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_glibc_tunables_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env GLIBC_TUNABLES=glibc.malloc.check=3 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'GLIBC_TUNABLES=glibc.malloc.check=3', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-glibc-tunables-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_glibc_tunables_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_glibc_tunables_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_glibc_tunables_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_glibc_tunables_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_unknown_glibc_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env GLIBC_MEMUSAGE=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'GLIBC_MEMUSAGE=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_glibc_tunables_env_pass'))
+            self.assertTrue(summary.get('release_gate_glibc_env_wildcard_check_enabled'))
+            self.assertFalse(summary.get('release_gate_glibc_env_wildcard_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_glibc_env_wildcard_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_glibc_env_wildcard_mismatches', [])
+            self.assertTrue(
+                any('GLIBC_MEMUSAGE=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_glibc_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_glibc_env_wildcard_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env GLIBC_MEMUSAGE=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'GLIBC_MEMUSAGE=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-glibc-env-wildcard-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_glibc_env_wildcard_check_enabled'))
+            self.assertTrue(summary.get('release_gate_glibc_env_wildcard_pass'))
+            self.assertEqual(int(summary.get('release_gate_glibc_env_wildcard_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_glibc_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_unknown_malloc_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_SHADOW_POLICY=strict python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_SHADOW_POLICY=strict', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_glibc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_env_wildcard_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_env_wildcard_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_SHADOW_POLICY=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_env_wildcard_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_SHADOW_POLICY=strict python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_SHADOW_POLICY=strict', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-env-wildcard-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_env_wildcard_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertEqual(int(summary.get('release_gate_malloc_env_wildcard_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_env_wildcard'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trace_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_TRACE=/tmp/mtrace.log python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_TRACE=/tmp/mtrace.log', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_trace_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_trace_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_TRACE=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_trace_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_trace_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_TRACE=/tmp/mtrace.log python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_TRACE=/tmp/mtrace.log', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-trace-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_trace_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_malloc_trace_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_trace_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_check_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_CHECK_=3 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_CHECK_=3', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_check_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_check_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_CHECK_=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_check_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_check_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_CHECK_=3 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_CHECK_=3', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-check-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_check_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_malloc_check_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_check_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_perturb_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PERTURB_=153 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PERTURB_=153', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_perturb_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_perturb_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_PERTURB_=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_perturb_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_perturb_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PERTURB_=153 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PERTURB_=153', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-perturb-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_perturb_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertEqual(int(summary.get('release_gate_malloc_perturb_env_mismatch_count', 0)), 0)
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_perturb_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_max_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_ARENA_MAX=8 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_ARENA_MAX=8', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_arena_max_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_arena_max_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_ARENA_MAX=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_arena_max_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_arena_max_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_ARENA_MAX=8 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_ARENA_MAX=8', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-arena-max-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_arena_max_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_arena_max_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_arena_max_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_threshold_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_MMAP_THRESHOLD_=16384 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_MMAP_THRESHOLD_=16384', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_mmap_threshold_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_mmap_threshold_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_MMAP_THRESHOLD_=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_mmap_threshold_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_mmap_threshold_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_MMAP_THRESHOLD_=16384 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_MMAP_THRESHOLD_=16384', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-mmap-threshold-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_mmap_threshold_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_mmap_threshold_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_mmap_threshold_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_max_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_MMAP_MAX_=256 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_MMAP_MAX_=256', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_mmap_max_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_mmap_max_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_MMAP_MAX_=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_mmap_max_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_mmap_max_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_MMAP_MAX_=256 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_MMAP_MAX_=256', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-mmap-max-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_mmap_max_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_mmap_max_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_mmap_max_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_top_pad_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_TOP_PAD_=131072 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_TOP_PAD_=131072', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_top_pad_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_top_pad_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_top_pad_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_top_pad_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_TOP_PAD_=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_top_pad_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_top_pad_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_TOP_PAD_=131072 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_TOP_PAD_=131072', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-top-pad-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_top_pad_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_top_pad_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_top_pad_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_top_pad_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trim_threshold_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_TRIM_THRESHOLD_=262144 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_TRIM_THRESHOLD_=262144', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_top_pad_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trim_threshold_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_trim_threshold_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_trim_threshold_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_trim_threshold_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_TRIM_THRESHOLD_=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_trim_threshold_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_trim_threshold_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_TRIM_THRESHOLD_=262144 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_TRIM_THRESHOLD_=262144', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-trim-threshold-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_trim_threshold_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_trim_threshold_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_trim_threshold_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_trim_threshold_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_test_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_ARENA_TEST=16 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_ARENA_TEST=16', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_top_pad_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trim_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_test_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_arena_test_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_arena_test_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_arena_test_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_ARENA_TEST=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_arena_test_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_arena_test_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_ARENA_TEST=16 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_ARENA_TEST=16', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-arena-test-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_arena_test_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_test_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_arena_test_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_arena_test_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'pass')
+
+    def test_script_decision_only_holds_when_release_gate_stage_uses_malloc_per_thread_env_assignment(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('release_gate_malloc_env_wildcard_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trace_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_check_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_perturb_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_mmap_max_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_top_pad_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_trim_threshold_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_arena_test_env_pass'))
+            self.assertTrue(summary.get('release_gate_malloc_per_thread_env_check_enabled'))
+            self.assertFalse(summary.get('release_gate_malloc_per_thread_env_pass'))
+            self.assertGreaterEqual(
+                int(summary.get('release_gate_malloc_per_thread_env_mismatch_count', 0)),
+                1,
+            )
+            mismatches = summary.get('release_gate_malloc_per_thread_env_mismatches', [])
+            self.assertTrue(
+                any('MALLOC_PER_THREAD=' in str(item.get('actual')) for item in mismatches)
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_per_thread_env'
+                ),
+                None,
+            )
+            self.assertIsNotNone(gate)
+            self.assertEqual(gate.get('status'), 'hold')
+
+    def test_script_decision_only_can_disable_release_gate_malloc_per_thread_env_gate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--skip-release-gate-malloc-per-thread-env-check',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=GO', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            summary = decision.get('evidence_summary', {})
+            self.assertFalse(summary.get('release_gate_malloc_per_thread_env_check_enabled'))
+            self.assertTrue(summary.get('release_gate_malloc_per_thread_env_pass'))
+            self.assertEqual(
+                int(summary.get('release_gate_malloc_per_thread_env_mismatch_count', 0)),
+                0,
+            )
+            gate = next(
+                (
+                    item
+                    for item in decision.get('gates', [])
+                    if item.get('name') == 'release_gate_malloc_per_thread_env'
                 ),
                 None,
             )

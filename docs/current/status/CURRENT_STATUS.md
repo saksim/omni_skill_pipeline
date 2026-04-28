@@ -221,3 +221,135 @@
 - Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
 - Decision gate upgrade: default behavior rejects `PYTHONWARNINGS=*` env assignments in release-gate stage launchers and stage `--python` relay values; warning-filter drift now forces `HOLD`
 - Escape hatch: set `--skip-release-gate-python-warnings-env-check` to bypass python-warnings-env gate for manual recovery/forensics runs
+
+## TP-E13-39 Release Switch Python-Env Wildcard Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects unknown `PYTHON*` env assignments in release-gate stage launchers and stage `--python` relay values (already-registered gate keys excluded); runtime-contract drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-python-env-wildcard-check` to bypass python-env-wildcard gate for manual recovery/forensics runs
+
+## TP-E13-40 Release Switch Path Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `PATH=*` env assignments in release-gate stage launchers and stage `--python` relay values; interpreter-lookup drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-path-env-check` to bypass path-env gate for manual recovery/forensics runs
+
+## TP-E13-41 Release Switch LD-Preload Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `LD_PRELOAD=*` env assignments in release-gate stage launchers and stage `--python` relay values; dynamic-loader hook injection now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-ld-preload-env-check` to bypass ld-preload-env gate for manual recovery/forensics runs
+
+## TP-E13-42 Release Switch LD-Library-Path Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `LD_LIBRARY_PATH=*` env assignments in release-gate stage launchers and stage `--python` relay values; dynamic-linker lookup-path drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-ld-library-path-env-check` to bypass ld-library-path-env gate for manual recovery/forensics runs
+
+## TP-E13-43 Release Switch LD-Audit Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `LD_AUDIT=*` env assignments in release-gate stage launchers and stage `--python` relay values; dynamic-linker audit-hook injection now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-ld-audit-env-check` to bypass ld-audit-env gate for manual recovery/forensics runs
+
+## TP-E13-44 Release Switch LD-Env Wildcard Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects unknown `LD_*` env assignments in release-gate stage launchers and stage `--python` relay values (already-registered gate keys excluded); dynamic-linker runtime-contract drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-ld-env-wildcard-check` to bypass ld-env-wildcard gate for manual recovery/forensics runs
+
+## TP-E13-45 Release Switch Glibc-Tunables Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `GLIBC_TUNABLES=*` env assignments in release-gate stage launchers and stage `--python` relay values; glibc dynamic-linker tunables drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-glibc-tunables-env-check` to bypass glibc-tunables-env gate for manual recovery/forensics runs
+
+## TP-E13-46 Release Switch Glibc-Env Wildcard Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects unknown `GLIBC_*` env assignments in release-gate stage launchers and stage `--python` relay values (already-registered gate keys excluded); glibc runtime-contract drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-glibc-env-wildcard-check` to bypass glibc-env-wildcard gate for manual recovery/forensics runs
+
+## TP-E13-47 Release Switch Malloc-Env Wildcard Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects unknown `MALLOC_*` env assignments in release-gate stage launchers and stage `--python` relay values (already-registered gate keys excluded); allocator runtime-contract drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-env-wildcard-check` to bypass malloc-env-wildcard gate for manual recovery/forensics runs
+
+## TP-E13-48 Release Switch Malloc-Trace Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_TRACE=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator trace side-channel drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-trace-env-check` to bypass malloc-trace-env gate for manual recovery/forensics runs
+
+## TP-E13-49 Release Switch Malloc-Check Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_CHECK_=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator-check behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-check-env-check` to bypass malloc-check-env gate for manual recovery/forensics runs
+
+## TP-E13-50 Release Switch Malloc-Perturb Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_PERTURB_=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator memory-perturbation behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-perturb-env-check` to bypass malloc-perturb-env gate for manual recovery/forensics runs
+
+## TP-E13-51 Release Switch Malloc-Arena-Max Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_ARENA_MAX=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator arena-scaling behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-arena-max-env-check` to bypass malloc-arena-max-env gate for manual recovery/forensics runs
+
+## TP-E13-52 Release Switch Malloc-Mmap-Threshold Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_MMAP_THRESHOLD_=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator mmap-threshold behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-mmap-threshold-env-check` to bypass malloc-mmap-threshold-env gate for manual recovery/forensics runs
+
+## TP-E13-53 Release Switch Malloc-Mmap-Max Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_MMAP_MAX_=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator mmap-extent behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-mmap-max-env-check` to bypass malloc-mmap-max-env gate for manual recovery/forensics runs
+
+## TP-E13-54 Release Switch Malloc-Top-Pad Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_TOP_PAD_=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator top-chunk padding behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-top-pad-env-check` to bypass malloc-top-pad-env gate for manual recovery/forensics runs
+
+## TP-E13-55 Release Switch Malloc-Trim-Threshold Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_TRIM_THRESHOLD_=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator trim-threshold behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-trim-threshold-env-check` to bypass malloc-trim-threshold-env gate for manual recovery/forensics runs
+
+## TP-E13-56 Release Switch Malloc-Arena-Test Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_ARENA_TEST=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator arena-probing behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-arena-test-env-check` to bypass malloc-arena-test-env gate for manual recovery/forensics runs
+
+## TP-E13-57 Release Switch Malloc-Per-Thread Env Gate
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision gate upgrade: default behavior rejects `MALLOC_PER_THREAD=*` env assignments in release-gate stage launchers and stage `--python` relay values; allocator per-thread arena-pooling behavior drift now forces `HOLD`
+- Escape hatch: set `--skip-release-gate-malloc-per-thread-env-check` to bypass malloc-per-thread-env gate for manual recovery/forensics runs
+
+## TP-E13-58 Release Switch Bulk Strategy View
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: adds `bulk_strategy_view` stable analytics projection so large-scale strategy jobs can aggregate gate status/counts without depending on expanding flat key sets
+- Compatibility contract: existing `decision/gates/evidence_summary` fields are preserved; `bulk_strategy_view` is additive and supports both `GO` and `HOLD` artifacts
+
+## TP-E13-59 Release Switch Bulk Domain Rollup Signature
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` promoted to `release_switch_bulk_strategy.v2`, adding `decision_code/hold_signature/pass_gate_indices/hold_gate_indices/gate_domain_index/domain_rollup`
+- Analytics contract: strategy systems can now cluster by `hold_signature` and aggregate by domain rollup directly, while existing legacy fields remain intact
+
+## TP-E13-60 Release Switch Bulk Signature Hashes
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits fixed-width hash keys `hold_signature_sha256` and `strategy_signature_sha256` for large-scale bucketing/dedup pipelines
+- Analytics contract: downstream aggregators can index deterministic 64-char digests instead of long signature strings while legacy fields remain intact

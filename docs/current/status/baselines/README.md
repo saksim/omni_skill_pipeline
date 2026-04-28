@@ -524,3 +524,310 @@
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_warnings_env_gate`
 - TP mapping:
   - `scripts/run_tp_tests.py` -> `TP-E13-38`
+
+## TP-E13-39 Release Switch Python-Env Wildcard Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid unknown `PYTHON*` env assignments (already-registered gate keys excluded) that can drift runtime contracts before decision `GO`.
+- Python-env-wildcard contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid unknown `PYTHON*` env assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects unknown `PYTHON*` env assignments within that relay value
+  - any unknown `PYTHON*` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-python-env-wildcard-check` disables python-env-wildcard gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_python_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_python_env_wildcard_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-39`
+
+## TP-E13-40 Release Switch Path Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `PATH=*` env assignments that can redirect interpreter lookup contracts before decision `GO`.
+- Path-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `PATH=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `PATH=*` assignments within that relay value
+  - any `PATH` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-path-env-check` disables path-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_path_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_path_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-40`
+
+## TP-E13-41 Release Switch LD-Preload Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `LD_PRELOAD=*` env assignments that can inject dynamic-loader hooks before decision `GO`.
+- Ld-preload-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `LD_PRELOAD=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `LD_PRELOAD=*` assignments within that relay value
+  - any `LD_PRELOAD` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-ld-preload-env-check` disables ld-preload-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_ld_preload_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_preload_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-41`
+
+## TP-E13-42 Release Switch LD-Library-Path Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `LD_LIBRARY_PATH=*` env assignments that can redirect dynamic-linker lookup paths before decision `GO`.
+- Ld-library-path-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `LD_LIBRARY_PATH=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `LD_LIBRARY_PATH=*` assignments within that relay value
+  - any `LD_LIBRARY_PATH` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-ld-library-path-env-check` disables ld-library-path-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_ld_library_path_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_library_path_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-42`
+
+## TP-E13-43 Release Switch LD-Audit Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `LD_AUDIT=*` env assignments that can inject dynamic-linker audit hooks before decision `GO`.
+- Ld-audit-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `LD_AUDIT=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `LD_AUDIT=*` assignments within that relay value
+  - any `LD_AUDIT` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-ld-audit-env-check` disables ld-audit-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_ld_audit_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_audit_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-43`
+
+## TP-E13-44 Release Switch LD-Env Wildcard Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid unknown `LD_*` env assignments (already-registered gate keys excluded) that can drift dynamic-linker runtime contracts before decision `GO`.
+- Ld-env-wildcard contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid unknown `LD_*` assignments (registered gate keys excluded)
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects unknown `LD_*` assignments within that relay value (registered gate keys excluded)
+  - any unknown `LD_*` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-ld-env-wildcard-check` disables ld-env-wildcard gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_ld_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_ld_env_wildcard_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-44`
+
+## TP-E13-45 Release Switch Glibc-Tunables Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `GLIBC_TUNABLES=*` env assignments that can drift glibc dynamic-linker tunable contracts before decision `GO`.
+- Glibc-tunables-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `GLIBC_TUNABLES=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `GLIBC_TUNABLES=*` assignments within that relay value
+  - any `GLIBC_TUNABLES` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-glibc-tunables-env-check` disables glibc-tunables-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_glibc_tunables_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_glibc_tunables_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-45`
+
+## TP-E13-46 Release Switch Glibc-Env Wildcard Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid unknown `GLIBC_*` env assignments (already-registered gate keys excluded) that can drift glibc runtime contracts before decision `GO`.
+- Glibc-env-wildcard contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid unknown `GLIBC_*` assignments (registered gate keys excluded)
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects unknown `GLIBC_*` assignments within that relay value (registered gate keys excluded)
+  - any unknown `GLIBC_*` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-glibc-env-wildcard-check` disables glibc-env-wildcard gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_glibc_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_glibc_env_wildcard_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-46`
+
+## TP-E13-47 Release Switch Malloc-Env Wildcard Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid unknown `MALLOC_*` env assignments (already-registered gate keys excluded) that can drift allocator runtime contracts before decision `GO`.
+- Malloc-env-wildcard contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid unknown `MALLOC_*` assignments (registered gate keys excluded)
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects unknown `MALLOC_*` assignments within that relay value (registered gate keys excluded)
+  - any unknown `MALLOC_*` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-env-wildcard-check` disables malloc-env-wildcard gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_unknown_malloc_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_env_wildcard_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-47`
+
+## TP-E13-48 Release Switch Malloc-Trace Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_TRACE=*` env assignments that can emit allocator-trace artifacts before decision `GO`.
+- Malloc-trace-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_TRACE=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_TRACE=*` assignments within that relay value
+  - any `MALLOC_TRACE` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-trace-env-check` disables malloc-trace-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trace_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_trace_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-48`
+
+## TP-E13-49 Release Switch Malloc-Check Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_CHECK_=*` env assignments that can alter allocator-check behavior before decision `GO`.
+- Malloc-check-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_CHECK_=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_CHECK_=*` assignments within that relay value
+  - any `MALLOC_CHECK_` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-check-env-check` disables malloc-check-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_check_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_check_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-49`
+
+## TP-E13-50 Release Switch Malloc-Perturb Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_PERTURB_=*` env assignments that can drift allocator memory-perturbation behavior before decision `GO`.
+- Malloc-perturb-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_PERTURB_=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_PERTURB_=*` assignments within that relay value
+  - any `MALLOC_PERTURB_` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-perturb-env-check` disables malloc-perturb-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_perturb_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_perturb_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-50`
+
+## TP-E13-51 Release Switch Malloc-Arena-Max Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_ARENA_MAX=*` env assignments that can drift allocator arena-scaling behavior before decision `GO`.
+- Malloc-arena-max-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_ARENA_MAX=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_ARENA_MAX=*` assignments within that relay value
+  - any `MALLOC_ARENA_MAX` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-arena-max-env-check` disables malloc-arena-max-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_max_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_arena_max_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-51`
+
+## TP-E13-52 Release Switch Malloc-Mmap-Threshold Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_MMAP_THRESHOLD_=*` env assignments that can drift allocator mmap-threshold behavior before decision `GO`.
+- Malloc-mmap-threshold-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_MMAP_THRESHOLD_=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_MMAP_THRESHOLD_=*` assignments within that relay value
+  - any `MALLOC_MMAP_THRESHOLD_` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-mmap-threshold-env-check` disables malloc-mmap-threshold-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_threshold_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_mmap_threshold_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-52`
+
+## TP-E13-53 Release Switch Malloc-Mmap-Max Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_MMAP_MAX_=*` env assignments that can drift allocator mmap-extent behavior before decision `GO`.
+- Malloc-mmap-max-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_MMAP_MAX_=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_MMAP_MAX_=*` assignments within that relay value
+  - any `MALLOC_MMAP_MAX_` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-mmap-max-env-check` disables malloc-mmap-max-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_max_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_mmap_max_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-53`
+
+## TP-E13-54 Release Switch Malloc-Top-Pad Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_TOP_PAD_=*` env assignments that can drift allocator top-chunk padding behavior before decision `GO`.
+- Malloc-top-pad-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_TOP_PAD_=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_TOP_PAD_=*` assignments within that relay value
+  - any `MALLOC_TOP_PAD_` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-top-pad-env-check` disables malloc-top-pad-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_top_pad_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_top_pad_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-54`
+
+## TP-E13-55 Release Switch Malloc-Trim-Threshold Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_TRIM_THRESHOLD_=*` env assignments that can drift allocator trim-threshold behavior before decision `GO`.
+- Malloc-trim-threshold-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_TRIM_THRESHOLD_=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_TRIM_THRESHOLD_=*` assignments within that relay value
+  - any `MALLOC_TRIM_THRESHOLD_` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-trim-threshold-env-check` disables malloc-trim-threshold-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trim_threshold_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_trim_threshold_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-55`
+
+## TP-E13-56 Release Switch Malloc-Arena-Test Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_ARENA_TEST=*` env assignments that can drift allocator arena-probing behavior before decision `GO`.
+- Malloc-arena-test-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_ARENA_TEST=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_ARENA_TEST=*` assignments within that relay value
+  - any `MALLOC_ARENA_TEST` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-arena-test-env-check` disables malloc-arena-test-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_test_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_arena_test_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-56`
+
+## TP-E13-57 Release Switch Malloc-Per-Thread Env Gate
+
+- Validation focus: release-gate stage launcher and `--python` relay values must avoid `MALLOC_PER_THREAD=*` env assignments that can drift allocator per-thread arena-pooling behavior before decision `GO`.
+- Malloc-per-thread-env contract:
+  - default behavior requires each release-gate stage command launcher token chain to avoid `MALLOC_PER_THREAD=*` assignments
+  - default behavior requires each release-gate stage command keeps exactly one parseable `--python` value and rejects `MALLOC_PER_THREAD=*` assignments within that relay value
+  - any `MALLOC_PER_THREAD` env-assignment hit in launcher or `--python` relay values forces `HOLD`
+  - `--skip-release-gate-malloc-per-thread-env-check` disables malloc-per-thread-env gate for manual recovery override
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_holds_when_release_gate_stage_uses_malloc_per_thread_env_assignment`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_can_disable_release_gate_malloc_per_thread_env_gate`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-57`
+
+## TP-E13-58 Release Switch Bulk Strategy View
+
+- Validation focus: decision artifact must provide a stable high-volume analytics projection (`bulk_strategy_view`) that does not require downstream schema rewrites when new gates are added.
+- Bulk-strategy contract:
+  - decision JSON keeps legacy fields (`decision/gates/evidence_summary`) and adds `bulk_strategy_view` additively
+  - `bulk_strategy_view` exports fixed keys for aggregation: `schema_version`, `decision`, `gate_count`, `pass_count`, `hold_count`, `gate_status_bitmap`, `gate_status_index`, `gate_rows`, `check_enablement`, `evidence_status_counts`, `evidence_freshness_counts`
+  - `bulk_strategy_view` gate counters and status maps must stay consistent with canonical `gates` list for both `GO` and `HOLD`
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_view_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_view_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-58`
+
+## TP-E13-59 Release Switch Bulk Domain Rollup Signature
+
+- Validation focus: `bulk_strategy_view` must provide domain-level rollups and deterministic hold signatures for large-scale aggregation and bucketing workloads.
+- Bulk-domain-rollup contract:
+  - `bulk_strategy_view.schema_version` upgraded to `release_switch_bulk_strategy.v2`
+  - decision artifact includes `decision_code` (`GO=1/HOLD=0`) and `hold_signature` (`GO` or sorted hold-gate signature string)
+  - decision artifact includes index vectors `pass_gate_indices/hold_gate_indices` and domain vectors `gate_domain_index`
+  - `domain_rollup` exports per-domain `gate_count/pass_count/hold_count/pass_ratio` and must be consistent with `gate_rows`
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_domain_rollup_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_domain_rollup_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-59`
+
+## TP-E13-60 Release Switch Bulk Signature Hashes
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width hash signatures for high-volume index, dedup, and bucketing pipelines.
+- Bulk-signature-hash contract:
+  - decision artifact includes `hold_signature_sha256` and it must equal `sha256(hold_signature)`
+  - decision artifact includes `strategy_signature_sha256` and it must equal `sha256` of canonical payload: `decision/gate_status_bitmap/pass_gate_indices/hold_gate_indices/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - both hash fields are 64-char lowercase hex and are emitted for both `GO` and `HOLD` decisions
+  - legacy fields remain intact (`schema_version=release_switch_bulk_strategy.v2`, `hold_signature`, `gate_rows`, `domain_rollup`, etc.)
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_signature_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_signature_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-60`

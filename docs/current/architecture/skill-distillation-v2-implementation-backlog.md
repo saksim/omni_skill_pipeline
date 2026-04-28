@@ -1077,6 +1077,336 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
   - 任一 stage 命中 `PYTHONWARNINGS` 赋值时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-python-warnings-env-check` 显式关闭该门禁
 
+#### TP-E13-39 Release switch 未登记 PYTHON* 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate 未登记 `PYTHON*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `PYTHON*` 赋值漂移运行时契约。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现未知 `PYTHON*` 赋值（已登记门禁键除外）
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现未知 `PYTHON*` 赋值（已登记门禁键除外）
+  - 任一 stage 命中未知 `PYTHON*` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-python-env-wildcard-check` 显式关闭该门禁
+
+#### TP-E13-40 Release switch PATH 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `PATH` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `PATH=*` 赋值重定向解释器解析路径，避免命中非预期 Python runtime 导致伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `PATH=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `PATH=*`
+  - 任一 stage 命中 `PATH` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-path-env-check` 显式关闭该门禁
+
+#### TP-E13-41 Release switch LD_PRELOAD 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `LD_PRELOAD` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `LD_PRELOAD=*` 注入动态加载器 hook，避免运行时被旁路导致伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `LD_PRELOAD=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `LD_PRELOAD=*`
+  - 任一 stage 命中 `LD_PRELOAD` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-ld-preload-env-check` 显式关闭该门禁
+
+#### TP-E13-42 Release switch LD_LIBRARY_PATH 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `LD_LIBRARY_PATH` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `LD_LIBRARY_PATH=*` 重定向动态链接器查找路径，避免运行时库解析漂移导致伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `LD_LIBRARY_PATH=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `LD_LIBRARY_PATH=*`
+  - 任一 stage 命中 `LD_LIBRARY_PATH` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-ld-library-path-env-check` 显式关闭该门禁
+
+#### TP-E13-43 Release switch LD_AUDIT 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `LD_AUDIT` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `LD_AUDIT=*` 注入动态链接器审计 hook，避免运行时旁路导致伪 `GO`。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `LD_AUDIT=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `LD_AUDIT=*`
+  - 任一 stage 命中 `LD_AUDIT` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-ld-audit-env-check` 显式关闭该门禁
+
+#### TP-E13-44 Release switch 未登记 LD_* 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate 未登记 `LD_*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `LD_*` 赋值漂移动态链接器运行时契约。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现未知 `LD_*` 赋值（已登记门禁键除外）
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现未知 `LD_*` 赋值（已登记门禁键除外）
+  - 任一 stage 命中未知 `LD_*` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-ld-env-wildcard-check` 显式关闭该门禁
+
+#### TP-E13-45 Release switch GLIBC_TUNABLES 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `GLIBC_TUNABLES` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `GLIBC_TUNABLES=*` 漂移 glibc 动态链接器 tunables 契约。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `GLIBC_TUNABLES=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `GLIBC_TUNABLES=*`
+  - 任一 stage 命中 `GLIBC_TUNABLES` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-glibc-tunables-env-check` 显式关闭该门禁
+
+#### TP-E13-46 Release switch 未登记 GLIBC_* 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate 未登记 `GLIBC_*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `GLIBC_*` 赋值漂移 glibc 运行时契约。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现未知 `GLIBC_*` 赋值（已登记门禁键除外）
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现未知 `GLIBC_*` 赋值（已登记门禁键除外）
+  - 任一 stage 命中未知 `GLIBC_*` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-glibc-env-wildcard-check` 显式关闭该门禁
+
+#### TP-E13-47 Release switch 未登记 MALLOC_* 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate 未登记 `MALLOC_*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `MALLOC_*` 赋值漂移内存分配器运行时契约。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现未知 `MALLOC_*` 赋值（已登记门禁键除外）
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现未知 `MALLOC_*` 赋值（已登记门禁键除外）
+  - 任一 stage 命中未知 `MALLOC_*` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-env-wildcard-check` 显式关闭该门禁
+
+#### TP-E13-48 Release switch MALLOC_TRACE 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_TRACE` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_TRACE=*` 注入分配器追踪输出与侧信道痕迹。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_TRACE=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_TRACE=*`
+  - 任一 stage 命中 `MALLOC_TRACE` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-trace-env-check` 显式关闭该门禁
+
+#### TP-E13-49 Release switch MALLOC_CHECK_ 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_CHECK_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_CHECK_=*` 改写 glibc 分配器检查策略。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_CHECK_=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_CHECK_=*`
+  - 任一 stage 命中 `MALLOC_CHECK_` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-check-env-check` 显式关闭该门禁
+
+#### TP-E13-50 Release switch MALLOC_PERTURB_ 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_PERTURB_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_PERTURB_=*` 注入内存扰动策略，避免运行时行为与基线判定出现漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_PERTURB_=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_PERTURB_=*`
+  - 任一 stage 命中 `MALLOC_PERTURB_` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-perturb-env-check` 显式关闭该门禁
+
+#### TP-E13-51 Release switch MALLOC_ARENA_MAX 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_ARENA_MAX` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_ARENA_MAX=*` 改写 allocator arena 并发扩展策略，避免运行时资源行为与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_ARENA_MAX=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_ARENA_MAX=*`
+  - 任一 stage 命中 `MALLOC_ARENA_MAX` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-arena-max-env-check` 显式关闭该门禁
+
+#### TP-E13-52 Release switch MALLOC_MMAP_THRESHOLD_ 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_MMAP_THRESHOLD_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_MMAP_THRESHOLD_=*` 改写 allocator mmap 阈值策略，避免运行时内存分配路径与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_MMAP_THRESHOLD_=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_MMAP_THRESHOLD_=*`
+  - 任一 stage 命中 `MALLOC_MMAP_THRESHOLD_` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-mmap-threshold-env-check` 显式关闭该门禁
+
+#### TP-E13-53 Release switch MALLOC_MMAP_MAX_ 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_MMAP_MAX_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_MMAP_MAX_=*` 改写 allocator mmap 数量阈值策略，避免运行时分配形态与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_MMAP_MAX_=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_MMAP_MAX_=*`
+  - 任一 stage 命中 `MALLOC_MMAP_MAX_` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-mmap-max-env-check` 显式关闭该门禁
+
+#### TP-E13-54 Release switch MALLOC_TOP_PAD_ 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_TOP_PAD_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_TOP_PAD_=*` 改写 allocator top chunk padding 策略，避免运行时堆增长行为与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_TOP_PAD_=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_TOP_PAD_=*`
+  - 任一 stage 命中 `MALLOC_TOP_PAD_` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-top-pad-env-check` 显式关闭该门禁
+
+#### TP-E13-55 Release switch MALLOC_TRIM_THRESHOLD_ 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_TRIM_THRESHOLD_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_TRIM_THRESHOLD_=*` 改写 allocator trim threshold 策略，避免运行时内存回收行为与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_TRIM_THRESHOLD_=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_TRIM_THRESHOLD_=*`
+  - 任一 stage 命中 `MALLOC_TRIM_THRESHOLD_` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-trim-threshold-env-check` 显式关闭该门禁
+
+#### TP-E13-56 Release switch MALLOC_ARENA_TEST 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_ARENA_TEST` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_ARENA_TEST=*` 改写 allocator arena probing 策略，避免运行时 arena 扩展行为与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_ARENA_TEST=*`
+  - 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_ARENA_TEST=*`
+  - 任一 stage 命中 `MALLOC_ARENA_TEST` 赋值时，判定强制 `HOLD`
+  - 支持 `--skip-release-gate-malloc-arena-test-env-check` 显式关闭该门禁
+
+#### TP-E13-57 Release switch MALLOC_PER_THREAD 环境变量门禁
+
+- 目标：在 release switch 判定中加入 release-gate `MALLOC_PER_THREAD` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_PER_THREAD=*` 改写 allocator per-thread arena pooling 策略，避免运行时线程内存分配行为与基线判定漂移。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 默认校验 release-gate `beta_gate/ga_gate/roadmap_gate` 命令在 linux-suite script token 前不允许出现 `MALLOC_PER_THREAD=*`
+- 默认校验 stage `--python` 传递值解析后的 token 中不允许出现 `MALLOC_PER_THREAD=*`
+- 任一 stage 命中 `MALLOC_PER_THREAD` 赋值时，判定强制 `HOLD`
+- 支持 `--skip-release-gate-malloc-per-thread-env-check` 显式关闭该门禁
+
+#### TP-E13-58 Release switch 决策 JSON 批量测算视图
+
+- 目标：在保持现有 `decision/evidence_summary/gates` 兼容前提下，新增 `bulk_strategy_view` 结构化视图，避免每次新增 gate 都要求下游测算器改 schema，支持海量批处理的稳定解析。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 新增 `bulk_strategy_view`，包含固定骨架：`schema_version/decision/gate_count/pass_count/hold_count/gate_status_bitmap/gate_status_index/gate_rows/check_enablement/evidence_status_counts/evidence_freshness_counts`
+  - `bulk_strategy_view` 中 gate 汇总与原始 `gates` 一致（计数、通过/阻断结果、门禁名映射）
+  - `bulk_strategy_view` 同时适用于 `GO` 与 `HOLD` 决策样本
+  - 保持旧字段不删除，避免破坏既有消费者
+
+#### TP-E13-59 Release switch 批量测算域聚合签名
+
+- 目标：在 `bulk_strategy_view` 上增加 domain 级聚合与签名字段，支持海量测算直接按域统计、按 hold 签名分桶，而无需二次遍历长 gate 明细。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - `bulk_strategy_view` 升级为 `schema_version=release_switch_bulk_strategy.v2`
+  - 新增 `decision_code/hold_signature/pass_gate_indices/hold_gate_indices/gate_domain_index/domain_rollup`
+  - `domain_rollup` 需给出每个 domain 的 `gate_count/pass_count/hold_count/pass_ratio`
+  - `GO` 样本 `hold_signature` 固定为 `GO`；`HOLD` 样本 `hold_signature` 必须包含关键阻断 gate 名
+
+#### TP-E13-60 Release switch 批量测算签名哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐固定宽度哈希签名字段，支撑海量聚合作业在不依赖长字符串索引的情况下完成分桶与去重，同时保持 `decision/gates/evidence_summary` 兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `hold_signature_sha256`
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `strategy_signature_sha256`
+  - 两个签名字段均为 64 位十六进制字符串，且可由稳定规则重算
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
 鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
 ### `src/omni_skill_pipeline/models.py`
 

@@ -1,10 +1,8 @@
-# Testing
+﻿# Testing
 
-## 鍒よ瘝
-
-杩欎釜浠撳綋鍓嶈蛋鐨勬槸 `unittest` 浣撶郴锛屼笉鏄?`pytest` 浣撶郴锛涙祴璇曞垽鏂鎸夌幇鏈夐摼璺獙灏革紝涓嶈鎷块敊鍒戝叿銆?
-## 鏈湴鐜瀵归綈
-
+## 閸掋倛鐦?
+鏉╂瑤閲滄禒鎾崇秼閸撳秷铔嬮惃鍕Ц `unittest` 娴ｆ挾閮撮敍灞肩瑝閺?`pytest` 娴ｆ挾閮撮敍娑欑ゴ鐠囨洖鍨介弬顓☆洣閹稿骞囬張澶愭懠鐠侯垶鐛欑亸闈╃礉娑撳秷顩﹂幏鍧楁晩閸掓垵鍙块妴?
+## 閺堫剙婀撮悳顖氼暔鐎靛綊缍?
 PowerShell:
 
 ```powershell
@@ -23,100 +21,90 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
 ```
 
-## 鍏ㄩ噺鍥炲綊
+## 閸忋劑鍣洪崶鐐茬秺
 
 ```bash
 python scripts/run_ci.py
 ```
 
-璇ュ叆鍙ｄ細缁熶竴鎵ц锛?
+鐠囥儱鍙嗛崣锝勭窗缂佺喍绔撮幍褑顢戦敍?
 - `python -m coverage run --parallel-mode -m unittest discover -s tests -p 'test_*.py'`
 - `python scripts/run_tp_tests.py --all --python <current-python>`
 - `python -m coverage combine`
 - `python -m coverage report --show-missing --fail-under <threshold>`
 - `python -m coverage xml -o coverage.xml`
 
-榛樿 coverage fail-under 涓?`50`锛屽彲閫氳繃鍙傛暟瑕嗙洊銆?
-绀轰緥锛氭彁楂橀槇鍊煎埌 `65`
+姒涙顓?coverage fail-under 娑?`50`閿涘苯褰查柅姘崇箖閸欏倹鏆熺憰鍡欐磰閵?
+缁€杞扮伐閿涙碍褰佹姗€妲囬崐鐓庡煂 `65`
 
 ```bash
 python scripts/run_ci.py --coverage-fail-under 65
 ```
 
-绀轰緥锛氫粎鍦ㄦ湰鍦板揩閫熼獙閫昏緫锛屼复鏃跺叧闂?coverage
+缁€杞扮伐閿涙矮绮庨崷銊︽拱閸︽澘鎻╅柅鐔肩崣闁槒绶敍灞煎閺冭泛鍙ч梻?coverage
 
 ```bash
 python scripts/run_ci.py --no-coverage
 ```
 
-## 瀹瑰櫒鐑熸祴鑴氭湰
-
-瀹瑰櫒鍩虹嚎鐑熸祴锛堟瀯寤洪暅鍍?+ 鍚姩瀹瑰櫒 + 杞 `/healthz`锛夛細
-
+## 鐎圭懓娅掗悜鐔哥ゴ閼存碍婀?
+鐎圭懓娅掗崺铏瑰殠閻戠喐绁撮敍鍫熺€娲殔閸?+ 閸氼垰濮╃€圭懓娅?+ 鏉烆喛顕?`/healthz`閿涘绱?
 ```bash
 python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:local --port 18000
 ```
 
-鍙湅鎵ц璁″垝锛屼笉鐪熸璋冪敤 Docker锛?
+閸欘亞婀呴幍褑顢戠拋鈥冲灊閿涘奔绗夐惇鐔割劀鐠嬪啰鏁?Docker閿?
 ```bash
 python scripts/run_container_smoke.py --dry-run
 ```
 
-Linux 缁熶竴楠屾祴鏃跺缓璁洿鎺ヤ娇鐢ㄨ鑴氭湰锛屼綔涓?`LC-L1-18` 鐨勫鍣ㄥ洖褰掑叆鍙ｃ€?
+Linux 缂佺喍绔存灞剧ゴ閺冭泛缂撶拋顔炬纯閹恒儰濞囬悽銊嚉閼存碍婀伴敍灞肩稊娑?`LC-L1-18` 閻ㄥ嫬顔愰崳銊ユ礀瑜版帒鍙嗛崣锝冣偓?
 ## Dual-Write Benchmark Harness
 
-`LC-L2-33` 寮曞叆 dual-write 鍩哄噯鑴氭湰锛?
+`LC-L2-33` 瀵洖鍙?dual-write 閸╁搫鍣懘姘拱閿?
 ```bash
 python scripts/benchmark_dual_write.py --iterations 20 --skip-postgres
 python scripts/benchmark_dual_write.py --iterations 20 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
 ```
 
-- 绗竴涓懡浠ゅ彧娴?file repository baseline銆?- 绗簩涓懡浠ゆ祴 file + Postgres dual-write 鏃跺欢銆?- 榛樿鎶ュ憡钀界洏锛歚docs/current/status/baselines/e8-dual-write-benchmark-report.json`銆?
-## 瀹氬悜鎵ц
-
-鏌ョ湅褰撳墠宸叉槧灏?Task Package:
+- 缁楊兛绔存稉顏勬嚒娴犮倕褰уù?file repository baseline閵?- 缁楊兛绨╂稉顏勬嚒娴犮倖绁?file + Postgres dual-write 閺冭泛娆㈤妴?- 姒涙顓婚幎銉ユ啞閽€鐣屾磸閿涙瓪docs/current/status/baselines/e8-dual-write-benchmark-report.json`閵?
+## 鐎规艾鎮滈幍褑顢?
+閺屻儳婀呰ぐ鎾冲瀹稿弶妲х亸?Task Package:
 
 ```bash
 python scripts/run_tp_tests.py --list
 ```
 
-鎵ц鍗曚釜宸ュ崟:
+閹笛嗩攽閸楁洑閲滃銉ュ礋:
 
 ```bash
 python scripts/run_tp_tests.py TP-E6-02 --python python
 ```
 
-鎵ц澶氫釜宸ュ崟:
+閹笛嗩攽婢舵矮閲滃銉ュ礋:
 
 ```bash
-python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 TP-E13-14 TP-E13-15 TP-E13-16 TP-E13-17 TP-E13-18 TP-E13-19 TP-E13-20 TP-E13-21 TP-E13-22 TP-E13-23 TP-E13-24 TP-E13-25 TP-E13-26 TP-E13-27 TP-E13-28 TP-E13-29 TP-E13-30 TP-E13-31 TP-E13-32 TP-E13-33 TP-E13-34 TP-E13-35 TP-E13-36 TP-E13-37 TP-E13-38 --python python3
+python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 TP-E13-14 TP-E13-15 TP-E13-16 TP-E13-17 TP-E13-18 TP-E13-19 TP-E13-20 TP-E13-21 TP-E13-22 TP-E13-23 TP-E13-24 TP-E13-25 TP-E13-26 TP-E13-27 TP-E13-28 TP-E13-29 TP-E13-30 TP-E13-31 TP-E13-32 TP-E13-33 TP-E13-34 TP-E13-35 TP-E13-36 TP-E13-37 TP-E13-38 TP-E13-39 TP-E13-40 TP-E13-41 TP-E13-42 TP-E13-43 TP-E13-44 TP-E13-45 TP-E13-46 TP-E13-47 TP-E13-48 TP-E13-49 TP-E13-50 TP-E13-51 TP-E13-52 TP-E13-53 TP-E13-54 TP-E13-55 TP-E13-56 TP-E13-57 TP-E13-58 TP-E13-59 TP-E13-60 --python python3
 ```
 
-## 褰撳墠瑕嗙洊閲嶇偣
+## 瑜版挸澧犵憰鍡欐磰闁插秶鍋?
+- `tests/test_mvp.py`: 鐟曞棛娲?text / audio / image / video / tabular 娑撴槒鐭惧?- `tests/test_v2_schema_and_corpus.py`: 鐟曞棛娲?corpus 缂佸嫯顥婇妴涔竨blication閵嗕构uality閵嗕购eview artifacts
+- `tests/test_quality_scoring.py`: 鐟曞棛娲婄拹銊╁櫤鐠囧嫬鍨?- `tests/test_review_policy.py`: 鐟曞棛娲?review threshold 娑?reason codes
+- `tests/test_dual_write_repository.py`: 鐟曞棛娲?dual-write 娑?娴犲簼绮ㄩ崒銊攽娑撹桨绗屾径杈Е娣囨繃濮?- `tests/test_benchmark_dual_write.py`: 鐟曞棛娲?dual-write benchmark 閼存碍婀伴悜鐔哥ゴ
+- `tests/test_similarity_retrieval.py`: 鐟曞棛娲婂Λ鈧槐銏″▕鐠灺扳偓涔畁memory baseline 閹烘帒绨妴涔ckend 闁鐎烽崡鐘辩秴鐞涘奔璐?- `tests/test_lifecycle_decision_engine.py`: 鐟曞棛娲?lifecycle `new/revise/merge/supersede/reject` 閸愬磭鐡ラ崚鍡樼ウ
+- `tests/test_publication_builder.py`: 鐟曞棛娲?checklist/decision_tree 鏉堟挸鍤稉搴㈡￥ decision 閸︾儤娅?fallback
+- `tests/test_publication_orchestrator_split.py`: 鐟曞棛娲?goal_type 妞瑰崬濮╅惃?publication type 闁瀚?- `tests/test_api_app.py`: 鐟曞棛娲?distill API 鏉堟挸鍙嗘潪顒佸床閵嗕線鏁婄拠顖涙Ё鐏忓嫪绗?TP-E10-02 閻?V2 鏉堟挸鍤總鎴犲鐎涙顔?- `tests/test_worker.py`: 鐟曞棛娲?TP-E10-03 worker 閺傞鎹㈤崝锛勮閸ㄥ绱檙eview_queue/rebuild_publication/revise_skill閿?- `tests/test_transformers_regression.py`: 鐟曞棛娲?TP-E11-01 濡€崇€?鏉烆剚宕查崳銊ュ瀻閺€顖氭礀瑜版帪绱檚kill_type閵嗕躬vidence 閼辨艾鎮庨妴涔磂gacy atom bridge閿?- `tests/test_doc_sync_check_script.py`: 鐟曞棛娲?TP-E13-01 / TP-E13-02 / TP-E13-03 閺傚洦銆傞崥灞绢劄濡偓閺屻儴鍓奸張顒婄礄濠ф劗鐖滅悰銊╂桨 + 鏉╀胶些閹稿洤宕?+ 閸欐垵绔烽崚鍥ㄥ床閺嶅洤鍣?+ LC-L1-19 Beta runbook 婵傛垹瀹抽敍?- `tests/test_linux_validation_suite_script.py`: 鐟曞棛娲?TP-E13-04 Linux 缂佺喍绔存灞芥缂傛牗甯撻懘姘拱閿涘牓妯佸▓鐢电摣闁鈧礁鎳℃禒銈嗗ⅵ閸栧懌鈧龚ry-run 鐠佲€冲灊閽€鐣屾磸閵嗕恭ontainer smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_postgres_soak_validation_script.py`: 鐟曞棛娲?TP-E13-05 Postgres 闂€璺ㄇ旀灞芥閼存碍婀伴敍鍦盤 閸ョ偛缍婄紓鏍ㄥ笓閵嗕攻enchmark 閸欏倹鏆熼妴涔╯n fail-fast閿?- `tests/test_worker_ga_validation_script.py`: 鐟曞棛娲?TP-E13-06 worker GA 妤犲矁鐦夐懘姘拱閿涘牓妯佸▓鐢电摣闁鈧龚ry-run 鐠佲€冲灊閽€鐣屾磸閿?- `tests/test_provider_ga_validation_script.py`: 鐟曞棛娲?TP-E13-07 provider GA 妤犲矁鐦夐懘姘拱閿涘澁etry/circuit-breaker/failure-budget/audit 鐠佲€冲灊缂傛牗甯撻敍?- `tests/test_review_queue_ga_validation_script.py`: 鐟曞棛娲?TP-E13-08 review queue GA 妤犲矁鐦夐懘姘拱閿涘澁epository/service/api/feedback 闂冭埖顔岀紓鏍ㄥ笓娑撳海鐡柅澶涚礆
+- `tests/test_calibration_ga_validation_script.py`: 鐟曞棛娲?TP-E13-09 calibration GA 妤犲矁鐦夐懘姘拱閿涘牓妲囬崐鐓庮殩缁撅负鈧浇鐨熼崣鍌涘Г閸涘鈧沟anifest/report 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_postgres_ga_validation_script.py`: 鐟曞棛娲?TP-E13-10 Postgres GA 妤犲矁鐦夐懘姘拱閿涘澁epository/dual-write/benchmark 闂冭埖顔岀紓鏍ㄥ笓閵嗕龚sn fail-fast閵嗕攻enchmark 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_roadmap_extension_validation_script.py`: 鐟曞棛娲?TP-E13-11 roadmap extension 妤犲矁鐦夐懘姘拱閿涘湢C-R-34~37 閻?retrieval/lifecycle/publication/review queue surface 闂冭埖顔岀紓鏍ㄥ笓娑撳海鐡柅澶涚礆
+- `tests/test_release_gate_validation_script.py`: 鐟曞棛娲?TP-E13-12 閸欐垵绔烽梻銊ь洣閼辨艾鎮庨懘姘拱閿涘潌eta/ga/roadmap 闂冭埖顔岀粵娑⑩偓澶夌瑢 coverage/container/postgres/calibration 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_release_switch_validation_script.py`: 鐟曞棛娲?TP-E13-13 / TP-E13-14 / TP-E13-15 / TP-E13-16 / TP-E13-17 / TP-E13-18 / TP-E13-19 / TP-E13-20 / TP-E13-21 / TP-E13-22 / TP-E13-23 / TP-E13-24 / TP-E13-25 / TP-E13-26 / TP-E13-27 / TP-E13-28 / TP-E13-29 / TP-E13-30 / TP-E13-31 / TP-E13-32 / TP-E13-33 / TP-E13-34 / TP-E13-35 / TP-E13-36 / TP-E13-37 閸欐垵绔烽崚鍥ㄥ床閸掋倕鐣鹃懘姘拱閿涘澁elease-gate/TP/doc-sync 缂傛牗甯撻妴涔╡cision-only GO/HOLD閵嗕浇鐦夐幑顔煎瘶閳ユ粌鐣弫瀛樷偓?+ 閸欘垱澧界悰灞芥嚒娴犮倛顓搁崚鎺嗏偓婵嬫，缁備降鈧躬vidence freshness 閺冭埖鏅ラ梻銊ь洣閵嗕公uture timestamp skew 闂傘劎顩﹂妴涔hort skew 闂傘劎顩︽稉宸杄lease-gate output binding 闂傘劎顩︽稉?stage contract 闂傘劎顩︽稉?script-position 闂傘劎顩︽稉?option override 闂傘劎顩︽稉?relaxed-flag 闂傘劎顩?+ dry-run 闂傘劎顩?+ script-anchor 闂傘劎顩?+ python-binding 闂傘劎顩?+ coverage-floor 闂傘劎顩?+ python-optimization 闂傘劎顩?+ python-option-optimization 闂傘劎顩?+ python-optimize-env 闂傘劎顩?+ python-option-inline-exec 闂傘劎顩?+ python-path-env 闂傘劎顩?+ python-home-env 闂傘劎顩?+ python-user-base-env 闂傘劎顩?+ python-breakpoint-env 闂傘劎顩?+ python-startup-env 闂傘劎顩?+ python-inspect-env 闂傘劎顩﹂敍?- `tests/test_tp_registry.py`: 鐟曞棛娲?TP 濞夈劌鍞界悰銊ょ瑢 `skill-distillation-v2-work-orders.md` 閻ㄥ嫬寮婚崥鎴濈暚閺佸瓨鈧冾嚠姒绘劧绱欏蹇旀Ё鐏?+ 楠炵晫浼掗弰鐘茬殸閿?
+## 瑜版挸澧犵紓鍝勫經
 
-- `tests/test_mvp.py`: 瑕嗙洊 text / audio / image / video / tabular 涓昏矾寰?- `tests/test_v2_schema_and_corpus.py`: 瑕嗙洊 corpus 缁勮銆乸ublication銆乹uality銆乺eview artifacts
-- `tests/test_quality_scoring.py`: 瑕嗙洊璐ㄩ噺璇勫垎
-- `tests/test_review_policy.py`: 瑕嗙洊 review threshold 涓?reason codes
-- `tests/test_dual_write_repository.py`: 瑕嗙洊 dual-write 涓?浠庝粨鍌ㄨ涓轰笌澶辫触淇濇姢
-- `tests/test_benchmark_dual_write.py`: 瑕嗙洊 dual-write benchmark 鑴氭湰鐑熸祴
-- `tests/test_similarity_retrieval.py`: 瑕嗙洊妫€绱㈡娊璞°€乮nmemory baseline 鎺掑簭銆乥ackend 閫夊瀷鍗犱綅琛屼负
-- `tests/test_lifecycle_decision_engine.py`: 瑕嗙洊 lifecycle `new/revise/merge/supersede/reject` 鍐崇瓥鍒嗘祦
-- `tests/test_publication_builder.py`: 瑕嗙洊 checklist/decision_tree 杈撳嚭涓庢棤 decision 鍦烘櫙 fallback
-- `tests/test_publication_orchestrator_split.py`: 瑕嗙洊 goal_type 椹卞姩鐨?publication type 閫夋嫨
-- `tests/test_api_app.py`: 瑕嗙洊 distill API 杈撳叆杞崲銆侀敊璇槧灏勪笌 TP-E10-02 鐨?V2 杈撳嚭濂戠害瀛楁
-- `tests/test_worker.py`: 瑕嗙洊 TP-E10-03 worker 鏂颁换鍔＄被鍨嬶紙review_queue/rebuild_publication/revise_skill锛?- `tests/test_transformers_regression.py`: 瑕嗙洊 TP-E11-01 妯″瀷/杞崲鍣ㄥ垎鏀洖褰掞紙skill_type銆乪vidence 鑱氬悎銆乴egacy atom bridge锛?- `tests/test_doc_sync_check_script.py`: 瑕嗙洊 TP-E13-01 / TP-E13-02 / TP-E13-03 鏂囨。鍚屾妫€鏌ヨ剼鏈紙婧愮爜琛ㄩ潰 + 杩佺Щ鎸囧崡 + 鍙戝竷鍒囨崲鏍囧噯 + LC-L1-19 Beta runbook 濂戠害锛?- `tests/test_linux_validation_suite_script.py`: 瑕嗙洊 TP-E13-04 Linux 缁熶竴楠屽案缂栨帓鑴氭湰锛堥樁娈电瓫閫夈€佸懡浠ゆ墦鍖呫€乨ry-run 璁″垝钀界洏銆乧ontainer smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 鍙傛暟閫忎紶锛?- `tests/test_postgres_soak_validation_script.py`: 瑕嗙洊 TP-E13-05 Postgres 闀跨ǔ楠屽案鑴氭湰锛圱P 鍥炲綊缂栨帓銆乥enchmark 鍙傛暟銆乨sn fail-fast锛?- `tests/test_worker_ga_validation_script.py`: 瑕嗙洊 TP-E13-06 worker GA 楠岃瘉鑴氭湰锛堥樁娈电瓫閫夈€乨ry-run 璁″垝钀界洏锛?- `tests/test_provider_ga_validation_script.py`: 瑕嗙洊 TP-E13-07 provider GA 楠岃瘉鑴氭湰锛坮etry/circuit-breaker/failure-budget/audit 璁″垝缂栨帓锛?- `tests/test_review_queue_ga_validation_script.py`: 瑕嗙洊 TP-E13-08 review queue GA 楠岃瘉鑴氭湰锛坮epository/service/api/feedback 闃舵缂栨帓涓庣瓫閫夛級
-- `tests/test_calibration_ga_validation_script.py`: 瑕嗙洊 TP-E13-09 calibration GA 楠岃瘉鑴氭湰锛堥槇鍊煎绾︺€佽皟鍙傛姤鍛娿€乵anifest/report 鍙傛暟閫忎紶锛?- `tests/test_postgres_ga_validation_script.py`: 瑕嗙洊 TP-E13-10 Postgres GA 楠岃瘉鑴氭湰锛坮epository/dual-write/benchmark 闃舵缂栨帓銆乨sn fail-fast銆乥enchmark 鍙傛暟閫忎紶锛?- `tests/test_roadmap_extension_validation_script.py`: 瑕嗙洊 TP-E13-11 roadmap extension 楠岃瘉鑴氭湰锛圠C-R-34~37 鐨?retrieval/lifecycle/publication/review queue surface 闃舵缂栨帓涓庣瓫閫夛級
-- `tests/test_release_gate_validation_script.py`: 瑕嗙洊 TP-E13-12 鍙戝竷闂ㄧ鑱氬悎鑴氭湰锛坆eta/ga/roadmap 闃舵绛涢€変笌 coverage/container/postgres/calibration 鍙傛暟閫忎紶锛?- `tests/test_release_switch_validation_script.py`: 瑕嗙洊 TP-E13-13 / TP-E13-14 / TP-E13-15 / TP-E13-16 / TP-E13-17 / TP-E13-18 / TP-E13-19 / TP-E13-20 / TP-E13-21 / TP-E13-22 / TP-E13-23 / TP-E13-24 / TP-E13-25 / TP-E13-26 / TP-E13-27 / TP-E13-28 / TP-E13-29 / TP-E13-30 / TP-E13-31 / TP-E13-32 / TP-E13-33 / TP-E13-34 / TP-E13-35 / TP-E13-36 / TP-E13-37 鍙戝竷鍒囨崲鍒ゅ畾鑴氭湰锛坮elease-gate/TP/doc-sync 缂栨帓銆乨ecision-only GO/HOLD銆佽瘉鎹寘鈥滃畬鏁存€?+ 鍙墽琛屽懡浠よ鍒掆€濋棬绂併€乪vidence freshness 鏃舵晥闂ㄧ銆乫uture timestamp skew 闂ㄧ銆乧ohort skew 闂ㄧ涓巖elease-gate output binding 闂ㄧ涓?stage contract 闂ㄧ涓?script-position 闂ㄧ涓?option override 闂ㄧ涓?relaxed-flag 闂ㄧ + dry-run 闂ㄧ + script-anchor 闂ㄧ + python-binding 闂ㄧ + coverage-floor 闂ㄧ + python-optimization 闂ㄧ + python-option-optimization 闂ㄧ + python-optimize-env 闂ㄧ + python-option-inline-exec 闂ㄧ + python-path-env 闂ㄧ + python-home-env 闂ㄧ + python-user-base-env 闂ㄧ + python-breakpoint-env 闂ㄧ + python-startup-env 闂ㄧ + python-inspect-env 闂ㄧ锛?- `tests/test_tp_registry.py`: 瑕嗙洊 TP 娉ㄥ唽琛ㄤ笌 `skill-distillation-v2-work-orders.md` 鐨勫弻鍚戝畬鏁存€у榻愶紙婕忔槧灏?+ 骞界伒鏄犲皠锛?
-## 褰撳墠缂哄彛
+- FastAPI/ASGI API 閼奉亜濮╅崠鏍ㄧゴ鐠囨洖鍑＄憰鍡欐磰閺嶇绺炬總鎴犲閿涙稐绮涚紓铏规埂鐎?provider 閺佸懘娈板▔銊ュ弳娑撳氦绀嬫潪钘夋簚閺?- coverage fail-under 娴犲秵妲告穱婵嗙暓闂冨牆鈧》绱檂50`閿涘绱濋崥搴ｇ敾鎼存棃娈㈢拹銊╁櫤閸╄櫣鍤庨幓鎰磳
+- 鐏忔碍妫ら悽鐔堕獓缁狙嗙鏉炶棄甯囧ù瀣剁礄瑜版挸澧犳禒鍛箒 dual-write benchmark smoke harness閿?- 閻喎鐤?provider failure-mode 鐟曞棛娲婃禒宥呬焊閽?
+## 缂佸瓨濮㈢憴鍕灟
 
-- FastAPI/ASGI API 鑷姩鍖栨祴璇曞凡瑕嗙洊鏍稿績濂戠害锛涗粛缂虹湡瀹?provider 鏁呴殰娉ㄥ叆涓庤礋杞藉満鏅?- coverage fail-under 浠嶆槸淇濆畧闃堝€硷紙`50`锛夛紝鍚庣画搴旈殢璐ㄩ噺鍩虹嚎鎻愬崌
-- 灏氭棤鐢熶骇绾ц礋杞藉帇娴嬶紙褰撳墠浠呮湁 dual-write benchmark smoke harness锛?- 鐪熷疄 provider failure-mode 瑕嗙洊浠嶅亸钖?
-## 缁存姢瑙勫垯
-
-姣忔鏂板 `TP-*` 宸ュ崟鏃讹紝鑷冲皯鍚屾瀹屾垚涓変欢浜嬶細
-
-1. 鍦?`tests/` 钀芥祴璇?case
-2. 鍦?`scripts/run_tp_tests.py` 鐨?`TP_TEST_CASES` 涓櫥璁版槧灏?3. 鍦ㄦ湰鏂囦欢鏇存柊瑕嗙洊鑼冨洿涓庢柊澧炲伐鍗曡鏄庯紙骞剁‘淇?`tests/test_tp_registry.py` 瀵归綈 work-orders锛?
+濮ｅ繑顐奸弬鏉款杻 `TP-*` 瀹搞儱宕熼弮璁圭礉閼峰啿鐨崥灞绢劄鐎瑰本鍨氭稉澶夋娴滃绱?
+1. 閸?`tests/` 閽€鑺ョゴ鐠?case
+2. 閸?`scripts/run_tp_tests.py` 閻?`TP_TEST_CASES` 娑擃厾娅ョ拋鐗堟Ё鐏?3. 閸︺劍婀伴弬鍥︽閺囧瓨鏌婄憰鍡欐磰閼煎啫娲挎稉搴㈡煀婢х偛浼愰崡鏇☆嚛閺勫函绱欓獮鍓佲€樻穱?`tests/test_tp_registry.py` 鐎靛綊缍?work-orders閿?
 ## LC-R-37 Additions
 
 - Added `TP-E9-03` for review queue operations surface.
@@ -486,3 +474,178 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_python_warnings_env_gate` to assert `--skip-release-gate-python-warnings-env-check` disables the gate for emergency recovery.
 - Added `TP-E13-38` mapping in `scripts/run_tp_tests.py`.
 - Linux decision-only with python-warnings-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env PYTHONWARNINGS=ignore python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-39 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate python-env-wildcard gate: decision now rejects unknown `PYTHON*` assignments in stage launchers and `--python` relay values (already-registered gate keys excluded) before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_unknown_python_env_assignment` to assert unknown `PYTHON*` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_python_env_wildcard_gate` to assert `--skip-release-gate-python-env-wildcard-check` disables the gate for emergency recovery.
+- Added `TP-E13-39` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with python-env-wildcard gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env PYTHONUNBUFFERED=1 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-40 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate path-env gate: decision now rejects `PATH=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_path_env_assignment` to assert `PATH` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_path_env_gate` to assert `--skip-release-gate-path-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-40` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with path-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env PATH=/tmp/rogue python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-41 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate ld-preload-env gate: decision now rejects `LD_PRELOAD=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_ld_preload_env_assignment` to assert `LD_PRELOAD` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_ld_preload_env_gate` to assert `--skip-release-gate-ld-preload-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-41` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with ld-preload-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env LD_PRELOAD=/tmp/evil.so python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-42 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate ld-library-path-env gate: decision now rejects `LD_LIBRARY_PATH=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_ld_library_path_env_assignment` to assert `LD_LIBRARY_PATH` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_ld_library_path_env_gate` to assert `--skip-release-gate-ld-library-path-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-42` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with ld-library-path-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env LD_LIBRARY_PATH=/tmp/evil-lib python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-43 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate ld-audit-env gate: decision now rejects `LD_AUDIT=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_ld_audit_env_assignment` to assert `LD_AUDIT` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_ld_audit_env_gate` to assert `--skip-release-gate-ld-audit-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-43` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with ld-audit-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env LD_AUDIT=/tmp/evil.audit.so python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-44 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate ld-env-wildcard gate: decision now rejects unknown `LD_*` assignments in stage launchers and `--python` relay values (already-registered gate keys excluded) before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_unknown_ld_env_assignment` to assert unknown `LD_*` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_ld_env_wildcard_gate` to assert `--skip-release-gate-ld-env-wildcard-check` disables the gate for emergency recovery.
+- Added `TP-E13-44` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with ld-env-wildcard gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env LD_DEBUG=files python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-45 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate glibc-tunables-env gate: decision now rejects `GLIBC_TUNABLES=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_glibc_tunables_env_assignment` to assert `GLIBC_TUNABLES` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_glibc_tunables_env_gate` to assert `--skip-release-gate-glibc-tunables-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-45` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with glibc-tunables-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env GLIBC_TUNABLES=glibc.malloc.check=3 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-46 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate glibc-env-wildcard gate: decision now rejects unknown `GLIBC_*` assignments (registered gate keys excluded) in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_unknown_glibc_env_assignment` to assert unknown `GLIBC_*` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_glibc_env_wildcard_gate` to assert `--skip-release-gate-glibc-env-wildcard-check` disables the gate for emergency recovery.
+- Added `TP-E13-46` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with glibc-env-wildcard gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env GLIBC_MEMUSAGE=1 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-47 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-env-wildcard gate: decision now rejects unknown `MALLOC_*` assignments (registered gate keys excluded) in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_unknown_malloc_env_assignment` to assert unknown `MALLOC_*` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_env_wildcard_gate` to assert `--skip-release-gate-malloc-env-wildcard-check` disables the gate for emergency recovery.
+- Added `TP-E13-47` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-env-wildcard gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_SHADOW_POLICY=strict python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-48 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-trace-env gate: decision now rejects `MALLOC_TRACE=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trace_env_assignment` to assert `MALLOC_TRACE` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_trace_env_gate` to assert `--skip-release-gate-malloc-trace-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-48` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-trace-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_TRACE=/tmp/mtrace.log python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-49 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-check-env gate: decision now rejects `MALLOC_CHECK_=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_check_env_assignment` to assert `MALLOC_CHECK_` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_check_env_gate` to assert `--skip-release-gate-malloc-check-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-49` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-check-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_CHECK_=3 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-50 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-perturb-env gate: decision now rejects `MALLOC_PERTURB_=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Updated `tests/test_release_switch_validation_script.py` malloc wildcard gate fixtures to use unknown `MALLOC_SHADOW_POLICY=*` so wildcard coverage stays focused on unknown keys after `MALLOC_ARENA_MAX` becomes a dedicated gate.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_perturb_env_assignment` to assert `MALLOC_PERTURB_` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_perturb_env_gate` to assert `--skip-release-gate-malloc-perturb-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-50` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-perturb-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_PERTURB_=153 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-51 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-arena-max-env gate: decision now rejects `MALLOC_ARENA_MAX=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Updated `tests/test_release_switch_validation_script.py` malloc wildcard gate fixtures to use unknown `MALLOC_SHADOW_POLICY=*` so wildcard coverage remains unknown-key focused after `MALLOC_ARENA_MAX` becomes a dedicated gate.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_max_env_assignment` to assert `MALLOC_ARENA_MAX` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_arena_max_env_gate` to assert `--skip-release-gate-malloc-arena-max-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-51` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-arena-max-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_ARENA_MAX=8 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-53 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-mmap-max-env gate: decision now rejects `MALLOC_MMAP_MAX_=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_max_env_assignment` to assert `MALLOC_MMAP_MAX_` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_mmap_max_env_gate` to assert `--skip-release-gate-malloc-mmap-max-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-53` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-mmap-max-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_MMAP_MAX_=256 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-54 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-top-pad-env gate: decision now rejects `MALLOC_TOP_PAD_=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_top_pad_env_assignment` to assert `MALLOC_TOP_PAD_` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_top_pad_env_gate` to assert `--skip-release-gate-malloc-top-pad-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-54` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-top-pad-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_TOP_PAD_=131072 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-55 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-trim-threshold-env gate: decision now rejects `MALLOC_TRIM_THRESHOLD_=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_trim_threshold_env_assignment` to assert `MALLOC_TRIM_THRESHOLD_` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_trim_threshold_env_gate` to assert `--skip-release-gate-malloc-trim-threshold-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-55` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-trim-threshold-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_TRIM_THRESHOLD_=262144 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-56 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-arena-test-env gate: decision now rejects `MALLOC_ARENA_TEST=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_arena_test_env_assignment` to assert `MALLOC_ARENA_TEST` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_arena_test_env_gate` to assert `--skip-release-gate-malloc-arena-test-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-56` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-arena-test-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_ARENA_TEST=16 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-57 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-per-thread-env gate: decision now rejects `MALLOC_PER_THREAD=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_per_thread_env_assignment` to assert `MALLOC_PER_THREAD` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_per_thread_env_gate` to assert `--skip-release-gate-malloc-per-thread-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-57` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-per-thread-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_PER_THREAD=1 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-58 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with `bulk_strategy_view` projection in decision JSON to support large-scale analytics without depending on ever-growing flat `evidence_summary` keys.
+- `bulk_strategy_view` now emits stable aggregation fields: `schema_version`, `decision`, `gate_count`, `pass_count`, `hold_count`, `gate_status_bitmap`, `gate_status_index`, `gate_rows`, `check_enablement`, `evidence_status_counts`, and `evidence_freshness_counts`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_view_for_go_decision` for GO-path schema + consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_view_for_hold_decision` for HOLD-path schema + gate-index consistency checks.
+- Added `TP-E13-58` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; parse `bulk_strategy_view` from the same decision artifact: `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-59 Additions
+
+- Upgraded `bulk_strategy_view` to `release_switch_bulk_strategy.v2` for high-volume analytics rollups.
+- Added deterministic aggregation keys for strategy clustering: `decision_code`, `hold_signature`, `pass_gate_indices`, `hold_gate_indices`, `gate_domain_index`, and `domain_rollup`.
+- `domain_rollup` now exports per-domain `gate_count/pass_count/hold_count/pass_ratio` for direct group-by aggregation without scanning raw gate text.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_domain_rollup_for_go_decision` to validate GO-path signature and domain rollup consistency.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_domain_rollup_for_hold_decision` to validate HOLD-path signature, index vectors, and domain hold counts.
+- Added `TP-E13-59` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `bulk_strategy_view` v2 from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-60 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic bulk signature digests: `hold_signature_sha256` and `strategy_signature_sha256`.
+- `hold_signature_sha256` now pins `sha256(hold_signature)` for fixed-width signature indexing.
+- `strategy_signature_sha256` now pins a canonical digest over `decision/gate_status_bitmap/pass_gate_indices/hold_gate_indices/check_enablement.enabled_keys/check_enablement.disabled_keys`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_signature_hash_for_go_decision` for GO-path signature-digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_signature_hash_for_hold_decision` for HOLD-path signature-digest consistency checks.
+- Added `TP-E13-60` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume new hash fields from `docs/current/status/baselines/e13-release-switch-decision-report.json`.

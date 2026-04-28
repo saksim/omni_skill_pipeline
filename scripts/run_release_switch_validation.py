@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shlex
@@ -69,6 +70,63 @@ FORBIDDEN_PYTHON_BREAKPOINT_ENV_KEYS = ('PYTHONBREAKPOINT',)
 FORBIDDEN_PYTHON_STARTUP_ENV_KEYS = ('PYTHONSTARTUP',)
 FORBIDDEN_PYTHON_INSPECT_ENV_KEYS = ('PYTHONINSPECT',)
 FORBIDDEN_PYTHON_WARNINGS_ENV_KEYS = ('PYTHONWARNINGS',)
+FORBIDDEN_PATH_ENV_KEYS = ('PATH',)
+FORBIDDEN_LD_PRELOAD_ENV_KEYS = ('LD_PRELOAD',)
+FORBIDDEN_LD_LIBRARY_PATH_ENV_KEYS = ('LD_LIBRARY_PATH',)
+FORBIDDEN_LD_AUDIT_ENV_KEYS = ('LD_AUDIT',)
+FORBIDDEN_GLIBC_TUNABLES_ENV_KEYS = ('GLIBC_TUNABLES',)
+FORBIDDEN_MALLOC_CHECK_ENV_KEYS = ('MALLOC_CHECK_',)
+FORBIDDEN_MALLOC_TRACE_ENV_KEYS = ('MALLOC_TRACE',)
+FORBIDDEN_MALLOC_PERTURB_ENV_KEYS = ('MALLOC_PERTURB_',)
+FORBIDDEN_MALLOC_ARENA_MAX_ENV_KEYS = ('MALLOC_ARENA_MAX',)
+FORBIDDEN_MALLOC_MMAP_THRESHOLD_ENV_KEYS = ('MALLOC_MMAP_THRESHOLD_',)
+FORBIDDEN_MALLOC_MMAP_MAX_ENV_KEYS = ('MALLOC_MMAP_MAX_',)
+FORBIDDEN_MALLOC_TOP_PAD_ENV_KEYS = ('MALLOC_TOP_PAD_',)
+FORBIDDEN_MALLOC_TRIM_THRESHOLD_ENV_KEYS = ('MALLOC_TRIM_THRESHOLD_',)
+FORBIDDEN_MALLOC_ARENA_TEST_ENV_KEYS = ('MALLOC_ARENA_TEST',)
+FORBIDDEN_MALLOC_PER_THREAD_ENV_KEYS = ('MALLOC_PER_THREAD',)
+FORBIDDEN_PYTHON_ENV_KEY_PREFIX = 'PYTHON'
+FORBIDDEN_LD_ENV_KEY_PREFIX = 'LD_'
+FORBIDDEN_GLIBC_ENV_KEY_PREFIX = 'GLIBC_'
+FORBIDDEN_MALLOC_ENV_KEY_PREFIX = 'MALLOC_'
+KNOWN_RELEASE_GATE_PYTHON_ENV_KEYS = frozenset(
+    (
+        *FORBIDDEN_PYTHON_OPTIMIZE_ENV_KEYS,
+        *FORBIDDEN_PYTHON_PATH_ENV_KEYS,
+        *FORBIDDEN_PYTHON_HOME_ENV_KEYS,
+        *FORBIDDEN_PYTHON_USER_BASE_ENV_KEYS,
+        *FORBIDDEN_PYTHON_BREAKPOINT_ENV_KEYS,
+        *FORBIDDEN_PYTHON_STARTUP_ENV_KEYS,
+        *FORBIDDEN_PYTHON_INSPECT_ENV_KEYS,
+        *FORBIDDEN_PYTHON_WARNINGS_ENV_KEYS,
+    )
+)
+KNOWN_RELEASE_GATE_LD_ENV_KEYS = frozenset(
+    (
+        *FORBIDDEN_LD_PRELOAD_ENV_KEYS,
+        *FORBIDDEN_LD_LIBRARY_PATH_ENV_KEYS,
+        *FORBIDDEN_LD_AUDIT_ENV_KEYS,
+    )
+)
+KNOWN_RELEASE_GATE_GLIBC_ENV_KEYS = frozenset(
+    (
+        *FORBIDDEN_GLIBC_TUNABLES_ENV_KEYS,
+    )
+)
+KNOWN_RELEASE_GATE_MALLOC_ENV_KEYS = frozenset(
+    (
+        *FORBIDDEN_MALLOC_CHECK_ENV_KEYS,
+        *FORBIDDEN_MALLOC_TRACE_ENV_KEYS,
+        *FORBIDDEN_MALLOC_PERTURB_ENV_KEYS,
+        *FORBIDDEN_MALLOC_ARENA_MAX_ENV_KEYS,
+        *FORBIDDEN_MALLOC_MMAP_THRESHOLD_ENV_KEYS,
+        *FORBIDDEN_MALLOC_MMAP_MAX_ENV_KEYS,
+        *FORBIDDEN_MALLOC_TOP_PAD_ENV_KEYS,
+        *FORBIDDEN_MALLOC_TRIM_THRESHOLD_ENV_KEYS,
+        *FORBIDDEN_MALLOC_ARENA_TEST_ENV_KEYS,
+        *FORBIDDEN_MALLOC_PER_THREAD_ENV_KEYS,
+    )
+)
 DEFAULT_STAGES = ('release_gate', 'release_contract', 'doc_sync')
 ALL_STAGES = tuple(DEFAULT_STAGES)
 RELEASE_GATE_MARKERS = (
@@ -352,6 +410,101 @@ def _parse_args() -> argparse.Namespace:
         '--skip-release-gate-python-warnings-env-check',
         action='store_true',
         help='Disable release-gate python-warnings-env gate (PYTHONWARNINGS env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-python-env-wildcard-check',
+        action='store_true',
+        help='Disable release-gate python-env-wildcard gate (unknown PYTHON* env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-path-env-check',
+        action='store_true',
+        help='Disable release-gate path-env gate (PATH env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-ld-preload-env-check',
+        action='store_true',
+        help='Disable release-gate ld-preload-env gate (LD_PRELOAD env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-ld-library-path-env-check',
+        action='store_true',
+        help='Disable release-gate ld-library-path-env gate (LD_LIBRARY_PATH env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-ld-audit-env-check',
+        action='store_true',
+        help='Disable release-gate ld-audit-env gate (LD_AUDIT env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-ld-env-wildcard-check',
+        action='store_true',
+        help='Disable release-gate ld-env-wildcard gate (unknown LD_* env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-glibc-tunables-env-check',
+        action='store_true',
+        help='Disable release-gate glibc-tunables-env gate (GLIBC_TUNABLES env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-glibc-env-wildcard-check',
+        action='store_true',
+        help='Disable release-gate glibc-env-wildcard gate (unknown GLIBC_* env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-check-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-check-env gate (MALLOC_CHECK_ env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-trace-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-trace-env gate (MALLOC_TRACE env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-perturb-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-perturb-env gate (MALLOC_PERTURB_ env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-arena-max-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-arena-max-env gate (MALLOC_ARENA_MAX env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-mmap-threshold-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-mmap-threshold-env gate (MALLOC_MMAP_THRESHOLD_ env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-mmap-max-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-mmap-max-env gate (MALLOC_MMAP_MAX_ env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-top-pad-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-top-pad-env gate (MALLOC_TOP_PAD_ env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-trim-threshold-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-trim-threshold-env gate (MALLOC_TRIM_THRESHOLD_ env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-arena-test-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-arena-test-env gate (MALLOC_ARENA_TEST env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-per-thread-env-check',
+        action='store_true',
+        help='Disable release-gate malloc-per-thread-env gate (MALLOC_PER_THREAD env-assignment checks) in decision evaluation.',
+    )
+    parser.add_argument(
+        '--skip-release-gate-malloc-env-wildcard-check',
+        action='store_true',
+        help='Disable release-gate malloc-env-wildcard gate (unknown MALLOC_* env-assignment checks) in decision evaluation.',
     )
     parser.add_argument(
         '--skip-release-gate-python-option-inline-exec-check',
@@ -864,6 +1017,223 @@ def _command_forbidden_python_warnings_env_assignment(token: str) -> str | None:
     env_key, _, env_value = stripped.partition('=')
     normalized_key = env_key.strip().upper()
     if normalized_key not in FORBIDDEN_PYTHON_WARNINGS_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_python_env_wildcard_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if not normalized_key.startswith(FORBIDDEN_PYTHON_ENV_KEY_PREFIX):
+        return None
+    if normalized_key in KNOWN_RELEASE_GATE_PYTHON_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_path_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_PATH_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_ld_preload_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_LD_PRELOAD_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_ld_library_path_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_LD_LIBRARY_PATH_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_ld_audit_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_LD_AUDIT_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_ld_env_wildcard_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if not normalized_key.startswith(FORBIDDEN_LD_ENV_KEY_PREFIX):
+        return None
+    if normalized_key in KNOWN_RELEASE_GATE_LD_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_glibc_tunables_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_GLIBC_TUNABLES_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_glibc_env_wildcard_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if not normalized_key.startswith(FORBIDDEN_GLIBC_ENV_KEY_PREFIX):
+        return None
+    if normalized_key in KNOWN_RELEASE_GATE_GLIBC_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_trace_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_TRACE_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_check_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_CHECK_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_perturb_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_PERTURB_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_arena_max_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_ARENA_MAX_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_mmap_threshold_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_MMAP_THRESHOLD_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_mmap_max_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_MMAP_MAX_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_top_pad_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_TOP_PAD_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_trim_threshold_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_TRIM_THRESHOLD_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_arena_test_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_ARENA_TEST_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_per_thread_env_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if normalized_key not in FORBIDDEN_MALLOC_PER_THREAD_ENV_KEYS:
+        return None
+    return '%s=%s' % (env_key.strip(), env_value)
+
+
+def _command_forbidden_malloc_env_wildcard_assignment(token: str) -> str | None:
+    stripped = str(token).strip()
+    if not stripped or stripped.startswith('--') or '=' not in stripped:
+        return None
+    env_key, _, env_value = stripped.partition('=')
+    normalized_key = env_key.strip().upper()
+    if not normalized_key.startswith(FORBIDDEN_MALLOC_ENV_KEY_PREFIX):
+        return None
+    if normalized_key in KNOWN_RELEASE_GATE_MALLOC_ENV_KEYS:
         return None
     return '%s=%s' % (env_key.strip(), env_value)
 
@@ -2343,6 +2713,1824 @@ def _release_gate_python_warnings_env_mismatches(
     return mismatches
 
 
+def _release_gate_python_env_wildcard_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_python_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-env-wildcard-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_python_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-python-env-wildcard-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_path_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_path_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-path-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_path_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-path-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_ld_preload_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_ld_preload_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-preload-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_ld_preload_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-preload-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_ld_library_path_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_ld_library_path_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-library-path-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_ld_library_path_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-library-path-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_ld_audit_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_ld_audit_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-audit-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_ld_audit_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-audit-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_ld_env_wildcard_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_ld_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-env-wildcard-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_ld_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-ld-env-wildcard-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_glibc_tunables_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_glibc_tunables_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-glibc-tunables-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_glibc_tunables_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-glibc-tunables-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_glibc_env_wildcard_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_glibc_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-glibc-env-wildcard-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_glibc_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-glibc-env-wildcard-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_check_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_check_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-check-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_check_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-check-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_trace_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_trace_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-trace-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_trace_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-trace-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_perturb_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_perturb_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-perturb-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_perturb_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-perturb-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_arena_max_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_arena_max_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-arena-max-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_arena_max_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-arena-max-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_mmap_threshold_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_mmap_threshold_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-mmap-threshold-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_mmap_threshold_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-mmap-threshold-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_mmap_max_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_mmap_max_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-mmap-max-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_mmap_max_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-mmap-max-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_top_pad_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_top_pad_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-top-pad-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_top_pad_env_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-top-pad-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_trim_threshold_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_trim_threshold_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-trim-threshold-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_trim_threshold_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-trim-threshold-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_arena_test_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_arena_test_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-arena-test-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_arena_test_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-arena-test-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_per_thread_env_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_per_thread_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-per-thread-env-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_per_thread_env_assignment(
+                str(token)
+            )
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-per-thread-env-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
+def _release_gate_malloc_env_wildcard_mismatches(
+    release_gate_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    expected_script = 'scripts/run_linux_validation_suite.py'
+    stage_names = ('beta_gate', 'ga_gate', 'roadmap_gate')
+    mismatches: list[dict[str, Any]] = []
+    for stage_name in stage_names:
+        command = _plan_stage_command(release_gate_plan, stage_name)
+        if command is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'command',
+                    'expected': 'non-empty command',
+                    'actual': None,
+                }
+            )
+            continue
+        script_index = _command_script_token_index(command, expected_script)
+        if script_index is None:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'expected-script-token',
+                    'expected': expected_script,
+                    'actual': command,
+                }
+            )
+            continue
+        for index, token in enumerate(command[:script_index]):
+            forbidden_assignment = _command_forbidden_malloc_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-env-wildcard-assignment',
+                    'scope': 'launcher',
+                    'actual': forbidden_assignment,
+                    'index': index,
+                }
+            )
+        python_option_occurrence_count = _command_option_occurrence_count(command, '--python')
+        if python_option_occurrence_count != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-occurrence',
+                    'expected': 1,
+                    'actual': python_option_occurrence_count,
+                }
+            )
+            continue
+        python_values = _command_option_values(command, '--python') or []
+        if len(python_values) != 1:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-shape',
+                    'expected': 'single value',
+                    'actual': python_values,
+                }
+            )
+            continue
+        raw_python_value = str(python_values[0]).strip()
+        try:
+            python_parts = _split_python_command(raw_python_value)
+        except ValueError:
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': '--python-value-parse',
+                    'expected': 'non-empty python command',
+                    'actual': raw_python_value or None,
+                }
+            )
+            continue
+        for index, token in enumerate(python_parts):
+            forbidden_assignment = _command_forbidden_malloc_env_wildcard_assignment(str(token))
+            if forbidden_assignment is None:
+                continue
+            mismatches.append(
+                {
+                    'stage': stage_name,
+                    'check': 'forbidden-malloc-env-wildcard-assignment',
+                    'scope': '--python-value',
+                    'actual': forbidden_assignment,
+                    'python_option_value': raw_python_value,
+                    'python_option_index': index,
+                }
+            )
+    return mismatches
+
+
 def _resolve_file_age_delta_hours(path: Path) -> float | None:
     try:
         modified_at = float(path.stat().st_mtime)
@@ -2406,6 +4594,63 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     )
     release_gate_python_warnings_env_check_enabled = not bool(
         args.skip_release_gate_python_warnings_env_check
+    )
+    release_gate_python_env_wildcard_check_enabled = not bool(
+        args.skip_release_gate_python_env_wildcard_check
+    )
+    release_gate_path_env_check_enabled = not bool(
+        args.skip_release_gate_path_env_check
+    )
+    release_gate_ld_preload_env_check_enabled = not bool(
+        args.skip_release_gate_ld_preload_env_check
+    )
+    release_gate_ld_library_path_env_check_enabled = not bool(
+        args.skip_release_gate_ld_library_path_env_check
+    )
+    release_gate_ld_audit_env_check_enabled = not bool(
+        args.skip_release_gate_ld_audit_env_check
+    )
+    release_gate_ld_env_wildcard_check_enabled = not bool(
+        args.skip_release_gate_ld_env_wildcard_check
+    )
+    release_gate_glibc_tunables_env_check_enabled = not bool(
+        args.skip_release_gate_glibc_tunables_env_check
+    )
+    release_gate_glibc_env_wildcard_check_enabled = not bool(
+        args.skip_release_gate_glibc_env_wildcard_check
+    )
+    release_gate_malloc_check_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_check_env_check
+    )
+    release_gate_malloc_trace_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_trace_env_check
+    )
+    release_gate_malloc_perturb_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_perturb_env_check
+    )
+    release_gate_malloc_arena_max_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_arena_max_env_check
+    )
+    release_gate_malloc_mmap_threshold_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_mmap_threshold_env_check
+    )
+    release_gate_malloc_mmap_max_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_mmap_max_env_check
+    )
+    release_gate_malloc_top_pad_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_top_pad_env_check
+    )
+    release_gate_malloc_trim_threshold_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_trim_threshold_env_check
+    )
+    release_gate_malloc_arena_test_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_arena_test_env_check
+    )
+    release_gate_malloc_per_thread_env_check_enabled = not bool(
+        args.skip_release_gate_malloc_per_thread_env_check
+    )
+    release_gate_malloc_env_wildcard_check_enabled = not bool(
+        args.skip_release_gate_malloc_env_wildcard_check
     )
     release_gate_python_option_inline_exec_check_enabled = not bool(
         args.skip_release_gate_python_option_inline_exec_check
@@ -2667,6 +4912,207 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
         (not release_gate_python_warnings_env_check_enabled)
         or (not release_gate_python_warnings_env_mismatches)
     )
+    release_gate_python_env_wildcard_mismatches: list[dict[str, Any]] = []
+    if release_gate_python_env_wildcard_check_enabled and release_gate_report is not None:
+        release_gate_python_env_wildcard_mismatches = (
+            _release_gate_python_env_wildcard_mismatches(release_gate_report)
+        )
+    release_gate_python_env_wildcard_pass = (
+        (not release_gate_python_env_wildcard_check_enabled)
+        or (not release_gate_python_env_wildcard_mismatches)
+    )
+    release_gate_path_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_path_env_check_enabled and release_gate_report is not None:
+        release_gate_path_env_mismatches = _release_gate_path_env_mismatches(
+            release_gate_report
+        )
+    release_gate_path_env_pass = (
+        (not release_gate_path_env_check_enabled)
+        or (not release_gate_path_env_mismatches)
+    )
+    release_gate_ld_preload_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_ld_preload_env_check_enabled and release_gate_report is not None:
+        release_gate_ld_preload_env_mismatches = _release_gate_ld_preload_env_mismatches(
+            release_gate_report
+        )
+    release_gate_ld_preload_env_pass = (
+        (not release_gate_ld_preload_env_check_enabled)
+        or (not release_gate_ld_preload_env_mismatches)
+    )
+    release_gate_ld_library_path_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_ld_library_path_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_ld_library_path_env_mismatches = (
+            _release_gate_ld_library_path_env_mismatches(release_gate_report)
+        )
+    release_gate_ld_library_path_env_pass = (
+        (not release_gate_ld_library_path_env_check_enabled)
+        or (not release_gate_ld_library_path_env_mismatches)
+    )
+    release_gate_ld_audit_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_ld_audit_env_check_enabled and release_gate_report is not None:
+        release_gate_ld_audit_env_mismatches = _release_gate_ld_audit_env_mismatches(
+            release_gate_report
+        )
+    release_gate_ld_audit_env_pass = (
+        (not release_gate_ld_audit_env_check_enabled)
+        or (not release_gate_ld_audit_env_mismatches)
+    )
+    release_gate_ld_env_wildcard_mismatches: list[dict[str, Any]] = []
+    if release_gate_ld_env_wildcard_check_enabled and release_gate_report is not None:
+        release_gate_ld_env_wildcard_mismatches = _release_gate_ld_env_wildcard_mismatches(
+            release_gate_report
+        )
+    release_gate_ld_env_wildcard_pass = (
+        (not release_gate_ld_env_wildcard_check_enabled)
+        or (not release_gate_ld_env_wildcard_mismatches)
+    )
+    release_gate_glibc_tunables_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_glibc_tunables_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_glibc_tunables_env_mismatches = (
+            _release_gate_glibc_tunables_env_mismatches(release_gate_report)
+        )
+    release_gate_glibc_tunables_env_pass = (
+        (not release_gate_glibc_tunables_env_check_enabled)
+        or (not release_gate_glibc_tunables_env_mismatches)
+    )
+    release_gate_glibc_env_wildcard_mismatches: list[dict[str, Any]] = []
+    if release_gate_glibc_env_wildcard_check_enabled and release_gate_report is not None:
+        release_gate_glibc_env_wildcard_mismatches = (
+            _release_gate_glibc_env_wildcard_mismatches(release_gate_report)
+        )
+    release_gate_glibc_env_wildcard_pass = (
+        (not release_gate_glibc_env_wildcard_check_enabled)
+        or (not release_gate_glibc_env_wildcard_mismatches)
+    )
+    release_gate_malloc_check_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_malloc_check_env_check_enabled and release_gate_report is not None:
+        release_gate_malloc_check_env_mismatches = (
+            _release_gate_malloc_check_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_check_env_pass = (
+        (not release_gate_malloc_check_env_check_enabled)
+        or (not release_gate_malloc_check_env_mismatches)
+    )
+    release_gate_malloc_trace_env_mismatches: list[dict[str, Any]] = []
+    if release_gate_malloc_trace_env_check_enabled and release_gate_report is not None:
+        release_gate_malloc_trace_env_mismatches = (
+            _release_gate_malloc_trace_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_trace_env_pass = (
+        (not release_gate_malloc_trace_env_check_enabled)
+        or (not release_gate_malloc_trace_env_mismatches)
+    )
+    release_gate_malloc_perturb_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_perturb_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_perturb_env_mismatches = (
+            _release_gate_malloc_perturb_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_perturb_env_pass = (
+        (not release_gate_malloc_perturb_env_check_enabled)
+        or (not release_gate_malloc_perturb_env_mismatches)
+    )
+    release_gate_malloc_arena_max_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_arena_max_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_arena_max_env_mismatches = (
+            _release_gate_malloc_arena_max_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_arena_max_env_pass = (
+        (not release_gate_malloc_arena_max_env_check_enabled)
+        or (not release_gate_malloc_arena_max_env_mismatches)
+    )
+    release_gate_malloc_mmap_threshold_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_mmap_threshold_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_mmap_threshold_env_mismatches = (
+            _release_gate_malloc_mmap_threshold_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_mmap_threshold_env_pass = (
+        (not release_gate_malloc_mmap_threshold_env_check_enabled)
+        or (not release_gate_malloc_mmap_threshold_env_mismatches)
+    )
+    release_gate_malloc_mmap_max_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_mmap_max_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_mmap_max_env_mismatches = (
+            _release_gate_malloc_mmap_max_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_mmap_max_env_pass = (
+        (not release_gate_malloc_mmap_max_env_check_enabled)
+        or (not release_gate_malloc_mmap_max_env_mismatches)
+    )
+    release_gate_malloc_top_pad_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_top_pad_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_top_pad_env_mismatches = (
+            _release_gate_malloc_top_pad_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_top_pad_env_pass = (
+        (not release_gate_malloc_top_pad_env_check_enabled)
+        or (not release_gate_malloc_top_pad_env_mismatches)
+    )
+    release_gate_malloc_trim_threshold_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_trim_threshold_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_trim_threshold_env_mismatches = (
+            _release_gate_malloc_trim_threshold_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_trim_threshold_env_pass = (
+        (not release_gate_malloc_trim_threshold_env_check_enabled)
+        or (not release_gate_malloc_trim_threshold_env_mismatches)
+    )
+    release_gate_malloc_arena_test_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_arena_test_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_arena_test_env_mismatches = (
+            _release_gate_malloc_arena_test_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_arena_test_env_pass = (
+        (not release_gate_malloc_arena_test_env_check_enabled)
+        or (not release_gate_malloc_arena_test_env_mismatches)
+    )
+    release_gate_malloc_per_thread_env_mismatches: list[dict[str, Any]] = []
+    if (
+        release_gate_malloc_per_thread_env_check_enabled
+        and release_gate_report is not None
+    ):
+        release_gate_malloc_per_thread_env_mismatches = (
+            _release_gate_malloc_per_thread_env_mismatches(release_gate_report)
+        )
+    release_gate_malloc_per_thread_env_pass = (
+        (not release_gate_malloc_per_thread_env_check_enabled)
+        or (not release_gate_malloc_per_thread_env_mismatches)
+    )
+    release_gate_malloc_env_wildcard_mismatches: list[dict[str, Any]] = []
+    if release_gate_malloc_env_wildcard_check_enabled and release_gate_report is not None:
+        release_gate_malloc_env_wildcard_mismatches = (
+            _release_gate_malloc_env_wildcard_mismatches(release_gate_report)
+        )
+    release_gate_malloc_env_wildcard_pass = (
+        (not release_gate_malloc_env_wildcard_check_enabled)
+        or (not release_gate_malloc_env_wildcard_mismatches)
+    )
     release_gate_python_option_inline_exec_mismatches: list[dict[str, Any]] = []
     if (
         release_gate_python_option_inline_exec_check_enabled
@@ -2743,6 +5189,26 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
         and release_gate_python_breakpoint_env_pass
         and release_gate_python_startup_env_pass
         and release_gate_python_inspect_env_pass
+        and release_gate_python_warnings_env_pass
+        and release_gate_python_env_wildcard_pass
+        and release_gate_path_env_pass
+        and release_gate_ld_preload_env_pass
+        and release_gate_ld_library_path_env_pass
+        and release_gate_ld_audit_env_pass
+        and release_gate_ld_env_wildcard_pass
+        and release_gate_glibc_tunables_env_pass
+        and release_gate_glibc_env_wildcard_pass
+        and release_gate_malloc_check_env_pass
+        and release_gate_malloc_trace_env_pass
+        and release_gate_malloc_perturb_env_pass
+        and release_gate_malloc_arena_max_env_pass
+        and release_gate_malloc_mmap_threshold_env_pass
+        and release_gate_malloc_mmap_max_env_pass
+        and release_gate_malloc_top_pad_env_pass
+        and release_gate_malloc_trim_threshold_env_pass
+        and release_gate_malloc_arena_test_env_pass
+        and release_gate_malloc_per_thread_env_pass
+        and release_gate_malloc_env_wildcard_pass
         and release_gate_python_option_inline_exec_pass
         and release_gate_coverage_floor_pass
         and release_gate_inline_exec_pass
@@ -3210,6 +5676,367 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
             ),
         },
         {
+            'name': 'release_gate_python_env_wildcard',
+            'status': 'pass' if release_gate_python_env_wildcard_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign unknown PYTHON* env values that can drift runtime contracts'
+                if release_gate_python_env_wildcard_pass
+                and release_gate_python_env_wildcard_check_enabled
+                else (
+                    'release-gate python-env-wildcard gate disabled (--skip-release-gate-python-env-wildcard-check)'
+                    if release_gate_python_env_wildcard_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden unknown PYTHON* env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_python_env_wildcard_mismatches
+                else release_gate_python_env_wildcard_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_path_env',
+            'status': 'pass' if release_gate_path_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign PATH env values that can redirect interpreter lookup'
+                if release_gate_path_env_pass
+                and release_gate_path_env_check_enabled
+                else (
+                    'release-gate path-env gate disabled (--skip-release-gate-path-env-check)'
+                    if release_gate_path_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden PATH env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_path_env_mismatches
+                else release_gate_path_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_ld_preload_env',
+            'status': 'pass' if release_gate_ld_preload_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign LD_PRELOAD env values that can inject dynamic loader hooks'
+                if release_gate_ld_preload_env_pass
+                and release_gate_ld_preload_env_check_enabled
+                else (
+                    'release-gate ld-preload-env gate disabled (--skip-release-gate-ld-preload-env-check)'
+                    if release_gate_ld_preload_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden LD_PRELOAD env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_ld_preload_env_mismatches
+                else release_gate_ld_preload_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_ld_library_path_env',
+            'status': 'pass' if release_gate_ld_library_path_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign LD_LIBRARY_PATH env values that can redirect dynamic-linker lookup paths'
+                if release_gate_ld_library_path_env_pass
+                and release_gate_ld_library_path_env_check_enabled
+                else (
+                    'release-gate ld-library-path-env gate disabled (--skip-release-gate-ld-library-path-env-check)'
+                    if release_gate_ld_library_path_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden LD_LIBRARY_PATH env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_ld_library_path_env_mismatches
+                else release_gate_ld_library_path_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_ld_audit_env',
+            'status': 'pass' if release_gate_ld_audit_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign LD_AUDIT env values that can inject dynamic-linker audit hooks'
+                if release_gate_ld_audit_env_pass
+                and release_gate_ld_audit_env_check_enabled
+                else (
+                    'release-gate ld-audit-env gate disabled (--skip-release-gate-ld-audit-env-check)'
+                    if release_gate_ld_audit_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden LD_AUDIT env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_ld_audit_env_mismatches
+                else release_gate_ld_audit_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_ld_env_wildcard',
+            'status': 'pass' if release_gate_ld_env_wildcard_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign unknown LD_* env values that can drift dynamic-linker runtime contracts'
+                if release_gate_ld_env_wildcard_pass
+                and release_gate_ld_env_wildcard_check_enabled
+                else (
+                    'release-gate ld-env-wildcard gate disabled (--skip-release-gate-ld-env-wildcard-check)'
+                    if release_gate_ld_env_wildcard_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden unknown LD_* env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_ld_env_wildcard_mismatches
+                else release_gate_ld_env_wildcard_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_glibc_tunables_env',
+            'status': 'pass' if release_gate_glibc_tunables_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign GLIBC_TUNABLES env values that can drift dynamic-linker runtime tunable contracts'
+                if release_gate_glibc_tunables_env_pass
+                and release_gate_glibc_tunables_env_check_enabled
+                else (
+                    'release-gate glibc-tunables-env gate disabled (--skip-release-gate-glibc-tunables-env-check)'
+                    if release_gate_glibc_tunables_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden GLIBC_TUNABLES env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_glibc_tunables_env_mismatches
+                else release_gate_glibc_tunables_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_glibc_env_wildcard',
+            'status': 'pass' if release_gate_glibc_env_wildcard_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign unknown GLIBC_* env values that can drift glibc runtime contracts'
+                if release_gate_glibc_env_wildcard_pass
+                and release_gate_glibc_env_wildcard_check_enabled
+                else (
+                    'release-gate glibc-env-wildcard gate disabled (--skip-release-gate-glibc-env-wildcard-check)'
+                    if release_gate_glibc_env_wildcard_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden unknown GLIBC_* env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_glibc_env_wildcard_mismatches
+                else release_gate_glibc_env_wildcard_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_check_env',
+            'status': 'pass' if release_gate_malloc_check_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_CHECK_ env values that can alter allocator hardening behavior'
+                if release_gate_malloc_check_env_pass
+                and release_gate_malloc_check_env_check_enabled
+                else (
+                    'release-gate malloc-check-env gate disabled (--skip-release-gate-malloc-check-env-check)'
+                    if release_gate_malloc_check_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_CHECK_ env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_check_env_mismatches
+                else release_gate_malloc_check_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_trace_env',
+            'status': 'pass' if release_gate_malloc_trace_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_TRACE env values that can leak allocator trace artifacts'
+                if release_gate_malloc_trace_env_pass
+                and release_gate_malloc_trace_env_check_enabled
+                else (
+                    'release-gate malloc-trace-env gate disabled (--skip-release-gate-malloc-trace-env-check)'
+                    if release_gate_malloc_trace_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_TRACE env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_trace_env_mismatches
+                else release_gate_malloc_trace_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_perturb_env',
+            'status': 'pass' if release_gate_malloc_perturb_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_PERTURB_ env values that can drift allocator memory-perturbation behavior'
+                if release_gate_malloc_perturb_env_pass
+                and release_gate_malloc_perturb_env_check_enabled
+                else (
+                    'release-gate malloc-perturb-env gate disabled (--skip-release-gate-malloc-perturb-env-check)'
+                    if release_gate_malloc_perturb_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_PERTURB_ env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_perturb_env_mismatches
+                else release_gate_malloc_perturb_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_arena_max_env',
+            'status': 'pass' if release_gate_malloc_arena_max_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_ARENA_MAX env values that can drift allocator arena scaling behavior'
+                if release_gate_malloc_arena_max_env_pass
+                and release_gate_malloc_arena_max_env_check_enabled
+                else (
+                    'release-gate malloc-arena-max-env gate disabled (--skip-release-gate-malloc-arena-max-env-check)'
+                    if release_gate_malloc_arena_max_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_ARENA_MAX env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_arena_max_env_mismatches
+                else release_gate_malloc_arena_max_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_mmap_threshold_env',
+            'status': 'pass' if release_gate_malloc_mmap_threshold_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_MMAP_THRESHOLD_ env values that can drift allocator mmap-threshold behavior'
+                if release_gate_malloc_mmap_threshold_env_pass
+                and release_gate_malloc_mmap_threshold_env_check_enabled
+                else (
+                    'release-gate malloc-mmap-threshold-env gate disabled (--skip-release-gate-malloc-mmap-threshold-env-check)'
+                    if release_gate_malloc_mmap_threshold_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_MMAP_THRESHOLD_ env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_mmap_threshold_env_mismatches
+                else release_gate_malloc_mmap_threshold_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_mmap_max_env',
+            'status': 'pass' if release_gate_malloc_mmap_max_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_MMAP_MAX_ env values that can drift allocator mmap-extent behavior'
+                if release_gate_malloc_mmap_max_env_pass
+                and release_gate_malloc_mmap_max_env_check_enabled
+                else (
+                    'release-gate malloc-mmap-max-env gate disabled (--skip-release-gate-malloc-mmap-max-env-check)'
+                    if release_gate_malloc_mmap_max_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_MMAP_MAX_ env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_mmap_max_env_mismatches
+                else release_gate_malloc_mmap_max_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_top_pad_env',
+            'status': 'pass' if release_gate_malloc_top_pad_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_TOP_PAD_ env values that can drift allocator top-chunk padding behavior'
+                if release_gate_malloc_top_pad_env_pass
+                and release_gate_malloc_top_pad_env_check_enabled
+                else (
+                    'release-gate malloc-top-pad-env gate disabled (--skip-release-gate-malloc-top-pad-env-check)'
+                    if release_gate_malloc_top_pad_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_TOP_PAD_ env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_top_pad_env_mismatches
+                else release_gate_malloc_top_pad_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_trim_threshold_env',
+            'status': 'pass' if release_gate_malloc_trim_threshold_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_TRIM_THRESHOLD_ env values that can drift allocator trim-threshold behavior'
+                if release_gate_malloc_trim_threshold_env_pass
+                and release_gate_malloc_trim_threshold_env_check_enabled
+                else (
+                    'release-gate malloc-trim-threshold-env gate disabled (--skip-release-gate-malloc-trim-threshold-env-check)'
+                    if release_gate_malloc_trim_threshold_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_TRIM_THRESHOLD_ env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_trim_threshold_env_mismatches
+                else release_gate_malloc_trim_threshold_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_arena_test_env',
+            'status': 'pass' if release_gate_malloc_arena_test_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_ARENA_TEST env values that can drift allocator arena-limit probing behavior'
+                if release_gate_malloc_arena_test_env_pass
+                and release_gate_malloc_arena_test_env_check_enabled
+                else (
+                    'release-gate malloc-arena-test-env gate disabled (--skip-release-gate-malloc-arena-test-env-check)'
+                    if release_gate_malloc_arena_test_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_ARENA_TEST env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_arena_test_env_mismatches
+                else release_gate_malloc_arena_test_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_per_thread_env',
+            'status': 'pass' if release_gate_malloc_per_thread_env_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign MALLOC_PER_THREAD env values that can drift allocator per-thread arena-pooling behavior'
+                if release_gate_malloc_per_thread_env_pass
+                and release_gate_malloc_per_thread_env_check_enabled
+                else (
+                    'release-gate malloc-per-thread-env gate disabled (--skip-release-gate-malloc-per-thread-env-check)'
+                    if release_gate_malloc_per_thread_env_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden MALLOC_PER_THREAD env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_per_thread_env_mismatches
+                else release_gate_malloc_per_thread_env_mismatches
+            ),
+        },
+        {
+            'name': 'release_gate_malloc_env_wildcard',
+            'status': 'pass' if release_gate_malloc_env_wildcard_pass else 'hold',
+            'reason': (
+                'release-gate stage launchers and --python relay values do not assign unknown MALLOC_* env values that can drift allocator runtime contracts'
+                if release_gate_malloc_env_wildcard_pass
+                and release_gate_malloc_env_wildcard_check_enabled
+                else (
+                    'release-gate malloc-env-wildcard gate disabled (--skip-release-gate-malloc-env-wildcard-check)'
+                    if release_gate_malloc_env_wildcard_pass
+                    else 'release-gate stage launchers or --python relay values include forbidden unknown MALLOC_* env assignments'
+                )
+            ),
+            'evidence': (
+                [str(release_gate_path)]
+                if not release_gate_malloc_env_wildcard_mismatches
+                else release_gate_malloc_env_wildcard_mismatches
+            ),
+        },
+        {
             'name': 'release_gate_python_option_inline_exec',
             'status': 'pass' if release_gate_python_option_inline_exec_pass else 'hold',
             'reason': (
@@ -3387,6 +6214,287 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     missing_or_invalid = [item for item in evidence_files if item['status'] != 'ok']
 
     decision = 'GO' if hold_count == 0 else 'HOLD'
+    evidence_summary = {
+        'doc_sync_status': (doc_sync_report or {}).get('status') if doc_sync_report else 'missing',
+        'doc_sync_release_switch_check': release_contract_check,
+        'quality_regressed_count': quality_regressed_count,
+        'perf_regressed_count': perf_regressed_count,
+        'postgres_run_postgres': postgres_run_enabled,
+        'postgres_dual_write_count': dual_write_count,
+        'freshness_check_enabled': freshness_check_enabled,
+        'max_evidence_age_hours': max_evidence_age_hours,
+        'future_skew_check_enabled': future_skew_check_enabled,
+        'max_evidence_future_skew_hours': max_evidence_future_skew_hours,
+        'cohort_skew_check_enabled': cohort_skew_check_enabled,
+        'max_evidence_cohort_skew_hours': max_evidence_cohort_skew_hours,
+        'evidence_freshness_gate_pass': evidence_freshness_gate_pass,
+        'evidence_cohort_skew_gate_pass': cohort_skew_gate_pass,
+        'release_gate_binding_check_enabled': release_gate_binding_check_enabled,
+        'release_gate_output_binding_pass': release_gate_output_binding_pass,
+        'release_gate_binding_mismatch_count': len(release_gate_binding_mismatches),
+        'release_gate_binding_mismatches': release_gate_binding_mismatches,
+        'release_gate_stage_contract_check_enabled': release_gate_stage_contract_check_enabled,
+        'release_gate_stage_contract_pass': release_gate_stage_contract_pass,
+        'release_gate_stage_contract_mismatch_count': len(release_gate_stage_contract_mismatches),
+        'release_gate_stage_contract_mismatches': release_gate_stage_contract_mismatches,
+        'release_gate_script_position_check_enabled': release_gate_script_position_check_enabled,
+        'release_gate_script_position_pass': release_gate_script_position_pass,
+        'release_gate_script_position_mismatch_count': len(
+            release_gate_script_position_mismatches
+        ),
+        'release_gate_script_position_mismatches': release_gate_script_position_mismatches,
+        'release_gate_script_anchor_check_enabled': release_gate_script_anchor_check_enabled,
+        'release_gate_script_anchor_pass': release_gate_script_anchor_pass,
+        'release_gate_script_anchor_mismatch_count': len(
+            release_gate_script_anchor_mismatches
+        ),
+        'release_gate_script_anchor_mismatches': release_gate_script_anchor_mismatches,
+        'release_gate_python_binding_check_enabled': release_gate_python_binding_check_enabled,
+        'release_gate_python_binding_pass': release_gate_python_binding_pass,
+        'release_gate_python_binding_mismatch_count': len(
+            release_gate_python_binding_mismatches
+        ),
+        'release_gate_python_binding_mismatches': release_gate_python_binding_mismatches,
+        'release_gate_python_optimization_check_enabled': release_gate_python_optimization_check_enabled,
+        'release_gate_python_optimization_pass': release_gate_python_optimization_pass,
+        'release_gate_python_optimization_mismatch_count': len(
+            release_gate_python_optimization_mismatches
+        ),
+        'release_gate_python_optimization_mismatches': release_gate_python_optimization_mismatches,
+        'release_gate_python_option_optimization_check_enabled': release_gate_python_option_optimization_check_enabled,
+        'release_gate_python_option_optimization_pass': release_gate_python_option_optimization_pass,
+        'release_gate_python_option_optimization_mismatch_count': len(
+            release_gate_python_option_optimization_mismatches
+        ),
+        'release_gate_python_option_optimization_mismatches': release_gate_python_option_optimization_mismatches,
+        'release_gate_python_optimize_env_check_enabled': release_gate_python_optimize_env_check_enabled,
+        'release_gate_python_optimize_env_pass': release_gate_python_optimize_env_pass,
+        'release_gate_python_optimize_env_mismatch_count': len(
+            release_gate_python_optimize_env_mismatches
+        ),
+        'release_gate_python_optimize_env_mismatches': release_gate_python_optimize_env_mismatches,
+        'release_gate_python_path_env_check_enabled': release_gate_python_path_env_check_enabled,
+        'release_gate_python_path_env_pass': release_gate_python_path_env_pass,
+        'release_gate_python_path_env_mismatch_count': len(
+            release_gate_python_path_env_mismatches
+        ),
+        'release_gate_python_path_env_mismatches': release_gate_python_path_env_mismatches,
+        'release_gate_python_home_env_check_enabled': release_gate_python_home_env_check_enabled,
+        'release_gate_python_home_env_pass': release_gate_python_home_env_pass,
+        'release_gate_python_home_env_mismatch_count': len(
+            release_gate_python_home_env_mismatches
+        ),
+        'release_gate_python_home_env_mismatches': release_gate_python_home_env_mismatches,
+        'release_gate_python_user_base_env_check_enabled': release_gate_python_user_base_env_check_enabled,
+        'release_gate_python_user_base_env_pass': release_gate_python_user_base_env_pass,
+        'release_gate_python_user_base_env_mismatch_count': len(
+            release_gate_python_user_base_env_mismatches
+        ),
+        'release_gate_python_user_base_env_mismatches': release_gate_python_user_base_env_mismatches,
+        'release_gate_python_breakpoint_env_check_enabled': release_gate_python_breakpoint_env_check_enabled,
+        'release_gate_python_breakpoint_env_pass': release_gate_python_breakpoint_env_pass,
+        'release_gate_python_breakpoint_env_mismatch_count': len(
+            release_gate_python_breakpoint_env_mismatches
+        ),
+        'release_gate_python_breakpoint_env_mismatches': release_gate_python_breakpoint_env_mismatches,
+        'release_gate_python_startup_env_check_enabled': release_gate_python_startup_env_check_enabled,
+        'release_gate_python_startup_env_pass': release_gate_python_startup_env_pass,
+        'release_gate_python_startup_env_mismatch_count': len(
+            release_gate_python_startup_env_mismatches
+        ),
+        'release_gate_python_startup_env_mismatches': release_gate_python_startup_env_mismatches,
+        'release_gate_python_inspect_env_check_enabled': release_gate_python_inspect_env_check_enabled,
+        'release_gate_python_inspect_env_pass': release_gate_python_inspect_env_pass,
+        'release_gate_python_inspect_env_mismatch_count': len(
+            release_gate_python_inspect_env_mismatches
+        ),
+        'release_gate_python_inspect_env_mismatches': release_gate_python_inspect_env_mismatches,
+        'release_gate_python_warnings_env_check_enabled': release_gate_python_warnings_env_check_enabled,
+        'release_gate_python_warnings_env_pass': release_gate_python_warnings_env_pass,
+        'release_gate_python_warnings_env_mismatch_count': len(
+            release_gate_python_warnings_env_mismatches
+        ),
+        'release_gate_python_warnings_env_mismatches': release_gate_python_warnings_env_mismatches,
+        'release_gate_python_env_wildcard_check_enabled': release_gate_python_env_wildcard_check_enabled,
+        'release_gate_python_env_wildcard_pass': release_gate_python_env_wildcard_pass,
+        'release_gate_python_env_wildcard_mismatch_count': len(
+            release_gate_python_env_wildcard_mismatches
+        ),
+        'release_gate_python_env_wildcard_mismatches': release_gate_python_env_wildcard_mismatches,
+        'release_gate_path_env_check_enabled': release_gate_path_env_check_enabled,
+        'release_gate_path_env_pass': release_gate_path_env_pass,
+        'release_gate_path_env_mismatch_count': len(
+            release_gate_path_env_mismatches
+        ),
+        'release_gate_path_env_mismatches': release_gate_path_env_mismatches,
+        'release_gate_ld_preload_env_check_enabled': release_gate_ld_preload_env_check_enabled,
+        'release_gate_ld_preload_env_pass': release_gate_ld_preload_env_pass,
+        'release_gate_ld_preload_env_mismatch_count': len(
+            release_gate_ld_preload_env_mismatches
+        ),
+        'release_gate_ld_preload_env_mismatches': release_gate_ld_preload_env_mismatches,
+        'release_gate_ld_library_path_env_check_enabled': release_gate_ld_library_path_env_check_enabled,
+        'release_gate_ld_library_path_env_pass': release_gate_ld_library_path_env_pass,
+        'release_gate_ld_library_path_env_mismatch_count': len(
+            release_gate_ld_library_path_env_mismatches
+        ),
+        'release_gate_ld_library_path_env_mismatches': release_gate_ld_library_path_env_mismatches,
+        'release_gate_ld_audit_env_check_enabled': release_gate_ld_audit_env_check_enabled,
+        'release_gate_ld_audit_env_pass': release_gate_ld_audit_env_pass,
+        'release_gate_ld_audit_env_mismatch_count': len(
+            release_gate_ld_audit_env_mismatches
+        ),
+        'release_gate_ld_audit_env_mismatches': release_gate_ld_audit_env_mismatches,
+        'release_gate_ld_env_wildcard_check_enabled': release_gate_ld_env_wildcard_check_enabled,
+        'release_gate_ld_env_wildcard_pass': release_gate_ld_env_wildcard_pass,
+        'release_gate_ld_env_wildcard_mismatch_count': len(
+            release_gate_ld_env_wildcard_mismatches
+        ),
+        'release_gate_ld_env_wildcard_mismatches': release_gate_ld_env_wildcard_mismatches,
+        'release_gate_glibc_tunables_env_check_enabled': release_gate_glibc_tunables_env_check_enabled,
+        'release_gate_glibc_tunables_env_pass': release_gate_glibc_tunables_env_pass,
+        'release_gate_glibc_tunables_env_mismatch_count': len(
+            release_gate_glibc_tunables_env_mismatches
+        ),
+        'release_gate_glibc_tunables_env_mismatches': release_gate_glibc_tunables_env_mismatches,
+        'release_gate_glibc_env_wildcard_check_enabled': release_gate_glibc_env_wildcard_check_enabled,
+        'release_gate_glibc_env_wildcard_pass': release_gate_glibc_env_wildcard_pass,
+        'release_gate_glibc_env_wildcard_mismatch_count': len(
+            release_gate_glibc_env_wildcard_mismatches
+        ),
+        'release_gate_glibc_env_wildcard_mismatches': release_gate_glibc_env_wildcard_mismatches,
+        'release_gate_malloc_check_env_check_enabled': release_gate_malloc_check_env_check_enabled,
+        'release_gate_malloc_check_env_pass': release_gate_malloc_check_env_pass,
+        'release_gate_malloc_check_env_mismatch_count': len(
+            release_gate_malloc_check_env_mismatches
+        ),
+        'release_gate_malloc_check_env_mismatches': release_gate_malloc_check_env_mismatches,
+        'release_gate_malloc_trace_env_check_enabled': release_gate_malloc_trace_env_check_enabled,
+        'release_gate_malloc_trace_env_pass': release_gate_malloc_trace_env_pass,
+        'release_gate_malloc_trace_env_mismatch_count': len(
+            release_gate_malloc_trace_env_mismatches
+        ),
+        'release_gate_malloc_trace_env_mismatches': release_gate_malloc_trace_env_mismatches,
+        'release_gate_malloc_perturb_env_check_enabled': release_gate_malloc_perturb_env_check_enabled,
+        'release_gate_malloc_perturb_env_pass': release_gate_malloc_perturb_env_pass,
+        'release_gate_malloc_perturb_env_mismatch_count': len(
+            release_gate_malloc_perturb_env_mismatches
+        ),
+        'release_gate_malloc_perturb_env_mismatches': release_gate_malloc_perturb_env_mismatches,
+        'release_gate_malloc_arena_max_env_check_enabled': release_gate_malloc_arena_max_env_check_enabled,
+        'release_gate_malloc_arena_max_env_pass': release_gate_malloc_arena_max_env_pass,
+        'release_gate_malloc_arena_max_env_mismatch_count': len(
+            release_gate_malloc_arena_max_env_mismatches
+        ),
+        'release_gate_malloc_arena_max_env_mismatches': release_gate_malloc_arena_max_env_mismatches,
+        'release_gate_malloc_mmap_threshold_env_check_enabled': release_gate_malloc_mmap_threshold_env_check_enabled,
+        'release_gate_malloc_mmap_threshold_env_pass': release_gate_malloc_mmap_threshold_env_pass,
+        'release_gate_malloc_mmap_threshold_env_mismatch_count': len(
+            release_gate_malloc_mmap_threshold_env_mismatches
+        ),
+        'release_gate_malloc_mmap_threshold_env_mismatches': release_gate_malloc_mmap_threshold_env_mismatches,
+        'release_gate_malloc_mmap_max_env_check_enabled': release_gate_malloc_mmap_max_env_check_enabled,
+        'release_gate_malloc_mmap_max_env_pass': release_gate_malloc_mmap_max_env_pass,
+        'release_gate_malloc_mmap_max_env_mismatch_count': len(
+            release_gate_malloc_mmap_max_env_mismatches
+        ),
+        'release_gate_malloc_mmap_max_env_mismatches': release_gate_malloc_mmap_max_env_mismatches,
+        'release_gate_malloc_top_pad_env_check_enabled': release_gate_malloc_top_pad_env_check_enabled,
+        'release_gate_malloc_top_pad_env_pass': release_gate_malloc_top_pad_env_pass,
+        'release_gate_malloc_top_pad_env_mismatch_count': len(
+            release_gate_malloc_top_pad_env_mismatches
+        ),
+        'release_gate_malloc_top_pad_env_mismatches': release_gate_malloc_top_pad_env_mismatches,
+        'release_gate_malloc_trim_threshold_env_check_enabled': release_gate_malloc_trim_threshold_env_check_enabled,
+        'release_gate_malloc_trim_threshold_env_pass': release_gate_malloc_trim_threshold_env_pass,
+        'release_gate_malloc_trim_threshold_env_mismatch_count': len(
+            release_gate_malloc_trim_threshold_env_mismatches
+        ),
+        'release_gate_malloc_trim_threshold_env_mismatches': release_gate_malloc_trim_threshold_env_mismatches,
+        'release_gate_malloc_arena_test_env_check_enabled': release_gate_malloc_arena_test_env_check_enabled,
+        'release_gate_malloc_arena_test_env_pass': release_gate_malloc_arena_test_env_pass,
+        'release_gate_malloc_arena_test_env_mismatch_count': len(
+            release_gate_malloc_arena_test_env_mismatches
+        ),
+        'release_gate_malloc_arena_test_env_mismatches': release_gate_malloc_arena_test_env_mismatches,
+        'release_gate_malloc_per_thread_env_check_enabled': release_gate_malloc_per_thread_env_check_enabled,
+        'release_gate_malloc_per_thread_env_pass': release_gate_malloc_per_thread_env_pass,
+        'release_gate_malloc_per_thread_env_mismatch_count': len(
+            release_gate_malloc_per_thread_env_mismatches
+        ),
+        'release_gate_malloc_per_thread_env_mismatches': release_gate_malloc_per_thread_env_mismatches,
+        'release_gate_malloc_env_wildcard_check_enabled': release_gate_malloc_env_wildcard_check_enabled,
+        'release_gate_malloc_env_wildcard_pass': release_gate_malloc_env_wildcard_pass,
+        'release_gate_malloc_env_wildcard_mismatch_count': len(
+            release_gate_malloc_env_wildcard_mismatches
+        ),
+        'release_gate_malloc_env_wildcard_mismatches': release_gate_malloc_env_wildcard_mismatches,
+        'release_gate_python_option_inline_exec_check_enabled': release_gate_python_option_inline_exec_check_enabled,
+        'release_gate_python_option_inline_exec_pass': release_gate_python_option_inline_exec_pass,
+        'release_gate_python_option_inline_exec_mismatch_count': len(
+            release_gate_python_option_inline_exec_mismatches
+        ),
+        'release_gate_python_option_inline_exec_mismatches': release_gate_python_option_inline_exec_mismatches,
+        'release_gate_coverage_floor_check_enabled': release_gate_coverage_floor_check_enabled,
+        'release_gate_coverage_floor_pass': release_gate_coverage_floor_pass,
+        'release_gate_coverage_floor_mismatch_count': len(
+            release_gate_coverage_floor_mismatches
+        ),
+        'release_gate_coverage_floor_mismatches': release_gate_coverage_floor_mismatches,
+        'release_gate_inline_exec_check_enabled': release_gate_inline_exec_check_enabled,
+        'release_gate_inline_exec_pass': release_gate_inline_exec_pass,
+        'release_gate_inline_exec_mismatch_count': len(
+            release_gate_inline_exec_mismatches
+        ),
+        'release_gate_inline_exec_mismatches': release_gate_inline_exec_mismatches,
+        'release_gate_option_override_check_enabled': release_gate_option_override_check_enabled,
+        'release_gate_option_override_pass': release_gate_option_override_pass,
+        'release_gate_option_override_mismatch_count': len(
+            release_gate_option_override_mismatches
+        ),
+        'release_gate_option_override_mismatches': release_gate_option_override_mismatches,
+        'release_gate_dry_run_check_enabled': release_gate_dry_run_check_enabled,
+        'release_gate_dry_run_pass': release_gate_dry_run_pass,
+        'release_gate_dry_run_mismatch_count': len(
+            release_gate_dry_run_mismatches
+        ),
+        'release_gate_dry_run_mismatches': release_gate_dry_run_mismatches,
+        'release_gate_relaxed_flags_check_enabled': release_gate_relaxed_flags_check_enabled,
+        'release_gate_relaxed_flags_pass': release_gate_relaxed_flags_pass,
+        'release_gate_relaxed_flags_mismatch_count': len(
+            release_gate_relaxed_flag_mismatches
+        ),
+        'release_gate_relaxed_flags_mismatches': release_gate_relaxed_flag_mismatches,
+        'evidence_cohort_age_spread_hours': evidence_cohort_age_spread_hours,
+        'oldest_evidence_file': oldest_evidence_file or None,
+        'newest_evidence_file': newest_evidence_file or None,
+        'cohort_skew_violation_count': len(cohort_skew_violation_files),
+        'cohort_skew_violation_files': cohort_skew_violation_files,
+        'stale_evidence_count': len(stale_evidence_files),
+        'stale_evidence_files': stale_evidence_files,
+        'future_evidence_count': len(future_evidence_files),
+        'future_evidence_files': future_evidence_files,
+        'beta_suite_stage_pack_complete': beta_suite_stage_pack_complete,
+        'beta_suite_stage_pack_executable': beta_suite_stage_pack_executable,
+        'beta_suite_evidence_pack_complete': beta_suite_evidence_pack_complete,
+        'ga_suite_stage_pack_complete': ga_suite_stage_pack_complete,
+        'ga_suite_stage_pack_executable': ga_suite_stage_pack_executable,
+        'ga_suite_evidence_pack_complete': ga_suite_evidence_pack_complete,
+        'roadmap_suite_stage_pack_complete': roadmap_suite_stage_pack_complete,
+        'roadmap_suite_stage_pack_executable': roadmap_suite_stage_pack_executable,
+        'roadmap_suite_evidence_pack_complete': roadmap_suite_evidence_pack_complete,
+        'release_gate_stage_pack_complete': release_gate_stage_pack_complete,
+        'release_gate_stage_pack_executable': release_gate_stage_pack_executable,
+        'release_gate_evidence_pack_complete': release_gate_evidence_pack_complete,
+        'ga_suite_has_review_queue_ga': review_queue_stage_present,
+        'release_standard_markers': standard_markers,
+    }
+    bulk_strategy_view = _build_bulk_strategy_view(
+        decision=decision,
+        gates=gates,
+        evidence_files=evidence_files,
+        evidence_summary=evidence_summary,
+    )
     return {
         'generated_at_utc': datetime.now(timezone.utc).isoformat(),
         'decision': decision,
@@ -3396,167 +6504,159 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
         'gates': gates,
         'evidence_files': evidence_files,
         'missing_or_invalid_evidence': missing_or_invalid,
-        'evidence_summary': {
-            'doc_sync_status': (doc_sync_report or {}).get('status') if doc_sync_report else 'missing',
-            'doc_sync_release_switch_check': release_contract_check,
-            'quality_regressed_count': quality_regressed_count,
-            'perf_regressed_count': perf_regressed_count,
-            'postgres_run_postgres': postgres_run_enabled,
-            'postgres_dual_write_count': dual_write_count,
-            'freshness_check_enabled': freshness_check_enabled,
-            'max_evidence_age_hours': max_evidence_age_hours,
-            'future_skew_check_enabled': future_skew_check_enabled,
-            'max_evidence_future_skew_hours': max_evidence_future_skew_hours,
-            'cohort_skew_check_enabled': cohort_skew_check_enabled,
-            'max_evidence_cohort_skew_hours': max_evidence_cohort_skew_hours,
-            'evidence_freshness_gate_pass': evidence_freshness_gate_pass,
-            'evidence_cohort_skew_gate_pass': cohort_skew_gate_pass,
-            'release_gate_binding_check_enabled': release_gate_binding_check_enabled,
-            'release_gate_output_binding_pass': release_gate_output_binding_pass,
-            'release_gate_binding_mismatch_count': len(release_gate_binding_mismatches),
-            'release_gate_binding_mismatches': release_gate_binding_mismatches,
-            'release_gate_stage_contract_check_enabled': release_gate_stage_contract_check_enabled,
-            'release_gate_stage_contract_pass': release_gate_stage_contract_pass,
-            'release_gate_stage_contract_mismatch_count': len(release_gate_stage_contract_mismatches),
-            'release_gate_stage_contract_mismatches': release_gate_stage_contract_mismatches,
-            'release_gate_script_position_check_enabled': release_gate_script_position_check_enabled,
-            'release_gate_script_position_pass': release_gate_script_position_pass,
-            'release_gate_script_position_mismatch_count': len(
-                release_gate_script_position_mismatches
-            ),
-            'release_gate_script_position_mismatches': release_gate_script_position_mismatches,
-            'release_gate_script_anchor_check_enabled': release_gate_script_anchor_check_enabled,
-            'release_gate_script_anchor_pass': release_gate_script_anchor_pass,
-            'release_gate_script_anchor_mismatch_count': len(
-                release_gate_script_anchor_mismatches
-            ),
-            'release_gate_script_anchor_mismatches': release_gate_script_anchor_mismatches,
-            'release_gate_python_binding_check_enabled': release_gate_python_binding_check_enabled,
-            'release_gate_python_binding_pass': release_gate_python_binding_pass,
-            'release_gate_python_binding_mismatch_count': len(
-                release_gate_python_binding_mismatches
-            ),
-            'release_gate_python_binding_mismatches': release_gate_python_binding_mismatches,
-            'release_gate_python_optimization_check_enabled': release_gate_python_optimization_check_enabled,
-            'release_gate_python_optimization_pass': release_gate_python_optimization_pass,
-            'release_gate_python_optimization_mismatch_count': len(
-                release_gate_python_optimization_mismatches
-            ),
-            'release_gate_python_optimization_mismatches': release_gate_python_optimization_mismatches,
-            'release_gate_python_option_optimization_check_enabled': release_gate_python_option_optimization_check_enabled,
-            'release_gate_python_option_optimization_pass': release_gate_python_option_optimization_pass,
-            'release_gate_python_option_optimization_mismatch_count': len(
-                release_gate_python_option_optimization_mismatches
-            ),
-            'release_gate_python_option_optimization_mismatches': release_gate_python_option_optimization_mismatches,
-            'release_gate_python_optimize_env_check_enabled': release_gate_python_optimize_env_check_enabled,
-            'release_gate_python_optimize_env_pass': release_gate_python_optimize_env_pass,
-            'release_gate_python_optimize_env_mismatch_count': len(
-                release_gate_python_optimize_env_mismatches
-            ),
-            'release_gate_python_optimize_env_mismatches': release_gate_python_optimize_env_mismatches,
-            'release_gate_python_path_env_check_enabled': release_gate_python_path_env_check_enabled,
-            'release_gate_python_path_env_pass': release_gate_python_path_env_pass,
-            'release_gate_python_path_env_mismatch_count': len(
-                release_gate_python_path_env_mismatches
-            ),
-            'release_gate_python_path_env_mismatches': release_gate_python_path_env_mismatches,
-            'release_gate_python_home_env_check_enabled': release_gate_python_home_env_check_enabled,
-            'release_gate_python_home_env_pass': release_gate_python_home_env_pass,
-            'release_gate_python_home_env_mismatch_count': len(
-                release_gate_python_home_env_mismatches
-            ),
-            'release_gate_python_home_env_mismatches': release_gate_python_home_env_mismatches,
-            'release_gate_python_user_base_env_check_enabled': release_gate_python_user_base_env_check_enabled,
-            'release_gate_python_user_base_env_pass': release_gate_python_user_base_env_pass,
-            'release_gate_python_user_base_env_mismatch_count': len(
-                release_gate_python_user_base_env_mismatches
-            ),
-            'release_gate_python_user_base_env_mismatches': release_gate_python_user_base_env_mismatches,
-            'release_gate_python_breakpoint_env_check_enabled': release_gate_python_breakpoint_env_check_enabled,
-            'release_gate_python_breakpoint_env_pass': release_gate_python_breakpoint_env_pass,
-            'release_gate_python_breakpoint_env_mismatch_count': len(
-                release_gate_python_breakpoint_env_mismatches
-            ),
-            'release_gate_python_breakpoint_env_mismatches': release_gate_python_breakpoint_env_mismatches,
-            'release_gate_python_startup_env_check_enabled': release_gate_python_startup_env_check_enabled,
-            'release_gate_python_startup_env_pass': release_gate_python_startup_env_pass,
-            'release_gate_python_startup_env_mismatch_count': len(
-                release_gate_python_startup_env_mismatches
-            ),
-            'release_gate_python_startup_env_mismatches': release_gate_python_startup_env_mismatches,
-            'release_gate_python_inspect_env_check_enabled': release_gate_python_inspect_env_check_enabled,
-            'release_gate_python_inspect_env_pass': release_gate_python_inspect_env_pass,
-            'release_gate_python_inspect_env_mismatch_count': len(
-                release_gate_python_inspect_env_mismatches
-            ),
-            'release_gate_python_inspect_env_mismatches': release_gate_python_inspect_env_mismatches,
-            'release_gate_python_warnings_env_check_enabled': release_gate_python_warnings_env_check_enabled,
-            'release_gate_python_warnings_env_pass': release_gate_python_warnings_env_pass,
-            'release_gate_python_warnings_env_mismatch_count': len(
-                release_gate_python_warnings_env_mismatches
-            ),
-            'release_gate_python_warnings_env_mismatches': release_gate_python_warnings_env_mismatches,
-            'release_gate_python_option_inline_exec_check_enabled': release_gate_python_option_inline_exec_check_enabled,
-            'release_gate_python_option_inline_exec_pass': release_gate_python_option_inline_exec_pass,
-            'release_gate_python_option_inline_exec_mismatch_count': len(
-                release_gate_python_option_inline_exec_mismatches
-            ),
-            'release_gate_python_option_inline_exec_mismatches': release_gate_python_option_inline_exec_mismatches,
-            'release_gate_coverage_floor_check_enabled': release_gate_coverage_floor_check_enabled,
-            'release_gate_coverage_floor_pass': release_gate_coverage_floor_pass,
-            'release_gate_coverage_floor_mismatch_count': len(
-                release_gate_coverage_floor_mismatches
-            ),
-            'release_gate_coverage_floor_mismatches': release_gate_coverage_floor_mismatches,
-            'release_gate_inline_exec_check_enabled': release_gate_inline_exec_check_enabled,
-            'release_gate_inline_exec_pass': release_gate_inline_exec_pass,
-            'release_gate_inline_exec_mismatch_count': len(
-                release_gate_inline_exec_mismatches
-            ),
-            'release_gate_inline_exec_mismatches': release_gate_inline_exec_mismatches,
-            'release_gate_option_override_check_enabled': release_gate_option_override_check_enabled,
-            'release_gate_option_override_pass': release_gate_option_override_pass,
-            'release_gate_option_override_mismatch_count': len(
-                release_gate_option_override_mismatches
-            ),
-            'release_gate_option_override_mismatches': release_gate_option_override_mismatches,
-            'release_gate_dry_run_check_enabled': release_gate_dry_run_check_enabled,
-            'release_gate_dry_run_pass': release_gate_dry_run_pass,
-            'release_gate_dry_run_mismatch_count': len(
-                release_gate_dry_run_mismatches
-            ),
-            'release_gate_dry_run_mismatches': release_gate_dry_run_mismatches,
-            'release_gate_relaxed_flags_check_enabled': release_gate_relaxed_flags_check_enabled,
-            'release_gate_relaxed_flags_pass': release_gate_relaxed_flags_pass,
-            'release_gate_relaxed_flags_mismatch_count': len(
-                release_gate_relaxed_flag_mismatches
-            ),
-            'release_gate_relaxed_flags_mismatches': release_gate_relaxed_flag_mismatches,
-            'evidence_cohort_age_spread_hours': evidence_cohort_age_spread_hours,
-            'oldest_evidence_file': oldest_evidence_file or None,
-            'newest_evidence_file': newest_evidence_file or None,
-            'cohort_skew_violation_count': len(cohort_skew_violation_files),
-            'cohort_skew_violation_files': cohort_skew_violation_files,
-            'stale_evidence_count': len(stale_evidence_files),
-            'stale_evidence_files': stale_evidence_files,
-            'future_evidence_count': len(future_evidence_files),
-            'future_evidence_files': future_evidence_files,
-            'beta_suite_stage_pack_complete': beta_suite_stage_pack_complete,
-            'beta_suite_stage_pack_executable': beta_suite_stage_pack_executable,
-            'beta_suite_evidence_pack_complete': beta_suite_evidence_pack_complete,
-            'ga_suite_stage_pack_complete': ga_suite_stage_pack_complete,
-            'ga_suite_stage_pack_executable': ga_suite_stage_pack_executable,
-            'ga_suite_evidence_pack_complete': ga_suite_evidence_pack_complete,
-            'roadmap_suite_stage_pack_complete': roadmap_suite_stage_pack_complete,
-            'roadmap_suite_stage_pack_executable': roadmap_suite_stage_pack_executable,
-            'roadmap_suite_evidence_pack_complete': roadmap_suite_evidence_pack_complete,
-            'release_gate_stage_pack_complete': release_gate_stage_pack_complete,
-            'release_gate_stage_pack_executable': release_gate_stage_pack_executable,
-            'release_gate_evidence_pack_complete': release_gate_evidence_pack_complete,
-            'ga_suite_has_review_queue_ga': review_queue_stage_present,
-            'release_standard_markers': standard_markers,
+        'evidence_summary': evidence_summary,
+        'bulk_strategy_view': bulk_strategy_view,
+    }
+
+
+def _bulk_gate_domain(name: str) -> str:
+    normalized = str(name or '').strip()
+    if not normalized:
+        return 'unknown'
+    if normalized.startswith('release_gate_'):
+        return 'release_gate'
+    if normalized.startswith('evidence_'):
+        return 'evidence'
+    if normalized in RELEASE_GATE_MARKERS:
+        return 'release_standard_marker'
+    return normalized.split('_', 1)[0] or 'unknown'
+
+
+def _build_bulk_strategy_view(
+    *,
+    decision: str,
+    gates: list[dict[str, Any]],
+    evidence_files: list[dict[str, Any]],
+    evidence_summary: dict[str, Any],
+) -> dict[str, Any]:
+    gate_rows: list[dict[str, Any]] = []
+    gate_status_index: dict[str, int] = {}
+    gate_names: list[str] = []
+    gate_status_bitmap: list[int] = []
+    pass_gate_names: list[str] = []
+    hold_gate_names: list[str] = []
+    pass_gate_indices: list[int] = []
+    hold_gate_indices: list[int] = []
+    gate_domain_index: dict[str, list[int]] = {}
+    for idx, gate in enumerate(gates):
+        name = str(gate.get('name') or '')
+        status = str(gate.get('status') or 'hold').strip().lower() or 'hold'
+        is_pass = status == 'pass'
+        domain = _bulk_gate_domain(name)
+        evidence = gate.get('evidence')
+        if isinstance(evidence, list):
+            evidence_count = len(evidence)
+        elif evidence is None:
+            evidence_count = 0
+        else:
+            evidence_count = 1
+        gate_rows.append(
+            {
+                'idx': idx,
+                'name': name,
+                'status': status,
+                'is_pass': is_pass,
+                'domain': domain,
+                'reason': str(gate.get('reason') or ''),
+                'evidence_count': evidence_count,
+            }
+        )
+        gate_names.append(name)
+        gate_status_bitmap.append(1 if is_pass else 0)
+        gate_status_index[name] = 1 if is_pass else 0
+        gate_domain_index.setdefault(domain, []).append(idx)
+        if is_pass:
+            pass_gate_names.append(name)
+            pass_gate_indices.append(idx)
+        else:
+            hold_gate_names.append(name)
+            hold_gate_indices.append(idx)
+
+    domain_rollup: dict[str, dict[str, Any]] = {}
+    for domain, indices in sorted(gate_domain_index.items()):
+        gate_count = len(indices)
+        pass_count = sum(1 for index in indices if gate_status_bitmap[index] == 1)
+        hold_count = gate_count - pass_count
+        pass_ratio = round((pass_count / gate_count), 4) if gate_count else 0.0
+        domain_rollup[domain] = {
+            'gate_count': gate_count,
+            'pass_count': pass_count,
+            'hold_count': hold_count,
+            'pass_ratio': pass_ratio,
+        }
+
+    evidence_status_counts: dict[str, int] = {}
+    evidence_freshness_counts: dict[str, int] = {}
+    for item in evidence_files:
+        if not isinstance(item, dict):
+            continue
+        status_key = str(item.get('status') or 'unknown').strip().lower() or 'unknown'
+        evidence_status_counts[status_key] = evidence_status_counts.get(status_key, 0) + 1
+        freshness_key = str(item.get('freshness') or '').strip().lower()
+        if freshness_key:
+            evidence_freshness_counts[freshness_key] = evidence_freshness_counts.get(freshness_key, 0) + 1
+
+    enabled_check_keys: list[str] = []
+    disabled_check_keys: list[str] = []
+    for key, value in evidence_summary.items():
+        if not str(key).endswith('_check_enabled'):
+            continue
+        if bool(value):
+            enabled_check_keys.append(str(key))
+        else:
+            disabled_check_keys.append(str(key))
+    enabled_check_keys = sorted(enabled_check_keys)
+    disabled_check_keys = sorted(disabled_check_keys)
+    hold_signature = 'GO' if not hold_gate_names else '|'.join(sorted(hold_gate_names))
+    decision_value = str(decision)
+    decision_code = 1 if decision_value == 'GO' else 0
+    hold_signature_sha256 = hashlib.sha256(hold_signature.encode('utf-8')).hexdigest()
+    strategy_signature_payload = {
+        'decision': decision_value,
+        'gate_status_bitmap': gate_status_bitmap,
+        'pass_gate_indices': pass_gate_indices,
+        'hold_gate_indices': hold_gate_indices,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    strategy_signature_sha256 = hashlib.sha256(
+        json.dumps(
+            strategy_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+
+    return {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'hold_signature': hold_signature,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'gate_count': len(gate_rows),
+        'pass_count': len(pass_gate_names),
+        'hold_count': len(hold_gate_names),
+        'gate_names': gate_names,
+        'gate_status_bitmap': gate_status_bitmap,
+        'gate_status_index': gate_status_index,
+        'gate_rows': gate_rows,
+        'pass_gate_names': pass_gate_names,
+        'hold_gate_names': hold_gate_names,
+        'pass_gate_indices': pass_gate_indices,
+        'hold_gate_indices': hold_gate_indices,
+        'gate_domain_index': gate_domain_index,
+        'domain_rollup': domain_rollup,
+        'check_enablement': {
+            'enabled_count': len(enabled_check_keys),
+            'disabled_count': len(disabled_check_keys),
+            'enabled_keys': enabled_check_keys,
+            'disabled_keys': disabled_check_keys,
         },
+        'evidence_file_count': len(evidence_files),
+        'evidence_status_counts': evidence_status_counts,
+        'evidence_freshness_counts': evidence_freshness_counts,
     }
 
 
