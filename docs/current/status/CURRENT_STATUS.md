@@ -353,3 +353,153 @@
 - Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
 - Decision JSON upgrade: `bulk_strategy_view` now emits fixed-width hash keys `hold_signature_sha256` and `strategy_signature_sha256` for large-scale bucketing/dedup pipelines
 - Analytics contract: downstream aggregators can index deterministic 64-char digests instead of long signature strings while legacy fields remain intact
+
+## TP-E13-61 Release Switch Bulk Domain Rollup Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `domain_rollup_sha256` over canonical `decision/domain_rollup/gate_domain_index` payload for stable domain-profile indexing
+- Analytics contract: large-scale aggregators can bucket directly by domain rollup digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-62 Release Switch Bulk Evidence Profile Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `evidence_profile_sha256` over canonical `decision/evidence_file_count/evidence_status_counts/evidence_freshness_counts` payload for stable evidence-profile indexing
+- Analytics contract: large-scale aggregators can bucket directly by evidence-state digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-63 Release Switch Bulk Gate-Status-Index Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `gate_status_index_sha256` over canonical `decision/gate_names/gate_status_bitmap/gate_status_index` payload for stable gate-matrix indexing
+- Analytics contract: large-scale aggregators can bucket directly by gate-status-index digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-64 Release Switch Bulk Composite-Profile Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `composite_profile_sha256` over canonical `decision/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256` payload for one-key cross-dimension strategy indexing
+- Analytics contract: large-scale aggregators can bucket directly by composite-profile digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-65 Release Switch Bulk Strategy-Envelope Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `strategy_envelope_sha256` over canonical `decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key batch reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by strategy-envelope digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-66 Release Switch Bulk Contract-Signature Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `contract_signature_sha256` over canonical `schema_version/decision/decision_code/gate_names/gate_domain_index/check_enablement.enabled_keys/check_enablement.disabled_keys/strategy_envelope_sha256` payload for one-key contract drift detection
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by contract-signature digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-67 Release Switch Bulk Contract-Envelope Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `contract_envelope_sha256` over canonical `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/contract_signature_sha256/strategy_envelope_sha256/composite_profile_sha256` payload for one-key contract+posture reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by contract-envelope digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-68 Release Switch Bulk Release-Fingerprint Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_fingerprint_sha256` over canonical `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key release-level reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-fingerprint digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-69 Release Switch Bulk Release-Manifest Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_manifest_sha256` over canonical `schema_version/decision/decision_code/gate_names/gate_status_bitmap/gate_domain_index/domain_rollup_sha256/evidence_profile_sha256/release_fingerprint_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key release-manifest replay/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-manifest digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-70 Release Switch Bulk Release-Root Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_root_sha256` over canonical `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/release_fingerprint_sha256/release_manifest_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key release posture reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-root digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-71 Release Switch Bulk Release-Attestation Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_attestation_sha256` over canonical `schema_version/decision/decision_code/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/gate_status_bitmap/gate_status_index_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key release attestation reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-attestation digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-72 Release Switch Bulk Release-Verdict Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_verdict_sha256` over canonical `schema_version/decision/decision_code/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/strategy_envelope_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key release verdict reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-verdict digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-73 Release Switch Bulk Release-Lineage Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_lineage_sha256` over canonical `schema_version/decision/decision_code/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key release lineage replay/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-lineage digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-74 Release Switch Bulk Release-Capsule Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_capsule_sha256` over canonical `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key compact release reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-capsule digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-75 Release Switch Bulk Release-Anchor Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_anchor_sha256` over canonical `schema_version/decision/decision_code/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key anchored release reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-anchor digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-76 Release Switch Bulk Release-Beacon Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_beacon_sha256` over canonical `schema_version/decision/decision_code/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key beaconed release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-beacon digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-77 Release Switch Bulk Release-Constellation Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_constellation_sha256` over canonical `schema_version/decision/decision_code/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key constellation release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-constellation digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-78 Release Switch Bulk Release-Galaxy Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_galaxy_sha256` over canonical `schema_version/decision/decision_code/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key galaxy release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-galaxy digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-79 Release Switch Bulk Release-Universe Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_universe_sha256` over canonical `schema_version/decision/decision_code/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key universe release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-universe digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-80 Release Switch Bulk Release-Multiverse Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_multiverse_sha256` over canonical `schema_version/decision/decision_code/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key multiverse release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-multiverse digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-81 Release Switch Bulk Release-Omniverse Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_omniverse_sha256` over canonical `schema_version/decision/decision_code/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key omniverse release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-omniverse digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-82 Release Switch Bulk Release-Hyperverse Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_hyperverse_sha256` over canonical `schema_version/decision/decision_code/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key hyperverse release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-hyperverse digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-83 Release Switch Bulk Release-Megaverse Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_megaverse_sha256` over canonical `schema_version/decision/decision_code/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key megaverse release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-megaverse digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-84 Release Switch Bulk Release-Gigaverse Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_gigaverse_sha256` over canonical `schema_version/decision/decision_code/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key gigaverse release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-gigaverse digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields
+
+## TP-E13-85 Release Switch Bulk Release-Teraverse Hash
+
+- Runner script: [../../../scripts/run_release_switch_validation.py](../../../scripts/run_release_switch_validation.py)
+- Decision JSON upgrade: `bulk_strategy_view` now emits `release_teraverse_sha256` over canonical `schema_version/decision/decision_code/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys` payload for one-key teraverse release routing/reconciliation
+- Analytics contract: large-scale aggregators can bucket/reconcile directly by release-teraverse digest while preserving `schema_version=release_switch_bulk_strategy.v2` and all legacy fields

@@ -1407,6 +1407,381 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
   - 两个签名字段均为 64 位十六进制字符串，且可由稳定规则重算
   - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
 
+#### TP-E13-61 Release switch 批量测算域聚合哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐 domain 聚合轮廓的固定宽度签名字段，支撑海量策略作业按域聚合画像做快速索引与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `domain_rollup_sha256`
+  - `domain_rollup_sha256` 必须由稳定 canonical payload 重算：`decision/domain_rollup/gate_domain_index`
+  - `domain_rollup_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-62 Release switch 批量测算证据轮廓哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐 evidence 轮廓的固定宽度签名字段，支撑海量策略作业按证据状态画像快速分桶、去重与回放，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `evidence_profile_sha256`
+  - `evidence_profile_sha256` 必须由稳定 canonical payload 重算：`decision/evidence_file_count/evidence_status_counts/evidence_freshness_counts`
+  - `evidence_profile_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-63 Release switch 批量测算门阵索引哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐 gate 状态索引轮廓的固定宽度签名字段，支撑海量策略作业按门阵状态向量快速分桶、去重与回放，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `gate_status_index_sha256`
+  - `gate_status_index_sha256` 必须由稳定 canonical payload 重算：`decision/gate_names/gate_status_bitmap/gate_status_index`
+  - `gate_status_index_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-64 Release switch 批量测算组合轮廓哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐跨维度组合轮廓的固定宽度签名字段，把现有多维哈希收敛为单一主索引，支撑海量策略作业快速分桶、去重与回放，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `composite_profile_sha256`
+  - `composite_profile_sha256` 必须由稳定 canonical payload 重算：`decision/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256`
+  - `composite_profile_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-65 Release switch 批量测算策略包络哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐策略包络级固定宽度签名字段，将决策码、门阵计数、证据计数与既有多维哈希绑定为统一索引，支撑跨批次快速对账、分桶与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `strategy_envelope_sha256`
+  - `strategy_envelope_sha256` 必须由稳定 canonical payload 重算：`decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `strategy_envelope_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-66 Release switch 批量测算合同签名哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐合同级固定宽度签名字段，将 schema 版本、门阵域索引、门禁启停键与策略包络哈希绑定为统一合同签名，支撑跨批次合同漂移检测与快速对账，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `contract_signature_sha256`
+  - `contract_signature_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/gate_names/gate_domain_index/check_enablement.enabled_keys/check_enablement.disabled_keys/strategy_envelope_sha256`
+  - `contract_signature_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-67 Release switch 批量测算合同包络哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐合同包络级固定宽度签名字段，将合同签名与批次门阵/证据计数绑定为统一包络索引，支撑跨批次合同+姿态快速对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `contract_envelope_sha256`
+  - `contract_envelope_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/contract_signature_sha256/strategy_envelope_sha256/composite_profile_sha256`
+  - `contract_envelope_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-68 Release switch 批量测算发布指纹哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布级固定宽度指纹字段，将合同签名、合同包络、姿态轮廓与门禁启停键绑定为统一发布指纹，支撑跨批次一键发布对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_fingerprint_sha256`
+  - `release_fingerprint_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_fingerprint_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-69 Release switch 批量测算发布清单哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布清单级固定宽度哈希字段，将发布指纹与门阵状态、域索引、证据轮廓绑定为统一发布清单索引，支撑跨批次发布面快速回放、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_manifest_sha256`
+  - `release_manifest_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/gate_names/gate_status_bitmap/gate_domain_index/domain_rollup_sha256/evidence_profile_sha256/release_fingerprint_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_manifest_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-70 Release switch 批量测算发布根签名哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布根级固定宽度哈希字段，将发布清单哈希与核心姿态签名绑定统一根索引，支撑跨批次快速对账、去重与回放，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_root_sha256`
+  - `release_root_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/release_fingerprint_sha256/release_manifest_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_root_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-71 Release switch 批量测算发布见证哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布见证级固定宽度哈希字段，将发布根签名与发布清单、发布指纹及核心姿态索引绑定为统一见证键，支撑跨批次发布产物快速验签、对账与追踪，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_attestation_sha256`
+  - `release_attestation_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/gate_status_bitmap/gate_status_index_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_attestation_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-72 Release switch 批量测算发布裁决哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布裁决级固定宽度哈希字段，将发布见证、发布根、发布清单、发布指纹与合同姿态包络绑定为统一裁决键，支撑跨批次一键发布对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_verdict_sha256`
+  - `release_verdict_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/strategy_envelope_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_verdict_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-73 Release switch 批量测算发布谱系哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布谱系级固定宽度哈希字段，将发布裁决、发布见证、发布根签名、发布清单与核心姿态签名索引绑定为统一谱系键，支撑跨批次发布链路回放、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_lineage_sha256`
+  - `release_lineage_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_lineage_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-74 Release switch 批量测算发布胶囊哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布胶囊级固定宽度哈希字段，将发布谱系签名与核心判定计数收敛为紧凑统一索引，支撑跨批次快速对账、分桶与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_capsule_sha256`
+  - `release_capsule_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_capsule_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-75 Release switch 批量测算发布锚点哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布锚点级固定宽度哈希字段，将发布胶囊签名与发布清单/发布指纹以及合同策略包络收敛为统一锚点索引，支撑跨批次极速对账、分桶与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_anchor_sha256`
+  - `release_anchor_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_anchor_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-76 Release switch 批量测算发布信标哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布信标级固定宽度哈希字段，将发布锚点与门阵索引/组合轮廓及合同策略包络收敛为统一信标索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_beacon_sha256`
+  - `release_beacon_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_beacon_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-77 Release switch 批量测算发布星图哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布星图级固定宽度哈希字段，将发布信标与谱系姿态签名收敛为统一星图索引，支撑跨批次极速路由、对账与回放，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_constellation_sha256`
+  - `release_constellation_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_constellation_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-78 Release switch 批量测算发布星系哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布星系级固定宽度哈希字段，将发布星图与双签姿态收敛为统一星系索引，支撑跨批次极速路由、对账与回放，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_galaxy_sha256`
+  - `release_galaxy_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_galaxy_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-79 Release switch 批量测算发布宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布宇宙级固定宽度哈希字段，将发布星系哈希与多维姿态签名收敛为统一宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_universe_sha256`
+  - `release_universe_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_universe_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-80 Release switch 批量测算发布多元宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布多元宇宙级固定宽度哈希字段，将发布宇宙哈希与多维姿态签名收敛为统一多元宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_multiverse_sha256`
+  - `release_multiverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_multiverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-81 Release switch 批量测算发布超宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布超宇宙级固定宽度哈希字段，将发布多元宇宙哈希与多维姿态签名收敛为统一超宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_omniverse_sha256`
+  - `release_omniverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_omniverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-82 Release switch 批量测算发布极宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布极宇宙级固定宽度哈希字段，将发布超宇宙哈希与多维姿态签名收敛为统一极宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_hyperverse_sha256`
+  - `release_hyperverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_hyperverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-83 Release switch 批量测算发布巨宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布巨宇宙级固定宽度哈希字段，将发布极宇宙哈希与多维姿态签名收敛为统一巨宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_megaverse_sha256`
+  - `release_megaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_megaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-84 Release switch 批量测算发布十亿宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布十亿宇宙级固定宽度哈希字段，将发布巨宇宙哈希与多维姿态签名收敛为统一十亿宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_gigaverse_sha256`
+  - `release_gigaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_gigaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-85 Release switch 批量测算发布万亿宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布万亿宇宙级固定宽度哈希字段，将发布十亿宇宙哈希与多维姿态签名收敛为统一万亿宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_teraverse_sha256`
+  - `release_teraverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_teraverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
 鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
 ### `src/omni_skill_pipeline/models.py`
 

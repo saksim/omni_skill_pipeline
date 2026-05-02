@@ -107,6 +107,592 @@ def _expected_bulk_strategy_signature_sha256(bulk_view: dict[str, object]) -> st
     return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
 
 
+def _expected_bulk_domain_rollup_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'decision': str(bulk_view.get('decision') or ''),
+        'domain_rollup': dict(bulk_view.get('domain_rollup') or {}),
+        'gate_domain_index': dict(bulk_view.get('gate_domain_index') or {}),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_evidence_profile_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'decision': str(bulk_view.get('decision') or ''),
+        'evidence_file_count': int(bulk_view.get('evidence_file_count') or 0),
+        'evidence_status_counts': dict(bulk_view.get('evidence_status_counts') or {}),
+        'evidence_freshness_counts': dict(bulk_view.get('evidence_freshness_counts') or {}),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_gate_status_index_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'decision': str(bulk_view.get('decision') or ''),
+        'gate_names': list(bulk_view.get('gate_names') or []),
+        'gate_status_bitmap': list(bulk_view.get('gate_status_bitmap') or []),
+        'gate_status_index': dict(bulk_view.get('gate_status_index') or {}),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_composite_profile_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'decision': str(bulk_view.get('decision') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_strategy_envelope_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_count': int(bulk_view.get('gate_count') or 0),
+        'pass_count': int(bulk_view.get('pass_count') or 0),
+        'hold_count': int(bulk_view.get('hold_count') or 0),
+        'evidence_file_count': int(bulk_view.get('evidence_file_count') or 0),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_contract_signature_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_names': list(bulk_view.get('gate_names') or []),
+        'gate_domain_index': dict(bulk_view.get('gate_domain_index') or {}),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_contract_envelope_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_count': int(bulk_view.get('gate_count') or 0),
+        'pass_count': int(bulk_view.get('pass_count') or 0),
+        'hold_count': int(bulk_view.get('hold_count') or 0),
+        'evidence_file_count': int(bulk_view.get('evidence_file_count') or 0),
+        'contract_signature_sha256': str(bulk_view.get('contract_signature_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_fingerprint_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_count': int(bulk_view.get('gate_count') or 0),
+        'pass_count': int(bulk_view.get('pass_count') or 0),
+        'hold_count': int(bulk_view.get('hold_count') or 0),
+        'evidence_file_count': int(bulk_view.get('evidence_file_count') or 0),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'contract_signature_sha256': str(bulk_view.get('contract_signature_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_manifest_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_names': list(bulk_view.get('gate_names') or []),
+        'gate_status_bitmap': list(bulk_view.get('gate_status_bitmap') or []),
+        'gate_domain_index': dict(bulk_view.get('gate_domain_index') or {}),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_root_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_count': int(bulk_view.get('gate_count') or 0),
+        'pass_count': int(bulk_view.get('pass_count') or 0),
+        'hold_count': int(bulk_view.get('hold_count') or 0),
+        'evidence_file_count': int(bulk_view.get('evidence_file_count') or 0),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'contract_signature_sha256': str(bulk_view.get('contract_signature_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_attestation_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'gate_status_bitmap': list(bulk_view.get('gate_status_bitmap') or []),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_verdict_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_lineage_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_capsule_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'gate_count': int(bulk_view.get('gate_count') or 0),
+        'pass_count': int(bulk_view.get('pass_count') or 0),
+        'hold_count': int(bulk_view.get('hold_count') or 0),
+        'evidence_file_count': int(bulk_view.get('evidence_file_count') or 0),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_anchor_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_beacon_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_constellation_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_galaxy_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_universe_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_multiverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_omniverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_hyperverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_omniverse_sha256': str(bulk_view.get('release_omniverse_sha256') or ''),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_megaverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_hyperverse_sha256': str(bulk_view.get('release_hyperverse_sha256') or ''),
+        'release_omniverse_sha256': str(bulk_view.get('release_omniverse_sha256') or ''),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_gigaverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_megaverse_sha256': str(bulk_view.get('release_megaverse_sha256') or ''),
+        'release_hyperverse_sha256': str(bulk_view.get('release_hyperverse_sha256') or ''),
+        'release_omniverse_sha256': str(bulk_view.get('release_omniverse_sha256') or ''),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_teraverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_gigaverse_sha256': str(bulk_view.get('release_gigaverse_sha256') or ''),
+        'release_megaverse_sha256': str(bulk_view.get('release_megaverse_sha256') or ''),
+        'release_hyperverse_sha256': str(bulk_view.get('release_hyperverse_sha256') or ''),
+        'release_omniverse_sha256': str(bulk_view.get('release_omniverse_sha256') or ''),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
 def _write_go_decision_evidence_bundle(tmp_path: Path) -> dict[str, Path]:
     doc_sync_path = tmp_path / 'e13-doc-sync-check-report.json'
     quality_path = tmp_path / 'e11-quality-regression-report.json'
@@ -961,6 +1547,2787 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             )
             self.assertEqual(len(str(bulk_view.get('hold_signature_sha256') or '')), 64)
             self.assertEqual(len(str(bulk_view.get('strategy_signature_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_domain_rollup_hash_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('domain_rollup_sha256'),
+                _expected_bulk_domain_rollup_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('domain_rollup_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_domain_rollup_hash_for_hold_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('domain_rollup_sha256'),
+                _expected_bulk_domain_rollup_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('domain_rollup_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_evidence_profile_hash_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('evidence_profile_sha256'),
+                _expected_bulk_evidence_profile_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('evidence_profile_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_evidence_profile_hash_for_hold_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('evidence_profile_sha256'),
+                _expected_bulk_evidence_profile_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('evidence_profile_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_gate_status_index_hash_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('gate_status_index_sha256'),
+                _expected_bulk_gate_status_index_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('gate_status_index_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_gate_status_index_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('gate_status_index_sha256'),
+                _expected_bulk_gate_status_index_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('gate_status_index_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_composite_profile_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('composite_profile_sha256'),
+                _expected_bulk_composite_profile_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('composite_profile_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_composite_profile_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('composite_profile_sha256'),
+                _expected_bulk_composite_profile_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('composite_profile_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_envelope_hash_for_go_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('strategy_envelope_sha256'),
+                _expected_bulk_strategy_envelope_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('strategy_envelope_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_envelope_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('strategy_envelope_sha256'),
+                _expected_bulk_strategy_envelope_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('strategy_envelope_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_contract_signature_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('contract_signature_sha256'),
+                _expected_bulk_contract_signature_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('contract_signature_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_contract_signature_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('contract_signature_sha256'),
+                _expected_bulk_contract_signature_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('contract_signature_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_contract_envelope_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('contract_envelope_sha256'),
+                _expected_bulk_contract_envelope_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('contract_envelope_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_contract_envelope_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('contract_envelope_sha256'),
+                _expected_bulk_contract_envelope_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('contract_envelope_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_fingerprint_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_fingerprint_sha256'),
+                _expected_bulk_release_fingerprint_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_fingerprint_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_fingerprint_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_fingerprint_sha256'),
+                _expected_bulk_release_fingerprint_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_fingerprint_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_manifest_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_manifest_sha256'),
+                _expected_bulk_release_manifest_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_manifest_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_manifest_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_manifest_sha256'),
+                _expected_bulk_release_manifest_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_manifest_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_root_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_root_sha256'),
+                _expected_bulk_release_root_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_root_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_root_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_root_sha256'),
+                _expected_bulk_release_root_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_root_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_attestation_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_attestation_sha256'),
+                _expected_bulk_release_attestation_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_attestation_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_attestation_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_attestation_sha256'),
+                _expected_bulk_release_attestation_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_attestation_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_verdict_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_verdict_sha256'),
+                _expected_bulk_release_verdict_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_verdict_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_verdict_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_verdict_sha256'),
+                _expected_bulk_release_verdict_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_verdict_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_lineage_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_lineage_sha256'),
+                _expected_bulk_release_lineage_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_lineage_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_lineage_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_lineage_sha256'),
+                _expected_bulk_release_lineage_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_lineage_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_capsule_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_capsule_sha256'),
+                _expected_bulk_release_capsule_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_capsule_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_capsule_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_capsule_sha256'),
+                _expected_bulk_release_capsule_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_capsule_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_anchor_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_anchor_sha256'),
+                _expected_bulk_release_anchor_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_anchor_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_anchor_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_anchor_sha256'),
+                _expected_bulk_release_anchor_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_anchor_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_beacon_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_beacon_sha256'),
+                _expected_bulk_release_beacon_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_beacon_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_beacon_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_beacon_sha256'),
+                _expected_bulk_release_beacon_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_beacon_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_constellation_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_constellation_sha256'),
+                _expected_bulk_release_constellation_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_constellation_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_constellation_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_constellation_sha256'),
+                _expected_bulk_release_constellation_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_constellation_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_galaxy_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_galaxy_sha256'),
+                _expected_bulk_release_galaxy_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_galaxy_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_galaxy_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_galaxy_sha256'),
+                _expected_bulk_release_galaxy_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_galaxy_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_universe_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_universe_sha256'),
+                _expected_bulk_release_universe_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_universe_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_universe_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_universe_sha256'),
+                _expected_bulk_release_universe_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_universe_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_multiverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_multiverse_sha256'),
+                _expected_bulk_release_multiverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_multiverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_multiverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_multiverse_sha256'),
+                _expected_bulk_release_multiverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_multiverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_omniverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_omniverse_sha256'),
+                _expected_bulk_release_omniverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_omniverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_omniverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_omniverse_sha256'),
+                _expected_bulk_release_omniverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_omniverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_hyperverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_hyperverse_sha256'),
+                _expected_bulk_release_hyperverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_hyperverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_hyperverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_hyperverse_sha256'),
+                _expected_bulk_release_hyperverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_hyperverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_megaverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_megaverse_sha256'),
+                _expected_bulk_release_megaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_megaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_megaverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_megaverse_sha256'),
+                _expected_bulk_release_megaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_megaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_gigaverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_gigaverse_sha256'),
+                _expected_bulk_release_gigaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_gigaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_gigaverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_gigaverse_sha256'),
+                _expected_bulk_release_gigaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_gigaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_teraverse_sha256'),
+                _expected_bulk_release_teraverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_teraverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_teraverse_sha256'),
+                _expected_bulk_release_teraverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_teraverse_sha256') or '')), 64)
 
     def test_script_decision_only_holds_when_release_gate_pack_evidence_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

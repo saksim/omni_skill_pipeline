@@ -831,3 +831,328 @@
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_signature_hash_for_hold_decision`
 - TP mapping:
   - `scripts/run_tp_tests.py` -> `TP-E13-60`
+
+## TP-E13-61 Release Switch Bulk Domain Rollup Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width hash for domain-level rollup profiles so high-volume analytics pipelines can bucket by domain aggregation shape without parsing long nested payloads.
+- Bulk-domain-rollup-hash contract:
+  - decision artifact includes `domain_rollup_sha256` and it must equal `sha256` of canonical payload: `decision/domain_rollup/gate_domain_index`
+  - `domain_rollup_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, `hold_signature`, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_domain_rollup_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_domain_rollup_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-61`
+
+## TP-E13-62 Release Switch Bulk Evidence Profile Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width hash for evidence-state profiles so high-volume analytics pipelines can bucket by evidence quality/freshness shape without parsing nested summaries.
+- Bulk-evidence-profile-hash contract:
+  - decision artifact includes `evidence_profile_sha256` and it must equal `sha256` of canonical payload: `decision/evidence_file_count/evidence_status_counts/evidence_freshness_counts`
+  - `evidence_profile_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, `hold_signature`, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_evidence_profile_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_evidence_profile_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-62`
+
+## TP-E13-63 Release Switch Bulk Gate-Status-Index Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width hash for gate-matrix status profiles so high-volume analytics pipelines can bucket by gate-state vectors without parsing full gate rows.
+- Bulk-gate-status-index-hash contract:
+  - decision artifact includes `gate_status_index_sha256` and it must equal `sha256` of canonical payload: `decision/gate_names/gate_status_bitmap/gate_status_index`
+  - `gate_status_index_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, `hold_signature`, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_gate_status_index_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_gate_status_index_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-63`
+
+## TP-E13-64 Release Switch Bulk Composite-Profile Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width hash for cross-dimension strategy profiles so high-volume analytics pipelines can index one canonical digest instead of joining multiple hash columns.
+- Bulk-composite-profile-hash contract:
+  - decision artifact includes `composite_profile_sha256` and it must equal `sha256` of canonical payload: `decision/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256`
+  - `composite_profile_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_composite_profile_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_composite_profile_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-64`
+
+## TP-E13-65 Release Switch Bulk Strategy-Envelope Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width envelope hash for cross-batch reconciliation so high-volume analytics pipelines can compare full strategy posture without joining multiple signature fields.
+- Bulk-strategy-envelope-hash contract:
+  - decision artifact includes `strategy_envelope_sha256` and it must equal `sha256` of canonical payload: `decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `strategy_envelope_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_envelope_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_envelope_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-65`
+
+## TP-E13-66 Release Switch Bulk Contract-Signature Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width contract signature for cross-batch contract drift detection so high-volume analytics pipelines can reconcile compatibility posture without expanding nested payloads.
+- Bulk-contract-signature-hash contract:
+  - decision artifact includes `contract_signature_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/gate_names/gate_domain_index/check_enablement.enabled_keys/check_enablement.disabled_keys/strategy_envelope_sha256`
+  - `contract_signature_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_contract_signature_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_contract_signature_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-66`
+
+## TP-E13-67 Release Switch Bulk Contract-Envelope Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width contract-envelope signature for cross-batch contract+posture reconciliation so high-volume analytics pipelines can compare release posture without expanding nested vectors.
+- Bulk-contract-envelope-hash contract:
+  - decision artifact includes `contract_envelope_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/contract_signature_sha256/strategy_envelope_sha256/composite_profile_sha256`
+  - `contract_envelope_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_contract_envelope_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_contract_envelope_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-67`
+
+## TP-E13-68 Release Switch Bulk Release-Fingerprint Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release fingerprint for cross-batch release-level reconciliation so high-volume analytics pipelines can compare contract and posture in one digest.
+- Bulk-release-fingerprint-hash contract:
+  - decision artifact includes `release_fingerprint_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_fingerprint_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_fingerprint_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_fingerprint_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-68`
+
+## TP-E13-69 Release Switch Bulk Release-Manifest Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release manifest hash for cross-batch replay/reconciliation so high-volume analytics pipelines can compare release surfaces without replaying full gate/event payloads.
+- Bulk-release-manifest-hash contract:
+  - decision artifact includes `release_manifest_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/gate_names/gate_status_bitmap/gate_domain_index/domain_rollup_sha256/evidence_profile_sha256/release_fingerprint_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_manifest_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_manifest_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_manifest_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-69`
+
+## TP-E13-70 Release Switch Bulk Release-Root Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release root hash for cross-batch posture reconciliation so high-volume analytics pipelines can compare complete release signatures with one key.
+- Bulk-release-root-hash contract:
+  - decision artifact includes `release_root_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/release_fingerprint_sha256/release_manifest_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_root_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_root_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_root_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-70`
+
+## TP-E13-71 Release Switch Bulk Release-Attestation Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release attestation hash for cross-batch attestation/reconciliation so high-volume analytics pipelines can compare root+manifest+posture signatures with one key.
+- Bulk-release-attestation-hash contract:
+  - decision artifact includes `release_attestation_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/gate_status_bitmap/gate_status_index_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_attestation_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_attestation_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_attestation_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-71`
+
+## TP-E13-72 Release Switch Bulk Release-Verdict Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release verdict hash for cross-batch verdict/reconciliation so high-volume analytics pipelines can compare attestation+contract+posture signatures with one key.
+- Bulk-release-verdict-hash contract:
+  - decision artifact includes `release_verdict_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/strategy_envelope_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_verdict_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_verdict_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_verdict_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-72`
+
+## TP-E13-73 Release Switch Bulk Release-Lineage Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release lineage hash for cross-batch lineage replay/reconciliation so high-volume analytics pipelines can compare verdict+posture signatures with one key.
+- Bulk-release-lineage-hash contract:
+  - decision artifact includes `release_lineage_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_lineage_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_lineage_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_lineage_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-73`
+
+## TP-E13-74 Release Switch Bulk Release-Capsule Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release capsule hash for compact cross-batch release reconciliation so high-volume analytics pipelines can index final release posture with one key.
+- Bulk-release-capsule-hash contract:
+  - decision artifact includes `release_capsule_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_capsule_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_capsule_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_capsule_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-74`
+
+## TP-E13-75 Release Switch Bulk Release-Anchor Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release anchor hash for anchored cross-batch reconciliation so high-volume analytics pipelines can index capsule+contract posture with one key.
+- Bulk-release-anchor-hash contract:
+  - decision artifact includes `release_anchor_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_anchor_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_anchor_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_anchor_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-75`
+
+## TP-E13-76 Release Switch Bulk Release-Beacon Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release beacon hash for beaconed cross-batch routing/reconciliation so high-volume analytics pipelines can index anchor+posture with one key.
+- Bulk-release-beacon-hash contract:
+  - decision artifact includes `release_beacon_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_beacon_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_beacon_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_beacon_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-76`
+
+## TP-E13-77 Release Switch Bulk Release-Constellation Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release constellation hash for constellation-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index beacon+lineage posture with one key.
+- Bulk-release-constellation-hash contract:
+  - decision artifact includes `release_constellation_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_constellation_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_constellation_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_constellation_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-77`
+
+## TP-E13-78 Release Switch Bulk Release-Galaxy Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release galaxy hash for galaxy-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index constellation+dual-signature posture with one key.
+- Bulk-release-galaxy-hash contract:
+  - decision artifact includes `release_galaxy_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_galaxy_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_galaxy_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_galaxy_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-78`
+
+## TP-E13-79 Release Switch Bulk Release-Universe Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release universe hash for universe-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index galaxy+multi-posture signatures with one key.
+- Bulk-release-universe-hash contract:
+  - decision artifact includes `release_universe_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_universe_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_universe_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_universe_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-79`
+
+## TP-E13-80 Release Switch Bulk Release-Multiverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release multiverse hash for multiverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index universe+multi-posture signatures with one key.
+- Bulk-release-multiverse-hash contract:
+  - decision artifact includes `release_multiverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_multiverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_multiverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_multiverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-80`
+
+## TP-E13-81 Release Switch Bulk Release-Omniverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release omniverse hash for omniverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index multiverse+multi-posture signatures with one key.
+- Bulk-release-omniverse-hash contract:
+  - decision artifact includes `release_omniverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_omniverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_omniverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_omniverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-81`
+
+## TP-E13-82 Release Switch Bulk Release-Hyperverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release hyperverse hash for hyperverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index omniverse+multi-posture signatures with one key.
+- Bulk-release-hyperverse-hash contract:
+  - decision artifact includes `release_hyperverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_hyperverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_hyperverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_hyperverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-82`
+
+## TP-E13-83 Release Switch Bulk Release-Megaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release megaverse hash for megaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index hyperverse+multi-posture signatures with one key.
+- Bulk-release-megaverse-hash contract:
+  - decision artifact includes `release_megaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_megaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_megaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_megaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-83`
+
+## TP-E13-84 Release Switch Bulk Release-Gigaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release gigaverse hash for gigaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index megaverse+multi-posture signatures with one key.
+- Bulk-release-gigaverse-hash contract:
+  - decision artifact includes `release_gigaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_gigaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_gigaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_gigaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-84`
+
+## TP-E13-85 Release Switch Bulk Release-Teraverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release teraverse hash for teraverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index gigaverse+multi-posture signatures with one key.
+- Bulk-release-teraverse-hash contract:
+  - decision artifact includes `release_teraverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_teraverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-85`

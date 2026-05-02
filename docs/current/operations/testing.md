@@ -84,7 +84,7 @@ python scripts/run_tp_tests.py TP-E6-02 --python python
 閹笛嗩攽婢舵矮閲滃銉ュ礋:
 
 ```bash
-python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 TP-E13-14 TP-E13-15 TP-E13-16 TP-E13-17 TP-E13-18 TP-E13-19 TP-E13-20 TP-E13-21 TP-E13-22 TP-E13-23 TP-E13-24 TP-E13-25 TP-E13-26 TP-E13-27 TP-E13-28 TP-E13-29 TP-E13-30 TP-E13-31 TP-E13-32 TP-E13-33 TP-E13-34 TP-E13-35 TP-E13-36 TP-E13-37 TP-E13-38 TP-E13-39 TP-E13-40 TP-E13-41 TP-E13-42 TP-E13-43 TP-E13-44 TP-E13-45 TP-E13-46 TP-E13-47 TP-E13-48 TP-E13-49 TP-E13-50 TP-E13-51 TP-E13-52 TP-E13-53 TP-E13-54 TP-E13-55 TP-E13-56 TP-E13-57 TP-E13-58 TP-E13-59 TP-E13-60 --python python3
+python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 TP-E13-14 TP-E13-15 TP-E13-16 TP-E13-17 TP-E13-18 TP-E13-19 TP-E13-20 TP-E13-21 TP-E13-22 TP-E13-23 TP-E13-24 TP-E13-25 TP-E13-26 TP-E13-27 TP-E13-28 TP-E13-29 TP-E13-30 TP-E13-31 TP-E13-32 TP-E13-33 TP-E13-34 TP-E13-35 TP-E13-36 TP-E13-37 TP-E13-38 TP-E13-39 TP-E13-40 TP-E13-41 TP-E13-42 TP-E13-43 TP-E13-44 TP-E13-45 TP-E13-46 TP-E13-47 TP-E13-48 TP-E13-49 TP-E13-50 TP-E13-51 TP-E13-52 TP-E13-53 TP-E13-54 TP-E13-55 TP-E13-56 TP-E13-57 TP-E13-58 TP-E13-59 TP-E13-60 TP-E13-61 TP-E13-62 TP-E13-63 TP-E13-64 TP-E13-65 TP-E13-66 TP-E13-67 TP-E13-68 TP-E13-69 TP-E13-70 TP-E13-71 TP-E13-72 TP-E13-73 TP-E13-74 TP-E13-75 TP-E13-76 TP-E13-77 TP-E13-78 TP-E13-79 TP-E13-80 TP-E13-81 TP-E13-82 TP-E13-83 TP-E13-84 --python python3
 ```
 
 ## 瑜版挸澧犵憰鍡欐磰闁插秶鍋?
@@ -649,3 +649,228 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_signature_hash_for_hold_decision` for HOLD-path signature-digest consistency checks.
 - Added `TP-E13-60` mapping in `scripts/run_tp_tests.py`.
 - Linux decision-only sample remains unchanged; consume new hash fields from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-61 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic domain-rollup digest: `domain_rollup_sha256`.
+- `domain_rollup_sha256` now pins a canonical digest over `decision/domain_rollup/gate_domain_index`, enabling fixed-width indexing for domain-level aggregation profiles.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_domain_rollup_hash_for_go_decision` for GO-path domain-rollup digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_domain_rollup_hash_for_hold_decision` for HOLD-path domain-rollup digest consistency checks.
+- Added `TP-E13-61` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `domain_rollup_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-62 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic evidence-profile digest: `evidence_profile_sha256`.
+- `evidence_profile_sha256` now pins a canonical digest over `decision/evidence_file_count/evidence_status_counts/evidence_freshness_counts`, enabling fixed-width indexing for evidence-state aggregation profiles.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_evidence_profile_hash_for_go_decision` for GO-path evidence-profile digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_evidence_profile_hash_for_hold_decision` for HOLD-path evidence-profile digest consistency checks.
+- Added `TP-E13-62` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `evidence_profile_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-63 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic gate-status-index digest: `gate_status_index_sha256`.
+- `gate_status_index_sha256` now pins a canonical digest over `decision/gate_names/gate_status_bitmap/gate_status_index`, enabling fixed-width indexing for gate-matrix aggregation profiles.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_gate_status_index_hash_for_go_decision` for GO-path gate-status-index digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_gate_status_index_hash_for_hold_decision` for HOLD-path gate-status-index digest consistency checks.
+- Added `TP-E13-63` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `gate_status_index_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-64 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic composite-profile digest: `composite_profile_sha256`.
+- `composite_profile_sha256` now pins a canonical digest over `decision/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256`, enabling one-key indexing for cross-dimension strategy profiles.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_composite_profile_hash_for_go_decision` for GO-path composite-profile digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_composite_profile_hash_for_hold_decision` for HOLD-path composite-profile digest consistency checks.
+- Added `TP-E13-64` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `composite_profile_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-65 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic strategy-envelope digest: `strategy_envelope_sha256`.
+- `strategy_envelope_sha256` now pins a canonical digest over `decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_envelope_hash_for_go_decision` for GO-path strategy-envelope digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_envelope_hash_for_hold_decision` for HOLD-path strategy-envelope digest consistency checks.
+- Added `TP-E13-65` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `strategy_envelope_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-66 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic contract-signature digest: `contract_signature_sha256`.
+- `contract_signature_sha256` now pins a canonical digest over `schema_version/decision/decision_code/gate_names/gate_domain_index/check_enablement.enabled_keys/check_enablement.disabled_keys/strategy_envelope_sha256`, enabling one-key contract drift detection across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_contract_signature_hash_for_go_decision` for GO-path contract-signature digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_contract_signature_hash_for_hold_decision` for HOLD-path contract-signature digest consistency checks.
+- Added `TP-E13-66` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `contract_signature_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-67 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic contract-envelope digest: `contract_envelope_sha256`.
+- `contract_envelope_sha256` now pins a canonical digest over `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/contract_signature_sha256/strategy_envelope_sha256/composite_profile_sha256`, enabling one-key contract+posture reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_contract_envelope_hash_for_go_decision` for GO-path contract-envelope digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_contract_envelope_hash_for_hold_decision` for HOLD-path contract-envelope digest consistency checks.
+- Added `TP-E13-67` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `contract_envelope_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-68 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-fingerprint digest: `release_fingerprint_sha256`.
+- `release_fingerprint_sha256` now pins a canonical digest over `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key release-level reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_fingerprint_hash_for_go_decision` for GO-path release-fingerprint digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_fingerprint_hash_for_hold_decision` for HOLD-path release-fingerprint digest consistency checks.
+- Added `TP-E13-68` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_fingerprint_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-69 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-manifest digest: `release_manifest_sha256`.
+- `release_manifest_sha256` now pins a canonical digest over `schema_version/decision/decision_code/gate_names/gate_status_bitmap/gate_domain_index/domain_rollup_sha256/evidence_profile_sha256/release_fingerprint_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key release-manifest replay/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_manifest_hash_for_go_decision` for GO-path release-manifest digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_manifest_hash_for_hold_decision` for HOLD-path release-manifest digest consistency checks.
+- Added `TP-E13-69` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_manifest_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-70 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-root digest: `release_root_sha256`.
+- `release_root_sha256` now pins a canonical digest over `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/composite_profile_sha256/strategy_envelope_sha256/contract_signature_sha256/contract_envelope_sha256/release_fingerprint_sha256/release_manifest_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key release posture reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_root_hash_for_go_decision` for GO-path release-root digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_root_hash_for_hold_decision` for HOLD-path release-root digest consistency checks.
+- Added `TP-E13-70` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_root_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-71 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-attestation digest: `release_attestation_sha256`.
+- `release_attestation_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/gate_status_bitmap/gate_status_index_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key release attestation/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_attestation_hash_for_go_decision` for GO-path release-attestation digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_attestation_hash_for_hold_decision` for HOLD-path release-attestation digest consistency checks.
+- Added `TP-E13-71` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_attestation_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-72 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-verdict digest: `release_verdict_sha256`.
+- `release_verdict_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/strategy_envelope_sha256/contract_envelope_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key verdict/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_verdict_hash_for_go_decision` for GO-path release-verdict digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_verdict_hash_for_hold_decision` for HOLD-path release-verdict digest consistency checks.
+- Added `TP-E13-72` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_verdict_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-73 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-lineage digest: `release_lineage_sha256`.
+- `release_lineage_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/hold_signature_sha256/strategy_signature_sha256/domain_rollup_sha256/evidence_profile_sha256/gate_status_index_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key release lineage replay/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_lineage_hash_for_go_decision` for GO-path release-lineage digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_lineage_hash_for_hold_decision` for HOLD-path release-lineage digest consistency checks.
+- Added `TP-E13-73` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_lineage_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-74 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-capsule digest: `release_capsule_sha256`.
+- `release_capsule_sha256` now pins a canonical digest over `schema_version/decision/decision_code/gate_count/pass_count/hold_count/evidence_file_count/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key compact release reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_capsule_hash_for_go_decision` for GO-path release-capsule digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_capsule_hash_for_hold_decision` for HOLD-path release-capsule digest consistency checks.
+- Added `TP-E13-74` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_capsule_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-75 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-anchor digest: `release_anchor_sha256`.
+- `release_anchor_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key anchored release reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_anchor_hash_for_go_decision` for GO-path release-anchor digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_anchor_hash_for_hold_decision` for HOLD-path release-anchor digest consistency checks.
+- Added `TP-E13-75` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_anchor_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-76 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-beacon digest: `release_beacon_sha256`.
+- `release_beacon_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key beaconed release routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_beacon_hash_for_go_decision` for GO-path release-beacon digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_beacon_hash_for_hold_decision` for HOLD-path release-beacon digest consistency checks.
+- Added `TP-E13-76` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_beacon_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-77 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-constellation digest: `release_constellation_sha256`.
+- `release_constellation_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key constellation routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_constellation_hash_for_go_decision` for GO-path release-constellation digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_constellation_hash_for_hold_decision` for HOLD-path release-constellation digest consistency checks.
+- Added `TP-E13-77` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_constellation_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-78 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-galaxy digest: `release_galaxy_sha256`.
+- `release_galaxy_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key galaxy routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_galaxy_hash_for_go_decision` for GO-path release-galaxy digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_galaxy_hash_for_hold_decision` for HOLD-path release-galaxy digest consistency checks.
+- Added `TP-E13-78` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_galaxy_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-79 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-universe digest: `release_universe_sha256`.
+- `release_universe_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key universe routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_universe_hash_for_go_decision` for GO-path release-universe digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_universe_hash_for_hold_decision` for HOLD-path release-universe digest consistency checks.
+- Added `TP-E13-79` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_universe_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-80 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-multiverse digest: `release_multiverse_sha256`.
+- `release_multiverse_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key multiverse routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_multiverse_hash_for_go_decision` for GO-path release-multiverse digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_multiverse_hash_for_hold_decision` for HOLD-path release-multiverse digest consistency checks.
+- Added `TP-E13-80` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_multiverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-81 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-omniverse digest: `release_omniverse_sha256`.
+- `release_omniverse_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key omniverse routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_omniverse_hash_for_go_decision` for GO-path release-omniverse digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_omniverse_hash_for_hold_decision` for HOLD-path release-omniverse digest consistency checks.
+- Added `TP-E13-81` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_omniverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-82 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-hyperverse digest: `release_hyperverse_sha256`.
+- `release_hyperverse_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key hyperverse routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_hyperverse_hash_for_go_decision` for GO-path release-hyperverse digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_hyperverse_hash_for_hold_decision` for HOLD-path release-hyperverse digest consistency checks.
+- Added `TP-E13-82` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_hyperverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-83 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-megaverse digest: `release_megaverse_sha256`.
+- `release_megaverse_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key megaverse routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_megaverse_hash_for_go_decision` for GO-path release-megaverse digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_megaverse_hash_for_hold_decision` for HOLD-path release-megaverse digest consistency checks.
+- Added `TP-E13-83` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_megaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-84 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-gigaverse digest: `release_gigaverse_sha256`.
+- `release_gigaverse_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key gigaverse routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_gigaverse_hash_for_go_decision` for GO-path release-gigaverse digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_gigaverse_hash_for_hold_decision` for HOLD-path release-gigaverse digest consistency checks.
+- Added `TP-E13-84` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_gigaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-85 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-teraverse digest: `release_teraverse_sha256`.
+- `release_teraverse_sha256` now pins a canonical digest over `schema_version/decision/decision_code/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`, enabling one-key teraverse routing/reconciliation across decision batches.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_go_decision` for GO-path release-teraverse digest consistency checks.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_hold_decision` for HOLD-path release-teraverse digest consistency checks.
+- Added `TP-E13-85` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_teraverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.

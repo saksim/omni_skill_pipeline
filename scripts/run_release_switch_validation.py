@@ -6627,6 +6627,667 @@ def _build_bulk_strategy_view(
             separators=(',', ':'),
         ).encode('utf-8')
     ).hexdigest()
+    domain_rollup_signature_payload = {
+        'decision': decision_value,
+        'domain_rollup': domain_rollup,
+        'gate_domain_index': gate_domain_index,
+    }
+    domain_rollup_sha256 = hashlib.sha256(
+        json.dumps(
+            domain_rollup_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    evidence_profile_signature_payload = {
+        'decision': decision_value,
+        'evidence_file_count': len(evidence_files),
+        'evidence_status_counts': evidence_status_counts,
+        'evidence_freshness_counts': evidence_freshness_counts,
+    }
+    evidence_profile_sha256 = hashlib.sha256(
+        json.dumps(
+            evidence_profile_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    gate_status_index_signature_payload = {
+        'decision': decision_value,
+        'gate_names': gate_names,
+        'gate_status_bitmap': gate_status_bitmap,
+        'gate_status_index': gate_status_index,
+    }
+    gate_status_index_sha256 = hashlib.sha256(
+        json.dumps(
+            gate_status_index_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    composite_profile_signature_payload = {
+        'decision': decision_value,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+    }
+    composite_profile_sha256 = hashlib.sha256(
+        json.dumps(
+            composite_profile_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    strategy_envelope_signature_payload = {
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_count': len(gate_rows),
+        'pass_count': len(pass_gate_names),
+        'hold_count': len(hold_gate_names),
+        'evidence_file_count': len(evidence_files),
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    strategy_envelope_sha256 = hashlib.sha256(
+        json.dumps(
+            strategy_envelope_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    contract_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_names': gate_names,
+        'gate_domain_index': gate_domain_index,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+    }
+    contract_signature_sha256 = hashlib.sha256(
+        json.dumps(
+            contract_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    contract_envelope_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_count': len(gate_rows),
+        'pass_count': len(pass_gate_names),
+        'hold_count': len(hold_gate_names),
+        'evidence_file_count': len(evidence_files),
+        'contract_signature_sha256': contract_signature_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+    }
+    contract_envelope_sha256 = hashlib.sha256(
+        json.dumps(
+            contract_envelope_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_fingerprint_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_count': len(gate_rows),
+        'pass_count': len(pass_gate_names),
+        'hold_count': len(hold_gate_names),
+        'evidence_file_count': len(evidence_files),
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'contract_signature_sha256': contract_signature_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_fingerprint_sha256 = hashlib.sha256(
+        json.dumps(
+            release_fingerprint_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_manifest_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_names': gate_names,
+        'gate_status_bitmap': gate_status_bitmap,
+        'gate_domain_index': gate_domain_index,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_manifest_sha256 = hashlib.sha256(
+        json.dumps(
+            release_manifest_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_root_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_count': len(gate_rows),
+        'pass_count': len(pass_gate_names),
+        'hold_count': len(hold_gate_names),
+        'evidence_file_count': len(evidence_files),
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'contract_signature_sha256': contract_signature_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_root_sha256 = hashlib.sha256(
+        json.dumps(
+            release_root_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_attestation_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'gate_status_bitmap': gate_status_bitmap,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_attestation_sha256 = hashlib.sha256(
+        json.dumps(
+            release_attestation_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_verdict_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_verdict_sha256 = hashlib.sha256(
+        json.dumps(
+            release_verdict_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_lineage_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_lineage_sha256 = hashlib.sha256(
+        json.dumps(
+            release_lineage_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_capsule_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'gate_count': len(gate_rows),
+        'pass_count': len(pass_gate_names),
+        'hold_count': len(hold_gate_names),
+        'evidence_file_count': len(evidence_files),
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_capsule_sha256 = hashlib.sha256(
+        json.dumps(
+            release_capsule_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_anchor_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_anchor_sha256 = hashlib.sha256(
+        json.dumps(
+            release_anchor_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_beacon_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_beacon_sha256 = hashlib.sha256(
+        json.dumps(
+            release_beacon_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_constellation_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_constellation_sha256 = hashlib.sha256(
+        json.dumps(
+            release_constellation_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_galaxy_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_galaxy_sha256 = hashlib.sha256(
+        json.dumps(
+            release_galaxy_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_universe_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_universe_sha256 = hashlib.sha256(
+        json.dumps(
+            release_universe_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_multiverse_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_universe_sha256': release_universe_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_multiverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_multiverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_omniverse_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_multiverse_sha256': release_multiverse_sha256,
+        'release_universe_sha256': release_universe_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_omniverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_omniverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_hyperverse_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_omniverse_sha256': release_omniverse_sha256,
+        'release_multiverse_sha256': release_multiverse_sha256,
+        'release_universe_sha256': release_universe_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_hyperverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_hyperverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_megaverse_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_hyperverse_sha256': release_hyperverse_sha256,
+        'release_omniverse_sha256': release_omniverse_sha256,
+        'release_multiverse_sha256': release_multiverse_sha256,
+        'release_universe_sha256': release_universe_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_megaverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_megaverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_gigaverse_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_megaverse_sha256': release_megaverse_sha256,
+        'release_hyperverse_sha256': release_hyperverse_sha256,
+        'release_omniverse_sha256': release_omniverse_sha256,
+        'release_multiverse_sha256': release_multiverse_sha256,
+        'release_universe_sha256': release_universe_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_gigaverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_gigaverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_teraverse_signature_payload = {
+        'schema_version': 'release_switch_bulk_strategy.v2',
+        'decision': decision_value,
+        'decision_code': decision_code,
+        'release_gigaverse_sha256': release_gigaverse_sha256,
+        'release_megaverse_sha256': release_megaverse_sha256,
+        'release_hyperverse_sha256': release_hyperverse_sha256,
+        'release_omniverse_sha256': release_omniverse_sha256,
+        'release_multiverse_sha256': release_multiverse_sha256,
+        'release_universe_sha256': release_universe_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'hold_signature_sha256': hold_signature_sha256,
+        'strategy_signature_sha256': strategy_signature_sha256,
+        'enabled_checks': enabled_check_keys,
+        'disabled_checks': disabled_check_keys,
+    }
+    release_teraverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_teraverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
 
     return {
         'schema_version': 'release_switch_bulk_strategy.v2',
@@ -6635,6 +7296,31 @@ def _build_bulk_strategy_view(
         'hold_signature': hold_signature,
         'hold_signature_sha256': hold_signature_sha256,
         'strategy_signature_sha256': strategy_signature_sha256,
+        'domain_rollup_sha256': domain_rollup_sha256,
+        'evidence_profile_sha256': evidence_profile_sha256,
+        'gate_status_index_sha256': gate_status_index_sha256,
+        'composite_profile_sha256': composite_profile_sha256,
+        'strategy_envelope_sha256': strategy_envelope_sha256,
+        'contract_signature_sha256': contract_signature_sha256,
+        'contract_envelope_sha256': contract_envelope_sha256,
+        'release_fingerprint_sha256': release_fingerprint_sha256,
+        'release_manifest_sha256': release_manifest_sha256,
+        'release_root_sha256': release_root_sha256,
+        'release_attestation_sha256': release_attestation_sha256,
+        'release_verdict_sha256': release_verdict_sha256,
+        'release_lineage_sha256': release_lineage_sha256,
+        'release_capsule_sha256': release_capsule_sha256,
+        'release_anchor_sha256': release_anchor_sha256,
+        'release_beacon_sha256': release_beacon_sha256,
+        'release_constellation_sha256': release_constellation_sha256,
+        'release_galaxy_sha256': release_galaxy_sha256,
+        'release_universe_sha256': release_universe_sha256,
+        'release_multiverse_sha256': release_multiverse_sha256,
+        'release_omniverse_sha256': release_omniverse_sha256,
+        'release_hyperverse_sha256': release_hyperverse_sha256,
+        'release_megaverse_sha256': release_megaverse_sha256,
+        'release_gigaverse_sha256': release_gigaverse_sha256,
+        'release_teraverse_sha256': release_teraverse_sha256,
         'gate_count': len(gate_rows),
         'pass_count': len(pass_gate_names),
         'hold_count': len(hold_gate_names),
