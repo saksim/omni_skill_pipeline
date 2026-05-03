@@ -2993,6 +2993,163 @@ def _expected_bulk_release_xinovaverse_sha256(bulk_view: dict[str, object]) -> s
     return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
 
 
+def _expected_bulk_release_omicronovaverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_xinovaverse_sha256': str(bulk_view.get('release_xinovaverse_sha256') or ''),
+        'release_nunovaverse_sha256': str(bulk_view.get('release_nunovaverse_sha256') or ''),
+        'release_munovaverse_sha256': str(bulk_view.get('release_munovaverse_sha256') or ''),
+        'release_lambdanovaverse_sha256': str(bulk_view.get('release_lambdanovaverse_sha256') or ''),
+        'release_kappanovaverse_sha256': str(bulk_view.get('release_kappanovaverse_sha256') or ''),
+        'release_iotanovaverse_sha256': str(bulk_view.get('release_iotanovaverse_sha256') or ''),
+        'release_thetanovaverse_sha256': str(bulk_view.get('release_thetanovaverse_sha256') or ''),
+        'release_etanovaverse_sha256': str(bulk_view.get('release_etanovaverse_sha256') or ''),
+        'release_zetanovaverse_sha256': str(bulk_view.get('release_zetanovaverse_sha256') or ''),
+        'release_epsilonnovaverse_sha256': str(bulk_view.get('release_epsilonnovaverse_sha256') or ''),
+        'release_deltanovaverse_sha256': str(bulk_view.get('release_deltanovaverse_sha256') or ''),
+        'release_gammanovaverse_sha256': str(bulk_view.get('release_gammanovaverse_sha256') or ''),
+        'release_betanovaverse_sha256': str(bulk_view.get('release_betanovaverse_sha256') or ''),
+        'release_alphanovaverse_sha256': str(bulk_view.get('release_alphanovaverse_sha256') or ''),
+        'release_omeganovaverse_sha256': str(bulk_view.get('release_omeganovaverse_sha256') or ''),
+        'release_ultranovaverse_sha256': str(bulk_view.get('release_ultranovaverse_sha256') or ''),
+        'release_hypernovaverse_sha256': str(bulk_view.get('release_hypernovaverse_sha256') or ''),
+        'release_supernovaverse_sha256': str(bulk_view.get('release_supernovaverse_sha256') or ''),
+        'release_novaverse_sha256': str(bulk_view.get('release_novaverse_sha256') or ''),
+        'release_neoverse_sha256': str(bulk_view.get('release_neoverse_sha256') or ''),
+        'release_holoverse_sha256': str(bulk_view.get('release_holoverse_sha256') or ''),
+        'release_panverse_sha256': str(bulk_view.get('release_panverse_sha256') or ''),
+        'release_polyverse_sha256': str(bulk_view.get('release_polyverse_sha256') or ''),
+        'release_paraverse_sha256': str(bulk_view.get('release_paraverse_sha256') or ''),
+        'release_metaverse_sha256': str(bulk_view.get('release_metaverse_sha256') or ''),
+        'release_eraverse_sha256': str(bulk_view.get('release_eraverse_sha256') or ''),
+        'release_epochverse_sha256': str(bulk_view.get('release_epochverse_sha256') or ''),
+        'release_aeonverse_sha256': str(bulk_view.get('release_aeonverse_sha256') or ''),
+        'release_timelessverse_sha256': str(bulk_view.get('release_timelessverse_sha256') or ''),
+        'release_eternaverse_sha256': str(bulk_view.get('release_eternaverse_sha256') or ''),
+        'release_infinitaverse_sha256': str(bulk_view.get('release_infinitaverse_sha256') or ''),
+        'release_transcendaverse_sha256': str(bulk_view.get('release_transcendaverse_sha256') or ''),
+        'release_ultimaverse_sha256': str(bulk_view.get('release_ultimaverse_sha256') or ''),
+        'release_apexverse_sha256': str(bulk_view.get('release_apexverse_sha256') or ''),
+        'release_quettaverse_sha256': str(bulk_view.get('release_quettaverse_sha256') or ''),
+        'release_ronnaverse_sha256': str(bulk_view.get('release_ronnaverse_sha256') or ''),
+        'release_yottaverse_sha256': str(bulk_view.get('release_yottaverse_sha256') or ''),
+        'release_zettaverse_sha256': str(bulk_view.get('release_zettaverse_sha256') or ''),
+        'release_exaverse_sha256': str(bulk_view.get('release_exaverse_sha256') or ''),
+        'release_petaverse_sha256': str(bulk_view.get('release_petaverse_sha256') or ''),
+        'release_teraverse_sha256': str(bulk_view.get('release_teraverse_sha256') or ''),
+        'release_gigaverse_sha256': str(bulk_view.get('release_gigaverse_sha256') or ''),
+        'release_megaverse_sha256': str(bulk_view.get('release_megaverse_sha256') or ''),
+        'release_hyperverse_sha256': str(bulk_view.get('release_hyperverse_sha256') or ''),
+        'release_omniverse_sha256': str(bulk_view.get('release_omniverse_sha256') or ''),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
+def _expected_bulk_release_pinovaverse_sha256(bulk_view: dict[str, object]) -> str:
+    payload = {
+        'schema_version': str(bulk_view.get('schema_version') or ''),
+        'decision': str(bulk_view.get('decision') or ''),
+        'decision_code': int(bulk_view.get('decision_code') or 0),
+        'release_omicronovaverse_sha256': str(bulk_view.get('release_omicronovaverse_sha256') or ''),
+        'release_xinovaverse_sha256': str(bulk_view.get('release_xinovaverse_sha256') or ''),
+        'release_nunovaverse_sha256': str(bulk_view.get('release_nunovaverse_sha256') or ''),
+        'release_munovaverse_sha256': str(bulk_view.get('release_munovaverse_sha256') or ''),
+        'release_lambdanovaverse_sha256': str(bulk_view.get('release_lambdanovaverse_sha256') or ''),
+        'release_kappanovaverse_sha256': str(bulk_view.get('release_kappanovaverse_sha256') or ''),
+        'release_iotanovaverse_sha256': str(bulk_view.get('release_iotanovaverse_sha256') or ''),
+        'release_thetanovaverse_sha256': str(bulk_view.get('release_thetanovaverse_sha256') or ''),
+        'release_etanovaverse_sha256': str(bulk_view.get('release_etanovaverse_sha256') or ''),
+        'release_zetanovaverse_sha256': str(bulk_view.get('release_zetanovaverse_sha256') or ''),
+        'release_epsilonnovaverse_sha256': str(bulk_view.get('release_epsilonnovaverse_sha256') or ''),
+        'release_deltanovaverse_sha256': str(bulk_view.get('release_deltanovaverse_sha256') or ''),
+        'release_gammanovaverse_sha256': str(bulk_view.get('release_gammanovaverse_sha256') or ''),
+        'release_betanovaverse_sha256': str(bulk_view.get('release_betanovaverse_sha256') or ''),
+        'release_alphanovaverse_sha256': str(bulk_view.get('release_alphanovaverse_sha256') or ''),
+        'release_omeganovaverse_sha256': str(bulk_view.get('release_omeganovaverse_sha256') or ''),
+        'release_ultranovaverse_sha256': str(bulk_view.get('release_ultranovaverse_sha256') or ''),
+        'release_hypernovaverse_sha256': str(bulk_view.get('release_hypernovaverse_sha256') or ''),
+        'release_supernovaverse_sha256': str(bulk_view.get('release_supernovaverse_sha256') or ''),
+        'release_novaverse_sha256': str(bulk_view.get('release_novaverse_sha256') or ''),
+        'release_neoverse_sha256': str(bulk_view.get('release_neoverse_sha256') or ''),
+        'release_holoverse_sha256': str(bulk_view.get('release_holoverse_sha256') or ''),
+        'release_panverse_sha256': str(bulk_view.get('release_panverse_sha256') or ''),
+        'release_polyverse_sha256': str(bulk_view.get('release_polyverse_sha256') or ''),
+        'release_paraverse_sha256': str(bulk_view.get('release_paraverse_sha256') or ''),
+        'release_metaverse_sha256': str(bulk_view.get('release_metaverse_sha256') or ''),
+        'release_eraverse_sha256': str(bulk_view.get('release_eraverse_sha256') or ''),
+        'release_epochverse_sha256': str(bulk_view.get('release_epochverse_sha256') or ''),
+        'release_aeonverse_sha256': str(bulk_view.get('release_aeonverse_sha256') or ''),
+        'release_timelessverse_sha256': str(bulk_view.get('release_timelessverse_sha256') or ''),
+        'release_eternaverse_sha256': str(bulk_view.get('release_eternaverse_sha256') or ''),
+        'release_infinitaverse_sha256': str(bulk_view.get('release_infinitaverse_sha256') or ''),
+        'release_transcendaverse_sha256': str(bulk_view.get('release_transcendaverse_sha256') or ''),
+        'release_ultimaverse_sha256': str(bulk_view.get('release_ultimaverse_sha256') or ''),
+        'release_apexverse_sha256': str(bulk_view.get('release_apexverse_sha256') or ''),
+        'release_quettaverse_sha256': str(bulk_view.get('release_quettaverse_sha256') or ''),
+        'release_ronnaverse_sha256': str(bulk_view.get('release_ronnaverse_sha256') or ''),
+        'release_yottaverse_sha256': str(bulk_view.get('release_yottaverse_sha256') or ''),
+        'release_zettaverse_sha256': str(bulk_view.get('release_zettaverse_sha256') or ''),
+        'release_exaverse_sha256': str(bulk_view.get('release_exaverse_sha256') or ''),
+        'release_petaverse_sha256': str(bulk_view.get('release_petaverse_sha256') or ''),
+        'release_teraverse_sha256': str(bulk_view.get('release_teraverse_sha256') or ''),
+        'release_gigaverse_sha256': str(bulk_view.get('release_gigaverse_sha256') or ''),
+        'release_megaverse_sha256': str(bulk_view.get('release_megaverse_sha256') or ''),
+        'release_hyperverse_sha256': str(bulk_view.get('release_hyperverse_sha256') or ''),
+        'release_omniverse_sha256': str(bulk_view.get('release_omniverse_sha256') or ''),
+        'release_multiverse_sha256': str(bulk_view.get('release_multiverse_sha256') or ''),
+        'release_universe_sha256': str(bulk_view.get('release_universe_sha256') or ''),
+        'release_galaxy_sha256': str(bulk_view.get('release_galaxy_sha256') or ''),
+        'release_constellation_sha256': str(bulk_view.get('release_constellation_sha256') or ''),
+        'release_beacon_sha256': str(bulk_view.get('release_beacon_sha256') or ''),
+        'release_anchor_sha256': str(bulk_view.get('release_anchor_sha256') or ''),
+        'release_capsule_sha256': str(bulk_view.get('release_capsule_sha256') or ''),
+        'release_lineage_sha256': str(bulk_view.get('release_lineage_sha256') or ''),
+        'release_verdict_sha256': str(bulk_view.get('release_verdict_sha256') or ''),
+        'release_attestation_sha256': str(bulk_view.get('release_attestation_sha256') or ''),
+        'release_root_sha256': str(bulk_view.get('release_root_sha256') or ''),
+        'release_manifest_sha256': str(bulk_view.get('release_manifest_sha256') or ''),
+        'release_fingerprint_sha256': str(bulk_view.get('release_fingerprint_sha256') or ''),
+        'contract_envelope_sha256': str(bulk_view.get('contract_envelope_sha256') or ''),
+        'strategy_envelope_sha256': str(bulk_view.get('strategy_envelope_sha256') or ''),
+        'gate_status_index_sha256': str(bulk_view.get('gate_status_index_sha256') or ''),
+        'composite_profile_sha256': str(bulk_view.get('composite_profile_sha256') or ''),
+        'domain_rollup_sha256': str(bulk_view.get('domain_rollup_sha256') or ''),
+        'evidence_profile_sha256': str(bulk_view.get('evidence_profile_sha256') or ''),
+        'hold_signature_sha256': str(bulk_view.get('hold_signature_sha256') or ''),
+        'strategy_signature_sha256': str(bulk_view.get('strategy_signature_sha256') or ''),
+        'enabled_checks': list((bulk_view.get('check_enablement') or {}).get('enabled_keys') or []),
+        'disabled_checks': list((bulk_view.get('check_enablement') or {}).get('disabled_keys') or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(serialized.encode('utf-8')).hexdigest()
+
+
 def _write_go_decision_evidence_bundle(tmp_path: Path) -> dict[str, Path]:
     doc_sync_path = tmp_path / 'e13-doc-sync-check-report.json'
     quality_path = tmp_path / 'e11-quality-regression-report.json'
@@ -11084,6 +11241,232 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                 _expected_bulk_release_xinovaverse_sha256(bulk_view),
             )
             self.assertEqual(len(str(bulk_view.get('release_xinovaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_omicronovaverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_omicronovaverse_sha256'),
+                _expected_bulk_release_omicronovaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_omicronovaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_omicronovaverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_omicronovaverse_sha256'),
+                _expected_bulk_release_omicronovaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_omicronovaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_pinovaverse_hash_for_go_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    sys.executable,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'GO')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_pinovaverse_sha256'),
+                _expected_bulk_release_pinovaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_pinovaverse_sha256') or '')), 64)
+
+    def test_script_decision_only_emits_bulk_strategy_release_pinovaverse_hash_for_hold_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
+            malicious_python = 'env MALLOC_PER_THREAD=1 python3'
+            for stage in release_gate_plan.get('stages', []):
+                if not isinstance(stage, dict):
+                    continue
+                command = stage.get('command')
+                if not isinstance(command, list):
+                    continue
+                command[:1] = ['env', 'MALLOC_PER_THREAD=1', command[0]]
+                python_option_index = command.index('--python')
+                command[python_option_index + 1] = malicious_python
+            bundle['release_gate_path'].write_text(
+                json.dumps(release_gate_plan, ensure_ascii=False, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--python',
+                    malicious_python,
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            bulk_view = decision.get('bulk_strategy_view', {})
+            self.assertEqual(
+                bulk_view.get('release_pinovaverse_sha256'),
+                _expected_bulk_release_pinovaverse_sha256(bulk_view),
+            )
+            self.assertEqual(len(str(bulk_view.get('release_pinovaverse_sha256') or '')), 64)
 
     def test_script_decision_only_emits_bulk_strategy_release_panverse_hash_for_hold_decision(
         self,

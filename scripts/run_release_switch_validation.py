@@ -9569,6 +9569,26 @@ def _build_bulk_strategy_view(
             separators=(',', ':'),
         ).encode('utf-8')
     ).hexdigest()
+    release_omicronovaverse_signature_payload = dict(release_xinovaverse_signature_payload)
+    release_omicronovaverse_signature_payload['release_xinovaverse_sha256'] = release_xinovaverse_sha256
+    release_omicronovaverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_omicronovaverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_pinovaverse_signature_payload = dict(release_omicronovaverse_signature_payload)
+    release_pinovaverse_signature_payload['release_omicronovaverse_sha256'] = release_omicronovaverse_sha256
+    release_pinovaverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_pinovaverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
 
     return {
         'schema_version': 'release_switch_bulk_strategy.v2',
@@ -9639,6 +9659,8 @@ def _build_bulk_strategy_view(
         'release_munovaverse_sha256': release_munovaverse_sha256,
         'release_nunovaverse_sha256': release_nunovaverse_sha256,
         'release_xinovaverse_sha256': release_xinovaverse_sha256,
+        'release_omicronovaverse_sha256': release_omicronovaverse_sha256,
+        'release_pinovaverse_sha256': release_pinovaverse_sha256,
         'release_neoverse_sha256': release_neoverse_sha256,
         'release_holoverse_sha256': release_holoverse_sha256,
         'release_panverse_sha256': release_panverse_sha256,
