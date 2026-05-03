@@ -1562,6 +1562,346 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             description="release-switch validation script should emit deterministic release-teraverse sha256 for HOLD bulk strategy artifacts.",
         ),
     ],
+    "TP-E13-86": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_petaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-petaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_petaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-petaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-87": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_exaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-exaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_exaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-exaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-88": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zettaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-zettaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zettaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-zettaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-89": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_yottaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-yottaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_yottaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-yottaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-90": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ronnaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-ronnaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ronnaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-ronnaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-91": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_quettaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-quettaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_quettaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-quettaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-92": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_apexverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-apexverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_apexverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-apexverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-93": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultimaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-ultimaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultimaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-ultimaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-94": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_transcendaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-transcendaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_transcendaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-transcendaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-95": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_infinitaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-infinitaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_infinitaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-infinitaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-96": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eternaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-eternaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eternaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-eternaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-97": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_timelessverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-timelessverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_timelessverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-timelessverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-98": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_aeonverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-aeonverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_aeonverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-aeonverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-99": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epochverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-epochverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epochverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-epochverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-100": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eraverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-eraverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eraverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-eraverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-101": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_metaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-metaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_metaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-metaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-102": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_paraverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-paraverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_paraverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-paraverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-103": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_polyverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-polyverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_polyverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-polyverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-104": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_panverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-panverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_panverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-panverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-105": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_holoverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-holoverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_holoverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-holoverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-106": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_neoverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-neoverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_neoverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-neoverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-107": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_novaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-novaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_novaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-novaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-108": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_supernovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-supernovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_supernovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-supernovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-109": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_hypernovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-hypernovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_hypernovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-hypernovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-110": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultranovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-ultranovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultranovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-ultranovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-111": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_omeganovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-omeganovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_omeganovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-omeganovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-112": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_alphanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-alphanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_alphanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-alphanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-113": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_betanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-betanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_betanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-betanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-114": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_gammanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-gammanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_gammanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-gammanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-115": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_deltanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-deltanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_deltanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-deltanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-116": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epsilonnovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-epsilonnovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epsilonnovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-epsilonnovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-117": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zetanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-zetanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zetanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-zetanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-118": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_etanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-etanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_etanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-etanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-119": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_thetanovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-thetanovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_thetanovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-thetanovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
 }
 
 

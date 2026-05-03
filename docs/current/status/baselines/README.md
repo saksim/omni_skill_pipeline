@@ -1156,3 +1156,445 @@
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_teraverse_hash_for_hold_decision`
 - TP mapping:
   - `scripts/run_tp_tests.py` -> `TP-E13-85`
+
+## TP-E13-86 Release Switch Bulk Release-Petaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release petaverse hash for petaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index teraverse+multi-posture signatures with one key.
+- Bulk-release-petaverse-hash contract:
+  - decision artifact includes `release_petaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_petaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_petaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_petaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-86`
+
+## TP-E13-87 Release Switch Bulk Release-Exaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release exaverse hash for exaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index petaverse+multi-posture signatures with one key.
+- Bulk-release-exaverse-hash contract:
+  - decision artifact includes `release_exaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_exaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_exaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_exaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-87`
+
+## TP-E13-88 Release Switch Bulk Release-Zettaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release zettaverse hash for zettaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index exaverse+multi-posture signatures with one key.
+- Bulk-release-zettaverse-hash contract:
+  - decision artifact includes `release_zettaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_zettaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zettaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zettaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-88`
+
+## TP-E13-89 Release Switch Bulk Release-Yottaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release yottaverse hash for yottaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index zettaverse+multi-posture signatures with one key.
+- Bulk-release-yottaverse-hash contract:
+  - decision artifact includes `release_yottaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_yottaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_yottaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_yottaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-89`
+
+## TP-E13-90 Release Switch Bulk Release-Ronnaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release ronnaverse hash for ronnaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index yottaverse+multi-posture signatures with one key.
+- Bulk-release-ronnaverse-hash contract:
+  - decision artifact includes `release_ronnaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_ronnaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ronnaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ronnaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-90`
+
+## TP-E13-91 Release Switch Bulk Release-Quettaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release quettaverse hash for quettaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index ronnaverse+multi-posture signatures with one key.
+- Bulk-release-quettaverse-hash contract:
+  - decision artifact includes `release_quettaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_quettaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_quettaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_quettaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-91`
+
+## TP-E13-92 Release Switch Bulk Release-Apexverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release apexverse hash for apexverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index quettaverse+multi-posture signatures with one key.
+- Bulk-release-apexverse-hash contract:
+  - decision artifact includes `release_apexverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_apexverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_apexverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_apexverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-92`
+
+## TP-E13-93 Release Switch Bulk Release-Ultimaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release ultimaverse hash for ultimaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index apexverse+multi-posture signatures with one key.
+- Bulk-release-ultimaverse-hash contract:
+  - decision artifact includes `release_ultimaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_ultimaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultimaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultimaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-93`
+
+## TP-E13-94 Release Switch Bulk Release-Transcendaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release transcendaverse hash for transcendaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index ultimaverse+multi-posture signatures with one key.
+- Bulk-release-transcendaverse-hash contract:
+  - decision artifact includes `release_transcendaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_transcendaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_transcendaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_transcendaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-94`
+
+## TP-E13-95 Release Switch Bulk Release-Infinitaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release infinitaverse hash for infinitaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index transcendaverse+multi-posture signatures with one key.
+- Bulk-release-infinitaverse-hash contract:
+  - decision artifact includes `release_infinitaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_infinitaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_infinitaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_infinitaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-95`
+
+## TP-E13-96 Release Switch Bulk Release-Eternaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release eternaverse hash for eternaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index infinitaverse+multi-posture signatures with one key.
+- Bulk-release-eternaverse-hash contract:
+  - decision artifact includes `release_eternaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_eternaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eternaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eternaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-96`
+
+## TP-E13-97 Release Switch Bulk Release-Timelessverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release timelessverse hash for timelessverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index eternaverse+multi-posture signatures with one key.
+- Bulk-release-timelessverse-hash contract:
+  - decision artifact includes `release_timelessverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_timelessverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_timelessverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_timelessverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-97`
+
+## TP-E13-98 Release Switch Bulk Release-Aeonverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release aeonverse hash for aeonverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index timelessverse+multi-posture signatures with one key.
+- Bulk-release-aeonverse-hash contract:
+  - decision artifact includes `release_aeonverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_aeonverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_aeonverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_aeonverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-98`
+
+## TP-E13-99 Release Switch Bulk Release-Epochverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release epochverse hash for epochverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index aeonverse+multi-posture signatures with one key.
+- Bulk-release-epochverse-hash contract:
+  - decision artifact includes `release_epochverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_epochverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epochverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epochverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-99`
+
+## TP-E13-100 Release Switch Bulk Release-Eraverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release eraverse hash for eraverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index epochverse+multi-posture signatures with one key.
+- Bulk-release-eraverse-hash contract:
+  - decision artifact includes `release_eraverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_eraverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eraverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_eraverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-100`
+
+## TP-E13-101 Release Switch Bulk Release-Metaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release metaverse hash for metaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index eraverse+multi-posture signatures with one key.
+- Bulk-release-metaverse-hash contract:
+  - decision artifact includes `release_metaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_metaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_metaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_metaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-101`
+
+## TP-E13-102 Release Switch Bulk Release-Paraverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release paraverse hash for paraverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index metaverse+multi-posture signatures with one key.
+- Bulk-release-paraverse-hash contract:
+  - decision artifact includes `release_paraverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_paraverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_paraverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_paraverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-102`
+
+## TP-E13-103 Release Switch Bulk Release-Polyverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release polyverse hash for polyverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index paraverse+multi-posture signatures with one key.
+- Bulk-release-polyverse-hash contract:
+  - decision artifact includes `release_polyverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_polyverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_polyverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_polyverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-103`
+
+## TP-E13-104 Release Switch Bulk Release-Panverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release panverse hash for panverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index polyverse+multi-posture signatures with one key.
+- Bulk-release-panverse-hash contract:
+  - decision artifact includes `release_panverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_panverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_panverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_panverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-104`
+
+## TP-E13-105 Release Switch Bulk Release-Holoverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release holoverse hash for holoverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index panverse+multi-posture signatures with one key.
+- Bulk-release-holoverse-hash contract:
+  - decision artifact includes `release_holoverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_holoverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_holoverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_holoverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-105`
+
+## TP-E13-106 Release Switch Bulk Release-Neoverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release neoverse hash for neoverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index holoverse+multi-posture signatures with one key.
+- Bulk-release-neoverse-hash contract:
+  - decision artifact includes `release_neoverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_neoverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_neoverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_neoverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-106`
+
+## TP-E13-107 Release Switch Bulk Release-Novaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release novaverse hash for novaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index neoverse+multi-posture signatures with one key.
+- Bulk-release-novaverse-hash contract:
+  - decision artifact includes `release_novaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_novaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_novaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_novaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-107`
+
+## TP-E13-108 Release Switch Bulk Release-Supernovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release supernovaverse hash for supernovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index novaverse+multi-posture signatures with one key.
+- Bulk-release-supernovaverse-hash contract:
+  - decision artifact includes `release_supernovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_supernovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_supernovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_supernovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-108`
+
+## TP-E13-109 Release Switch Bulk Release-Hypernovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release hypernovaverse hash for hypernovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index supernovaverse+multi-posture signatures with one key.
+- Bulk-release-hypernovaverse-hash contract:
+  - decision artifact includes `release_hypernovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_hypernovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_hypernovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_hypernovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-109`
+
+## TP-E13-110 Release Switch Bulk Release-Ultranovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release ultranovaverse hash for ultranovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index hypernovaverse+multi-posture signatures with one key.
+- Bulk-release-ultranovaverse-hash contract:
+  - decision artifact includes `release_ultranovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_ultranovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultranovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_ultranovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-110`
+
+## TP-E13-111 Release Switch Bulk Release-Omeganovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release omeganovaverse hash for omeganovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index ultranovaverse+multi-posture signatures with one key.
+- Bulk-release-omeganovaverse-hash contract:
+  - decision artifact includes `release_omeganovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_omeganovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_omeganovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_omeganovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-111`
+
+## TP-E13-112 Release Switch Bulk Release-Alphanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release alphanovaverse hash for alphanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index omeganovaverse+multi-posture signatures with one key.
+- Bulk-release-alphanovaverse-hash contract:
+  - decision artifact includes `release_alphanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_alphanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_alphanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_alphanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-112`
+
+## TP-E13-113 Release Switch Bulk Release-Betanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release betanovaverse hash for betanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index alphanovaverse+multi-posture signatures with one key.
+- Bulk-release-betanovaverse-hash contract:
+  - decision artifact includes `release_betanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_betanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_betanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_betanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-113`
+
+## TP-E13-114 Release Switch Bulk Release-Gammanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release gammanovaverse hash for gammanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index betanovaverse+multi-posture signatures with one key.
+- Bulk-release-gammanovaverse-hash contract:
+  - decision artifact includes `release_gammanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_gammanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_gammanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_gammanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-114`
+
+## TP-E13-115 Release Switch Bulk Release-Deltanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release deltanovaverse hash for deltanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index gammanovaverse+multi-posture signatures with one key.
+- Bulk-release-deltanovaverse-hash contract:
+  - decision artifact includes `release_deltanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_deltanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_deltanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_deltanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-115`
+
+## TP-E13-116 Release Switch Bulk Release-Epsilonnovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release epsilonnovaverse hash for epsilonnovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index deltanovaverse+multi-posture signatures with one key.
+- Bulk-release-epsilonnovaverse-hash contract:
+  - decision artifact includes `release_epsilonnovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_epsilonnovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epsilonnovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_epsilonnovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-116`
+
+## TP-E13-117 Release Switch Bulk Release-Zetanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release zetanovaverse hash for zetanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index epsilonnovaverse+multi-posture signatures with one key.
+- Bulk-release-zetanovaverse-hash contract:
+  - decision artifact includes `release_zetanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_zetanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zetanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_zetanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-117`
+
+## TP-E13-118 Release Switch Bulk Release-Etanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release etanovaverse hash for etanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index zetanovaverse+multi-posture signatures with one key.
+- Bulk-release-etanovaverse-hash contract:
+  - decision artifact includes `release_etanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_zetanovaverse_sha256/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_etanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_etanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_etanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-118`
+
+## TP-E13-119 Release Switch Bulk Release-Thetanovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release thetanovaverse hash for thetanovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index etanovaverse+multi-posture signatures with one key.
+- Bulk-release-thetanovaverse-hash contract:
+  - decision artifact includes `release_thetanovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_etanovaverse_sha256/release_zetanovaverse_sha256/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_thetanovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_thetanovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_thetanovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-119`

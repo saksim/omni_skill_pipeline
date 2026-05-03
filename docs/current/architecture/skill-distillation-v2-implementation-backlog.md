@@ -1782,6 +1782,528 @@ E11 鍏ㄧ▼骞惰锛屼絾姣忎釜 Epic 瀹屾垚閮借琛?E12 寤鸿�
   - `release_teraverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
   - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
 
+#### TP-E13-86 Release switch 批量测算发布千万亿宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布千万亿宇宙级固定宽度哈希字段，将发布万亿宇宙哈希与多维姿态签名收敛为统一千万亿宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_petaverse_sha256`
+  - `release_petaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_petaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-87 Release switch 批量测算发布百京宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布百京宇宙级固定宽度哈希字段，将发布千万亿宇宙哈希与多维姿态签名收敛为统一百京宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_exaverse_sha256`
+  - `release_exaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_exaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-88 Release switch 批量测算发布十垓宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布十垓宇宙级固定宽度哈希字段，将发布百京宇宙哈希与多维姿态签名收敛为统一十垓宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_zettaverse_sha256`
+  - `release_zettaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_zettaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-89 Release switch 批量测算发布尧它宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布尧它宇宙级固定宽度哈希字段，将发布十垓宇宙哈希与多维姿态签名收敛为统一尧它宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_yottaverse_sha256`
+  - `release_yottaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_yottaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-90 Release switch 批量测算发布罗纳宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布罗纳宇宙级固定宽度哈希字段，将发布秭宇宙哈希与多维姿态签名收敛为统一罗纳宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_ronnaverse_sha256`
+  - `release_ronnaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_ronnaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-91 Release switch 批量测算发布昆塔宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布昆塔宇宙级固定宽度哈希字段，将发布罗纳宇宙哈希与多维姿态签名收敛为统一昆塔宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_quettaverse_sha256`
+  - `release_quettaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_quettaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-92 Release switch 批量测算发布极巅宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布极巅宇宙级固定宽度哈希字段，将发布昆塔宇宙哈希与多维姿态签名收敛为统一极巅宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_apexverse_sha256`
+  - `release_apexverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_apexverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-93 Release switch 批量测算发布终极宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布终极宇宙级固定宽度哈希字段，将发布极巅宇宙哈希与多维姿态签名收敛为统一终极宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_ultimaverse_sha256`
+  - `release_ultimaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_ultimaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-94 Release switch 批量测算发布超越宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布超越宇宙级固定宽度哈希字段，将发布终极宇宙哈希与多维姿态签名收敛为统一超越宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_transcendaverse_sha256`
+  - `release_transcendaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_transcendaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-95 Release switch 批量测算发布无限宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布无限宇宙级固定宽度哈希字段，将发布超越宇宙哈希与多维姿态签名收敛为统一无限宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_infinitaverse_sha256`
+  - `release_infinitaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_infinitaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-96 Release switch 批量测算发布永恒宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布永恒宇宙级固定宽度哈希字段，将发布无限宇宙哈希与多维姿态签名收敛为统一永恒宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_eternaverse_sha256`
+  - `release_eternaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_eternaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-97 Release switch 批量测算发布永序宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布永序宇宙级固定宽度哈希字段，将发布永恒宇宙哈希与多维姿态签名收敛为统一永序宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_timelessverse_sha256`
+  - `release_timelessverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_timelessverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-98 Release switch 批量测算发布纪元宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布纪元宇宙级固定宽度哈希字段，将发布永序宇宙哈希与多维姿态签名收敛为统一纪元宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_aeonverse_sha256`
+  - `release_aeonverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_aeonverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-99 Release switch 批量测算发布世代宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布世代宇宙级固定宽度哈希字段，将发布纪元宇宙哈希与多维姿态签名收敛为统一世代宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_epochverse_sha256`
+  - `release_epochverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_epochverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-100 Release switch 批量测算发布元宇宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布元宇宇宙级固定宽度哈希字段，将发布世代宇宙哈希与多维姿态签名收敛为统一元宇宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_eraverse_sha256`
+- `release_eraverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+- `release_eraverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+- 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-101 Release switch 批量测算发布超元宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布超元宇宙级固定宽度哈希字段，将发布元宇宇宙哈希与多维姿态签名收敛为统一超元宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_metaverse_sha256`
+  - `release_metaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_metaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-102 Release switch 批量测算发布平行宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布平行宇宙级固定宽度哈希字段，将发布超元宇宙哈希与多维姿态签名收敛为统一平行宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_paraverse_sha256`
+  - `release_paraverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_paraverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-103 Release switch 批量测算发布多维宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布多维宇宙级固定宽度哈希字段，将发布平行宇宙哈希与多维姿态签名收敛为统一多维宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_polyverse_sha256`
+  - `release_polyverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_polyverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-104 Release switch 批量测算发布泛宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布泛宇宙级固定宽度哈希字段，将发布多维宇宙哈希与多维姿态签名收敛为统一泛宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_panverse_sha256`
+  - `release_panverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_panverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-105 Release switch 批量测算发布全息宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布全息宇宙级固定宽度哈希字段，将发布泛宇宙哈希与多维姿态签名收敛为统一全息宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_holoverse_sha256`
+  - `release_holoverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_holoverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-106 Release switch 批量测算发布新宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布新宇宙级固定宽度哈希字段，将发布全息宇宙哈希与多维姿态签名收敛为统一新宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_neoverse_sha256`
+  - `release_neoverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_neoverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-107 Release switch 批量测算发布新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布新星宇宙级固定宽度哈希字段，将发布新宇宙哈希与多维姿态签名收敛为统一新星宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_novaverse_sha256`
+  - `release_novaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_novaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-108 Release switch 批量测算发布超新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布超新星宇宙级固定宽度哈希字段，将发布新星宇宙哈希与前序发布签名收敛为统一超新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_supernovaverse_sha256`
+  - `release_supernovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_supernovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-109 Release switch 批量测算发布超极新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布超极新星宇宙级固定宽度哈希字段，将发布超新星宇宙哈希与前序发布签名收敛为统一超极新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_hypernovaverse_sha256`
+  - `release_hypernovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_hypernovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-110 Release switch 批量测算发布极耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布极耀新星宇宙级固定宽度哈希字段，将发布超极新星宇宙哈希与前序发布签名收敛为统一极耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_ultranovaverse_sha256`
+  - `release_ultranovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_ultranovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-111 Release switch 批量测算发布终耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布终耀新星宇宙级固定宽度哈希字段，将发布极耀新星宇宙哈希与前序发布签名收敛为统一终耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_omeganovaverse_sha256`
+  - `release_omeganovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_omeganovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-112 Release switch 批量测算发布始耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布始耀新星宇宙级固定宽度哈希字段，将发布终耀新星宇宙哈希与前序发布签名收敛为统一始耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_alphanovaverse_sha256`
+  - `release_alphanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_alphanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-113 Release switch 批量测算发布次耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布次耀新星宇宙级固定宽度哈希字段，将发布始耀新星宇宙哈希与前序发布签名收敛为统一次耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_betanovaverse_sha256`
+  - `release_betanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_betanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-114 Release switch 批量测算发布叁耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布叁耀新星宇宙级固定宽度哈希字段，将发布次耀新星宇宙哈希与前序发布签名收敛为统一叁耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_gammanovaverse_sha256`
+  - `release_gammanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_gammanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-115 Release switch 批量测算发布肆耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布肆耀新星宇宙级固定宽度哈希字段，将发布叁耀新星宇宙哈希与前序发布签名收敛为统一肆耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_deltanovaverse_sha256`
+  - `release_deltanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_deltanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-116 Release switch 批量测算发布伍耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布伍耀新星宇宙级固定宽度哈希字段，将发布肆耀新星宇宙哈希与前序发布签名收敛为统一伍耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_epsilonnovaverse_sha256`
+  - `release_epsilonnovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_epsilonnovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-117 Release switch 批量测算发布陆耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布陆耀新星宇宙级固定宽度哈希字段，将发布伍耀新星宇宙哈希与前序发布签名收敛为统一陆耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_zetanovaverse_sha256`
+  - `release_zetanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_zetanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-118 Release switch 批量测算发布柒耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布柒耀新星宇宙级固定宽度哈希字段，将发布陆耀新星宇宙哈希与前序发布签名收敛为统一柒耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_etanovaverse_sha256`
+  - `release_etanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_zetanovaverse_sha256/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_etanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
+#### TP-E13-119 Release switch 批量测算发布捌耀新星宇宙哈希固化
+
+- 目标：在 `bulk_strategy_view` 上补齐发布捌耀新星宇宙级固定宽度哈希字段，将发布柒耀新星宇宙哈希与前序发布签名收敛为统一捌耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
+- 主要文件：
+  - `scripts/run_release_switch_validation.py`
+  - `tests/test_release_switch_validation_script.py`
+  - `scripts/run_tp_tests.py`
+  - `docs/current/operations/testing.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- 验收：
+  - 决策 JSON 的 `bulk_strategy_view` 新增 `release_thetanovaverse_sha256`
+  - `release_thetanovaverse_sha256` 必须由稳定 canonical payload 重算：`schema_version/decision/decision_code/release_etanovaverse_sha256/release_zetanovaverse_sha256/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_thetanovaverse_sha256` 在 `GO/HOLD` 样本下均为 64 位十六进制字符串
+  - 保持 `schema_version=release_switch_bulk_strategy.v2` 与既有字段兼容，不删除旧键
+
 鎸変唬鐮佺洰褰曠殑寮€鍙戞竻鍗?
 ### `src/omni_skill_pipeline/models.py`
 
