@@ -3944,7 +3944,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
     def test_keep_going_runs_later_release_switch_stages_after_failure(self) -> None:
         command = (
             "import sys; print('switch-probe'); "
-            "raise SystemExit(8 if 'run_release_gate_validation.py' in sys.argv else 0)"
+            "raise SystemExit(8 if any(arg.endswith('run_release_gate_validation.py') for arg in sys.argv) else 0)"
         )
         completed = subprocess.run(
             [

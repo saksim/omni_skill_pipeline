@@ -69,9 +69,9 @@ class _CapturingService(object):
 
 
 def _run_cli(argv: list[str], service: _CapturingService) -> tuple[int, str]:
-    with patch('omni_skill_pipeline.cli.build_service', return_value=service):
-        module = importlib.import_module('omni_skill_pipeline.cli')
-        module = importlib.reload(module)
+    module = importlib.import_module('omni_skill_pipeline.cli')
+    module = importlib.reload(module)
+    with patch.object(module, 'build_service', return_value=service):
         stdout = io.StringIO()
         with redirect_stdout(stdout):
             exit_code = module.main(argv)

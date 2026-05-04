@@ -11,11 +11,18 @@ DEFAULT_COVERAGE_FAIL_UNDER = 50.0
 DEFAULT_COVERAGE_XML_PATH = "coverage.xml"
 DEFAULT_TESTS_DIR = "tests"
 DEFAULT_TEST_PATTERN = "test_*.py"
+COVERAGE_ENV_KEYS = (
+    "COVERAGE_PROCESS_START",
+    "COVERAGE_RCFILE",
+    "COV_CORE_CONFIG",
+    "COV_CORE_DATAFILE",
+    "COV_CORE_SOURCE",
+)
 
 
-def _run(command: list[str]) -> int:
+def _run(command: list[str], *, env: dict[str, str] | None = None) -> int:
     print("Command: %s" % " ".join(command))
-    completed = subprocess.run(command, check=False)
+    completed = subprocess.run(command, check=False, env=env)
     return completed.returncode
 
 
@@ -37,6 +44,13 @@ def _discover_test_files(tests_dir: str, test_pattern: str) -> list[Path]:
     if not root.is_dir():
         return []
     return sorted(path for path in root.glob(test_pattern) if path.is_file())
+
+
+def _ci_subprocess_env() -> dict[str, str]:
+    env = os.environ.copy()
+    for key in COVERAGE_ENV_KEYS:
+        env.pop(key, None)
+    return env
 
 
 def _parse_args() -> argparse.Namespace:
@@ -203,8 +217,9 @@ def main() -> int:
             if not args.keep_going:
                 return exit_code
 
+    command_env = _ci_subprocess_env()
     for command in commands:
-        exit_code = _run(command)
+        exit_code = _run(command, env=command_env)
         if exit_code != 0:
             failures.append((" ".join(command), exit_code))
             if not args.keep_going:

@@ -41,7 +41,23 @@ class Settings:
 
 
 def get_repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    env_root = os.getenv('OMNI_REPO_ROOT')
+    if env_root:
+        return Path(env_root).resolve()
+
+    current_workdir = Path.cwd().resolve()
+    if (current_workdir / 'docs' / 'current' / 'contracts' / 'SKILL.template.md').is_file():
+        return current_workdir
+
+    package_root = Path(__file__).resolve().parents[2]
+    if (package_root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md').is_file():
+        return package_root
+
+    container_root = Path('/app')
+    if (container_root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md').is_file():
+        return container_root
+
+    return package_root
 
 
 def _env_flag(name: str, default: bool) -> bool:

@@ -14,7 +14,7 @@ class CiScriptTests(unittest.TestCase):
     def test_isolate_test_files_runs_each_matching_file(self) -> None:
         command = (
             "import sys; print('ci-probe:' + ' '.join(sys.argv[1:])); "
-            "raise SystemExit(6 if 'test_ci_script.py' in sys.argv else 0)"
+            "raise SystemExit(6 if any(arg.endswith('test_ci_script.py') for arg in sys.argv) else 0)"
         )
         completed = subprocess.run(
             [
@@ -66,7 +66,7 @@ class CiScriptTests(unittest.TestCase):
         self.assertIn("- ", completed.stderr)
 
     def test_coverage_post_processing_is_skipped_without_data(self) -> None:
-        command = "import sys; print('ci-probe:' + ' '.join(sys.argv[1:])); raise SystemExit(9)"
+        command = "import sys; print('ci-probe:' + ' '.join(sys.argv[1:])); raise SystemExit(0)"
         completed = subprocess.run(
             [
                 sys.executable,
@@ -84,7 +84,7 @@ class CiScriptTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-        self.assertEqual(completed.returncode, 9)
+        self.assertEqual(completed.returncode, 1)
         self.assertIn("Coverage post-processing skipped: no coverage data files found.", completed.stderr)
         self.assertNotIn("coverage combine", completed.stdout)
         self.assertNotIn("coverage report", completed.stdout)

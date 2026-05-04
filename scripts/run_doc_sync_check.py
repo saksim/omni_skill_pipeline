@@ -42,8 +42,8 @@ _MARKDOWN_LINK_PATTERN = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
 _CLI_COMMAND_PATTERN = re.compile(r"add_parser\('([a-z0-9_-]+)'")
 _API_ROUTE_PATTERN = re.compile(r"@app\.(get|post)\('([^']+)'\)")
 _WORKER_KIND_PATTERN = re.compile(r"if kind == '([a-z_]+)'")
-_TP_ID_PATTERN = re.compile(r'"(TP-E\d{1,2}-\d{2})"\s*:')
-_STALE_PENDING_TP_PATTERN = re.compile(r'(?:\u5f85|pending)\s*`?(TP-E\d{1,2}-\d{2})`?', re.IGNORECASE)
+_TP_ID_PATTERN = re.compile(r'"(TP-E\d{1,2}-\d{2,3})"\s*:')
+_STALE_PENDING_TP_PATTERN = re.compile(r'(?:\u5f85|pending)\s*`?(TP-E\d{1,2}-\d{2,3})(?!\d)`?', re.IGNORECASE)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -217,7 +217,7 @@ def _check_worker_kinds(worker_source_text: str, worker_doc_text: str) -> dict[s
 def _extract_recent_tp_ids(tp_source_text: str) -> list[str]:
     output: list[str] = []
     for tp_id in _TP_ID_PATTERN.findall(tp_source_text):
-        match = re.match(r'TP-E(\d{1,2})-(\d{2})', tp_id)
+        match = re.fullmatch(r'TP-E(\d{1,2})-(\d{2,3})', tp_id)
         if match is None:
             continue
         epic = int(match.group(1))
