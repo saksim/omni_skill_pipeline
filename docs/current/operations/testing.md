@@ -1,8 +1,11 @@
-﻿# Testing
+# Testing
 
-## 閸掋倛鐦?
-鏉╂瑤閲滄禒鎾崇秼閸撳秷铔嬮惃鍕Ц `unittest` 娴ｆ挾閮撮敍灞肩瑝閺?`pytest` 娴ｆ挾閮撮敍娑欑ゴ鐠囨洖鍨介弬顓☆洣閹稿骞囬張澶愭懠鐠侯垶鐛欑亸闈╃礉娑撳秷顩﹂幏鍧楁晩閸掓垵鍙块妴?
-## 閺堫剙婀撮悳顖氼暔鐎靛綊缍?
+## 判词
+
+这个仓当前走的是 `unittest` 体系，不是 `pytest` 体系；测试判断要按现有链路验尸，不要拿错刑具。
+
+## 本地环境对齐
+
 PowerShell:
 
 ```powershell
@@ -21,90 +24,125 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
 ```
 
-## 閸忋劑鍣洪崶鐐茬秺
+## 全量回归
 
 ```bash
 python scripts/run_ci.py
 ```
 
-鐠囥儱鍙嗛崣锝勭窗缂佺喍绔撮幍褑顢戦敍?
+该入口会统一执行：
+
 - `python -m coverage run --parallel-mode -m unittest discover -s tests -p 'test_*.py'`
 - `python scripts/run_tp_tests.py --all --python <current-python>`
 - `python -m coverage combine`
 - `python -m coverage report --show-missing --fail-under <threshold>`
 - `python -m coverage xml -o coverage.xml`
 
-姒涙顓?coverage fail-under 娑?`50`閿涘苯褰查柅姘崇箖閸欏倹鏆熺憰鍡欐磰閵?
-缁€杞扮伐閿涙碍褰佹姗€妲囬崐鐓庡煂 `65`
+默认 coverage fail-under 为 `50`，可通过参数覆盖。
+
+示例：提高阈值到 `65`
 
 ```bash
 python scripts/run_ci.py --coverage-fail-under 65
 ```
 
-缁€杞扮伐閿涙矮绮庨崷銊︽拱閸︽澘鎻╅柅鐔肩崣闁槒绶敍灞煎閺冭泛鍙ч梻?coverage
+示例：仅在本地快速验逻辑，临时关闭 coverage
 
 ```bash
 python scripts/run_ci.py --no-coverage
 ```
 
-## 鐎圭懓娅掗悜鐔哥ゴ閼存碍婀?
-鐎圭懓娅掗崺铏瑰殠閻戠喐绁撮敍鍫熺€娲殔閸?+ 閸氼垰濮╃€圭懓娅?+ 鏉烆喛顕?`/healthz`閿涘绱?
+## 容器烟测脚本
+
+容器基线烟测（构建镜像 + 启动容器 + 轮询 `/healthz`）：
+
 ```bash
 python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:local --port 18000
 ```
 
-閸欘亞婀呴幍褑顢戠拋鈥冲灊閿涘奔绗夐惇鐔割劀鐠嬪啰鏁?Docker閿?
+只看执行计划，不真正调用 Docker：
+
 ```bash
 python scripts/run_container_smoke.py --dry-run
 ```
 
-Linux 缂佺喍绔存灞剧ゴ閺冭泛缂撶拋顔炬纯閹恒儰濞囬悽銊嚉閼存碍婀伴敍灞肩稊娑?`LC-L1-18` 閻ㄥ嫬顔愰崳銊ユ礀瑜版帒鍙嗛崣锝冣偓?
+Linux 统一验测时建议直接使用该脚本，作为 `LC-L1-18` 的容器回归入口。
+
 ## Dual-Write Benchmark Harness
 
-`LC-L2-33` 瀵洖鍙?dual-write 閸╁搫鍣懘姘拱閿?
+`LC-L2-33` 引入 dual-write 基准脚本：
+
 ```bash
 python scripts/benchmark_dual_write.py --iterations 20 --skip-postgres
 python scripts/benchmark_dual_write.py --iterations 20 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
 ```
 
-- 缁楊兛绔存稉顏勬嚒娴犮倕褰уù?file repository baseline閵?- 缁楊兛绨╂稉顏勬嚒娴犮倖绁?file + Postgres dual-write 閺冭泛娆㈤妴?- 姒涙顓婚幎銉ユ啞閽€鐣屾磸閿涙瓪docs/current/status/baselines/e8-dual-write-benchmark-report.json`閵?
-## 鐎规艾鎮滈幍褑顢?
-閺屻儳婀呰ぐ鎾冲瀹稿弶妲х亸?Task Package:
+- 第一个命令只测 file repository baseline。
+- 第二个命令测 file + Postgres dual-write 时延。
+- 默认报告落盘：`docs/current/status/baselines/e8-dual-write-benchmark-report.json`。
+
+## 定向执行
+
+查看当前已映射 Task Package:
 
 ```bash
 python scripts/run_tp_tests.py --list
 ```
 
-閹笛嗩攽閸楁洑閲滃銉ュ礋:
+执行单个工单:
 
 ```bash
 python scripts/run_tp_tests.py TP-E6-02 --python python
 ```
 
-閹笛嗩攽婢舵矮閲滃銉ュ礋:
+执行多个工单:
 
 ```bash
-python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 TP-E13-13 TP-E13-14 TP-E13-15 TP-E13-16 TP-E13-17 TP-E13-18 TP-E13-19 TP-E13-20 TP-E13-21 TP-E13-22 TP-E13-23 TP-E13-24 TP-E13-25 TP-E13-26 TP-E13-27 TP-E13-28 TP-E13-29 TP-E13-30 TP-E13-31 TP-E13-32 TP-E13-33 TP-E13-34 TP-E13-35 TP-E13-36 TP-E13-37 TP-E13-38 TP-E13-39 TP-E13-40 TP-E13-41 TP-E13-42 TP-E13-43 TP-E13-44 TP-E13-45 TP-E13-46 TP-E13-47 TP-E13-48 TP-E13-49 TP-E13-50 TP-E13-51 TP-E13-52 TP-E13-53 TP-E13-54 TP-E13-55 TP-E13-56 TP-E13-57 TP-E13-58 TP-E13-59 TP-E13-60 TP-E13-61 TP-E13-62 TP-E13-63 TP-E13-64 TP-E13-65 TP-E13-66 TP-E13-67 TP-E13-68 TP-E13-69 TP-E13-70 TP-E13-71 TP-E13-72 TP-E13-73 TP-E13-74 TP-E13-75 TP-E13-76 TP-E13-77 TP-E13-78 TP-E13-79 TP-E13-80 TP-E13-81 TP-E13-82 TP-E13-83 TP-E13-84 --python python3
+python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E2-03 TP-E3-01 TP-E3-02 TP-E3-03 TP-E4-01 TP-E4-02 TP-E4-03 TP-E4-04 TP-E4-05 TP-E5-01 TP-E5-02 TP-E5-03 TP-E5-04 TP-E6-01 TP-E6-02 TP-E6-03 TP-E6-04 TP-E7-01 TP-E7-02 TP-E7-03 TP-E7-04 TP-E8-01 TP-E8-02 TP-E8-03 TP-E8-04 TP-E9-01 TP-E9-02 TP-E9-03 TP-E10-01 TP-E10-02 TP-E10-03 TP-E11-01 TP-E11-02 TP-E11-03 TP-E11-04 TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 TP-E13-02 TP-E13-03 TP-E13-04 TP-E13-05 TP-E13-06 TP-E13-07 TP-E13-08 TP-E13-09 TP-E13-10 TP-E13-11 TP-E13-12 --python python3
 ```
 
-## 瑜版挸澧犵憰鍡欐磰闁插秶鍋?
-- `tests/test_mvp.py`: 鐟曞棛娲?text / audio / image / video / tabular 娑撴槒鐭惧?- `tests/test_v2_schema_and_corpus.py`: 鐟曞棛娲?corpus 缂佸嫯顥婇妴涔竨blication閵嗕构uality閵嗕购eview artifacts
-- `tests/test_quality_scoring.py`: 鐟曞棛娲婄拹銊╁櫤鐠囧嫬鍨?- `tests/test_review_policy.py`: 鐟曞棛娲?review threshold 娑?reason codes
-- `tests/test_dual_write_repository.py`: 鐟曞棛娲?dual-write 娑?娴犲簼绮ㄩ崒銊攽娑撹桨绗屾径杈Е娣囨繃濮?- `tests/test_benchmark_dual_write.py`: 鐟曞棛娲?dual-write benchmark 閼存碍婀伴悜鐔哥ゴ
-- `tests/test_similarity_retrieval.py`: 鐟曞棛娲婂Λ鈧槐銏″▕鐠灺扳偓涔畁memory baseline 閹烘帒绨妴涔ckend 闁鐎烽崡鐘辩秴鐞涘奔璐?- `tests/test_lifecycle_decision_engine.py`: 鐟曞棛娲?lifecycle `new/revise/merge/supersede/reject` 閸愬磭鐡ラ崚鍡樼ウ
-- `tests/test_publication_builder.py`: 鐟曞棛娲?checklist/decision_tree 鏉堟挸鍤稉搴㈡￥ decision 閸︾儤娅?fallback
-- `tests/test_publication_orchestrator_split.py`: 鐟曞棛娲?goal_type 妞瑰崬濮╅惃?publication type 闁瀚?- `tests/test_api_app.py`: 鐟曞棛娲?distill API 鏉堟挸鍙嗘潪顒佸床閵嗕線鏁婄拠顖涙Ё鐏忓嫪绗?TP-E10-02 閻?V2 鏉堟挸鍤總鎴犲鐎涙顔?- `tests/test_worker.py`: 鐟曞棛娲?TP-E10-03 worker 閺傞鎹㈤崝锛勮閸ㄥ绱檙eview_queue/rebuild_publication/revise_skill閿?- `tests/test_transformers_regression.py`: 鐟曞棛娲?TP-E11-01 濡€崇€?鏉烆剚宕查崳銊ュ瀻閺€顖氭礀瑜版帪绱檚kill_type閵嗕躬vidence 閼辨艾鎮庨妴涔磂gacy atom bridge閿?- `tests/test_doc_sync_check_script.py`: 鐟曞棛娲?TP-E13-01 / TP-E13-02 / TP-E13-03 閺傚洦銆傞崥灞绢劄濡偓閺屻儴鍓奸張顒婄礄濠ф劗鐖滅悰銊╂桨 + 鏉╀胶些閹稿洤宕?+ 閸欐垵绔烽崚鍥ㄥ床閺嶅洤鍣?+ LC-L1-19 Beta runbook 婵傛垹瀹抽敍?- `tests/test_linux_validation_suite_script.py`: 鐟曞棛娲?TP-E13-04 Linux 缂佺喍绔存灞芥缂傛牗甯撻懘姘拱閿涘牓妯佸▓鐢电摣闁鈧礁鎳℃禒銈嗗ⅵ閸栧懌鈧龚ry-run 鐠佲€冲灊閽€鐣屾磸閵嗕恭ontainer smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_postgres_soak_validation_script.py`: 鐟曞棛娲?TP-E13-05 Postgres 闂€璺ㄇ旀灞芥閼存碍婀伴敍鍦盤 閸ョ偛缍婄紓鏍ㄥ笓閵嗕攻enchmark 閸欏倹鏆熼妴涔╯n fail-fast閿?- `tests/test_worker_ga_validation_script.py`: 鐟曞棛娲?TP-E13-06 worker GA 妤犲矁鐦夐懘姘拱閿涘牓妯佸▓鐢电摣闁鈧龚ry-run 鐠佲€冲灊閽€鐣屾磸閿?- `tests/test_provider_ga_validation_script.py`: 鐟曞棛娲?TP-E13-07 provider GA 妤犲矁鐦夐懘姘拱閿涘澁etry/circuit-breaker/failure-budget/audit 鐠佲€冲灊缂傛牗甯撻敍?- `tests/test_review_queue_ga_validation_script.py`: 鐟曞棛娲?TP-E13-08 review queue GA 妤犲矁鐦夐懘姘拱閿涘澁epository/service/api/feedback 闂冭埖顔岀紓鏍ㄥ笓娑撳海鐡柅澶涚礆
-- `tests/test_calibration_ga_validation_script.py`: 鐟曞棛娲?TP-E13-09 calibration GA 妤犲矁鐦夐懘姘拱閿涘牓妲囬崐鐓庮殩缁撅负鈧浇鐨熼崣鍌涘Г閸涘鈧沟anifest/report 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_postgres_ga_validation_script.py`: 鐟曞棛娲?TP-E13-10 Postgres GA 妤犲矁鐦夐懘姘拱閿涘澁epository/dual-write/benchmark 闂冭埖顔岀紓鏍ㄥ笓閵嗕龚sn fail-fast閵嗕攻enchmark 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_roadmap_extension_validation_script.py`: 鐟曞棛娲?TP-E13-11 roadmap extension 妤犲矁鐦夐懘姘拱閿涘湢C-R-34~37 閻?retrieval/lifecycle/publication/review queue surface 闂冭埖顔岀紓鏍ㄥ笓娑撳海鐡柅澶涚礆
-- `tests/test_release_gate_validation_script.py`: 鐟曞棛娲?TP-E13-12 閸欐垵绔烽梻銊ь洣閼辨艾鎮庨懘姘拱閿涘潌eta/ga/roadmap 闂冭埖顔岀粵娑⑩偓澶夌瑢 coverage/container/postgres/calibration 閸欏倹鏆熼柅蹇庣炊閿?- `tests/test_release_switch_validation_script.py`: 鐟曞棛娲?TP-E13-13 / TP-E13-14 / TP-E13-15 / TP-E13-16 / TP-E13-17 / TP-E13-18 / TP-E13-19 / TP-E13-20 / TP-E13-21 / TP-E13-22 / TP-E13-23 / TP-E13-24 / TP-E13-25 / TP-E13-26 / TP-E13-27 / TP-E13-28 / TP-E13-29 / TP-E13-30 / TP-E13-31 / TP-E13-32 / TP-E13-33 / TP-E13-34 / TP-E13-35 / TP-E13-36 / TP-E13-37 閸欐垵绔烽崚鍥ㄥ床閸掋倕鐣鹃懘姘拱閿涘澁elease-gate/TP/doc-sync 缂傛牗甯撻妴涔╡cision-only GO/HOLD閵嗕浇鐦夐幑顔煎瘶閳ユ粌鐣弫瀛樷偓?+ 閸欘垱澧界悰灞芥嚒娴犮倛顓搁崚鎺嗏偓婵嬫，缁備降鈧躬vidence freshness 閺冭埖鏅ラ梻銊ь洣閵嗕公uture timestamp skew 闂傘劎顩﹂妴涔hort skew 闂傘劎顩︽稉宸杄lease-gate output binding 闂傘劎顩︽稉?stage contract 闂傘劎顩︽稉?script-position 闂傘劎顩︽稉?option override 闂傘劎顩︽稉?relaxed-flag 闂傘劎顩?+ dry-run 闂傘劎顩?+ script-anchor 闂傘劎顩?+ python-binding 闂傘劎顩?+ coverage-floor 闂傘劎顩?+ python-optimization 闂傘劎顩?+ python-option-optimization 闂傘劎顩?+ python-optimize-env 闂傘劎顩?+ python-option-inline-exec 闂傘劎顩?+ python-path-env 闂傘劎顩?+ python-home-env 闂傘劎顩?+ python-user-base-env 闂傘劎顩?+ python-breakpoint-env 闂傘劎顩?+ python-startup-env 闂傘劎顩?+ python-inspect-env 闂傘劎顩﹂敍?- `tests/test_tp_registry.py`: 鐟曞棛娲?TP 濞夈劌鍞界悰銊ょ瑢 `skill-distillation-v2-work-orders.md` 閻ㄥ嫬寮婚崥鎴濈暚閺佸瓨鈧冾嚠姒绘劧绱欏蹇旀Ё鐏?+ 楠炵晫浼掗弰鐘茬殸閿?
-## 瑜版挸澧犵紓鍝勫經
+## 当前覆盖重点
 
-- FastAPI/ASGI API 閼奉亜濮╅崠鏍ㄧゴ鐠囨洖鍑＄憰鍡欐磰閺嶇绺炬總鎴犲閿涙稐绮涚紓铏规埂鐎?provider 閺佸懘娈板▔銊ュ弳娑撳氦绀嬫潪钘夋簚閺?- coverage fail-under 娴犲秵妲告穱婵嗙暓闂冨牆鈧》绱檂50`閿涘绱濋崥搴ｇ敾鎼存棃娈㈢拹銊╁櫤閸╄櫣鍤庨幓鎰磳
-- 鐏忔碍妫ら悽鐔堕獓缁狙嗙鏉炶棄甯囧ù瀣剁礄瑜版挸澧犳禒鍛箒 dual-write benchmark smoke harness閿?- 閻喎鐤?provider failure-mode 鐟曞棛娲婃禒宥呬焊閽?
-## 缂佸瓨濮㈢憴鍕灟
+- `tests/test_mvp.py`: 覆盖 text / audio / image / video / tabular 主路径
+- `tests/test_v2_schema_and_corpus.py`: 覆盖 corpus 组装、publication、quality、review artifacts
+- `tests/test_quality_scoring.py`: 覆盖质量评分
+- `tests/test_review_policy.py`: 覆盖 review threshold 与 reason codes
+- `tests/test_dual_write_repository.py`: 覆盖 dual-write 主/从仓储行为与失败保护
+- `tests/test_benchmark_dual_write.py`: 覆盖 dual-write benchmark 脚本烟测
+- `tests/test_similarity_retrieval.py`: 覆盖检索抽象、inmemory baseline 排序、backend 选型占位行为
+- `tests/test_lifecycle_decision_engine.py`: 覆盖 lifecycle `new/revise/merge/supersede/reject` 决策分流
+- `tests/test_publication_builder.py`: 覆盖 checklist/decision_tree 输出与无 decision 场景 fallback
+- `tests/test_publication_orchestrator_split.py`: 覆盖 goal_type 驱动的 publication type 选择
+- `tests/test_api_app.py`: 覆盖 distill API 输入转换、错误映射与 TP-E10-02 的 V2 输出契约字段
+- `tests/test_worker.py`: 覆盖 TP-E10-03 worker 新任务类型（review_queue/rebuild_publication/revise_skill）
+- `tests/test_transformers_regression.py`: 覆盖 TP-E11-01 模型/转换器分支回归（skill_type、evidence 聚合、legacy atom bridge）
+- `tests/test_doc_sync_check_script.py`: 覆盖 TP-E13-01 / TP-E13-02 / TP-E13-03 文档同步检查脚本（源码表面 + 迁移指南 + 发布切换标准 + LC-L1-19 Beta runbook 契约）
+- `tests/test_linux_validation_suite_script.py`: 覆盖 TP-E13-04 Linux 统一验尸编排脚本（阶段筛选、命令打包、dry-run 计划落盘、container smoke / postgres_soak / postgres_ga / worker_ga / review_queue_ga / provider_ga / calibration_ga / roadmap_extension 参数透传）
+- `tests/test_postgres_soak_validation_script.py`: 覆盖 TP-E13-05 Postgres 长稳验尸脚本（TP 回归编排、benchmark 参数、dsn fail-fast）
+- `tests/test_worker_ga_validation_script.py`: 覆盖 TP-E13-06 worker GA 验证脚本（阶段筛选、dry-run 计划落盘）
+- `tests/test_provider_ga_validation_script.py`: 覆盖 TP-E13-07 provider GA 验证脚本（retry/circuit-breaker/failure-budget/audit 计划编排）
+- `tests/test_review_queue_ga_validation_script.py`: 覆盖 TP-E13-08 review queue GA 验证脚本（repository/service/api/feedback 阶段编排与筛选）
+- `tests/test_calibration_ga_validation_script.py`: 覆盖 TP-E13-09 calibration GA 验证脚本（阈值契约、调参报告、manifest/report 参数透传）
+- `tests/test_postgres_ga_validation_script.py`: 覆盖 TP-E13-10 Postgres GA 验证脚本（repository/dual-write/benchmark 阶段编排、dsn fail-fast、benchmark 参数透传）
+- `tests/test_roadmap_extension_validation_script.py`: 覆盖 TP-E13-11 roadmap extension 验证脚本（LC-R-34~37 的 retrieval/lifecycle/publication/review queue surface 阶段编排与筛选）
+- `tests/test_release_gate_validation_script.py`: 覆盖 TP-E13-12 发布门禁聚合脚本（beta/ga/roadmap 阶段筛选与 coverage/container/postgres/calibration 参数透传）
+- `tests/test_tp_registry.py`: 覆盖 TP 注册表与 `skill-distillation-v2-work-orders.md` 的完整性对齐，防止新工单漏映射
 
-濮ｅ繑顐奸弬鏉款杻 `TP-*` 瀹搞儱宕熼弮璁圭礉閼峰啿鐨崥灞绢劄鐎瑰本鍨氭稉澶夋娴滃绱?
-1. 閸?`tests/` 閽€鑺ョゴ鐠?case
-2. 閸?`scripts/run_tp_tests.py` 閻?`TP_TEST_CASES` 娑擃厾娅ョ拋鐗堟Ё鐏?3. 閸︺劍婀伴弬鍥︽閺囧瓨鏌婄憰鍡欐磰閼煎啫娲挎稉搴㈡煀婢х偛浼愰崡鏇☆嚛閺勫函绱欓獮鍓佲€樻穱?`tests/test_tp_registry.py` 鐎靛綊缍?work-orders閿?
+## 当前缺口
+
+- FastAPI/ASGI API 自动化测试已覆盖核心契约；仍缺真实 provider 故障注入与负载场景
+- coverage fail-under 仍是保守阈值（`50`），后续应随质量基线提升
+- 尚无生产级负载压测（当前仅有 dual-write benchmark smoke harness）
+- 真实 provider failure-mode 覆盖仍偏薄
+
+## 维护规则
+
+每次新增 `TP-*` 工单时，至少同步完成三件事：
+
+1. 在 `tests/` 落测试 case
+2. 在 `scripts/run_tp_tests.py` 的 `TP_TEST_CASES` 中登记映射
+3. 在本文件更新覆盖范围与新增工单说明（并确保 `tests/test_tp_registry.py` 对齐 work-orders）
+
 ## LC-R-37 Additions
 
 - Added `TP-E9-03` for review queue operations surface.
@@ -155,8 +193,7 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - Extended `scripts/run_doc_sync_check.py` with `launch_beta_runbook_completeness` check for `docs/current/operations/runbooks/launch-beta.md` (`LC-L1-19` checklist contract).
 - Added `tests/test_doc_sync_check_script.py` coverage for API ops-contract incomplete fail-path.
 - Added `tests/test_doc_sync_check_script.py` coverage for launch-beta incomplete-contract fail-path.
-- Extended `tests/test_tp_registry.py` with reverse-parity assertion so undocumented TP IDs in `run_tp_tests --list` fail fast.
-- Added `TP-E13-01` mapping in `scripts/run_tp_tests.py`, including the TP registry parity check testcase.
+- Added `TP-E13-01` mapping in `scripts/run_tp_tests.py`.
 - Linux doc sync example: `python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json`.
 - Linux batch example: `python scripts/run_tp_tests.py TP-E12-01 TP-E12-02 TP-E12-03 TP-E12-04 TP-E13-01 --python python3`.
 
