@@ -33,6 +33,9 @@ DEFAULT_RELEASE_HISTORY_DOC_PATH = (
 DEFAULT_LAUNCH_BETA_RUNBOOK_PATH = (
     REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'launch-beta.md'
 )
+DEFAULT_DOCKER_ZERO_TO_RELEASE_RUNBOOK_PATH = (
+    REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'docker-zero-to-release.md'
+)
 DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
 
 _MARKDOWN_LINK_PATTERN = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
@@ -80,6 +83,11 @@ def _parse_args() -> argparse.Namespace:
         '--launch-beta-runbook',
         default=str(DEFAULT_LAUNCH_BETA_RUNBOOK_PATH),
         help='Launch-beta runbook path.',
+    )
+    parser.add_argument(
+        '--docker-zero-to-release-runbook',
+        default=str(DEFAULT_DOCKER_ZERO_TO_RELEASE_RUNBOOK_PATH),
+        help='Docker-first zero-to-release runbook path.',
     )
     parser.add_argument(
         '--output',
@@ -392,6 +400,62 @@ def _check_launch_beta_runbook_completeness(launch_beta_runbook_text: str) -> di
     }
 
 
+def _check_docker_zero_to_release_runbook_completeness(
+    docker_zero_to_release_runbook_text: str,
+) -> dict[str, Any]:
+    required_headings = [
+        '## Verdict',
+        '## Scope',
+        '## Host Assumptions',
+        '## Python Contract',
+        '## Source Bootstrap',
+        '## Image Build',
+        '## Docker-Only Test Gate',
+        '## Release Decision',
+        '## Deploy',
+        '## Acceptance',
+        '## Observability',
+        '## Rollback',
+        '## From Zero Checklist',
+    ]
+    required_markers = [
+        'Bare Linux',
+        'Docker Engine',
+        'requires-python = ">=3.11"',
+        'python:3.11-slim',
+        'Dockerfile.test',
+        'docker build -f Dockerfile.test -t omni-skill-pipeline:test .',
+        'docker build -t omni-skill-pipeline:beta .',
+        'docker run --rm',
+        'docker run --rm -d',
+        '--network host',
+        'docker exec omni-skill-beta python --version',
+        'docker cp',
+        'docker logs',
+        'docker rm -f',
+        'curl -fsS http://127.0.0.1:8000/healthz',
+        'scripts/run_ci.py --python python3 --keep-going',
+        'scripts/run_linux_validation_suite.py --python python3 --keep-going',
+        'scripts/run_release_switch_validation.py --python python3 --keep-going',
+    ]
+
+    missing_required_headings = [
+        item for item in required_headings if item not in docker_zero_to_release_runbook_text
+    ]
+    missing_required_markers = [
+        item for item in required_markers if item not in docker_zero_to_release_runbook_text
+    ]
+    missing_any = missing_required_headings or missing_required_markers
+    return {
+        'name': 'docker_zero_to_release_runbook_completeness',
+        'status': 'fail' if missing_any else 'pass',
+        'details': {
+            'missing_required_headings': missing_required_headings,
+            'missing_required_markers': missing_required_markers,
+        },
+    }
+
+
 def _build_report(*, checks: list[dict[str, Any]]) -> dict[str, Any]:
     failed = [check for check in checks if check.get('status') != 'pass']
     return {
@@ -443,6 +507,7 @@ def main() -> int:
         'release_standard_doc': Path(args.release_standard_doc).resolve(),
         'release_history_doc': Path(args.release_history_doc).resolve(),
         'launch_beta_runbook': Path(args.launch_beta_runbook).resolve(),
+        'docker_zero_to_release_runbook': Path(args.docker_zero_to_release_runbook).resolve(),
     }
 
     checks: list[dict[str, Any]] = [_check_required_files(paths)]
@@ -461,6 +526,7 @@ def main() -> int:
         release_standard_doc_text = _read_utf8(paths['release_standard_doc'])
         release_history_doc_text = _read_utf8(paths['release_history_doc'])
         launch_beta_runbook_text = _read_utf8(paths['launch_beta_runbook'])
+        docker_zero_to_release_runbook_text = _read_utf8(paths['docker_zero_to_release_runbook'])
 
         checks.extend(
             [
@@ -473,6 +539,7 @@ def main() -> int:
                 _check_migration_guide_completeness(arch_migration_doc_text, ops_migration_doc_text),
                 _check_release_switch_standard(release_standard_doc_text, release_history_doc_text),
                 _check_launch_beta_runbook_completeness(launch_beta_runbook_text),
+                _check_docker_zero_to_release_runbook_completeness(docker_zero_to_release_runbook_text),
                 _check_stale_pending_tp_markers(
                     tp_source_text,
                     {
@@ -486,6 +553,9 @@ def main() -> int:
                         'docs/current/status/v2-release-switch-standard.md': release_standard_doc_text,
                         'docs/history/status/2026-04-26-v2-release-switch-standard.md': release_history_doc_text,
                         'docs/current/operations/runbooks/launch-beta.md': launch_beta_runbook_text,
+                        'docs/current/operations/runbooks/docker-zero-to-release.md': (
+                            docker_zero_to_release_runbook_text
+                        ),
                     },
                 ),
             ]

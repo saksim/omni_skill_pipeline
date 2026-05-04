@@ -109,7 +109,7 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - `tests/test_review_policy.py`: 覆盖 review threshold 与 reason codes
 - `tests/test_dual_write_repository.py`: 覆盖 dual-write 主/从仓储行为与失败保护
 - `tests/test_benchmark_dual_write.py`: 覆盖 dual-write benchmark 脚本烟测
-- `tests/test_similarity_retrieval.py`: 覆盖检索抽象、inmemory baseline 排序、backend 选型占位行为
+- `tests/test_similarity_retrieval.py`: 覆盖检索抽象、inmemory baseline 排序、backend 选型占位行为，以及 whitespace-tags 输入校验与 step/graph overlap 结构化语义加权排序
 - `tests/test_lifecycle_decision_engine.py`: 覆盖 lifecycle `new/revise/merge/supersede/reject` 决策分流
 - `tests/test_publication_builder.py`: 覆盖 checklist/decision_tree 输出与无 decision 场景 fallback
 - `tests/test_publication_orchestrator_split.py`: 覆盖 goal_type 驱动的 publication type 选择
@@ -223,6 +223,7 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - Linux dry-run example: `python scripts/run_linux_validation_suite.py --python python3 --dry-run --output docs/current/status/baselines/e13-linux-validation-suite-plan.json`.
 - Linux container-only dry-run example: `python scripts/run_linux_validation_suite.py --python python3 --stages container_smoke --container-image-tag omni-skill-pipeline:beta --dry-run --output -`.
 - Linux execution example: `python scripts/run_linux_validation_suite.py --python python3`.
+- Linux aggregate execution example: `python scripts/run_linux_validation_suite.py --python python3 --keep-going`; this keeps later stages running after an earlier failure and prints a stage failure summary.
 
 ## TP-E13-05 Additions
 

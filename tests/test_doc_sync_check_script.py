@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
@@ -154,6 +155,76 @@ python scripts/prune_tmp_media.py --dry-run
 1. 下线当前 Beta 容器。
 2. 启动上一稳定镜像。
 """
+VALID_DOCKER_ZERO_TO_RELEASE_RUNBOOK = """# Docker Zero-to-Release Runbook
+
+## Verdict
+
+Bare Linux host starts from Docker Engine only.
+
+## Scope
+
+Use Dockerfile.test and python:3.11-slim for tests and release.
+
+## Host Assumptions
+
+Docker Engine can run docker build, docker run --rm, docker run --rm -d, --network host, docker exec, docker logs, docker cp, docker rm -f.
+
+## Python Contract
+
+pyproject.toml declares requires-python = ">=3.11"; no host Python is required.
+
+## Source Bootstrap
+
+Prepare Dockerfile.test, Dockerfile.test.dockerignore, scripts, tests, docs.
+
+## Image Build
+
+```bash
+docker build -f Dockerfile.test -t omni-skill-pipeline:test .
+docker build -t omni-skill-pipeline:beta .
+```
+
+## Docker-Only Test Gate
+
+```bash
+docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going
+docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_linux_validation_suite.py --python python3 --keep-going
+docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going
+docker cp omni-release-gate:/app/docs/current/status/baselines ./baselines-from-container
+```
+
+## Release Decision
+
+GO can continue; HOLD blocks production promotion.
+
+## Deploy
+
+```bash
+docker run --rm -d --name omni-skill-beta -p 8000:8000 omni-skill-pipeline:beta
+docker exec omni-skill-beta python --version
+curl -fsS http://127.0.0.1:8000/healthz
+```
+
+## Acceptance
+
+healthz and auth probes must pass.
+
+## Observability
+
+```bash
+docker logs --tail 300 omni-skill-beta
+```
+
+## Rollback
+
+```bash
+docker rm -f omni-skill-beta
+```
+
+## From Zero Checklist
+
+Build test image, run test gate, deploy runtime image, verify, then rollback if needed.
+"""
 VALID_API_OPS_CONTRACT_DOC = """## Health / Readiness
 
 - `GET /healthz`
@@ -184,6 +255,24 @@ VALID_API_OPS_CONTRACT_DOC = """## Health / Readiness
 
 
 class DocSyncCheckScriptTests(unittest.TestCase):
+    def test_docker_zero_to_release_check_reports_missing_markers(self) -> None:
+        spec = importlib.util.spec_from_file_location('run_doc_sync_check', SCRIPT_PATH)
+        self.assertIsNotNone(spec)
+        assert spec is not None
+        module = importlib.util.module_from_spec(spec)
+        self.assertIsNotNone(spec.loader)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+
+        check = module._check_docker_zero_to_release_runbook_completeness(
+            '# Docker Zero-to-Release Runbook\n\n## Deploy\n\nincomplete\n'
+        )
+
+        self.assertEqual(check.get('status'), 'fail')
+        self.assertEqual(check.get('name'), 'docker_zero_to_release_runbook_completeness')
+        self.assertIn('## Host Assumptions', check['details']['missing_required_headings'])
+        self.assertIn('Docker Engine', check['details']['missing_required_markers'])
+
     def test_script_smoke_validates_docs_against_code_surfaces(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
@@ -204,6 +293,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            docker_zero_to_release_runbook_path = repo_root / 'docker-zero-to-release.md'
             output_path = repo_root / 'doc-sync-report.json'
 
             (repo_root / 'docs').mkdir()
@@ -248,6 +338,10 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path.write_text(VALID_RELEASE_STANDARD_DOC, encoding='utf-8')
             release_history_doc_path.write_text(VALID_RELEASE_HISTORY_DOC, encoding='utf-8')
             launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            docker_zero_to_release_runbook_path.write_text(
+                VALID_DOCKER_ZERO_TO_RELEASE_RUNBOOK,
+                encoding='utf-8',
+            )
 
             completed = subprocess.run(
                 [
@@ -281,6 +375,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(release_history_doc_path),
                     '--launch-beta-runbook',
                     str(launch_beta_runbook_path),
+                    '--docker-zero-to-release-runbook',
+                    str(docker_zero_to_release_runbook_path),
                     '--output',
                     str(output_path),
                 ],

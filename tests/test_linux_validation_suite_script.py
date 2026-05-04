@@ -37,6 +37,7 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
                 completed.stdout,
             )
             self.assertIn('scripts/run_ci.py', completed.stdout)
+            self.assertIn('--python python3', completed.stdout)
             self.assertIn('scripts/run_container_smoke.py', completed.stdout)
             self.assertIn('scripts/run_doc_sync_check.py', completed.stdout)
             self.assertIn('scripts/run_quality_regression.py', completed.stdout)
@@ -438,6 +439,42 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             self.assertNotIn('scripts/run_ci.py', completed.stdout)
             self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
             self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
+
+    def test_keep_going_runs_later_stages_after_failure_and_summarizes_failures(self) -> None:
+        command = (
+            "import sys; print('probe-stage'); "
+            "raise SystemExit(7 if sys.argv[-1].endswith('fail') else 0)"
+        )
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                '--python',
+                '%s -c "%s"' % (sys.executable, command),
+                '--stages',
+                'doc_sync',
+                'quality_regression',
+                '--doc-sync-output',
+                'fail',
+                '--quality-manifest',
+                'ok',
+                '--quality-output',
+                'ok',
+                '--allow-regression',
+                '--keep-going',
+                '--output',
+                '-',
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(completed.returncode, 7)
+        self.assertIn('Running stage: doc_sync', completed.stdout)
+        self.assertIn('Running stage: quality_regression', completed.stdout)
+        self.assertIn('Stage failures summary:', completed.stderr)
+        self.assertIn('- doc_sync (exit=7)', completed.stderr)
 
 
 if __name__ == '__main__':

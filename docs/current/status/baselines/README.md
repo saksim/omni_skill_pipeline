@@ -1754,3 +1754,41 @@
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_upsilonnovaverse_hash_for_hold_decision`
 - TP mapping:
   - `scripts/run_tp_tests.py` -> `TP-E13-131`
+
+## TP-E13-132 Release Switch Bulk Release-Phinovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release phinovaverse hash for phinovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index upsilonnovaverse+taunovaverse+multi-posture signatures with one key.
+- Bulk-release-phinovaverse-hash contract:
+  - decision artifact includes `release_phinovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_upsilonnovaverse_sha256/release_taunovaverse_sha256/release_sigmanovaverse_sha256/release_rhonovaverse_sha256/release_pinovaverse_sha256/release_omicronovaverse_sha256/release_xinovaverse_sha256/release_nunovaverse_sha256/release_munovaverse_sha256/release_lambdanovaverse_sha256/release_kappanovaverse_sha256/release_iotanovaverse_sha256/release_thetanovaverse_sha256/release_etanovaverse_sha256/release_zetanovaverse_sha256/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_phinovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_phinovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_phinovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-132`
+
+## TP-E13-133 Release Switch Bulk Release-Chinovaverse Hash
+
+- Validation focus: `bulk_strategy_view` must expose deterministic fixed-width release chinovaverse hash for chinovaverse-grade cross-batch routing/reconciliation so high-volume analytics pipelines can index phinovaverse+upsilonnovaverse+multi-posture signatures with one key.
+- Bulk-release-chinovaverse-hash contract:
+  - decision artifact includes `release_chinovaverse_sha256` and it must equal `sha256` of canonical payload: `schema_version/decision/decision_code/release_phinovaverse_sha256/release_upsilonnovaverse_sha256/release_taunovaverse_sha256/release_sigmanovaverse_sha256/release_rhonovaverse_sha256/release_pinovaverse_sha256/release_omicronovaverse_sha256/release_xinovaverse_sha256/release_nunovaverse_sha256/release_munovaverse_sha256/release_lambdanovaverse_sha256/release_kappanovaverse_sha256/release_iotanovaverse_sha256/release_thetanovaverse_sha256/release_etanovaverse_sha256/release_zetanovaverse_sha256/release_epsilonnovaverse_sha256/release_deltanovaverse_sha256/release_gammanovaverse_sha256/release_betanovaverse_sha256/release_alphanovaverse_sha256/release_omeganovaverse_sha256/release_ultranovaverse_sha256/release_hypernovaverse_sha256/release_supernovaverse_sha256/release_novaverse_sha256/release_neoverse_sha256/release_holoverse_sha256/release_panverse_sha256/release_polyverse_sha256/release_paraverse_sha256/release_metaverse_sha256/release_eraverse_sha256/release_epochverse_sha256/release_aeonverse_sha256/release_timelessverse_sha256/release_eternaverse_sha256/release_infinitaverse_sha256/release_transcendaverse_sha256/release_ultimaverse_sha256/release_apexverse_sha256/release_quettaverse_sha256/release_ronnaverse_sha256/release_yottaverse_sha256/release_zettaverse_sha256/release_exaverse_sha256/release_petaverse_sha256/release_teraverse_sha256/release_gigaverse_sha256/release_megaverse_sha256/release_hyperverse_sha256/release_omniverse_sha256/release_multiverse_sha256/release_universe_sha256/release_galaxy_sha256/release_constellation_sha256/release_beacon_sha256/release_anchor_sha256/release_capsule_sha256/release_lineage_sha256/release_verdict_sha256/release_attestation_sha256/release_root_sha256/release_manifest_sha256/release_fingerprint_sha256/contract_envelope_sha256/strategy_envelope_sha256/gate_status_index_sha256/composite_profile_sha256/domain_rollup_sha256/evidence_profile_sha256/hold_signature_sha256/strategy_signature_sha256/check_enablement.enabled_keys/check_enablement.disabled_keys`
+  - `release_chinovaverse_sha256` is emitted for both `GO` and `HOLD` decisions and must stay 64-char lowercase hex
+  - existing `schema_version=release_switch_bulk_strategy.v2`, component hash fields, and other legacy fields remain intact
+- Added testcase:
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_chinovaverse_hash_for_go_decision`
+  - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_chinovaverse_hash_for_hold_decision`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E13-133`
+
+## TP-E9-01 Similarity Retrieval Hardening
+
+- Validation focus: retrieval input guard and ranking stability for `inmemory` backend.
+- Contract:
+  - `SimilarityQuery` must reject whitespace-only tags when `text` and `domain` are both empty.
+  - `inmemory` ranking should include `step overlap` and `graph overlap` contributions, so structurally richer candidates can win when lexical base scores are close.
+- Added testcase:
+  - `tests/test_similarity_retrieval.py::SimilarityRetrievalTests.test_query_validation_rejects_whitespace_only_tags_without_text_and_domain`
+  - `tests/test_similarity_retrieval.py::SimilarityRetrievalTests.test_inmemory_backend_uses_step_and_graph_overlap_when_lexical_base_ties`
+- TP mapping:
+  - `scripts/run_tp_tests.py` -> `TP-E9-01`

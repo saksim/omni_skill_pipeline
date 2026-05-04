@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import os
+import shlex
 import subprocess
 import sys
 
@@ -17,6 +19,11 @@ def _run(command: list[str]) -> int:
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run the repository CI test checks locally.",
+    )
+    parser.add_argument(
+        "--python",
+        default=sys.executable,
+        help='Python command used to run checks. Supports args, e.g. --python "python3.11".',
     )
     parser.add_argument(
         "--skip-full-suite",
@@ -49,12 +56,21 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip generating coverage XML output.",
     )
+    parser.add_argument(
+        "--keep-going",
+        action="store_true",
+        help="Continue running selected checks after failures and summarize all failed commands.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = _parse_args()
     coverage_enabled = not args.no_coverage
+    python_cmd = shlex.split(args.python, posix=os.name != "nt")
+    if not python_cmd:
+        print("Empty --python command.", file=sys.stderr)
+        return 2
 
     if coverage_enabled and args.skip_full_suite:
         print(
@@ -68,7 +84,7 @@ def main() -> int:
         if coverage_enabled:
             commands.append(
                 [
-                    sys.executable,
+                    *python_cmd,
                     "-m",
                     "coverage",
                     "run",
@@ -83,29 +99,35 @@ def main() -> int:
                 ]
             )
         else:
-            commands.append([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"])
+            commands.append([*python_cmd, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"])
     if not args.skip_tp_suite:
-        commands.append([sys.executable, "scripts/run_tp_tests.py", "--all", "--python", sys.executable])
+        commands.append([*python_cmd, "scripts/run_tp_tests.py", "--all", "--python", args.python])
 
     if not commands:
         print("No CI checks selected.", file=sys.stderr)
         return 2
 
+    failures: list[tuple[str, int]] = []
+
     if coverage_enabled:
-        exit_code = _run([sys.executable, "-m", "coverage", "erase"])
+        exit_code = _run([*python_cmd, "-m", "coverage", "erase"])
         if exit_code != 0:
-            return exit_code
+            failures.append(("coverage_erase", exit_code))
+            if not args.keep_going:
+                return exit_code
 
     for command in commands:
         exit_code = _run(command)
         if exit_code != 0:
-            return exit_code
+            failures.append((" ".join(command), exit_code))
+            if not args.keep_going:
+                return exit_code
 
     if coverage_enabled:
         post_commands: list[list[str]] = [
-            [sys.executable, "-m", "coverage", "combine"],
+            [*python_cmd, "-m", "coverage", "combine"],
             [
-                sys.executable,
+                *python_cmd,
                 "-m",
                 "coverage",
                 "report",
@@ -115,11 +137,18 @@ def main() -> int:
             ],
         ]
         if not args.skip_coverage_xml:
-            post_commands.append([sys.executable, "-m", "coverage", "xml", "-o", args.coverage_xml])
+            post_commands.append([*python_cmd, "-m", "coverage", "xml", "-o", args.coverage_xml])
         for command in post_commands:
             exit_code = _run(command)
             if exit_code != 0:
-                return exit_code
+                failures.append((" ".join(command), exit_code))
+                if not args.keep_going:
+                    return exit_code
+    if failures:
+        print("CI failures summary:", file=sys.stderr)
+        for label, exit_code in failures:
+            print("- %s (exit=%s)" % (label, exit_code), file=sys.stderr)
+        return failures[0][1]
     return 0
 
 

@@ -441,6 +441,14 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
             case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_backend_factory_exposes_pgvector_placeholder",
             description="backend factory 应暴露 pgvector placeholder，保持接口前向兼容。",
         ),
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_query_validation_rejects_whitespace_only_tags_without_text_and_domain",
+            description="SimilarityQuery 仅含空白 tags 且 text/domain 为空时应被拒绝，避免无效检索误入流水线。",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_similarity_retrieval.SimilarityRetrievalTests.test_inmemory_backend_uses_step_and_graph_overlap_when_lexical_base_ties",
+            description="inmemory 检索应在词面基线接近时利用 step/graph overlap 提升结构化语义排序稳定性。",
+        ),
     ],
     "TP-E9-02": [
         TestCaseSpec(
@@ -2020,6 +2028,26 @@ TP_TEST_CASES: dict[str, list[TestCaseSpec]] = {
         TestCaseSpec(
             case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_upsilonnovaverse_hash_for_hold_decision",
             description="release-switch validation script should emit deterministic release-upsilonnovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-132": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_phinovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-phinovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_phinovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-phinovaverse sha256 for HOLD bulk strategy artifacts.",
+        ),
+    ],
+    "TP-E13-133": [
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_chinovaverse_hash_for_go_decision",
+            description="release-switch validation script should emit deterministic release-chinovaverse sha256 for GO bulk strategy artifacts.",
+        ),
+        TestCaseSpec(
+            case_id="tests.test_release_switch_validation_script.ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_chinovaverse_hash_for_hold_decision",
+            description="release-switch validation script should emit deterministic release-chinovaverse sha256 for HOLD bulk strategy artifacts.",
         ),
     ],
 }

@@ -129,6 +129,49 @@ class SimilarityRetrievalTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             backend.search(SimilarityQuery(text='   ', top_k=1))
 
+    def test_query_validation_rejects_whitespace_only_tags_without_text_and_domain(self) -> None:
+        backend = InMemorySimilarityBackend()
+        backend.index(
+            [
+                SkillSearchDocument(
+                    skill_id='skill-any',
+                    name='Any skill',
+                    summary='Any summary',
+                )
+            ]
+        )
+        with self.assertRaises(ValueError):
+            backend.search(SimilarityQuery(text='   ', top_k=1, tags=('   ',)))
+
+    def test_inmemory_backend_uses_step_and_graph_overlap_when_lexical_base_ties(self) -> None:
+        backend = InMemorySimilarityBackend(domain_bonus=0.0, tag_bonus=0.0, step_bonus=0.3, graph_bonus=0.2)
+        backend.index(
+            [
+                SkillSearchDocument(
+                    skill_id='skill-with-structure',
+                    name='Release runbook',
+                    summary='Operational checklist',
+                    step_hints=('verify rollback readiness and canary metrics',),
+                    graph_hints=('if gate fails then rollback immediately',),
+                ),
+                SkillSearchDocument(
+                    skill_id='skill-plain',
+                    name='Release runbook',
+                    summary='Operational checklist',
+                    step_hints=(),
+                    graph_hints=(),
+                ),
+            ]
+        )
+
+        results = backend.search(SimilarityQuery(text='rollback gate verify metrics', top_k=2))
+
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].skill_id, 'skill-with-structure')
+        self.assertGreater(results[0].score, results[1].score)
+        self.assertGreater(results[0].metadata.get('step_score', 0.0), 0.0)
+        self.assertGreater(results[0].metadata.get('graph_score', 0.0), 0.0)
+
 
 if __name__ == '__main__':
     unittest.main()

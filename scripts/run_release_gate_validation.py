@@ -190,6 +190,11 @@ def _parse_args() -> argparse.Namespace:
         help='Print command pack only without running commands.',
     )
     parser.add_argument(
+        '--keep-going',
+        action='store_true',
+        help='Continue after failed release-gate stages and summarize all failures.',
+    )
+    parser.add_argument(
         '--output',
         default=str(DEFAULT_PLAN_OUTPUT),
         help='Write JSON plan/report to this path. Use "-" to skip file writing.',
@@ -242,6 +247,8 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         beta_command.append('--no-coverage')
     if args.allow_regression:
         beta_command.append('--allow-regression')
+    if args.keep_going:
+        beta_command.append('--keep-going')
     if args.container_skip_build:
         beta_command.append('--container-skip-build')
     if args.container_skip_run:
@@ -279,6 +286,8 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         ga_command.append('--allow-secondary-failures')
     if args.calibration_fail_on_mismatch:
         ga_command.append('--calibration-fail-on-mismatch')
+    if args.keep_going:
+        ga_command.append('--keep-going')
 
     roadmap_command = [
         *python_cmd,
@@ -338,16 +347,24 @@ def _write_plan(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
-def _run_stages(stage_specs: list[StageSpec]) -> int:
+def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False) -> int:
+    failures: list[tuple[str, int]] = []
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
         completed = subprocess.run(stage.command, check=False)
         if completed.returncode != 0:
+            failures.append((stage.name, completed.returncode))
             print(
                 'Stage failed: %s (exit=%s)' % (stage.name, completed.returncode),
                 file=sys.stderr,
             )
-            return completed.returncode
+            if not keep_going:
+                return completed.returncode
+    if failures:
+        print('Stage failures summary:', file=sys.stderr)
+        for stage_name, exit_code in failures:
+            print('- %s (exit=%s)' % (stage_name, exit_code), file=sys.stderr)
+        return failures[0][1]
     return 0
 
 
@@ -379,7 +396,7 @@ def main() -> int:
 
     if args.dry_run:
         return 0
-    return _run_stages(stage_specs)
+    return _run_stages(stage_specs, keep_going=bool(args.keep_going))
 
 
 if __name__ == '__main__':

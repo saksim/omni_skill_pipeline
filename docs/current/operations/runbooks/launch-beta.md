@@ -15,6 +15,8 @@
 
 ## Preflight Checklist
 
+> 裸 Linux 且宿主机无 Python 时，优先执行 [Docker Zero-to-Release Runbook](docker-zero-to-release.md)。本手册保留 host Python 命令，是给已有 Python 执行环境的 Beta 快速发布链使用。
+
 发布前必须满足：
 
 - `requirements-dev.txt` 可安装成功。

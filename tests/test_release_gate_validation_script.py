@@ -98,6 +98,7 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
         self.assertIn('--container-timeout-seconds 41.0', completed.stdout)
         self.assertIn('--container-interval-seconds 2.0', completed.stdout)
         self.assertIn('--container-skip-build', completed.stdout)
+        self.assertNotIn('--keep-going', completed.stdout)
         self.assertNotIn('--stages postgres_soak', completed.stdout)
         self.assertNotIn('--stages roadmap_extension', completed.stdout)
 
@@ -151,7 +152,71 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
             self.assertIn('--calibration-report-output %s' % str(report_path.resolve()), completed.stdout)
             self.assertIn('--calibration-margin 0.06', completed.stdout)
             self.assertIn('--calibration-fail-on-mismatch', completed.stdout)
+            self.assertNotIn('--keep-going', completed.stdout)
             self.assertNotIn('--stages ci container_smoke doc_sync', completed.stdout)
+
+    def test_keep_going_is_forwarded_to_nested_linux_suites(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                '--python',
+                'python3',
+                '--stages',
+                'beta_gate',
+                'ga_gate',
+                '--keep-going',
+                '--dry-run',
+                '--output',
+                '-',
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        command_lines = [
+            line
+            for line in completed.stdout.splitlines()
+            if 'scripts/run_linux_validation_suite.py' in line
+        ]
+        self.assertEqual(len(command_lines), 2)
+        for line in command_lines:
+            self.assertIn('--keep-going', line)
+
+    def test_keep_going_runs_later_release_gates_after_failure_and_summarizes_failures(self) -> None:
+        command = (
+            "import sys; print('release-probe'); "
+            "raise SystemExit(9 if sys.argv[-1].endswith('beta') else 0)"
+        )
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                '--python',
+                '%s -c "%s"' % (sys.executable, command),
+                '--stages',
+                'beta_gate',
+                'roadmap_gate',
+                '--beta-suite-output',
+                'beta',
+                '--roadmap-suite-output',
+                'roadmap',
+                '--keep-going',
+                '--output',
+                '-',
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(completed.returncode, 9)
+        self.assertIn('Running stage: beta_gate', completed.stdout)
+        self.assertIn('Running stage: roadmap_gate', completed.stdout)
+        self.assertIn('Stage failures summary:', completed.stderr)
+        self.assertIn('- beta_gate (exit=9)', completed.stderr)
 
 
 if __name__ == '__main__':

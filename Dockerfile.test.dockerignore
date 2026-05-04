@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+coverage.xml
+data/
+examples/
+infra/
+.tmp_omni_media/
+skills/drafts/
+skills/published/

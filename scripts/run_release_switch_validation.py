@@ -542,6 +542,11 @@ def _parse_args() -> argparse.Namespace:
         help='Print command pack without executing stages.',
     )
     parser.add_argument(
+        '--keep-going',
+        action='store_true',
+        help='Continue after failed release-switch stages and summarize all failures.',
+    )
+    parser.add_argument(
         '--output',
         default=str(DEFAULT_PLAN_OUTPUT),
         help='Write command plan JSON to this path. Use "-" to skip file writing.',
@@ -622,6 +627,8 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         release_gate_command.append('--allow-secondary-failures')
     if args.calibration_fail_on_mismatch:
         release_gate_command.append('--calibration-fail-on-mismatch')
+    if args.keep_going:
+        release_gate_command.append('--keep-going')
 
     release_contract_command = [
         *python_cmd,
@@ -686,16 +693,24 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
-def _run_stages(stage_specs: list[StageSpec]) -> int:
+def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False) -> int:
+    failures: list[tuple[str, int]] = []
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
         completed = subprocess.run(stage.command, check=False)
         if completed.returncode != 0:
+            failures.append((stage.name, completed.returncode))
             print(
                 'Stage failed: %s (exit=%s)' % (stage.name, completed.returncode),
                 file=sys.stderr,
             )
-            return completed.returncode
+            if not keep_going:
+                return completed.returncode
+    if failures:
+        print('Stage failures summary:', file=sys.stderr)
+        for stage_name, exit_code in failures:
+            print('- %s (exit=%s)' % (stage_name, exit_code), file=sys.stderr)
+        return failures[0][1]
     return 0
 
 
@@ -9629,6 +9644,26 @@ def _build_bulk_strategy_view(
             separators=(',', ':'),
         ).encode('utf-8')
     ).hexdigest()
+    release_phinovaverse_signature_payload = dict(release_upsilonnovaverse_signature_payload)
+    release_phinovaverse_signature_payload['release_upsilonnovaverse_sha256'] = release_upsilonnovaverse_sha256
+    release_phinovaverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_phinovaverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
+    release_chinovaverse_signature_payload = dict(release_phinovaverse_signature_payload)
+    release_chinovaverse_signature_payload['release_phinovaverse_sha256'] = release_phinovaverse_sha256
+    release_chinovaverse_sha256 = hashlib.sha256(
+        json.dumps(
+            release_chinovaverse_signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        ).encode('utf-8')
+    ).hexdigest()
 
     return {
         'schema_version': 'release_switch_bulk_strategy.v2',
@@ -9705,6 +9740,8 @@ def _build_bulk_strategy_view(
         'release_sigmanovaverse_sha256': release_sigmanovaverse_sha256,
         'release_taunovaverse_sha256': release_taunovaverse_sha256,
         'release_upsilonnovaverse_sha256': release_upsilonnovaverse_sha256,
+        'release_phinovaverse_sha256': release_phinovaverse_sha256,
+        'release_chinovaverse_sha256': release_chinovaverse_sha256,
         'release_neoverse_sha256': release_neoverse_sha256,
         'release_holoverse_sha256': release_holoverse_sha256,
         'release_panverse_sha256': release_panverse_sha256,
@@ -9781,7 +9818,7 @@ def main() -> int:
         if args.dry_run:
             print('Dry-run enabled: command stages are not executed.')
         else:
-            run_code = _run_stages(stage_specs)
+            run_code = _run_stages(stage_specs, keep_going=bool(args.keep_going))
             if run_code != 0:
                 return run_code
 

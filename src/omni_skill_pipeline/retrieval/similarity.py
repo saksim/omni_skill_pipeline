@@ -36,6 +36,8 @@ class SkillSearchDocument:
     summary: str = ''
     domain: str = 'general'
     tags: tuple[str, ...] = field(default_factory=tuple)
+    step_hints: tuple[str, ...] = field(default_factory=tuple)
+    graph_hints: tuple[str, ...] = field(default_factory=tuple)
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -46,17 +48,35 @@ class SkillSearchDocument:
         domain: str = 'general',
         metadata: dict[str, Any] | None = None,
     ) -> 'SkillSearchDocument':
+        step_hints = tuple(
+            '%s %s' % (str(step.action or '').strip(), str(step.why or '').strip())
+            for step in skill.steps
+            if str(step.action or '').strip() or str(step.why or '').strip()
+        )
+        graph_hints = tuple(
+            str(item).strip()
+            for item in [*skill.decision_rules, *skill.anti_patterns, *skill.verification]
+            if str(item).strip()
+        )
         return cls(
             skill_id=skill.skill_id,
             name=skill.name,
             summary=skill.summary,
             domain=domain.strip() or 'general',
             tags=_normalize_tags(skill.tags),
+            step_hints=step_hints,
+            graph_hints=graph_hints,
             metadata=dict(metadata or {}),
         )
 
     def tokenized_text(self) -> set[str]:
         return _tokenize('%s %s' % (self.name, self.summary))
+
+    def tokenized_steps(self) -> set[str]:
+        return _tokenize(' '.join(self.step_hints))
+
+    def tokenized_graph(self) -> set[str]:
+        return _tokenize(' '.join(self.graph_hints))
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,7 +92,7 @@ class SimilarityQuery:
     def validate(self) -> None:
         if self.top_k < 1:
             raise ValueError('SimilarityQuery.top_k must be >= 1.')
-        if not self.text.strip() and not self.domain.strip() and not self.tags:
+        if not self.text.strip() and not self.domain.strip() and not self.normalized_tags():
             raise ValueError('SimilarityQuery requires text, domain, or tags.')
 
 
@@ -107,13 +127,25 @@ class InMemorySimilarityBackend(SimilarityBackend):
         *,
         domain_bonus: float = 0.15,
         tag_bonus: float = 0.1,
+        step_bonus: float = 0.2,
+        graph_bonus: float = 0.15,
     ) -> None:
         self.domain_bonus = float(domain_bonus)
         self.tag_bonus = float(tag_bonus)
-        self._indexed: list[tuple[SkillSearchDocument, set[str]]] = []
+        self.step_bonus = float(step_bonus)
+        self.graph_bonus = float(graph_bonus)
+        self._indexed: list[tuple[SkillSearchDocument, set[str], set[str], set[str]]] = []
 
     def index(self, documents: Sequence[SkillSearchDocument]) -> None:
-        self._indexed = [(item, item.tokenized_text()) for item in documents]
+        self._indexed = [
+            (
+                item,
+                item.tokenized_text(),
+                item.tokenized_steps(),
+                item.tokenized_graph(),
+            )
+            for item in documents
+        ]
 
     def search(self, query: SimilarityQuery) -> list[SimilarityResult]:
         query.validate()
@@ -125,11 +157,13 @@ class InMemorySimilarityBackend(SimilarityBackend):
         query_tags = set(query.normalized_tags())
         ranked: list[SimilarityResult] = []
 
-        for document, document_tokens in self._indexed:
-            base_score = self._jaccard(query_tokens, document_tokens)
+        for document, text_tokens, step_tokens, graph_tokens in self._indexed:
+            base_score = self._jaccard(query_tokens, text_tokens)
+            step_score = self._component_score(query_tokens, step_tokens, self.step_bonus)
+            graph_score = self._component_score(query_tokens, graph_tokens, self.graph_bonus)
             domain_score = self._domain_score(query_domain, document.domain)
             tag_score, matched_tags = self._tag_score(query_tags, document.tags)
-            total_score = _clamp_score(base_score + domain_score + tag_score)
+            total_score = _clamp_score(base_score + step_score + graph_score + domain_score + tag_score)
             if total_score <= 0:
                 continue
             ranked.append(
@@ -142,6 +176,8 @@ class InMemorySimilarityBackend(SimilarityBackend):
                         'domain': document.domain,
                         'tags': list(document.tags),
                         'base_score': round(base_score, 4),
+                        'step_score': round(step_score, 4),
+                        'graph_score': round(graph_score, 4),
                         'domain_score': round(domain_score, 4),
                         'tag_score': round(tag_score, 4),
                         'matched_tags': matched_tags,
@@ -165,6 +201,11 @@ class InMemorySimilarityBackend(SimilarityBackend):
         if not query_domain:
             return 0.0
         return self.domain_bonus if query_domain == document_domain.strip().lower() else 0.0
+
+    def _component_score(self, query_tokens: set[str], document_tokens: set[str], weight: float) -> float:
+        if weight <= 0:
+            return 0.0
+        return float(weight) * self._jaccard(query_tokens, document_tokens)
 
     def _tag_score(self, query_tags: set[str], document_tags: Sequence[str]) -> tuple[float, list[str]]:
         if not query_tags:

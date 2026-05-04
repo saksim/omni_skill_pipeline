@@ -272,6 +272,8 @@ Batch G: E10 + E11 + E12 + E13
 | `TP-E13-129` | E13 | Release switch 批量测算发布拾捌耀新星宇宙哈希固化 | `scripts/run_release_switch_validation.py`, `tests/test_release_switch_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-128` | 脚本 smoke 测试 | Linux 判定输出 `release_sigmanovaverse_sha256`，支持极速路由、对账与去重 |
 | `TP-E13-130` | E13 | Release switch 批量测算发布拾玖耀新星宇宙哈希固化 | `scripts/run_release_switch_validation.py`, `tests/test_release_switch_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-129` | 脚本 smoke 测试 | Linux 判定输出 `release_taunovaverse_sha256`，支持极速路由、对账与去重 |
 | `TP-E13-131` | E13 | Release switch 批量测算发布贰拾耀新星宇宙哈希固化 | `scripts/run_release_switch_validation.py`, `tests/test_release_switch_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-130` | 脚本 smoke 测试 | Linux 判定输出 `release_upsilonnovaverse_sha256`，支持极速路由、对账与去重 |
+| `TP-E13-132` | E13 | Release switch 批量测算发布贰拾壹耀新星宇宙哈希固化 | `scripts/run_release_switch_validation.py`, `tests/test_release_switch_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-131` | 脚本 smoke 测试 | Linux 判定输出 `release_phinovaverse_sha256`，支持极速路由、对账与去重 |
+| `TP-E13-133` | E13 | Release switch 批量测算发布贰拾贰耀新星宇宙哈希固化 | `scripts/run_release_switch_validation.py`, `tests/test_release_switch_validation_script.py`, `scripts/run_tp_tests.py`, `docs/current/operations/testing.md` | `TP-E13-132` | 脚本 smoke 测试 | Linux 判定输出 `release_chinovaverse_sha256`，支持极速路由、对账与去重 |
 
 ## 5. 近战优先级
 
