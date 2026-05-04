@@ -10,6 +10,7 @@ RUNBOOK_PATH = (
 )
 TEST_DOCKERFILE_PATH = REPO_ROOT / "Dockerfile.test"
 TEST_DOCKERIGNORE_PATH = REPO_ROOT / "Dockerfile.test.dockerignore"
+ROOT_DOCKERIGNORE_PATH = REPO_ROOT / ".dockerignore"
 
 
 class DockerZeroToReleaseRunbookTests(unittest.TestCase):
@@ -62,9 +63,11 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
             TEST_DOCKERIGNORE_PATH.exists(),
             "Dockerfile.test.dockerignore is missing",
         )
+        self.assertTrue(ROOT_DOCKERIGNORE_PATH.exists(), ".dockerignore is missing")
 
         dockerfile = TEST_DOCKERFILE_PATH.read_text(encoding="utf-8")
         dockerignore = TEST_DOCKERIGNORE_PATH.read_text(encoding="utf-8")
+        root_dockerignore = ROOT_DOCKERIGNORE_PATH.read_text(encoding="utf-8")
 
         self.assertIn("FROM python:3.11-slim", dockerfile)
         self.assertIn("COPY Dockerfile Dockerfile.test Dockerfile.test.dockerignore .dockerignore ./", dockerfile)
@@ -72,6 +75,10 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
         self.assertIn("COPY scripts ./scripts", dockerfile)
         self.assertIn("docker.io", dockerfile)
         self.assertNotIn("tests/", dockerignore)
+        self.assertIn("tests/", root_dockerignore)
+        self.assertIn("!tests/", root_dockerignore)
+        self.assertIn("!tests/**", root_dockerignore)
+        self.assertIn("tests/.tmp_runtime/", root_dockerignore)
 
 
 if __name__ == "__main__":

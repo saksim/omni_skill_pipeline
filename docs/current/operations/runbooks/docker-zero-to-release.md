@@ -70,6 +70,11 @@ cd omni-skill-pipeline
 - `tests/`
 - `docs/`
 
+兼容说明：
+
+- 根 `.dockerignore` 已显式 re-include `tests/`，用于兼容不支持 `Dockerfile.test.dockerignore` 的旧 Docker Engine。
+- 运行镜像仍不会把 `tests/` 打进最终 image，因为 `Dockerfile` 没有 `COPY tests`；只是 build context 会包含测试目录。
+
 ## Image Build
 
 先构建测试镜像，测试镜像包含 dev 依赖、测试脚本、测试用例和 Docker CLI：
