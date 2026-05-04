@@ -21,6 +21,6 @@ COPY tests ./tests
 COPY .env.example ./.env.example
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install -r requirements-dev.txt
+    && python -m pip install -r requirements-dev.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 CMD ["python", "scripts/run_ci.py", "--python", "python3", "--keep-going"]
