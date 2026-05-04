@@ -87,8 +87,67 @@ docker run --rm omni-skill-pipeline:test python --version
 再构建运行镜像，运行镜像不包含 `tests/`，保持生产镜像收敛：
 
 ```bash
-docker build -t omni-skill-pipeline:beta .
+RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta .
 ```
+
+## Packaging Artifacts
+
+这一步用于给未来其他内网机器打地基：同一批次同时交付源码 tar、测试镜像 tar、运行镜像 tar 和校验摘要。内网机器可以只 `docker load` 镜像上线，也可以解开源码 tar 后按同一份 runbook 重新构建。
+
+在构建机执行：
+
+```bash
+RELEASE_ID="${RELEASE_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
+ARTIFACT_DIR="$PWD/../omni-skill-pipeline-release-${RELEASE_ID}"
+mkdir -p "$ARTIFACT_DIR"
+
+tar -czf "$ARTIFACT_DIR/omni-skill-pipeline-source-${RELEASE_ID}.tar.gz" \
+  --exclude='.git' \
+  --exclude='.venv' \
+  --exclude='__pycache__' \
+  --exclude='.pytest_cache' \
+  --exclude='.coverage' \
+  --exclude='coverage.xml' \
+  --exclude='.tmp_omni_media' \
+  --exclude='skills/drafts' \
+  --exclude='skills/published' \
+  .
+
+docker save "omni-skill-pipeline:${RELEASE_ID}" omni-skill-pipeline:beta \
+  -o "$ARTIFACT_DIR/omni-skill-pipeline-runtime-${RELEASE_ID}.image.tar"
+docker save omni-skill-pipeline:test \
+  -o "$ARTIFACT_DIR/omni-skill-pipeline-test-${RELEASE_ID}.image.tar"
+
+sha256sum "$ARTIFACT_DIR"/* > "$ARTIFACT_DIR/SHA256SUMS"
+```
+
+交付包内容：
+
+| Artifact | 用途 | 是否含密钥 |
+| --- | --- | --- |
+| `omni-skill-pipeline-source-<release_id>.tar.gz` | 内网机器复建源码与审计 | 否 |
+| `omni-skill-pipeline-runtime-<release_id>.image.tar` | 离线导入运行镜像 | 否 |
+| `omni-skill-pipeline-test-<release_id>.image.tar` | 离线导入测试镜像并执行脚本 | 否 |
+| `SHA256SUMS` | 校验交付包未损坏/未被替换 | 否 |
+
+内网机器导入：
+
+```bash
+cd omni-skill-pipeline-release-<release_id>
+sha256sum -c SHA256SUMS
+docker load -i omni-skill-pipeline-runtime-<release_id>.image.tar
+docker load -i omni-skill-pipeline-test-<release_id>.image.tar
+mkdir -p /opt/omni-skill-pipeline
+tar -xzf omni-skill-pipeline-source-<release_id>.tar.gz -C /opt/omni-skill-pipeline
+cd /opt/omni-skill-pipeline
+```
+
+判定：
+
+- `sha256sum -c SHA256SUMS` 必须通过。
+- `docker images | grep omni-skill-pipeline` 能看到 runtime/test 镜像。
+- `.env.runtime` 不进入 tar 包；只在目标机器单独创建。
 
 ## Docker-Only Test Gate
 
@@ -202,6 +261,83 @@ docker rm -f omni-release-gate
 - `scripts/run_release_switch_validation.py --python python3 --keep-going` 给出 `GO`，或发布负责人明确接受 `HOLD` 风险但不得称为正式通过。
 - `curl -fsS http://127.0.0.1:18000/healthz` 通过容器烟测。
 
+## Code Update Rebuild
+
+每次更新代码后，不复用旧镜像直接上线。更新链必须是：拿新代码 -> 重建测试镜像 -> 重建运行镜像 -> 重跑门禁 -> 重新打包 -> 再部署。
+
+### 1. 有 git 的机器
+
+```bash
+git fetch --all --tags
+git status --short
+git pull --ff-only
+```
+
+如果 `git status --short` 存在未提交改动，先停止更新，确认这些改动是否应纳入发布包。
+
+### 2. 无 git 的内网机器
+
+```bash
+mkdir -p /opt/omni-skill-pipeline-next
+tar -xzf omni-skill-pipeline-source-<new_release_id>.tar.gz -C /opt/omni-skill-pipeline-next
+cd /opt/omni-skill-pipeline-next
+```
+
+### 3. 重建镜像
+
+联网构建机可拉取最新 base image：
+
+```bash
+RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+docker build --pull -f Dockerfile.test -t omni-skill-pipeline:test .
+docker build --pull -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta .
+```
+
+离线内网机器不能访问外网时，去掉 `--pull`，并确保已通过 `docker load` 导入 `python:3.11-slim` 或上一批次基础镜像：
+
+```bash
+RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+docker build -f Dockerfile.test -t omni-skill-pipeline:test .
+docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta .
+```
+
+### 4. 重跑门禁并切换
+
+```bash
+docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --coverage-fail-under 50
+docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag "omni-skill-pipeline:${RELEASE_ID}"
+
+PREVIOUS_IMAGE="$(docker inspect --format '{{.Config.Image}}' omni-skill-beta 2>/dev/null || true)"
+printf '%s\n' "$PREVIOUS_IMAGE" > release.previous
+
+docker rm -f omni-skill-beta 2>/dev/null || true
+docker run --rm -d \
+  --name omni-skill-beta \
+  -p 8000:8000 \
+  --env-file .env.runtime \
+  -v omni_skill_drafts:/app/skills/drafts \
+  -v omni_skill_published:/app/skills/published \
+  -v omni_skill_tmp_media:/app/.tmp_omni_media \
+  "omni-skill-pipeline:${RELEASE_ID}"
+
+curl -fsS http://127.0.0.1:8000/healthz
+docker tag "omni-skill-pipeline:${RELEASE_ID}" omni-skill-pipeline:stable
+```
+
+如果验收失败：
+
+```bash
+FAILED_IMAGE="omni-skill-pipeline:${RELEASE_ID}"
+PREVIOUS_IMAGE="$(cat release.previous)"
+docker logs --tail 300 omni-skill-beta > "failed-${RELEASE_ID}.log"
+docker rm -f omni-skill-beta
+docker run --rm -d --name omni-skill-beta -p 8000:8000 --env-file .env.runtime "$PREVIOUS_IMAGE"
+curl -fsS http://127.0.0.1:8000/healthz
+docker image inspect "$FAILED_IMAGE" >/dev/null
+```
+
+失败镜像先保留，不立即删除，便于复盘。
+
 ## Deploy
 
 准备运行环境文件，文件只留在宿主机：
@@ -309,17 +445,47 @@ docker run --rm -d \
 curl -fsS http://127.0.0.1:8000/healthz
 ```
 
+## Common Release Scenarios
+
+| 场景 | 入口 | 必做动作 | 禁止动作 |
+| --- | --- | --- | --- |
+| 首次上线 | 源码目录或源码 tar | build test/runtime -> test gate -> deploy -> acceptance | 跳过 Release Switch |
+| 代码更新 | git pull 或新源码 tar | Code Update Rebuild 全链执行 | 复用旧镜像 tag 冒充新版本 |
+| 配置更新 | `.env.runtime` 变化 | 不重建镜像，只重建容器并验收 | 把密钥写入 Dockerfile |
+| 内网离线部署 | image tar + source tar | `sha256sum -c` -> `docker load` -> deploy -> acceptance | 目标机临时装 Python |
+| 内网离线复建 | source tar + base image | `docker load` base image -> docker build -> test gate | 省略测试镜像 |
+| 回滚 | `release.previous` 或 stable tag | 收集 logs -> `docker rm -f` -> run previous image -> healthz | 删除失败镜像证据 |
+| 多机器分发 | release artifact directory | 同一 `RELEASE_ID`、同一 `SHA256SUMS`、同一 image tar | 每台机器各自生成不同包 |
+
+配置更新只需要重建容器：
+
+```bash
+docker rm -f omni-skill-beta
+docker run --rm -d \
+  --name omni-skill-beta \
+  -p 8000:8000 \
+  --env-file .env.runtime \
+  -v omni_skill_drafts:/app/skills/drafts \
+  -v omni_skill_published:/app/skills/published \
+  -v omni_skill_tmp_media:/app/.tmp_omni_media \
+  omni-skill-pipeline:stable
+curl -fsS http://127.0.0.1:8000/healthz
+```
+
 ## From Zero Checklist
 
 1. 拿到源码：`git clone` 或 `tar -xzf`。
 2. 确认宿主 Docker：`docker ps`。
 3. 构建测试镜像：`docker build -f Dockerfile.test -t omni-skill-pipeline:test .`。
 4. 确认容器 Python 版本：`docker run --rm omni-skill-pipeline:test python --version`。
-5. 构建运行镜像：`docker build -t omni-skill-pipeline:beta .`。
-6. 执行最小 CI：`docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --coverage-fail-under 50`。
-7. 执行容器烟测：`docker run --rm -d --name omni-skill-pipeline-smoke -p 18000:8000 omni-skill-pipeline:beta` 后 `curl -fsS http://127.0.0.1:18000/healthz`。
-8. 执行分模块 Linux 验证：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_linux_validation_suite.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
-9. 执行 Release Switch 总闸：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
-10. 结果为 `GO` 后写 `.env.runtime`，启动 `omni-skill-beta`。
-11. 执行 `/healthz`、template、鉴权、核心 distill happy path 验收。
-12. 巡检 `docker logs`，异常则 `docker rm -f omni-skill-beta` 并回滚到 `omni-skill-pipeline:stable`。
+5. 设置 `RELEASE_ID`，构建运行镜像：`docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta .`。
+6. 打交付包：`tar -czf` 源码包、`docker save` 镜像包、`sha256sum` 生成摘要。
+7. 内网机器导入：`sha256sum -c SHA256SUMS`、`docker load -i ...image.tar`、`tar -xzf ...source...tar.gz`。
+8. 执行最小 CI：`docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --coverage-fail-under 50`。
+9. 执行容器烟测：`docker run --rm -d --name omni-skill-pipeline-smoke -p 18000:8000 omni-skill-pipeline:beta` 后 `curl -fsS http://127.0.0.1:18000/healthz`。
+10. 执行分模块 Linux 验证：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_linux_validation_suite.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
+11. 执行 Release Switch 总闸：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
+12. 结果为 `GO` 后写 `.env.runtime`，启动 `omni-skill-beta`。
+13. 执行 `/healthz`、template、鉴权、核心 distill happy path 验收。
+14. 代码更新时执行 `Code Update Rebuild`，配置更新时只重建容器。
+15. 巡检 `docker logs`，异常则 `docker rm -f omni-skill-beta` 并回滚到 `release.previous` 或 `omni-skill-pipeline:stable`。

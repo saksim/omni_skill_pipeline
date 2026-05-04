@@ -184,6 +184,16 @@ docker build -f Dockerfile.test -t omni-skill-pipeline:test .
 docker build -t omni-skill-pipeline:beta .
 ```
 
+## Packaging Artifacts
+
+```bash
+tar -czf omni-skill-pipeline-source-release.tar.gz .
+docker save omni-skill-pipeline:beta -o omni-skill-pipeline-runtime-release.image.tar
+docker save omni-skill-pipeline:test -o omni-skill-pipeline-test-release.image.tar
+sha256sum -c SHA256SUMS
+docker load -i omni-skill-pipeline-runtime-release.image.tar
+```
+
 ## Docker-Only Test Gate
 
 ```bash
@@ -196,6 +206,14 @@ docker cp omni-release-gate:/app/docs/current/status/baselines ./baselines-from-
 ## Release Decision
 
 GO can continue; HOLD blocks production promotion.
+
+## Code Update Rebuild
+
+```bash
+git pull --ff-only
+docker build --pull -f Dockerfile.test -t omni-skill-pipeline:test .
+docker tag "omni-skill-pipeline:${RELEASE_ID}" omni-skill-pipeline:stable
+```
 
 ## Deploy
 
@@ -221,9 +239,13 @@ docker logs --tail 300 omni-skill-beta
 docker rm -f omni-skill-beta
 ```
 
+## Common Release Scenarios
+
+Common Release Scenarios include first deploy, code update, config update, offline deploy, rebuild, rollback.
+
 ## From Zero Checklist
 
-Build test image, run test gate, deploy runtime image, verify, then rollback if needed.
+Build test image, package artifacts, docker load image tar, run test gate, deploy runtime image, verify, then rollback if needed.
 """
 VALID_API_OPS_CONTRACT_DOC = """## Health / Readiness
 

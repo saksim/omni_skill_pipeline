@@ -12,7 +12,7 @@ COPY apps ./apps
 COPY docs/current/contracts ./docs/current/contracts
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install .[api] \
+    && python -m pip install .[api] -i https://pypi.tuna.tsinghua.edu.cn/simple \
     && mkdir -p /app/skills/drafts /app/skills/published
 
 EXPOSE 8000

@@ -23,12 +23,15 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
             "## Host Assumptions",
             "## Python Contract",
             "## Image Build",
+            "## Packaging Artifacts",
             "## Docker-Only Test Gate",
             "## Release Decision",
+            "## Code Update Rebuild",
             "## Deploy",
             "## Acceptance",
             "## Observability",
             "## Rollback",
+            "## Common Release Scenarios",
             "## From Zero Checklist",
         ]
         for heading in required_headings:
@@ -43,6 +46,12 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
             "docker build -f Dockerfile.test -t omni-skill-pipeline:test .",
             "docker build -t omni-skill-pipeline:beta .",
             "docker exec omni-skill-beta python --version",
+            "docker save",
+            "docker load -i",
+            "sha256sum -c SHA256SUMS",
+            "git pull --ff-only",
+            "Code Update Rebuild",
+            "Common Release Scenarios",
         ]
         for marker in required_markers:
             self.assertIn(marker, content, "Missing marker: %s" % marker)
