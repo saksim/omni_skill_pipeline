@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 import time
@@ -36,7 +37,11 @@ class SmokeConfig:
 
 def _run(command: list[str]) -> int:
     print("Command: %s" % " ".join(command))
-    completed = subprocess.run(command, check=False)
+    try:
+        completed = subprocess.run(command, check=False)
+    except FileNotFoundError:
+        print("Docker CLI not found in PATH.", file=sys.stderr)
+        return 127
     return completed.returncode
 
 
@@ -117,6 +122,10 @@ def _print_plan(config: SmokeConfig) -> None:
         print("Plan: docker rm -f %s" % config.container_name)
 
 
+def _docker_available() -> bool:
+    return shutil.which("docker") is not None
+
+
 def main() -> int:
     config = _to_config(_build_args())
     if config.skip_build and config.skip_run:
@@ -126,6 +135,13 @@ def main() -> int:
     _print_plan(config)
     if config.dry_run:
         return 0
+
+    if not _docker_available():
+        print(
+            "Docker CLI not found in PATH. Install docker client in this environment or run this stage on host with docker available.",
+            file=sys.stderr,
+        )
+        return 127
 
     if not config.skip_build:
         exit_code = _run(["docker", "build", "-t", config.image_tag, "."])

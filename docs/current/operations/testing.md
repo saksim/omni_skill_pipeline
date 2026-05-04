@@ -32,7 +32,8 @@ python scripts/run_ci.py
 
 该入口会统一执行：
 
-- `python -m coverage run --parallel-mode -m unittest discover -s tests -p 'test_*.py'`
+- Docker 容器内默认按 `tests/test_*.py` 逐文件隔离执行，宿主环境默认使用 `unittest discover`
+- `python -m coverage run --parallel-mode -m unittest discover -s tests -p 'test_*.py'`（宿主默认）
 - `python scripts/run_tp_tests.py --all --python <current-python>`
 - `python -m coverage combine`
 - `python -m coverage report --show-missing --fail-under <threshold>`
@@ -50,6 +51,18 @@ python scripts/run_ci.py --coverage-fail-under 65
 
 ```bash
 python scripts/run_ci.py --no-coverage
+```
+
+示例：Docker/Linux 下按文件隔离定位，避免单个大进程被 SIGKILL 后失去具体失败面：
+
+```bash
+python scripts/run_ci.py --keep-going --isolate-test-files
+```
+
+示例：只定位 API 相关文件，不跑 TP 套件：
+
+```bash
+python scripts/run_ci.py --no-coverage --keep-going --isolate-test-files --test-pattern 'test_api_*.py' --skip-tp-suite
 ```
 
 ## 容器烟测脚本
@@ -618,6 +631,14 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
 - Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_arena_max_env_gate` to assert `--skip-release-gate-malloc-arena-max-env-check` disables the gate for emergency recovery.
 - Added `TP-E13-51` mapping in `scripts/run_tp_tests.py`.
 - Linux decision-only with malloc-arena-max-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_ARENA_MAX=8 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-52 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with release-gate malloc-mmap-threshold-env gate: decision now rejects `MALLOC_MMAP_THRESHOLD_=*` assignments in stage launchers and `--python` relay values before allowing `GO`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_holds_when_release_gate_stage_uses_malloc_mmap_threshold_env_assignment` to assert `MALLOC_MMAP_THRESHOLD_` env assignments force `HOLD`.
+- Added `tests/test_release_switch_validation_script.py::test_script_decision_only_can_disable_release_gate_malloc_mmap_threshold_env_gate` to assert `--skip-release-gate-malloc-mmap-threshold-env-check` disables the gate for emergency recovery.
+- Added `TP-E13-52` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only with malloc-mmap-threshold-env gate example: `python scripts/run_release_switch_validation.py --decision-only --python "env MALLOC_MMAP_THRESHOLD_=131072 python3" --doc-sync-report docs/current/status/baselines/e13-doc-sync-check-report.json --quality-report docs/current/status/baselines/e11-quality-regression-report.json --perf-report docs/current/status/baselines/e11-perf-cost-baseline-report.json --postgres-soak-benchmark-report docs/current/status/baselines/e13-postgres-soak-benchmark-report.json --beta-suite-output docs/current/status/baselines/e13-release-gate-beta-suite-plan.json --ga-suite-output docs/current/status/baselines/e13-release-gate-ga-suite-plan.json --roadmap-suite-output docs/current/status/baselines/e13-release-gate-roadmap-suite-plan.json --release-gate-output docs/current/status/baselines/e13-release-gate-validation-plan.json --decision-output docs/current/status/baselines/e13-release-switch-decision-report.json`.
 
 ## TP-E13-53 Additions
 

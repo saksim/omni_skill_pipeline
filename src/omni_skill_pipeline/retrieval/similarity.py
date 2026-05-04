@@ -164,8 +164,6 @@ class InMemorySimilarityBackend(SimilarityBackend):
             domain_score = self._domain_score(query_domain, document.domain)
             tag_score, matched_tags = self._tag_score(query_tags, document.tags)
             total_score = _clamp_score(base_score + step_score + graph_score + domain_score + tag_score)
-            if total_score <= 0:
-                continue
             ranked.append(
                 SimilarityResult(
                     skill_id=document.skill_id,
@@ -186,7 +184,13 @@ class InMemorySimilarityBackend(SimilarityBackend):
             )
 
         ranked.sort(key=lambda item: (-item.score, item.skill_id))
-        return ranked[: query.top_k]
+        positive_ranked = [item for item in ranked if item.score > 0]
+        if not positive_ranked:
+            return []
+        if len(positive_ranked) >= query.top_k:
+            return positive_ranked[: query.top_k]
+        zero_fillers = [item for item in ranked if item.score <= 0]
+        return [*positive_ranked, *zero_fillers[: query.top_k - len(positive_ranked)]]
 
     def _jaccard(self, query_tokens: set[str], document_tokens: set[str]) -> float:
         if not query_tokens or not document_tokens:

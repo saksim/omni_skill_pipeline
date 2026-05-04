@@ -197,7 +197,7 @@ docker load -i omni-skill-pipeline-runtime-release.image.tar
 ## Docker-Only Test Gate
 
 ```bash
-docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going
+docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --isolate-test-files
 docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_linux_validation_suite.py --python python3 --keep-going
 docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going
 docker cp omni-release-gate:/app/docs/current/status/baselines ./baselines-from-container

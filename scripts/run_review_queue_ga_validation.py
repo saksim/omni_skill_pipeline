@@ -17,7 +17,7 @@ DEFAULT_PLAN_OUTPUT = (
 )
 DEFAULT_STAGES = (
     'review_queue_repository',
-    'review_queue_service',
+    'review_queue_service_flow',
     'review_queue_api',
     'review_feedback',
     'review_feedback_consumer',
@@ -85,14 +85,14 @@ def _build_stage_map(*, python_cmd: list[str]) -> dict[str, StageSpec]:
                 'tests.test_review_queue_repository.ReviewQueueRepositoryTests',
             ],
         ),
-        'review_queue_service': StageSpec(
-            name='review_queue_service',
+        'review_queue_service_flow': StageSpec(
+            name='review_queue_service_flow',
             description='Validate review queue service integration transitions and snapshots.',
             command=[
                 *python_cmd,
                 '-m',
                 'unittest',
-                'tests.test_review_queue_integration.ReviewQueueIntegrationTests',
+                'tests.test_review_queue_integration.ReviewQueueIntegrationTests.test_service_review_required_flow_persists_queryable_review_queue',
             ],
         ),
         'review_queue_api': StageSpec(

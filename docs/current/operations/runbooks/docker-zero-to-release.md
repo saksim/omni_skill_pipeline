@@ -157,13 +157,29 @@ cd /opt/omni-skill-pipeline
 docker run --rm \
   -v "$PWD/docs/current/status/baselines:/app/docs/current/status/baselines" \
   omni-skill-pipeline:test \
-  python scripts/run_ci.py --python python3 --keep-going --coverage-fail-under 50 --coverage-xml docs/current/status/baselines/coverage.xml
+  python scripts/run_ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50 --coverage-xml docs/current/status/baselines/coverage.xml
 ```
 
 判定：
 
+- Docker 容器内会默认按 `tests/test_*.py` 逐文件隔离执行，避免单个全量 unittest 进程过大被 SIGKILL 后看不到具体失败文件。
 - 失败时不要只看最后一条错误，`--keep-going` 会继续执行后续模块并汇总失败模块。
+- 若看到 `exit=-9`，优先判定为容器进程被系统杀掉，先重跑隔离命令或提高 Docker memory；不要把后续 `No data to combine/report` 当根因。
 - 产物优先看 `docs/current/status/baselines/coverage.xml` 与终端 summary。
+
+若要进一步压缩定位范围：
+
+```bash
+docker run --rm omni-skill-pipeline:test \
+  python scripts/run_ci.py --python python3 --keep-going --no-coverage --isolate-test-files --test-pattern 'test_api_*.py' --skip-tp-suite
+```
+
+若首次结果出现 `FAILED (failures=..., errors=...)`，下一步先跑无 coverage 的隔离定位，输出会按单个 test file 汇总失败：
+
+```bash
+docker run --rm omni-skill-pipeline:test \
+  python scripts/run_ci.py --python python3 --keep-going --no-coverage --isolate-test-files --skip-tp-suite
+```
 
 ### 2. 容器烟测
 
@@ -256,7 +272,7 @@ docker rm -f omni-release-gate
 
 - 测试镜像可构建，`python --version` 为 Python 3.11.x。
 - 运行镜像 `docker build -t omni-skill-pipeline:beta .` 成功。
-- `scripts/run_ci.py --python python3 --keep-going` 无阻断失败。
+- `scripts/run_ci.py --python python3 --keep-going --isolate-test-files` 无阻断失败。
 - `scripts/run_linux_validation_suite.py --python python3 --keep-going` 输出可归因的模块结果。
 - `scripts/run_release_switch_validation.py --python python3 --keep-going` 给出 `GO`，或发布负责人明确接受 `HOLD` 风险但不得称为正式通过。
 - `curl -fsS http://127.0.0.1:18000/healthz` 通过容器烟测。
@@ -304,7 +320,7 @@ docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta 
 ### 4. 重跑门禁并切换
 
 ```bash
-docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --coverage-fail-under 50
+docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50
 docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag "omni-skill-pipeline:${RELEASE_ID}"
 
 PREVIOUS_IMAGE="$(docker inspect --format '{{.Config.Image}}' omni-skill-beta 2>/dev/null || true)"
@@ -481,7 +497,7 @@ curl -fsS http://127.0.0.1:8000/healthz
 5. 设置 `RELEASE_ID`，构建运行镜像：`docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta .`。
 6. 打交付包：`tar -czf` 源码包、`docker save` 镜像包、`sha256sum` 生成摘要。
 7. 内网机器导入：`sha256sum -c SHA256SUMS`、`docker load -i ...image.tar`、`tar -xzf ...source...tar.gz`。
-8. 执行最小 CI：`docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --coverage-fail-under 50`。
+8. 执行最小 CI：`docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50`。
 9. 执行容器烟测：`docker run --rm -d --name omni-skill-pipeline-smoke -p 18000:8000 omni-skill-pipeline:beta` 后 `curl -fsS http://127.0.0.1:18000/healthz`。
 10. 执行分模块 Linux 验证：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_linux_validation_suite.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
 11. 执行 Release Switch 总闸：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。

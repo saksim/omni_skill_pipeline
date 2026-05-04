@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import unittest
@@ -48,6 +49,29 @@ class ContainerSmokeScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 2)
         self.assertIn("No smoke actions selected.", completed.stderr)
+
+    def test_missing_docker_cli_returns_clear_error(self) -> None:
+        env = os.environ.copy()
+        env["PATH"] = ""
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "scripts/run_container_smoke.py",
+                "--image-tag",
+                "omni:test",
+                "--container-name",
+                "omni-smoke",
+                "--port",
+                "18080",
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        self.assertEqual(completed.returncode, 127)
+        self.assertIn("Docker CLI not found in PATH", completed.stderr)
 
 
 if __name__ == "__main__":

@@ -33,11 +33,11 @@ class ReviewQueueGaValidationScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn(
-                'Selected stages: review_queue_repository, review_queue_service, review_queue_api, review_feedback, review_feedback_consumer',
+                'Selected stages: review_queue_repository, review_queue_service_flow, review_queue_api, review_feedback, review_feedback_consumer',
                 completed.stdout,
             )
             self.assertIn('tests.test_review_queue_repository.ReviewQueueRepositoryTests', completed.stdout)
-            self.assertIn('tests.test_review_queue_integration.ReviewQueueIntegrationTests', completed.stdout)
+            self.assertIn('tests.test_review_queue_integration.ReviewQueueIntegrationTests.test_service_review_required_flow_persists_queryable_review_queue', completed.stdout)
             self.assertIn('tests.test_api_review_queue.ApiReviewQueueEndpointTests', completed.stdout)
             self.assertIn('tests.test_review_feedback.ReviewFeedbackEngineTests', completed.stdout)
             self.assertIn('tests.test_review_feedback_consumer.ReviewFeedbackConsumerTests', completed.stdout)
@@ -48,7 +48,7 @@ class ReviewQueueGaValidationScriptTests(unittest.TestCase):
                 [item.get('name') for item in report.get('stages', [])],
                 [
                     'review_queue_repository',
-                    'review_queue_service',
+                    'review_queue_service_flow',
                     'review_queue_api',
                     'review_feedback',
                     'review_feedback_consumer',
@@ -79,7 +79,7 @@ class ReviewQueueGaValidationScriptTests(unittest.TestCase):
         self.assertIn('tests.test_api_review_queue.ApiReviewQueueEndpointTests', completed.stdout)
         self.assertIn('tests.test_review_feedback_consumer.ReviewFeedbackConsumerTests', completed.stdout)
         self.assertNotIn('tests.test_review_queue_repository.ReviewQueueRepositoryTests', completed.stdout)
-        self.assertNotIn('tests.test_review_queue_integration.ReviewQueueIntegrationTests', completed.stdout)
+        self.assertNotIn('tests.test_review_queue_integration.ReviewQueueIntegrationTests.test_service_review_required_flow_persists_queryable_review_queue', completed.stdout)
         self.assertNotIn('tests.test_review_feedback.ReviewFeedbackEngineTests', completed.stdout)
 
 

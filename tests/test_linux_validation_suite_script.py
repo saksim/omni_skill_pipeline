@@ -33,17 +33,19 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn(
-                'Selected stages: ci, container_smoke, doc_sync, quality_regression, perf_cost_baseline, postgres_soak, postgres_ga, worker_ga, review_queue_ga, provider_ga, calibration_ga, roadmap_extension',
+                'Selected stages: ci, container_smoke, doc_sync, quality_regression, perf_cost_baseline, worker_ga, review_queue_ga, provider_ga, calibration_ga, roadmap_extension',
                 completed.stdout,
             )
+            self.assertIn('Skipping Postgres stages without DSN: postgres_soak, postgres_ga', completed.stdout)
             self.assertIn('scripts/run_ci.py', completed.stdout)
+            self.assertIn('--isolate-test-files', completed.stdout)
             self.assertIn('--python python3', completed.stdout)
             self.assertIn('scripts/run_container_smoke.py', completed.stdout)
             self.assertIn('scripts/run_doc_sync_check.py', completed.stdout)
             self.assertIn('scripts/run_quality_regression.py', completed.stdout)
             self.assertIn('scripts/run_perf_cost_baseline.py', completed.stdout)
-            self.assertIn('scripts/run_postgres_soak_validation.py', completed.stdout)
-            self.assertIn('scripts/run_postgres_ga_validation.py', completed.stdout)
+            self.assertNotIn('scripts/run_postgres_soak_validation.py', completed.stdout)
+            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
             self.assertIn('scripts/run_worker_ga_validation.py', completed.stdout)
             self.assertIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
             self.assertIn('scripts/run_provider_ga_validation.py', completed.stdout)
@@ -51,7 +53,7 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             self.assertIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
-            self.assertEqual(report.get('stage_count'), 12)
+            self.assertEqual(report.get('stage_count'), 10)
             self.assertEqual(
                 [item.get('name') for item in report.get('stages', [])],
                 [
@@ -60,8 +62,6 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
                     'doc_sync',
                     'quality_regression',
                     'perf_cost_baseline',
-                    'postgres_soak',
-                    'postgres_ga',
                     'worker_ga',
                     'review_queue_ga',
                     'provider_ga',

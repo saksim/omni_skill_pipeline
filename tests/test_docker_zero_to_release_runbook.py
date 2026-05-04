@@ -59,7 +59,7 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
     def test_runbook_documents_keep_going_module_gates(self) -> None:
         content = RUNBOOK_PATH.read_text(encoding="utf-8")
         required_commands = [
-            "scripts/run_ci.py --python python3 --keep-going",
+            "scripts/run_ci.py --python python3 --keep-going --isolate-test-files",
             "scripts/run_linux_validation_suite.py --python python3 --keep-going",
             "scripts/run_release_switch_validation.py --python python3 --keep-going",
         ]
@@ -83,6 +83,7 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
         self.assertIn("COPY tests ./tests", dockerfile)
         self.assertIn("COPY scripts ./scripts", dockerfile)
         self.assertIn("docker.io", dockerfile)
+        self.assertIn('"--isolate-test-files"', dockerfile)
         self.assertNotIn("tests/", dockerignore)
         self.assertIn("tests/", root_dockerignore)
         self.assertIn("!tests/", root_dockerignore)

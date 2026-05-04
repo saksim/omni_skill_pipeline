@@ -446,7 +446,7 @@ def _check_docker_zero_to_release_runbook_completeness(
         'docker logs',
         'docker rm -f',
         'curl -fsS http://127.0.0.1:8000/healthz',
-        'scripts/run_ci.py --python python3 --keep-going',
+        'scripts/run_ci.py --python python3 --keep-going --isolate-test-files',
         'scripts/run_linux_validation_suite.py --python python3 --keep-going',
         'scripts/run_release_switch_validation.py --python python3 --keep-going',
     ]

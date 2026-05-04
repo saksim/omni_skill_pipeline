@@ -133,6 +133,7 @@ def _error_response(
     details: Any = None,
     headers: dict[str, str] | None = None,
 ):
+    safe_message = str(message)
     return JSONResponse(
         status_code=status_code,
         headers=headers,
@@ -140,11 +141,23 @@ def _error_response(
             'error': {
                 'type': error_type,
                 'code': code,
-                'message': message,
-                'details': details,
+                'message': safe_message,
+                'details': _json_safe(details),
             }
         },
     )
+
+
+def _json_safe(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, BaseException):
+        return str(value)
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe(item) for item in value]
+    return str(value)
 
 
 def _build_graph_metadata(payload: dict[str, Any]) -> dict[str, Any] | None:
@@ -471,7 +484,7 @@ def create_app():
         try:
             try:
                 response = await call_next(request)
-            except Exception:
+            except Exception as exc:
                 duration_ms = round((time.perf_counter() - started_at) * 1000.0, 3)
                 logger.exception(
                     'API request failed.',
@@ -484,7 +497,16 @@ def create_app():
                         'trace_id': trace_id,
                     },
                 )
-                raise
+                response = _error_response(
+                    status_code=500,
+                    error_type='runtime',
+                    code='runtime_error',
+                    message='Internal server error.',
+                    details=str(exc),
+                )
+                response.headers['X-Request-ID'] = request_id
+                response.headers['X-Trace-ID'] = trace_id
+                return response
 
             duration_ms = round((time.perf_counter() - started_at) * 1000.0, 3)
             response.headers['X-Request-ID'] = request_id

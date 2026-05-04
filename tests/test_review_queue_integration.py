@@ -23,7 +23,9 @@ from omni_skill_pipeline.models import (
     LoadedAsset,
     Modality,
     SkillDocument,
+    SkillGraph,
     SkillStep,
+    StepNode,
     TextDistillRequest,
 )
 from omni_skill_pipeline.repository import FileArtifactRepository
@@ -115,7 +117,17 @@ class ReviewQueueIntegrationTests(unittest.TestCase):
             review_policy=review_policy,
             review_feedback_engine=review_feedback_engine,
         )
-        service._build_publications = Mock(return_value=(SimpleNamespace(graph_id='graph-1', version='0.1.0', evidence_refs=[]), []))
+        service._build_publications = Mock(
+            return_value=(
+                SkillGraph(
+                    name='Integration Review Skill Graph',
+                    goal='Ensure review queue can be queried and consumed.',
+                    source_modalities=[Modality.TEXT],
+                    steps=[StepNode(step=1, action='Create review-required output')],
+                ),
+                [],
+            )
+        )
         service.evidence_builder.build_from_loaded_asset.return_value = []
 
         bundle = service.distill_text(TextDistillRequest(content='trigger review queue', goal=DistillGoal(domain='ops')))

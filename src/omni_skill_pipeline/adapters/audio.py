@@ -14,6 +14,7 @@ from omni_skill_pipeline.utils import read_text_file, split_paragraphs, unique_p
 
 class AudioAdapter(object):
     SIDECAR_SUFFIXES = ('.txt', '.md', '.srt', '.json')
+    EXPLICIT_SIDECAR_MARKERS = ('.transcript', '.transcription', '.caption', '.captions')
 
     def __init__(
         self,
@@ -59,7 +60,7 @@ class AudioAdapter(object):
 
         if request.audio_path:
             audio_path = Path(request.audio_path)
-            sidecar = self._find_sidecar(audio_path)
+            sidecar = self._find_sidecar(audio_path, include_legacy_same_stem=self.transcriber is None)
             if sidecar:
                 return (
                     self._parse_transcript_payload(self._load_transcript_path(sidecar)),
@@ -78,7 +79,17 @@ class AudioAdapter(object):
             return json.loads(path.read_text(encoding='utf-8'))
         return read_text_file(path)
 
-    def _find_sidecar(self, audio_path: Path) -> Optional[Path]:
+    def _find_sidecar(self, audio_path: Path, *, include_legacy_same_stem: bool) -> Optional[Path]:
+        for marker in self.EXPLICIT_SIDECAR_MARKERS:
+            for suffix in self.SIDECAR_SUFFIXES:
+                candidate = audio_path.with_name('%s%s%s' % (audio_path.stem, marker, suffix))
+                if candidate.exists():
+                    return candidate
+        srt_candidate = audio_path.with_suffix('.srt')
+        if srt_candidate.exists():
+            return srt_candidate
+        if not include_legacy_same_stem:
+            return None
         for suffix in self.SIDECAR_SUFFIXES:
             candidate = audio_path.with_suffix(suffix)
             if candidate.exists():

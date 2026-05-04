@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import logging
 from typing import Any, Optional
 from uuid import uuid4
@@ -399,6 +400,13 @@ class DistillationService(object):
         asset_breakdown.sort(key=lambda item: item.get('asset_id', ''))
 
         runtime_provider_audits = self._collect_runtime_provider_audits()
+        runtime_summary = self._summarize_runtime_provider_audits(runtime_provider_audits)
+        if total_calls <= 0 and runtime_summary['total_calls'] > 0:
+            total_calls = runtime_summary['total_calls']
+            total_successes = runtime_summary['total_successes']
+            total_failures = runtime_summary['total_failures']
+            provider_totals = runtime_summary['providers']
+            channel_totals = runtime_summary['channels']
         return {
             'corpus_id': str(corpus_id).strip(),
             'asset_breakdown': asset_breakdown,
@@ -410,6 +418,7 @@ class DistillationService(object):
                 'channels': dict(sorted(channel_totals.items())),
             },
             'runtime_provider_audits': runtime_provider_audits,
+            'runtime_summary': runtime_summary,
         }
 
     def _extract_provider_calls(self, adapter_metadata: dict[str, object]) -> list[dict[str, object]]:
@@ -484,7 +493,7 @@ class DistillationService(object):
             if component_id in visited:
                 continue
             visited.add(component_id)
-            snapshot_fn = getattr(component, 'provider_call_audit_snapshot', None)
+            snapshot_fn = self._get_existing_component_attr(component, 'provider_call_audit_snapshot')
             if callable(snapshot_fn):
                 try:
                     snapshot = snapshot_fn()
@@ -504,12 +513,73 @@ class DistillationService(object):
                 'media_processor',
                 'audio_adapter',
             ):
-                child = getattr(component, attr_name, None)
+                child = self._get_existing_component_attr(component, attr_name)
                 if isinstance(child, (list, tuple, set)):
                     stack.extend(item for item in child if item is not None)
                 elif child is not None:
                     stack.append(child)
         return sorted(audits, key=lambda item: str(item.get('component', '')))
+
+    def _get_existing_component_attr(self, component: object, attr_name: str) -> object | None:
+        instance_attrs = getattr(component, '__dict__', None)
+        if isinstance(instance_attrs, dict) and attr_name in instance_attrs:
+            return instance_attrs.get(attr_name)
+        try:
+            inspect.getattr_static(component, attr_name)
+        except AttributeError:
+            return None
+        return getattr(component, attr_name, None)
+
+    def _summarize_runtime_provider_audits(self, audits: list[dict[str, object]]) -> dict[str, object]:
+        provider_totals: dict[str, dict[str, int]] = {}
+        channel_totals: dict[str, dict[str, int]] = {}
+        total_calls = 0
+        total_successes = 0
+        total_failures = 0
+
+        for audit in audits:
+            if not isinstance(audit, dict):
+                continue
+            provider_name = str(audit.get('provider', '')).strip() or 'unknown'
+            totals = audit.get('totals', {})
+            if not isinstance(totals, dict):
+                totals = {}
+            calls = self._safe_int(totals.get('calls', 0))
+            successes = self._safe_int(totals.get('successes', 0))
+            failures = self._safe_int(totals.get('failures', 0))
+            total_calls += calls
+            total_successes += successes
+            total_failures += failures
+            provider_entry = provider_totals.setdefault(provider_name, {'calls': 0, 'successes': 0, 'failures': 0})
+            provider_entry['calls'] += calls
+            provider_entry['successes'] += successes
+            provider_entry['failures'] += failures
+
+            operations = audit.get('operations', {})
+            if not isinstance(operations, dict):
+                operations = {}
+            for operation_name, operation_counter in operations.items():
+                if not isinstance(operation_counter, dict):
+                    continue
+                channel_name = str(operation_name).strip() or 'provider'
+                channel_calls = self._safe_int(operation_counter.get('calls', 0))
+                channel_successes = self._safe_int(operation_counter.get('successes', 0))
+                channel_failures = self._safe_int(operation_counter.get('failures', 0))
+                channel_entry = channel_totals.setdefault(
+                    channel_name,
+                    {'calls': 0, 'successes': 0, 'failures': 0},
+                )
+                channel_entry['calls'] += channel_calls
+                channel_entry['successes'] += channel_successes
+                channel_entry['failures'] += channel_failures
+
+        return {
+            'total_calls': total_calls,
+            'total_successes': total_successes,
+            'total_failures': total_failures,
+            'providers': dict(sorted(provider_totals.items())),
+            'channels': dict(sorted(channel_totals.items())),
+        }
 
     def _safe_int(self, value: Any) -> int:
         try:

@@ -84,6 +84,7 @@ DEFAULT_STAGES = (
     'roadmap_extension',
 )
 ALL_STAGES = tuple(sorted(DEFAULT_STAGES))
+POSTGRES_STAGES = {'postgres_soak', 'postgres_ga'}
 
 
 @dataclass(frozen=True, slots=True)
@@ -236,6 +237,11 @@ def _parse_args() -> argparse.Namespace:
         help='Forward --allow-secondary-failures to postgres soak benchmark stage.',
     )
     parser.add_argument(
+        '--require-postgres',
+        action='store_true',
+        help='Fail when Postgres stages are selected without --postgres-dsn/OMNI_TEST_POSTGRES_DSN.',
+    )
+    parser.add_argument(
         '--worker-ga-output',
         default=str(DEFAULT_WORKER_GA_OUTPUT),
         help='Worker GA validation stage plan output path.',
@@ -322,6 +328,9 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
     ]
     if args.no_coverage:
         ci_command.append('--no-coverage')
+    if args.keep_going:
+        ci_command.append('--keep-going')
+    ci_command.append('--isolate-test-files')
 
     doc_sync_command = [
         *python_cmd,
@@ -535,6 +544,20 @@ def _build_plan(stage_specs: list[StageSpec]) -> dict[str, Any]:
     }
 
 
+def _filter_stage_specs(args: argparse.Namespace, stage_specs: list[StageSpec]) -> list[StageSpec]:
+    postgres_dsn = str(args.postgres_dsn or '').strip()
+    if postgres_dsn or args.require_postgres:
+        return stage_specs
+    filtered = [stage for stage in stage_specs if stage.name not in POSTGRES_STAGES]
+    skipped = [stage.name for stage in stage_specs if stage.name in POSTGRES_STAGES]
+    if skipped:
+        print(
+            'Skipping Postgres stages without DSN: %s. Pass --postgres-dsn or --require-postgres to enforce them.'
+            % ', '.join(skipped)
+        )
+    return filtered
+
+
 def _print_plan(stage_specs: list[StageSpec]) -> None:
     print('Selected stages: %s' % ', '.join(stage.name for stage in stage_specs))
     for stage in stage_specs:
@@ -582,7 +605,10 @@ def main() -> int:
         return 2
 
     stage_map = _build_stage_map(args, python_cmd=python_cmd)
-    stage_specs = [stage_map[name] for name in args.stages]
+    stage_specs = _filter_stage_specs(args, [stage_map[name] for name in args.stages])
+    if not stage_specs:
+        print('No runnable stages selected after environment filtering.', file=sys.stderr)
+        return 2
     _print_plan(stage_specs)
 
     plan_payload = _build_plan(stage_specs)
