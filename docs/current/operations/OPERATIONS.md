@@ -7,6 +7,7 @@
 - [Worker](worker.md)
 - [Environment](env.md)
 - [Testing](testing.md)
+- Standard Linux release test script: `bash scripts/run_linux_release_test.sh`
 - [V1 -> V2 Migration Runbook](v1-to-v2-migration-runbook.md)
 
 ## Expansion Zones

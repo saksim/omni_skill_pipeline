@@ -1,5 +1,35 @@
 # Testing
 
+## Standard Linux Release Test
+
+上线前的标准测试入口是 Linux/Docker-only 脚本：
+
+```bash
+bash scripts/run_linux_release_test.sh
+```
+
+该入口只要求宿主 Linux 具备 Docker、基础 shell 工具和项目源码；Python、coverage、测试依赖都在 `omni-skill-pipeline:test` 容器内执行。
+
+可选环境变量：
+
+```bash
+export OMNI_TEST_POSTGRES_DSN='postgresql://...'
+export OMNI_API_KEY='same-key-used-by-.env.runtime-if-auth-enabled'
+export RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+bash scripts/run_linux_release_test.sh
+```
+
+产物：
+
+- `release-artifacts/<RELEASE_ID>/summary.tsv`
+- `release-artifacts/<RELEASE_ID>/summary.json`
+- `release-artifacts/<RELEASE_ID>/logs/*.log`
+- `release-artifacts/<RELEASE_ID>/logs/*.exit`
+- `release-artifacts/<RELEASE_ID>/baselines/*`
+- `release-artifacts-<RELEASE_ID>.tar.gz`
+
+把 `release-artifacts-<RELEASE_ID>.tar.gz` 交给评审者即可复盘每个阶段的日志、退出码、coverage、release switch 证据和最终 GO/HOLD 判定。
+
 ## 判词
 
 这个仓当前走的是 `unittest` 体系，不是 `pytest` 体系；测试判断要按现有链路验尸，不要拿错刑具。

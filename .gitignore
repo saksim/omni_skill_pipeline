@@ -6,6 +6,7 @@ logs_*.logs
 
 # 环境变量
 .env
+.env.runtime
 .env.local
 .env.development.local
 .env.test.local
@@ -109,3 +110,5 @@ output/
 *test_round*
 *test_iter*
 artifacts/
+release-artifacts/
+release-artifacts-*.tar.gz

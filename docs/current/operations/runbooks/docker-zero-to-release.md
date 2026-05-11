@@ -1,5 +1,34 @@
 # Docker Zero-to-Release Runbook
 
+## Standard Script Entry
+
+上线前优先执行归总脚本，而不是手工复制本手册中的分散命令：
+
+```bash
+bash scripts/run_linux_release_test.sh
+```
+
+可选输入：
+
+```bash
+export OMNI_TEST_POSTGRES_DSN='postgresql://...'
+export OMNI_API_KEY='same-key-used-by-.env.runtime-if-auth-enabled'
+export RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+```
+
+脚本会依次执行：
+
+1. build test image
+2. verify container Python
+3. CI gate with coverage
+4. build runtime image
+5. container `/healthz` smoke
+6. API acceptance smoke
+7. Linux validation suite
+8. Release Switch decision gate
+
+汇总包输出为 `release-artifacts-<RELEASE_ID>.tar.gz`。把该包交给评审者即可获得完整日志、每阶段 exit code、`docs/current/status/baselines` 证据、coverage XML、`summary.tsv` 和 `summary.json`。
+
 ## Verdict
 
 本手册是裸 Linux 测试到上线的主流程：宿主机只需要 Docker Engine 与基础 shell 工具，不要求安装 Python；项目 Python 由 Docker 镜像提供。
