@@ -25,12 +25,14 @@ API_PUBLISHED_VOLUME="${API_PUBLISHED_VOLUME:-omni_skill_release_${RELEASE_ID}_p
 API_TMP_MEDIA_VOLUME="${API_TMP_MEDIA_VOLUME:-omni_skill_release_${RELEASE_ID}_tmp_media}"
 RUNTIME_ENV_FILE="${RUNTIME_ENV_FILE:-.env.runtime}"
 COVERAGE_FAIL_UNDER="${COVERAGE_FAIL_UNDER:-50}"
+DRY_RUN=0
 
 mkdir -p "${LOG_DIR}" "${META_DIR}" "${BASELINE_DIR}"
 
 STAGE_NAMES=()
 STAGE_CODES=()
 STAGE_LOGS=()
+STAGE_STATUS=()
 
 cleanup_acceptance_container() {
   docker rm -f "${API_CONTAINER_NAME}" >/dev/null 2>&1 || true
@@ -62,6 +64,10 @@ Environment overrides:
   SMOKE_PORT                   Container smoke host port. Default: 18000
   API_ACCEPTANCE_PORT          API acceptance host port. Default: 18001
 
+Options:
+  --dry-run                    Print and record the release-test plan without
+                               building images or running containers.
+
 Outputs:
   release-artifacts/<RELEASE_ID>/logs/*.log
   release-artifacts/<RELEASE_ID>/logs/*.exit
@@ -72,19 +78,46 @@ Outputs:
 EOF
 }
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  usage
-  exit 0
-fi
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
 
 record_stage() {
   local name="$1"
   local code="$2"
   local log_path="$3"
+  local status="${4:-run}"
   STAGE_NAMES+=("${name}")
   STAGE_CODES+=("${code}")
   STAGE_LOGS+=("${log_path}")
+  STAGE_STATUS+=("${status}")
   printf '%s\n' "${code}" > "${LOG_DIR}/${name}.exit"
+}
+
+stage_succeeded() {
+  local name="$1"
+  local i
+  for i in "${!STAGE_NAMES[@]}"; do
+    if [[ "${STAGE_NAMES[$i]}" == "${name}" ]]; then
+      [[ "${STAGE_CODES[$i]}" == "0" ]]
+      return $?
+    fi
+  done
+  return 1
 }
 
 run_step() {
@@ -103,8 +136,59 @@ run_step() {
     exit "${code}"
   ) 2>&1 | tee "${log_path}"
   local code="${PIPESTATUS[0]}"
-  record_stage "${name}" "${code}" "${log_path}"
+  record_stage "${name}" "${code}" "${log_path}" "run"
   return 0
+}
+
+plan_step() {
+  local name="$1"
+  shift
+  local log_path="${LOG_DIR}/${name}.log"
+  echo "===== ${name} ====="
+  {
+    echo "release_id=${RELEASE_ID}"
+    echo "stage=${name}"
+    echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "dry_run=true"
+    printf 'Plan:'
+    printf ' %q' "$@"
+    printf '\n'
+    echo "finished_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "exit=0"
+  } 2>&1 | tee "${log_path}"
+  record_stage "${name}" "0" "${log_path}" "planned"
+  return 0
+}
+
+run_or_plan_step() {
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    plan_step "$@"
+  else
+    run_step "$@"
+  fi
+}
+
+skip_step() {
+  local name="$1"
+  shift
+  local reason="$*"
+  local log_path="${LOG_DIR}/${name}.log"
+  echo "===== ${name} ====="
+  {
+    echo "release_id=${RELEASE_ID}"
+    echo "stage=${name}"
+    echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "skipped=true"
+    echo "reason=${reason}"
+    echo "finished_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "exit=99"
+  } 2>&1 | tee "${log_path}"
+  record_stage "${name}" "99" "${log_path}" "skipped"
+  return 0
+}
+
+runtime_image_ready() {
+  stage_succeeded build_runtime_image
 }
 
 capture_meta() {
@@ -117,6 +201,48 @@ capture_meta() {
   git status --short > "${META_DIR}/git-status.txt" 2>&1 || true
   docker version > "${META_DIR}/docker-version.txt" 2>&1 || true
   docker info > "${META_DIR}/docker-info.txt" 2>&1 || true
+}
+
+preflight_source_tree() {
+  local code=0
+  local required_paths=(
+    "Dockerfile"
+    "Dockerfile.test"
+    "Dockerfile.test.dockerignore"
+    ".dockerignore"
+    "pyproject.toml"
+    "requirements-dev.txt"
+    "README.md"
+    "src/omni_skill_pipeline"
+    "apps/api/main.py"
+    "scripts/run_ci.py"
+    "scripts/run_container_smoke.py"
+    "scripts/run_linux_validation_suite.py"
+    "scripts/run_release_switch_validation.py"
+    "tests"
+    "docs/current/contracts/SKILL.template.md"
+    "docs/current/contracts/skill.schema.json"
+    "docs/current/contracts/skill-graph.schema.json"
+  )
+  local path
+
+  for path in "${required_paths[@]}"; do
+    if [[ ! -e "${path}" ]]; then
+      echo "missing required release source path: ${path}" >&2
+      code=1
+    fi
+  done
+
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    local ignored_output
+    ignored_output="$(git check-ignore -v docs/current/contracts docs/current/contracts/SKILL.template.md docs/current/contracts/skill.schema.json docs/current/contracts/skill-graph.schema.json || true)"
+    if [[ -n "${ignored_output}" ]]; then
+      printf '%s\n' "${ignored_output}" >&2
+      code=1
+    fi
+  fi
+
+  return "${code}"
 }
 
 ensure_runtime_env_file() {
@@ -139,6 +265,10 @@ EOF
 
 docker_curl() {
   docker run --rm --network host "${TEST_IMAGE_TAG}" curl "$@"
+}
+
+docker_image_exists() {
+  docker image inspect "$1" >/dev/null 2>&1
 }
 
 poll_url() {
@@ -165,6 +295,12 @@ api_acceptance() {
 
   if [[ -n "${OMNI_API_KEY:-}" ]]; then
     auth_args=(-H "X-API-Key: ${OMNI_API_KEY}")
+  fi
+
+  if ! docker_image_exists "${RUNTIME_IMAGE_TAG}"; then
+    echo "Runtime image not found locally: ${RUNTIME_IMAGE_TAG}" >&2
+    echo "Build runtime image before API acceptance; refusing to let docker run pull this tag from a registry." >&2
+    return 125
   fi
 
   docker rm -f "${API_CONTAINER_NAME}" >/dev/null 2>&1 || true
@@ -199,6 +335,11 @@ copy_evidence() {
 }
 
 read_release_decision() {
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    printf 'dry_run'
+    return 0
+  fi
+
   local report="${BASELINE_DIR}/e13-release-switch-decision-report.json"
   if [[ ! -f "${report}" ]]; then
     printf 'missing'
@@ -212,23 +353,29 @@ read_release_decision() {
 write_summary() {
   local decision="$1"
   local overall="PASS"
+  local stage_failed=0
   local i
   for i in "${!STAGE_NAMES[@]}"; do
     if [[ "${STAGE_CODES[$i]}" != "0" ]]; then
       overall="FAIL"
+      stage_failed=1
     fi
   done
-  if [[ "${decision}" != "GO" ]]; then
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    if [[ "${stage_failed}" == "0" ]]; then
+      overall="PLANNED"
+    fi
+  elif [[ "${decision}" != "GO" ]]; then
     overall="FAIL"
   fi
 
   {
-    printf 'stage\texit_code\tlog\n'
+    printf 'stage\texit_code\tstatus\tlog\n'
     for i in "${!STAGE_NAMES[@]}"; do
-      printf '%s\t%s\t%s\n' "${STAGE_NAMES[$i]}" "${STAGE_CODES[$i]}" "${STAGE_LOGS[$i]}"
+      printf '%s\t%s\t%s\t%s\n' "${STAGE_NAMES[$i]}" "${STAGE_CODES[$i]}" "${STAGE_STATUS[$i]}" "${STAGE_LOGS[$i]}"
     done
-    printf 'release_switch_decision\t%s\t%s\n' "${decision}" "${BASELINE_DIR}/e13-release-switch-decision-report.json"
-    printf 'overall\t%s\t%s\n' "${overall}" "${ARTIFACT_DIR}"
+    printf 'release_switch_decision\t%s\treport\t%s\n' "${decision}" "${BASELINE_DIR}/e13-release-switch-decision-report.json"
+    printf 'overall\t%s\tresult\t%s\n' "${overall}" "${ARTIFACT_DIR}"
   } > "${ARTIFACT_DIR}/summary.tsv"
 
   {
@@ -239,8 +386,8 @@ write_summary() {
     printf '  "artifact_dir": "%s",\n' "${ARTIFACT_DIR}"
     printf '  "stages": [\n'
     for i in "${!STAGE_NAMES[@]}"; do
-      printf '    {"name": "%s", "exit_code": %s, "log": "%s"}' \
-        "${STAGE_NAMES[$i]}" "${STAGE_CODES[$i]}" "${STAGE_LOGS[$i]}"
+      printf '    {"name": "%s", "exit_code": %s, "status": "%s", "log": "%s"}' \
+        "${STAGE_NAMES[$i]}" "${STAGE_CODES[$i]}" "${STAGE_STATUS[$i]}" "${STAGE_LOGS[$i]}"
       if [[ "$i" -lt "$((${#STAGE_NAMES[@]} - 1))" ]]; then
         printf ','
       fi
@@ -251,7 +398,7 @@ write_summary() {
   } > "${ARTIFACT_DIR}/summary.json"
 
   printf '%s\n' "${overall}" > "${ARTIFACT_DIR}/overall.txt"
-  if [[ "${overall}" == "PASS" ]]; then
+  if [[ "${overall}" == "PASS" || "${overall}" == "PLANNED" ]]; then
     return 0
   fi
   return 1
@@ -266,57 +413,91 @@ package_artifacts() {
 
 capture_meta
 
-run_step docker_preflight docker ps
+run_step source_preflight preflight_source_tree
 
-run_step build_test_image \
-  docker build -f Dockerfile.test -t "${TEST_IMAGE_TAG}" -t "${TEST_IMAGE_ALIAS}" .
+run_or_plan_step docker_preflight docker ps
 
-run_step test_image_python \
-  docker run --rm "${TEST_IMAGE_TAG}" python --version
+if stage_succeeded source_preflight && stage_succeeded docker_preflight; then
+  run_or_plan_step build_test_image \
+    docker build -f Dockerfile.test -t "${TEST_IMAGE_TAG}" -t "${TEST_IMAGE_ALIAS}" .
+else
+  skip_step build_test_image "source_preflight or docker_preflight did not pass"
+fi
 
-run_step ci_gate \
-  docker run --rm \
-    -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
-    "${TEST_IMAGE_TAG}" \
-    python scripts/run_ci.py --python python3 --keep-going --isolate-test-files \
-      --coverage-fail-under "${COVERAGE_FAIL_UNDER}" \
-      --coverage-xml docs/current/status/baselines/coverage.xml
+if stage_succeeded build_test_image; then
+  run_or_plan_step test_image_python \
+    docker run --rm "${TEST_IMAGE_TAG}" python --version
+else
+  skip_step test_image_python "build_test_image did not pass"
+fi
 
-run_step build_runtime_image \
-  docker build -t "${VERSIONED_RUNTIME_IMAGE_TAG}" -t "${RUNTIME_IMAGE_TAG}" -t "${RUNTIME_IMAGE_ALIAS}" .
+if stage_succeeded build_test_image; then
+  run_or_plan_step ci_gate \
+    docker run --rm \
+      -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
+      "${TEST_IMAGE_TAG}" \
+      python scripts/run_ci.py --python python3 --keep-going --isolate-test-files \
+        --coverage-fail-under "${COVERAGE_FAIL_UNDER}" \
+        --coverage-xml docs/current/status/baselines/coverage.xml
+else
+  skip_step ci_gate "build_test_image did not pass"
+fi
 
-run_step container_smoke \
-  docker run --rm --network host \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    "${TEST_IMAGE_TAG}" \
-    python scripts/run_container_smoke.py \
-      --image-tag "${RUNTIME_IMAGE_TAG}" \
-      --port "${SMOKE_PORT}" \
-      --skip-build
+if stage_succeeded source_preflight && stage_succeeded docker_preflight; then
+  run_or_plan_step build_runtime_image \
+    docker build -t "${VERSIONED_RUNTIME_IMAGE_TAG}" -t "${RUNTIME_IMAGE_TAG}" -t "${RUNTIME_IMAGE_ALIAS}" .
+else
+  skip_step build_runtime_image "source_preflight or docker_preflight did not pass"
+fi
 
-run_step api_acceptance api_acceptance
+if stage_succeeded build_test_image && runtime_image_ready; then
+  run_or_plan_step container_smoke \
+    docker run --rm --network host \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      "${TEST_IMAGE_TAG}" \
+      python scripts/run_container_smoke.py \
+        --image-tag "${RUNTIME_IMAGE_TAG}" \
+        --port "${SMOKE_PORT}" \
+        --skip-build
+else
+  skip_step container_smoke "build_test_image or build_runtime_image did not pass"
+fi
 
-run_step linux_validation_suite \
-  docker run --rm --network host \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
-    -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
-    "${TEST_IMAGE_TAG}" \
-    python scripts/run_linux_validation_suite.py \
-      --python python3 \
-      --keep-going \
-      --container-image-tag "${RUNTIME_IMAGE_TAG}"
+if stage_succeeded build_test_image && runtime_image_ready; then
+  run_or_plan_step api_acceptance api_acceptance
+else
+  skip_step api_acceptance "build_test_image or build_runtime_image did not pass"
+fi
 
-run_step release_switch \
-  docker run --rm --network host \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
-    -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
-    "${TEST_IMAGE_TAG}" \
-    python scripts/run_release_switch_validation.py \
-      --python python3 \
-      --keep-going \
-      --container-image-tag "${RUNTIME_IMAGE_TAG}"
+if stage_succeeded build_test_image && runtime_image_ready; then
+  run_or_plan_step linux_validation_suite \
+    docker run --rm --network host \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
+      -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
+      "${TEST_IMAGE_TAG}" \
+      python scripts/run_linux_validation_suite.py \
+        --python python3 \
+        --keep-going \
+        --container-image-tag "${RUNTIME_IMAGE_TAG}"
+else
+  skip_step linux_validation_suite "build_test_image or build_runtime_image did not pass"
+fi
+
+if stage_succeeded build_test_image && runtime_image_ready; then
+  run_or_plan_step release_switch \
+    docker run --rm --network host \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
+      -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
+      "${TEST_IMAGE_TAG}" \
+      python scripts/run_release_switch_validation.py \
+        --python python3 \
+        --keep-going \
+        --container-image-tag "${RUNTIME_IMAGE_TAG}"
+else
+  skip_step release_switch "build_test_image or build_runtime_image did not pass"
+fi
 
 copy_evidence
 DECISION="$(read_release_decision)"

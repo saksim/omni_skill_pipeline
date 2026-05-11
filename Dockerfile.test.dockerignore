@@ -9,6 +9,10 @@ __pycache__/
 .coverage
 coverage.xml
 data/
+!docs/
+!docs/current/
+!docs/current/contracts/
+!docs/current/contracts/**
 examples/
 infra/
 .tmp_omni_media/

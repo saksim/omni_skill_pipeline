@@ -12,6 +12,10 @@ tests/
 !tests/
 !tests/**
 tests/.tmp_runtime/
+!docs/
+!docs/current/
+!docs/current/contracts/
+!docs/current/contracts/**
 examples/
 infra/
 data/
