@@ -64,19 +64,26 @@ def _path_size_bytes(path: Path) -> int:
 
 def _latest_mtime(path: Path) -> float:
     try:
-        latest = float(path.stat().st_mtime)
+        latest = float('-inf') if path.is_dir() else float(path.stat().st_mtime)
     except OSError:
         return time.time()
 
     if path.is_dir():
+        seen_child = False
         for child in path.rglob('*'):
             try:
                 child_mtime = float(child.stat().st_mtime)
             except OSError:
                 # Permission-denied children are treated as active to avoid accidental deletion.
                 return time.time()
+            seen_child = True
             if child_mtime > latest:
                 latest = child_mtime
+        if not seen_child:
+            try:
+                return float(path.stat().st_mtime)
+            except OSError:
+                return time.time()
     return latest
 
 

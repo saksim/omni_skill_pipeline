@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import re
 from typing import Any
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote_plus, urlencode, urlsplit, urlunsplit
 
 REDACTED_VALUE = '[REDACTED]'
 
 _SENSITIVE_ASSIGNMENT_PATTERN = re.compile(
-    r'(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|id[_-]?token|bearer[_-]?token|token|secret|credential|password)\b(\s*[:=]\s*)([^\s,;]+)'
+    r'(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|id[_-]?token|bearer[_-]?token|token|secret|credential|password)\b(\s*[:=]\s*)([^\s,;&]+)'
 )
 _BEARER_PATTERN = re.compile(r'(?i)\bBearer\s+[A-Za-z0-9._~+/=-]{6,}')
 
@@ -63,7 +63,11 @@ def redact_sensitive_data(value: Any, *, redacted_value: str = REDACTED_VALUE) -
 
 
 def _redact_inline_assignments(value: str, *, redacted_value: str) -> str:
+    encoded_redacted_value = quote_plus(redacted_value)
+
     def _replace(match: re.Match[str]) -> str:
+        if match.group(3) == encoded_redacted_value:
+            return match.group(0)
         return '%s%s%s' % (match.group(1), match.group(2), redacted_value)
 
     return _SENSITIVE_ASSIGNMENT_PATTERN.sub(_replace, value)

@@ -1372,3 +1372,51 @@ python scripts/run_tp_tests.py TP-E1-01 TP-E1-02 TP-E1-03 TP-E2-01 TP-E2-02 TP-E
   - `tests/test_release_switch_validation_script.py::ReleaseSwitchValidationScriptTests.test_script_decision_only_emits_bulk_strategy_release_pinovaverse_hash_for_hold_decision`
 - Added `TP-E13-127` mapping in `scripts/run_tp_tests.py`.
 - Linux decision-only sample remains unchanged; consume `release_pinovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## Linux Release Script Entry Clarification
+
+- Run `bash scripts/run_linux_release_test.sh` on the bare Linux host after cloning the repository.
+- Do not enter a Docker container manually before running the script; it builds Docker images on the host and executes CI, Linux validation suite, API acceptance, and release-switch validation inside Docker.
+- Upload `release-artifacts-<RELEASE_ID>.tar.gz` for review. The reviewer can use `summary.json`, `summary.tsv`, `logs/*.log`, `logs/*.exit`, and `baselines/*` to reconstruct every stage result.
+
+## TP-E13-128 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-rhonovaverse digest: `release_rhonovaverse_sha256`.
+- Added testcase coverage for GO and HOLD release-rhonovaverse digest emission in `tests/test_release_switch_validation_script.py`.
+- Added `TP-E13-128` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_rhonovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-129 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-sigmanovaverse digest: `release_sigmanovaverse_sha256`.
+- Added testcase coverage for GO and HOLD release-sigmanovaverse digest emission in `tests/test_release_switch_validation_script.py`.
+- Added `TP-E13-129` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_sigmanovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-130 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-taunovaverse digest: `release_taunovaverse_sha256`.
+- Added testcase coverage for GO and HOLD release-taunovaverse digest emission in `tests/test_release_switch_validation_script.py`.
+- Added `TP-E13-130` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_taunovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-131 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-upsilonnovaverse digest: `release_upsilonnovaverse_sha256`.
+- Added testcase coverage for GO and HOLD release-upsilonnovaverse digest emission in `tests/test_release_switch_validation_script.py`.
+- Added `TP-E13-131` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_upsilonnovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-132 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-phinovaverse digest: `release_phinovaverse_sha256`.
+- Added testcase coverage for GO and HOLD release-phinovaverse digest emission in `tests/test_release_switch_validation_script.py`.
+- Added `TP-E13-132` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_phinovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.
+
+## TP-E13-133 Additions
+
+- Extended `scripts/run_release_switch_validation.py` with deterministic release-chinovaverse digest: `release_chinovaverse_sha256`.
+- Added testcase coverage for GO and HOLD release-chinovaverse digest emission in `tests/test_release_switch_validation_script.py`.
+- Added `TP-E13-133` mapping in `scripts/run_tp_tests.py`.
+- Linux decision-only sample remains unchanged; consume `release_chinovaverse_sha256` from `docs/current/status/baselines/e13-release-switch-decision-report.json`.

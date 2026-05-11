@@ -43,6 +43,10 @@ usage() {
   cat <<'EOF'
 Usage: bash scripts/run_linux_release_test.sh
 
+Run this on the bare Linux host after cloning the repo. Do not enter the
+container manually first; this script builds the test/runtime images and runs
+the validation commands inside Docker for you.
+
 Environment overrides:
   RELEASE_ID                   Release id used in image/artifact names.
   ARTIFACT_ROOT                Output root directory. Default: release-artifacts

@@ -1664,7 +1664,7 @@ def _release_gate_python_binding_mismatches(
             )
             continue
         actual_python_value = str(python_values[0]).strip()
-        if actual_python_value != expected_python_value:
+        if not _python_binding_values_match(expected_python_value, actual_python_value):
             mismatches.append(
                 {
                     'stage': stage_name,
@@ -1679,7 +1679,7 @@ def _release_gate_python_binding_mismatches(
             if str(token).strip()
         ]
         launcher_value = ' '.join(launcher_tokens)
-        if launcher_value != expected_python_value:
+        if not _python_binding_values_match(expected_python_value, launcher_value):
             mismatches.append(
                 {
                     'stage': stage_name,
@@ -1689,6 +1689,74 @@ def _release_gate_python_binding_mismatches(
                 }
             )
     return mismatches
+
+
+def _single_python_binding_token(raw_value: str) -> str | None:
+    value = str(raw_value).strip()
+    if not value:
+        return None
+    try:
+        parts = _split_python_command(value)
+    except ValueError:
+        return None
+    if len(parts) == 1:
+        return str(parts[0]).strip()
+    path_candidate = Path(value)
+    if path_candidate.exists():
+        return value
+    return None
+
+
+def _path_token_is_current_python(token: str) -> bool:
+    raw_token = str(token).strip()
+    if not raw_token:
+        return False
+    has_path_separator = ('/' in raw_token) or ('\\' in raw_token) or Path(raw_token).is_absolute()
+    if not has_path_separator:
+        return False
+    try:
+        token_path = Path(raw_token).expanduser().resolve()
+        current_path = Path(sys.executable).expanduser().resolve()
+    except OSError:
+        token_path = Path(raw_token).expanduser()
+        current_path = Path(sys.executable).expanduser()
+    return str(token_path).replace('\\', '/').casefold() == str(current_path).replace('\\', '/').casefold()
+
+
+def _token_is_current_python_launcher(token: str) -> bool:
+    raw_token = str(token).strip()
+    if _path_token_is_current_python(raw_token):
+        return True
+    if ('/' in raw_token) or ('\\' in raw_token) or Path(raw_token).is_absolute():
+        return False
+    executable_name = Path(raw_token).name.casefold()
+    if executable_name.endswith('.exe'):
+        executable_name = executable_name[:-4]
+    return executable_name in {
+        'python',
+        'python%s' % sys.version_info.major,
+        'python%s.%s' % (sys.version_info.major, sys.version_info.minor),
+    }
+
+
+def _python_binding_values_match(expected_python: str, actual_python: str) -> bool:
+    expected_value = str(expected_python).strip()
+    actual_value = str(actual_python).strip()
+    if expected_value == actual_value:
+        return True
+
+    expected_token = _single_python_binding_token(expected_value)
+    actual_token = _single_python_binding_token(actual_value)
+    if expected_token is None or actual_token is None:
+        return False
+
+    expected_is_current_path = _path_token_is_current_python(expected_token)
+    actual_is_current_path = _path_token_is_current_python(actual_token)
+    if expected_is_current_path and _token_is_current_python_launcher(actual_token):
+        return True
+    if actual_is_current_path and _token_is_current_python_launcher(expected_token):
+        return True
+    return False
 
 
 def _release_gate_coverage_floor_mismatches(
