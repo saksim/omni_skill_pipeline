@@ -188,7 +188,7 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
     def test_keep_going_runs_later_release_gates_after_failure_and_summarizes_failures(self) -> None:
         command = (
             "import sys; print('release-probe'); "
-            "raise SystemExit(9 if sys.argv[-1].endswith('beta') else 0)"
+            "raise SystemExit(9 if '--stages' in sys.argv else 0)"
         )
         completed = subprocess.run(
             [

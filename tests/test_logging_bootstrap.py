@@ -201,7 +201,14 @@ class LoggingBootstrapTests(unittest.TestCase):
             review_feedback_engine=Mock(),
         )
         request = TextDistillRequest(content='incident timeline', goal=DistillGoal(domain='ops'))
-        result_bundle = SimpleNamespace(skill=SimpleNamespace(skill_id='skill-1'), evidence_units=[1, 2, 3])
+        result_bundle = SimpleNamespace(
+            skill=SimpleNamespace(skill_id='skill-1'),
+            evidence_units=[1, 2, 3],
+            publications=[],
+            skill_graph=None,
+            review_task=None,
+            asset=SimpleNamespace(asset_id='asset-1', modality=SimpleNamespace(value='text')),
+        )
 
         with (
             patch('omni_skill_pipeline.service.logger') as logger_mock,

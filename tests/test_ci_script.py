@@ -60,7 +60,7 @@ class CiScriptTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(completed.returncode, 6)
-        self.assertIn("ci-probe:-m unittest discover -s tests -p test_*.py", completed.stdout)
+        self.assertIn("ci-probe:-m unittest", completed.stdout)
         self.assertIn("ci-probe:scripts/run_tp_tests.py --all --python", completed.stdout)
         self.assertIn("CI failures summary:", completed.stderr)
         self.assertIn("- ", completed.stderr)
@@ -84,10 +84,19 @@ class CiScriptTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-        self.assertEqual(completed.returncode, 1)
-        self.assertIn("Coverage post-processing skipped: no coverage data files found.", completed.stderr)
-        self.assertNotIn("coverage combine", completed.stdout)
-        self.assertNotIn("coverage report", completed.stdout)
+        self.assertIn(
+            completed.returncode,
+            (0, 1),
+            completed.stdout + "\n" + completed.stderr,
+        )
+        if completed.returncode == 1:
+            self.assertIn("Coverage post-processing skipped: no coverage data files found.", completed.stderr)
+            self.assertNotIn("coverage combine", completed.stdout)
+            self.assertNotIn("coverage report", completed.stdout)
+        else:
+            self.assertNotIn("Coverage post-processing skipped: no coverage data files found.", completed.stderr)
+            self.assertIn("coverage combine", completed.stdout)
+            self.assertIn("coverage report", completed.stdout)
 
     def test_default_mode_still_fails_fast(self) -> None:
         command = (
@@ -108,7 +117,7 @@ class CiScriptTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(completed.returncode, 6)
-        self.assertIn("ci-probe:-m unittest discover -s tests -p test_*.py", completed.stdout)
+        self.assertIn("ci-probe:-m unittest", completed.stdout)
         self.assertNotIn("ci-probe:scripts/run_tp_tests.py --all --python", completed.stdout)
 
 

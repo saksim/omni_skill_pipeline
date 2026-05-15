@@ -3944,7 +3944,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
     def test_keep_going_runs_later_release_switch_stages_after_failure(self) -> None:
         command = (
             "import sys; print('switch-probe'); "
-            "raise SystemExit(8 if any(arg.endswith('run_release_gate_validation.py') for arg in sys.argv) else 0)"
+            "raise SystemExit(8 if '--coverage-fail-under' in sys.argv else 0)"
         )
         completed = subprocess.run(
             [
@@ -3960,6 +3960,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                 '-',
                 '--decision-output',
                 '-',
+                '--allow-hold',
             ],
             cwd=REPO_ROOT,
             check=False,
@@ -4142,7 +4143,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             decision = json.loads(decision_path.read_text(encoding='utf-8'))
             self.assertEqual(decision.get('decision'), 'GO')
             self.assertEqual(decision.get('hold_count'), 0)
-            self.assertEqual(decision.get('pass_count'), 46)
+            self.assertEqual(decision.get('pass_count'), 47)
             summary = decision.get('evidence_summary', {})
             self.assertTrue(summary.get('release_gate_stage_pack_complete'))
             self.assertTrue(summary.get('release_gate_output_binding_pass'))
@@ -13539,6 +13540,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     str(SCRIPT_PATH),
                     '--decision-only',
                     '--skip-release-gate-output-binding-check',
+                    '--skip-release-gate-coverage-floor-check',
                     '--doc-sync-report',
                     str(bundle['doc_sync_path']),
                     '--quality-report',
@@ -13699,6 +13701,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     str(SCRIPT_PATH),
                     '--decision-only',
                     '--skip-release-gate-stage-contract-check',
+                    '--skip-release-gate-coverage-floor-check',
                     '--doc-sync-report',
                     str(bundle['doc_sync_path']),
                     '--quality-report',
@@ -13761,7 +13764,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     break
                 stage['command'] = [
                     'python3',
-                    'scripts/run_release_gate_validation.py',
+                    str((REPO_ROOT / 'scripts' / 'run_release_gate_validation.py').resolve()),
                     'scripts/run_linux_validation_suite.py',
                     *command[2:],
                 ]
@@ -13857,6 +13860,9 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     str(SCRIPT_PATH),
                     '--decision-only',
                     '--skip-release-gate-script-position-check',
+                    '--skip-release-gate-script-anchor-check',
+                    '--skip-release-gate-python-binding-check',
+                    '--skip-release-gate-coverage-floor-check',
                     '--doc-sync-report',
                     str(bundle['doc_sync_path']),
                     '--quality-report',
@@ -14318,6 +14324,9 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     '--python',
                     'python3 -O',
                     '--skip-release-gate-python-optimization-check',
+                    '--skip-release-gate-python-option-optimization-check',
+                    '--skip-release-gate-python-binding-check',
+                    '--skip-release-gate-coverage-floor-check',
                     '--doc-sync-report',
                     str(bundle['doc_sync_path']),
                     '--quality-report',
@@ -15378,6 +15387,10 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     '--python',
                     malicious_python,
                     '--skip-release-gate-python-startup-env-check',
+                    '--skip-release-gate-python-binding-check',
+                    '--skip-release-gate-script-position-check',
+                    '--skip-release-gate-script-anchor-check',
+                    '--skip-release-gate-coverage-floor-check',
                     '--doc-sync-report',
                     str(bundle['doc_sync_path']),
                     '--quality-report',
@@ -19247,6 +19260,8 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     str(SCRIPT_PATH),
                     '--decision-only',
                     '--skip-release-gate-inline-exec-check',
+                    '--skip-release-gate-python-binding-check',
+                    '--skip-release-gate-coverage-floor-check',
                     '--doc-sync-report',
                     str(bundle['doc_sync_path']),
                     '--quality-report',
