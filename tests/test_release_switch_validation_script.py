@@ -4190,6 +4190,73 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             self.assertTrue(summary.get('roadmap_suite_stage_pack_complete'))
             self.assertTrue(summary.get('evidence_cohort_skew_gate_pass'))
 
+    def test_decision_only_keeps_review_queue_pass_when_postgres_evidence_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            bundle = _write_go_decision_evidence_bundle(tmp_path)
+            bundle['postgres_soak_path'].unlink()
+            bundle['ga_suite_path'].write_text(
+                json.dumps(
+                    _plan_payload(
+                        [
+                            'worker_ga',
+                            'review_queue_ga',
+                            'provider_ga',
+                            'calibration_ga',
+                        ]
+                    ),
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + '\n',
+                encoding='utf-8',
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--decision-only',
+                    '--allow-hold',
+                    '--doc-sync-report',
+                    str(bundle['doc_sync_path']),
+                    '--quality-report',
+                    str(bundle['quality_path']),
+                    '--perf-report',
+                    str(bundle['perf_path']),
+                    '--postgres-soak-benchmark-report',
+                    str(bundle['postgres_soak_path']),
+                    '--beta-suite-output',
+                    str(bundle['beta_suite_path']),
+                    '--ga-suite-output',
+                    str(bundle['ga_suite_path']),
+                    '--roadmap-suite-output',
+                    str(bundle['roadmap_suite_path']),
+                    '--release-gate-output',
+                    str(bundle['release_gate_path']),
+                    '--release-standard-doc',
+                    str(bundle['standard_path']),
+                    '--decision-output',
+                    str(bundle['decision_path']),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('Release switch decision=HOLD', completed.stdout)
+
+            decision = json.loads(bundle['decision_path'].read_text(encoding='utf-8'))
+            self.assertEqual(decision.get('decision'), 'HOLD')
+            summary = decision.get('evidence_summary', {})
+            self.assertTrue(summary.get('ga_suite_has_review_queue_ga'))
+            self.assertFalse(summary.get('ga_suite_evidence_pack_complete'))
+            self.assertEqual(summary.get('postgres_dual_write_count'), 0)
+            gate_status = {item.get('name'): item.get('status') for item in decision.get('gates', [])}
+            self.assertEqual(gate_status.get('review_queue_operational'), 'pass')
+            self.assertEqual(gate_status.get('postgres_repository_stable'), 'hold')
+
     def test_script_decision_only_emits_bulk_strategy_view_for_go_decision(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)

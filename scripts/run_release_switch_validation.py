@@ -5369,7 +5369,6 @@ def _evaluate_decision(args: argparse.Namespace) -> dict[str, Any]:
     gate_review_queue = (
         review_queue_stage_present
         and release_gate_evidence_pack_complete
-        and ga_suite_evidence_pack_complete
         and standard_markers.get('review_queue_operational', False)
     )
     gate_publication_views = (
