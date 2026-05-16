@@ -1,1 +1,1 @@
--e .[api,dev]
+-e .[api,dev,postgres]

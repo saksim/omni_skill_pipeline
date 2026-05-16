@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -13,6 +14,13 @@ SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_linux_validation_suite.py'
 
 
 class LinuxValidationSuiteScriptTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._postgres_dsn = os.environ.pop('OMNI_TEST_POSTGRES_DSN', None)
+
+    def tearDown(self) -> None:
+        if self._postgres_dsn is not None:
+            os.environ['OMNI_TEST_POSTGRES_DSN'] = self._postgres_dsn
+
     def test_script_dry_run_emits_default_linux_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_path = Path(tmp_dir) / 'linux-validation-plan.json'
@@ -207,6 +215,33 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
             self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
             self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+
+    def test_env_postgres_dsn_selects_postgres_stages_without_printing_secret(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            output_path = Path(tmp_dir) / 'linux-validation-plan.json'
+            env = os.environ.copy()
+            env['OMNI_TEST_POSTGRES_DSN'] = 'postgresql://user:secret@127.0.0.1:5432/omni_test'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    'python3',
+                    '--dry-run',
+                    '--output',
+                    str(output_path),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('postgres_soak', completed.stdout)
+            self.assertIn('postgres_ga', completed.stdout)
+            self.assertNotIn('postgresql://user:secret', completed.stdout)
+            self.assertNotIn('--postgres-dsn', completed.stdout)
 
     def test_worker_ga_stage_forwards_worker_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -441,35 +476,40 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
 
     def test_keep_going_runs_later_stages_after_failure_and_summarizes_failures(self) -> None:
-        command = (
-            "import sys; print('probe-stage'); "
-            "raise SystemExit(7 if sys.argv[-1].endswith('fail') else 0)"
-        )
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPT_PATH),
-                '--python',
-                '%s -c "%s"' % (sys.executable, command),
-                '--stages',
-                'doc_sync',
-                'quality_regression',
-                '--doc-sync-output',
-                'fail',
-                '--quality-manifest',
-                'ok',
-                '--quality-output',
-                'ok',
-                '--allow-regression',
-                '--keep-going',
-                '--output',
-                '-',
-            ],
-            cwd=REPO_ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            launcher = Path(tmp_dir) / 'fail_launcher.py'
+            launcher.write_text(
+                "from __future__ import annotations\n"
+                "import sys\n"
+                "print('probe-stage')\n"
+                "raise SystemExit(7)\n",
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    '%s %s' % (sys.executable, launcher),
+                    '--stages',
+                    'doc_sync',
+                    'quality_regression',
+                    '--doc-sync-output',
+                    'fail',
+                    '--quality-manifest',
+                    'ok',
+                    '--quality-output',
+                    'ok',
+                    '--allow-regression',
+                    '--keep-going',
+                    '--output',
+                    '-',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
         self.assertEqual(completed.returncode, 7)
         self.assertIn('Running stage: doc_sync', completed.stdout)
         self.assertIn('Running stage: quality_regression', completed.stdout)

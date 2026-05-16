@@ -222,7 +222,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '--postgres-dsn',
-        default=os.getenv('OMNI_TEST_POSTGRES_DSN', ''),
+        default='',
         help='Postgres DSN forwarded into release_gate stage.',
     )
     parser.add_argument(
@@ -612,9 +612,12 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         if str(args.release_gate_output).strip() != '-'
         else '-',
     ]
-    postgres_dsn = str(args.postgres_dsn or '').strip()
-    if postgres_dsn:
+    explicit_postgres_dsn = str(args.postgres_dsn or '').strip()
+    if explicit_postgres_dsn:
+        postgres_dsn = explicit_postgres_dsn
         release_gate_command.extend(['--postgres-dsn', postgres_dsn])
+    else:
+        postgres_dsn = str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip()
     if args.no_coverage:
         release_gate_command.append('--no-coverage')
     if args.allow_regression:
@@ -693,11 +696,16 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
-def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False) -> int:
+def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False, postgres_dsn: str = '') -> int:
     failures: list[tuple[str, int]] = []
+    env_override = None
+    if postgres_dsn:
+        env_override = os.environ.copy()
+        env_override['OMNI_TEST_POSTGRES_DSN'] = postgres_dsn
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
-        completed = subprocess.run(stage.command, check=False)
+        stage_env = env_override if stage.name == 'release_gate' else None
+        completed = subprocess.run(stage.command, check=False, env=stage_env)
         if completed.returncode != 0:
             failures.append((stage.name, completed.returncode))
             print(
@@ -9860,6 +9868,7 @@ def _print_decision_summary(decision_report: dict[str, Any]) -> None:
 def main() -> int:
     args = _parse_args()
 
+    run_code = 0
     stage_specs: list[StageSpec] = []
     if not args.decision_only:
         if not args.stages:
@@ -9885,8 +9894,12 @@ def main() -> int:
         if args.dry_run:
             print('Dry-run enabled: command stages are not executed.')
         else:
-            run_code = _run_stages(stage_specs, keep_going=bool(args.keep_going))
-            if run_code != 0:
+            run_code = _run_stages(
+                stage_specs,
+                keep_going=bool(args.keep_going),
+                postgres_dsn=str(args.postgres_dsn or '').strip() or str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip(),
+            )
+            if run_code != 0 and not args.keep_going:
                 return run_code
 
     decision_report = _evaluate_decision(args)
@@ -9903,6 +9916,8 @@ def main() -> int:
 
     if args.dry_run:
         return 0
+    if not args.decision_only and args.keep_going and run_code != 0:
+        return run_code
     if decision_report.get('decision') == 'HOLD' and not args.allow_hold:
         return 1
     return 0

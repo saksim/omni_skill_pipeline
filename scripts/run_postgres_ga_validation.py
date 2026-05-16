@@ -58,7 +58,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '--postgres-dsn',
-        default=os.getenv('OMNI_TEST_POSTGRES_DSN', ''),
+        default='',
         help='Postgres DSN for integration/benchmark stages. Defaults to OMNI_TEST_POSTGRES_DSN.',
     )
     parser.add_argument(
@@ -103,7 +103,7 @@ def _split_python_command(raw: str) -> list[str]:
 
 
 def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict[str, StageSpec]:
-    postgres_dsn = str(args.postgres_dsn).strip() or '$OMNI_TEST_POSTGRES_DSN'
+    postgres_dsn = str(args.postgres_dsn).strip()
     benchmark_output = str(Path(args.benchmark_output).resolve())
 
     dual_write_benchmark_command = [
@@ -111,11 +111,11 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         'scripts/benchmark_dual_write.py',
         '--iterations',
         str(int(args.benchmark_iterations)),
-        '--postgres-dsn',
-        postgres_dsn,
         '--output',
         benchmark_output,
     ]
+    if postgres_dsn:
+        dual_write_benchmark_command.extend(['--postgres-dsn', postgres_dsn])
     if args.allow_secondary_failures:
         dual_write_benchmark_command.append('--allow-secondary-failures')
 
@@ -242,7 +242,7 @@ def main() -> int:
         print('No stages selected. Use --stages with at least one value.', file=sys.stderr)
         return 2
 
-    postgres_dsn = str(args.postgres_dsn or '').strip()
+    postgres_dsn = str(args.postgres_dsn or '').strip() or str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip()
 
     try:
         python_cmd = _split_python_command(args.python)

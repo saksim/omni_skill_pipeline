@@ -196,7 +196,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '--postgres-dsn',
-        default=os.getenv('OMNI_TEST_POSTGRES_DSN', ''),
+        default='',
         help='Postgres DSN forwarded to postgres soak stage.',
     )
     parser.add_argument(
@@ -392,9 +392,12 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         '--output',
         str(Path(args.postgres_soak_output).resolve()),
     ]
-    postgres_dsn = str(args.postgres_dsn or '').strip()
-    if postgres_dsn:
+    explicit_postgres_dsn = str(args.postgres_dsn or '').strip()
+    if explicit_postgres_dsn:
+        postgres_dsn = explicit_postgres_dsn
         postgres_soak_command.extend(['--postgres-dsn', postgres_dsn])
+    else:
+        postgres_dsn = str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip()
     if args.allow_secondary_failures:
         postgres_soak_command.append('--allow-secondary-failures')
 
@@ -410,7 +413,7 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         '--output',
         str(Path(args.postgres_ga_output).resolve()),
     ]
-    if postgres_dsn:
+    if explicit_postgres_dsn:
         postgres_ga_command.extend(['--postgres-dsn', postgres_dsn])
     if args.allow_secondary_failures:
         postgres_ga_command.append('--allow-secondary-failures')
@@ -545,7 +548,7 @@ def _build_plan(stage_specs: list[StageSpec]) -> dict[str, Any]:
 
 
 def _filter_stage_specs(args: argparse.Namespace, stage_specs: list[StageSpec]) -> list[StageSpec]:
-    postgres_dsn = str(args.postgres_dsn or '').strip()
+    postgres_dsn = str(args.postgres_dsn or '').strip() or str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip()
     if postgres_dsn or args.require_postgres:
         return stage_specs
     filtered = [stage for stage in stage_specs if stage.name not in POSTGRES_STAGES]
@@ -571,11 +574,16 @@ def _write_plan(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
-def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False) -> int:
+def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False, postgres_dsn: str = '') -> int:
     failures: list[tuple[str, int]] = []
+    env_override = None
+    if postgres_dsn:
+        env_override = os.environ.copy()
+        env_override['OMNI_TEST_POSTGRES_DSN'] = postgres_dsn
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
-        completed = subprocess.run(stage.command, check=False)
+        stage_env = env_override if stage.name in POSTGRES_STAGES else None
+        completed = subprocess.run(stage.command, check=False, env=stage_env)
         if completed.returncode != 0:
             failures.append((stage.name, completed.returncode))
             print(
@@ -623,7 +631,11 @@ def main() -> int:
 
     if args.dry_run:
         return 0
-    return _run_stages(stage_specs, keep_going=bool(args.keep_going))
+    return _run_stages(
+        stage_specs,
+        keep_going=bool(args.keep_going),
+        postgres_dsn=str(args.postgres_dsn or '').strip() or str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip(),
+    )
 
 
 if __name__ == '__main__':

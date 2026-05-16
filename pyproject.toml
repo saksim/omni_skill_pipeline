@@ -32,6 +32,9 @@ dev = [
   "jsonschema>=4.23,<5.0",
   "coverage>=7.6,<8.0"
 ]
+postgres = [
+  "psycopg[binary]>=3.2,<4.0"
+]
 
 [project.scripts]
 omni-skill = "omni_skill_pipeline.cli:main"

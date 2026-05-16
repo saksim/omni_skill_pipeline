@@ -34,6 +34,35 @@ STAGE_CODES=()
 STAGE_LOGS=()
 STAGE_STATUS=()
 
+reset_generated_evidence() {
+  local generated_paths=(
+    "coverage.xml"
+    "e11-perf-cost-baseline-report.json"
+    "e11-quality-regression-report.json"
+    "e13-calibration-ga-validation-plan.json"
+    "e13-doc-sync-check-report.json"
+    "e13-linux-validation-suite-plan.json"
+    "e13-postgres-ga-benchmark-report.json"
+    "e13-postgres-ga-validation-plan.json"
+    "e13-postgres-soak-benchmark-report.json"
+    "e13-postgres-soak-plan.json"
+    "e13-provider-ga-validation-plan.json"
+    "e13-release-gate-beta-suite-plan.json"
+    "e13-release-gate-ga-suite-plan.json"
+    "e13-release-gate-roadmap-suite-plan.json"
+    "e13-release-gate-validation-plan.json"
+    "e13-release-switch-decision-report.json"
+    "e13-release-switch-validation-plan.json"
+    "e13-review-queue-ga-validation-plan.json"
+    "e13-roadmap-extension-validation-plan.json"
+    "e13-worker-ga-validation-plan.json"
+  )
+  local relative_path
+  for relative_path in "${generated_paths[@]}"; do
+    rm -f "${BASELINE_DIR}/${relative_path}"
+  done
+}
+
 cleanup_acceptance_container() {
   docker rm -f "${API_CONTAINER_NAME}" >/dev/null 2>&1 || true
   docker volume rm "${API_DRAFTS_VOLUME}" "${API_PUBLISHED_VOLUME}" "${API_TMP_MEDIA_VOLUME}" >/dev/null 2>&1 || true
@@ -58,7 +87,8 @@ Environment overrides:
   RUNTIME_IMAGE_ALIAS          Extra runtime image alias. Default: omni-skill-pipeline:beta
   VERSIONED_RUNTIME_IMAGE_TAG  Versioned runtime tag. Default: omni-skill-pipeline:$RELEASE_ID
   RUNTIME_ENV_FILE             Runtime env file for API acceptance. Default: .env.runtime
-  OMNI_TEST_POSTGRES_DSN       Optional Postgres DSN for GA/release gates.
+  OMNI_TEST_POSTGRES_DSN       Postgres DSN for full GA/release GO. Set via env;
+                               inherited DSNs are not printed in nested plans.
   OMNI_API_KEY                 Optional API key header for acceptance if auth is enabled.
   COVERAGE_FAIL_UNDER          Coverage gate threshold. Default: 50
   SMOKE_PORT                   Container smoke host port. Default: 18000
@@ -428,6 +458,7 @@ package_artifacts() {
   echo "ARTIFACT=${tarball}"
 }
 
+reset_generated_evidence
 capture_meta
 
 run_step source_preflight preflight_source_tree

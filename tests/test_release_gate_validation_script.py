@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -13,6 +14,13 @@ SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_release_gate_validation.py'
 
 
 class ReleaseGateValidationScriptTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._postgres_dsn = os.environ.pop('OMNI_TEST_POSTGRES_DSN', None)
+
+    def tearDown(self) -> None:
+        if self._postgres_dsn is not None:
+            os.environ['OMNI_TEST_POSTGRES_DSN'] = self._postgres_dsn
+
     def test_script_dry_run_emits_default_release_gate_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_path = Path(tmp_dir) / 'release-gate-plan.json'
@@ -155,6 +163,32 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
             self.assertNotIn('--keep-going', completed.stdout)
             self.assertNotIn('--stages ci container_smoke doc_sync', completed.stdout)
 
+    def test_env_postgres_dsn_is_not_printed_in_ga_gate_command(self) -> None:
+        env = os.environ.copy()
+        env['OMNI_TEST_POSTGRES_DSN'] = 'postgresql://user:secret@127.0.0.1:5432/omni_test'
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                '--python',
+                'python3',
+                '--stages',
+                'ga_gate',
+                '--dry-run',
+                '--output',
+                '-',
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('Selected stages: ga_gate', completed.stdout)
+        self.assertNotIn('postgresql://user:secret', completed.stdout)
+        self.assertNotIn('--postgres-dsn', completed.stdout)
+
     def test_keep_going_is_forwarded_to_nested_linux_suites(self) -> None:
         completed = subprocess.run(
             [
@@ -186,32 +220,37 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
             self.assertIn('--keep-going', line)
 
     def test_keep_going_runs_later_release_gates_after_failure_and_summarizes_failures(self) -> None:
-        command = (
-            "import sys; print('release-probe'); "
-            "raise SystemExit(9 if '--stages' in sys.argv else 0)"
-        )
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPT_PATH),
-                '--python',
-                '%s -c "%s"' % (sys.executable, command),
-                '--stages',
-                'beta_gate',
-                'roadmap_gate',
-                '--beta-suite-output',
-                'beta',
-                '--roadmap-suite-output',
-                'roadmap',
-                '--keep-going',
-                '--output',
-                '-',
-            ],
-            cwd=REPO_ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            launcher = Path(tmp_dir) / 'fail_launcher.py'
+            launcher.write_text(
+                "from __future__ import annotations\n"
+                "import sys\n"
+                "print('release-probe')\n"
+                "raise SystemExit(9)\n",
+                encoding='utf-8',
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    '%s %s' % (sys.executable, launcher),
+                    '--stages',
+                    'beta_gate',
+                    'roadmap_gate',
+                    '--beta-suite-output',
+                    'beta',
+                    '--roadmap-suite-output',
+                    'roadmap',
+                    '--keep-going',
+                    '--output',
+                    '-',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
         self.assertEqual(completed.returncode, 9)
         self.assertIn('Running stage: beta_gate', completed.stdout)
         self.assertIn('Running stage: roadmap_gate', completed.stdout)

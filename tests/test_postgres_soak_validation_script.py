@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -13,6 +14,13 @@ SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_postgres_soak_validation.py'
 
 
 class PostgresSoakValidationScriptTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._postgres_dsn = os.environ.pop('OMNI_TEST_POSTGRES_DSN', None)
+
+    def tearDown(self) -> None:
+        if self._postgres_dsn is not None:
+            os.environ['OMNI_TEST_POSTGRES_DSN'] = self._postgres_dsn
+
     def test_script_dry_run_emits_default_postgres_soak_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_path = Path(tmp_dir) / 'postgres-soak-plan.json'

@@ -128,7 +128,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '--postgres-dsn',
-        default=os.getenv('OMNI_TEST_POSTGRES_DSN', ''),
+        default='',
         help='Postgres DSN forwarded into ga gate.',
     )
     parser.add_argument(
@@ -279,9 +279,12 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         '--output',
         str(Path(args.ga_suite_output).resolve()),
     ]
-    postgres_dsn = str(args.postgres_dsn or '').strip()
-    if postgres_dsn:
+    explicit_postgres_dsn = str(args.postgres_dsn or '').strip()
+    if explicit_postgres_dsn:
+        postgres_dsn = explicit_postgres_dsn
         ga_command.extend(['--postgres-dsn', postgres_dsn])
+    else:
+        postgres_dsn = str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip()
     if args.allow_secondary_failures:
         ga_command.append('--allow-secondary-failures')
     if args.calibration_fail_on_mismatch:
@@ -347,11 +350,16 @@ def _write_plan(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
-def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False) -> int:
+def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False, postgres_dsn: str = '') -> int:
     failures: list[tuple[str, int]] = []
+    env_override = None
+    if postgres_dsn:
+        env_override = os.environ.copy()
+        env_override['OMNI_TEST_POSTGRES_DSN'] = postgres_dsn
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
-        completed = subprocess.run(stage.command, check=False)
+        stage_env = env_override if stage.name == 'ga_gate' else None
+        completed = subprocess.run(stage.command, check=False, env=stage_env)
         if completed.returncode != 0:
             failures.append((stage.name, completed.returncode))
             print(
@@ -396,7 +404,11 @@ def main() -> int:
 
     if args.dry_run:
         return 0
-    return _run_stages(stage_specs, keep_going=bool(args.keep_going))
+    return _run_stages(
+        stage_specs,
+        keep_going=bool(args.keep_going),
+        postgres_dsn=str(args.postgres_dsn or '').strip() or str(os.getenv('OMNI_TEST_POSTGRES_DSN', '')).strip(),
+    )
 
 
 if __name__ == '__main__':

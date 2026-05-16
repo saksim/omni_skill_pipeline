@@ -3791,6 +3791,13 @@ def _write_go_decision_evidence_bundle(tmp_path: Path) -> dict[str, Path]:
 
 
 class ReleaseSwitchValidationScriptTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._postgres_dsn = os.environ.pop('OMNI_TEST_POSTGRES_DSN', None)
+
+    def tearDown(self) -> None:
+        if self._postgres_dsn is not None:
+            os.environ['OMNI_TEST_POSTGRES_DSN'] = self._postgres_dsn
+
     def test_script_dry_run_emits_default_release_switch_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
@@ -3911,6 +3918,34 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
         self.assertNotIn('scripts/run_tp_tests.py', completed.stdout)
         self.assertNotIn('scripts/run_doc_sync_check.py --output', completed.stdout)
 
+    def test_env_postgres_dsn_is_not_printed_in_release_gate_command(self) -> None:
+        env = os.environ.copy()
+        env['OMNI_TEST_POSTGRES_DSN'] = 'postgresql://user:secret@127.0.0.1:5432/omni_test'
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                '--python',
+                'python3',
+                '--stages',
+                'release_gate',
+                '--dry-run',
+                '--output',
+                '-',
+                '--decision-output',
+                '-',
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('Selected stages: release_gate', completed.stdout)
+        self.assertNotIn('postgresql://user:secret', completed.stdout)
+        self.assertNotIn('--postgres-dsn', completed.stdout)
+
     def test_keep_going_is_forwarded_to_release_gate_stage(self) -> None:
         completed = subprocess.run(
             [
@@ -3942,36 +3977,44 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
         self.assertIn('--keep-going', command_lines[0])
 
     def test_keep_going_runs_later_release_switch_stages_after_failure(self) -> None:
-        command = (
-            "import sys; print('switch-probe'); "
-            "raise SystemExit(8 if '--coverage-fail-under' in sys.argv else 0)"
-        )
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPT_PATH),
-                '--python',
-                '%s -c "%s"' % (sys.executable, command),
-                '--stages',
-                'release_gate',
-                'doc_sync',
-                '--keep-going',
-                '--output',
-                '-',
-                '--decision-output',
-                '-',
-                '--allow-hold',
-            ],
-            cwd=REPO_ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        self.assertEqual(completed.returncode, 8)
-        self.assertIn('Running stage: release_gate', completed.stdout)
-        self.assertIn('Running stage: doc_sync', completed.stdout)
-        self.assertIn('Stage failures summary:', completed.stderr)
-        self.assertIn('- release_gate (exit=8)', completed.stderr)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            launcher = Path(tmp_dir) / 'fail_launcher.py'
+            launcher.write_text(
+                "from __future__ import annotations\n"
+                "import sys\n"
+                "print('switch-probe')\n"
+                "raise SystemExit(8)\n",
+                encoding='utf-8',
+            )
+            decision_path = Path(tmp_dir) / 'release-switch-decision.json'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    '%s %s' % (sys.executable, launcher),
+                    '--stages',
+                    'release_gate',
+                    'doc_sync',
+                    '--keep-going',
+                    '--output',
+                    '-',
+                    '--decision-output',
+                    str(decision_path),
+                    '--allow-hold',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 8)
+            self.assertIn('Running stage: release_gate', completed.stdout)
+            self.assertIn('Running stage: doc_sync', completed.stdout)
+            self.assertIn('Stage failures summary:', completed.stderr)
+            self.assertIn('- release_gate (exit=8)', completed.stderr)
+            self.assertIn('Decision report written:', completed.stdout)
+            self.assertTrue(decision_path.exists())
 
     def test_script_decision_only_can_emit_go_decision(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

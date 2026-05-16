@@ -47,6 +47,15 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         self.assertIn("run_or_plan_step docker_preflight docker ps", content)
         self.assertIn("run_step source_preflight preflight_source_tree", content)
 
+    def test_script_resets_generated_evidence_before_release_run(self) -> None:
+        content = SCRIPT_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("reset_generated_evidence()", content)
+        self.assertIn("reset_generated_evidence\ncapture_meta", content)
+        self.assertIn("e13-release-switch-decision-report.json", content)
+        self.assertIn("e13-postgres-soak-benchmark-report.json", content)
+        self.assertIn("e13-postgres-ga-benchmark-report.json", content)
+
     def test_docker_context_keeps_runtime_contracts_visible(self) -> None:
         root_ignore = ROOT_DOCKERIGNORE_PATH.read_text(encoding="utf-8")
         test_ignore = TEST_DOCKERIGNORE_PATH.read_text(encoding="utf-8")
