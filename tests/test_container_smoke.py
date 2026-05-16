@@ -31,7 +31,7 @@ class ContainerSmokeScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("Plan: docker build -t omni:test .", completed.stdout)
-        self.assertIn("Plan: docker run --rm -d --name omni-smoke -p 18080:8000 omni:test", completed.stdout)
+        self.assertIn("Plan: docker run -d --name omni-smoke -p 18080:8000 omni:test", completed.stdout)
         self.assertIn("Plan: poll http://127.0.0.1:18080/healthz", completed.stdout)
 
     def test_skip_build_and_run_returns_usage_error(self) -> None:

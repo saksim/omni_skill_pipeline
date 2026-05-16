@@ -114,7 +114,7 @@ def _print_plan(config: SmokeConfig) -> None:
         print("Plan: docker build -t %s ." % config.image_tag)
     if not config.skip_run:
         print(
-            "Plan: docker run --rm -d --name %s -p %s:8000 %s"
+            "Plan: docker run -d --name %s -p %s:8000 %s"
             % (config.container_name, config.host_port, config.image_tag)
         )
         print("Plan: poll %s" % config.health_url)
@@ -155,7 +155,6 @@ def main() -> int:
         [
             "docker",
             "run",
-            "--rm",
             "-d",
             "--name",
             config.container_name,

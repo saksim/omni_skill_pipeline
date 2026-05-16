@@ -45,7 +45,7 @@ export RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 裸 Linux 宿主机只要求：
 
 - Docker Engine 已安装，且当前用户执行 `docker ps` 不报权限错误。
-- 可访问镜像源以拉取 `python:3.11-slim`，并可执行 `docker build`、`docker run --rm`、`docker run --rm -d`、`docker exec`、`docker logs`、`docker cp`、`docker rm -f`。
+- 可访问镜像源以拉取 `python:3.11-slim`，并可执行 `docker build`、`docker run --rm`、`docker run -d`、`docker run --rm -d`、`docker exec`、`docker logs`、`docker cp`、`docker rm -f`。
 - 基础工具：`bash`、`curl`、`tar`。若没有 `git`，由发布机上传源码压缩包后解压。
 - 如需完整 PostgreSQL 验证，准备 `OMNI_TEST_POSTGRES_DSN`；没有该 DSN 时只能做非 PostgreSQL 部分或得到 HOLD。
 

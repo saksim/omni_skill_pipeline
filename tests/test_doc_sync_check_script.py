@@ -167,7 +167,7 @@ Use Dockerfile.test and python:3.11-slim for tests and release.
 
 ## Host Assumptions
 
-Docker Engine can run docker build, docker run --rm, docker run --rm -d, --network host, docker exec, docker logs, docker cp, docker rm -f.
+Docker Engine can run docker build, docker run --rm, docker run -d, --network host, docker exec, docker logs, docker cp, docker rm -f.
 
 ## Python Contract
 
@@ -218,7 +218,7 @@ docker tag "omni-skill-pipeline:${RELEASE_ID}" omni-skill-pipeline:stable
 ## Deploy
 
 ```bash
-docker run --rm -d --name omni-skill-beta -p 8000:8000 omni-skill-pipeline:beta
+docker run -d --name omni-skill-beta -p 8000:8000 omni-skill-pipeline:beta
 docker exec omni-skill-beta python --version
 curl -fsS http://127.0.0.1:8000/healthz
 ```

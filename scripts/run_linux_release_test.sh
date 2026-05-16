@@ -214,6 +214,12 @@ preflight_source_tree() {
     "requirements-dev.txt"
     "README.md"
     "src/omni_skill_pipeline"
+    "src/omni_skill_pipeline/adapters/__init__.py"
+    "src/omni_skill_pipeline/adapters/audio.py"
+    "src/omni_skill_pipeline/adapters/image.py"
+    "src/omni_skill_pipeline/adapters/tabular.py"
+    "src/omni_skill_pipeline/adapters/text.py"
+    "src/omni_skill_pipeline/adapters/video.py"
     "apps/api/main.py"
     "scripts/run_ci.py"
     "scripts/run_container_smoke.py"
@@ -304,7 +310,7 @@ api_acceptance() {
   fi
 
   docker rm -f "${API_CONTAINER_NAME}" >/dev/null 2>&1 || true
-  docker run --rm -d \
+  docker run -d \
     --name "${API_CONTAINER_NAME}" \
     -p "${API_ACCEPTANCE_PORT}:8000" \
     --env-file "${runtime_env}" \
@@ -312,8 +318,19 @@ api_acceptance() {
     -v "${API_PUBLISHED_VOLUME}:/app/skills/published" \
     -v "${API_TMP_MEDIA_VOLUME}:/app/.tmp_omni_media" \
     "${RUNTIME_IMAGE_TAG}"
+  local run_code=$?
+  if [[ "${run_code}" != "0" ]]; then
+    return "${run_code}"
+  fi
 
-  poll_url "${base_url}/healthz" 30 1 || code=$?
+  poll_url "${base_url}/healthz" 30 1
+  code=$?
+  if [[ "${code}" != "0" ]]; then
+    docker logs --tail 300 "${API_CONTAINER_NAME}" || true
+    docker rm -f "${API_CONTAINER_NAME}" >/dev/null 2>&1 || true
+    docker volume rm "${API_DRAFTS_VOLUME}" "${API_PUBLISHED_VOLUME}" "${API_TMP_MEDIA_VOLUME}" >/dev/null 2>&1 || true
+    return "${code}"
+  fi
   docker_curl -fsS --max-time 10 "${base_url}/v1/templates/skill" >/dev/null || code=$?
   docker_curl -fsS -X POST "${base_url}/v1/distill/text" \
     --max-time 30 \

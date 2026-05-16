@@ -439,7 +439,7 @@ def _check_docker_zero_to_release_runbook_completeness(
         'docker build -f Dockerfile.test -t omni-skill-pipeline:test .',
         'docker build -t omni-skill-pipeline:beta .',
         'docker run --rm',
-        'docker run --rm -d',
+        'docker run -d',
         '--network host',
         'docker exec omni-skill-beta python --version',
         'docker cp',
