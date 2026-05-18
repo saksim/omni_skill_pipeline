@@ -15,6 +15,9 @@ data/
 !docs/current/contracts/**
 examples/
 infra/
+!infra/
+!infra/sql/
+!infra/sql/001_init.sql
 .tmp_omni_media/
 skills/drafts/
 skills/published/

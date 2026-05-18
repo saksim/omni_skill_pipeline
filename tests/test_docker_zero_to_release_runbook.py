@@ -82,14 +82,17 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
         self.assertIn("COPY Dockerfile Dockerfile.test Dockerfile.test.dockerignore .dockerignore ./", dockerfile)
         self.assertIn("COPY tests ./tests", dockerfile)
         self.assertIn("COPY scripts ./scripts", dockerfile)
+        self.assertIn("COPY infra/sql ./infra/sql", dockerfile)
         self.assertIn("docker-cli", dockerfile)
         self.assertIn("docker --version", dockerfile)
         self.assertIn('"--isolate-test-files"', dockerfile)
         self.assertNotIn("tests/", dockerignore)
+        self.assertIn("!infra/sql/001_init.sql", dockerignore)
         self.assertIn("tests/", root_dockerignore)
         self.assertIn("!tests/", root_dockerignore)
         self.assertIn("!tests/**", root_dockerignore)
         self.assertIn("tests/.tmp_runtime/", root_dockerignore)
+        self.assertIn("!infra/sql/001_init.sql", root_dockerignore)
 
 
 if __name__ == "__main__":

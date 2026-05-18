@@ -28,6 +28,7 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         self.assertIn("src/omni_skill_pipeline/adapters/tabular.py", content)
         self.assertIn("src/omni_skill_pipeline/adapters/text.py", content)
         self.assertIn("src/omni_skill_pipeline/adapters/video.py", content)
+        self.assertIn("infra/sql/001_init.sql", content)
         self.assertIn("git check-ignore -v docs/current/contracts", content)
 
     def test_script_skips_runtime_dependent_stages_after_runtime_build_failure(self) -> None:
@@ -72,6 +73,7 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         for content in (root_ignore, test_ignore):
             self.assertIn("!docs/current/contracts/", content)
             self.assertIn("!docs/current/contracts/**", content)
+            self.assertIn("!infra/sql/001_init.sql", content)
 
     def test_runtime_dockerfile_copies_contract_files_explicitly(self) -> None:
         content = DOCKERFILE_PATH.read_text(encoding="utf-8")

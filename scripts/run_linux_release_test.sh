@@ -274,6 +274,7 @@ preflight_source_tree() {
     "scripts/run_linux_validation_suite.py"
     "scripts/run_release_switch_validation.py"
     "tests"
+    "infra/sql/001_init.sql"
     "docs/current/contracts/SKILL.template.md"
     "docs/current/contracts/skill.schema.json"
     "docs/current/contracts/skill-graph.schema.json"
