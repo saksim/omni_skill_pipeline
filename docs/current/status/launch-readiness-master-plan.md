@@ -4,6 +4,8 @@
 > Scope: launch-target assessment, GLM5.1 comparison, feature inventory, gap decomposition, Codex task cards
 > Sources: `src/`, `tests/`, `.github/workflows/ci.yml`, `docs/glm-5.1-project-assessment.md`
 
+> 2026-05-18 status update: this document is now a historical baseline. Many L1/L2 gaps listed below have since been closed by later TP-E13 work and the latest Linux release run reached `GO`. Use [CURRENT_STATUS.md](CURRENT_STATUS.md) and [2026-05-18-controlled-business-trial-iteration.md](2026-05-18-controlled-business-trial-iteration.md) as the current execution entry.
+
 ## 判词
 
 项目当前不是“功能没做出来”，而是“核心蒸馏链已成、生产外壳未成”。  

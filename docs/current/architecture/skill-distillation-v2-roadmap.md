@@ -1,5 +1,7 @@
 # Skill Distillation V2 Roadmap
 
+> 2026-05-18 status update: Phase 1 is complete. The latest Linux release run reached `GO`, and current execution has moved from core V2 model rollout to controlled business trial and Agent Skill Compiler validation. See [../status/CURRENT_STATUS.md](../status/CURRENT_STATUS.md) and [../status/2026-05-18-controlled-business-trial-iteration.md](../status/2026-05-18-controlled-business-trial-iteration.md).
+
 ## 判词
 
 V2 不能一口吞天。正确路径不是推倒重来，而是沿着“模型先行、主链渐进替换、存储双写、评审闭环先落地”的顺序分阶段推进。
@@ -66,6 +68,8 @@ Phase 7  多视图发布与 V1 收口
 - 任意后续改动都能与 Phase 0 基线做对比
 
 ## 4. Phase 1：领域模型升级
+
+Status: Complete as of 2026-05-18. The implementation now has serializable V2 models, compatibility transforms, corpus/publication/review coverage, and release-contract evidence through the latest `GO` release run.
 
 ### 目标
 

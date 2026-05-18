@@ -73,6 +73,7 @@ python scripts/run_ci.py
 - 当前状态: [docs/current/status/CURRENT_STATUS.md](docs/current/status/CURRENT_STATUS.md)
 - 上线整合总卷: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
 - 蒸馏平台战略评估: [docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md](docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md)
+- 受控业务试运行下一迭代: [docs/current/status/2026-05-18-controlled-business-trial-iteration.md](docs/current/status/2026-05-18-controlled-business-trial-iteration.md)
 - 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)
 - API: [docs/current/operations/api.md](docs/current/operations/api.md)
 - CLI: [docs/current/operations/cli.md](docs/current/operations/cli.md)
@@ -87,10 +88,12 @@ python scripts/run_ci.py
 ## 当前工程判断
 
 - 多模态主链已经可跑通，并有 `unittest` 回归覆盖。
+- 最新 Linux release run 已达到 `GO`，当前目标从补 Beta 阻断项调整为受控业务试运行。
 - `test_mvp.py` 已覆盖 text / audio / image / video / tabular 主路径。
 - `test_v2_schema_and_corpus.py` 已覆盖 corpus、publication、quality、review artifacts 落盘。
 - API schema validation、auth、rate limiting、error contract、trace context、review queue、worker retry/idempotency、Postgres repository 与 release gate 已逐步落地。
-- 短期最弱环节不是主链能力，而是最后一公里：需要把内部 `SkillDocument / SkillGraph` 编译成 Codex / Claude Code / OpenCode 可发现、可触发、可执行的 agent skill package。
+- 受控业务试运行阶段要求限制客户/团队、限制多模态场景、限制数据范围，所有产物默认人工 REVIEW。
+- 短期最弱环节不是主链能力，而是最后一公里：需要把内部 `SkillDocument / SkillGraph` 稳定编译成 Codex / Claude Code / OpenCode 可发现、可触发、可执行的 agent skill package，并用真实业务闭环证明质量。
 
 ## 目录骨架
 

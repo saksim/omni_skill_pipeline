@@ -2,30 +2,59 @@
 
 ## 判词
 
-当前项目的上线缺口与任务卡，仍以 [launch-readiness-master-plan.md](launch-readiness-master-plan.md) 为历史基线；当前战略定位、竞争判断与后续演化方向，以 [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md) 为准。
+截至 2026-05-18，最新 Linux release run 已从连续 `HOLD` 修复到 `GO`。当前事实口径是：V2 Roadmap 的 Phase 1 功能开发已完成，且项目已经越过早期 L1 阻断项，具备受控业务试运行条件；但这不等于无边界正式 GA。
+
+当前上线目标已调整为 **受控业务试运行**：限定客户/团队数量、限定多模态输入场景、限定数据范围，所有产物默认进入人工 REVIEW。试运行跑完一轮真实业务闭环后，再根据质量、成本、故障率、人工修改距离和 agent 使用成功率决定是否推进正式 GA。
 
 ## 当前入口
 
 - 上线整合总卷: [launch-readiness-master-plan.md](launch-readiness-master-plan.md)
 - 蒸馏平台战略评估: [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md)
+- 受控业务试运行下一迭代: [2026-05-18-controlled-business-trial-iteration.md](2026-05-18-controlled-business-trial-iteration.md)
 - 历史状态快照: [../../history/status/2026-04-24-current-status-pre-launch-master-plan.md](../../history/status/2026-04-24-current-status-pre-launch-master-plan.md)
 - GLM5.1 旧评估归档: [../../history/assessments/2026-04-22-glm-5.1-project-assessment.md](../../history/assessments/2026-04-22-glm-5.1-project-assessment.md)
 
 ## 当前结论
 
 - 内网试运行：可用
-- 受控外部 Beta：可谨慎承诺，需限制客户数量、数据范围与使用场景
-- 单团队早期 GA：接近但仍需真实负载、真实样本、质量基准与运行手册验证
+- 受控业务试运行：可执行，必须限制客户/团队数量、数据范围与使用场景，所有产物默认人工 REVIEW
+- 受控外部 Beta：可谨慎承诺，但应先以受控业务试运行收集真实质量、成本、故障和人工审核数据
+- 单团队早期 GA：接近但仍需真实负载、真实样本、质量基准、运行手册和 agent-native skill package 验证
 - 多租户平台化 SaaS：不应承诺，仍缺租户隔离、权限模型、配额体系、协作 UI 与成本治理
 - 短期战略定位：优先做 Agent Skill Compiler，把任意资料快速编译成 Codex / Claude Code / OpenCode 可用的 `SKILL.md`
 - 长期战略定位：技能蒸馏与治理层，而不是通用 LLM observability 平台
 
+## 最新 GO 证据
+
+- 用户最新 release artifact：`release-artifacts-20260518T080402Z.tar.gz`
+- Linux release summary：`overall PASS`
+- Release switch decision：`GO`
+- Gate summary：`gates(pass=47 hold=0)`
+- 已确认关键门禁：release contract、doc sync、release gate evidence pack、Postgres soak / dual-write、worker GA、provider GA、review queue GA、calibration GA、roadmap extension、quality/perf regression。
+- Phase 1 功能验收：`Corpus`、`EvidenceNode`、`SemanticAtom`、`SkillGraph`、`Publication`、枚举、序列化、V1 兼容转换和 `SkillGraph -> SkillDocument` 最小转换均已落地并被测试覆盖。
+
+## 已完成任务点归档
+
+以下 2026-04-24 总卷中曾列为 Beta/GA 缺口的能力，当前已不再作为受控试运行阻断项：
+
+- Corpus API / CLI / worker 路径已具备基础能力。
+- API typed request validation、stable error contract、auth、rate limiting、readiness check 已具备基础能力。
+- API 自动化测试、coverage fail-under、container smoke、release runbook 已接入发布链。
+- Structured logging、request/trace context、provider timeout/retry/circuit breaker/failure budget、provider audit footprint 已具备基础能力。
+- Worker retry、idempotency、claim/lock、多任务类型硬化已具备基础能力。
+- Review queue repository/service/API/feedback consumer 以及最小 operations surface 已具备基础能力。
+- Artifact repository abstraction、Postgres repository、dual-write repository、Postgres GA validation、dual-write benchmark 已具备基础能力。
+- Similarity retrieval、lifecycle `new/revise/merge/supersede/reject`、lineage link、多视图 publication 已具备基础能力。
+- Release switch 已升级为完整 `GO/HOLD` 证据闭环，默认校验证据 freshness、cohort skew、stage contract、script anchor、python/env bypass、coverage floor、relaxed flags、dry-run 等门禁。
+
+保留 [launch-readiness-master-plan.md](launch-readiness-master-plan.md) 作为历史基线。后续执行入口以 [2026-05-18-controlled-business-trial-iteration.md](2026-05-18-controlled-business-trial-iteration.md) 为准。
+
 ## 下一跳
 
-1. 先读总卷中的功能矩阵
-2. 再读蒸馏平台战略评估，确认 Skill Compiler 优先级、目标导出格式与后置事项
-3. 再按任务卡顺序执行 `LC-L1-*`
-4. 完成 Beta 阻断项后，再推进 `LC-L2-*`
+1. 先读 [2026-05-18-controlled-business-trial-iteration.md](2026-05-18-controlled-business-trial-iteration.md)，确认受控业务试运行边界与任务卡。
+2. 再读 [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md)，确认 Skill Compiler 优先级、目标导出格式与后置事项。
+3. 执行 `CBT-*` 任务卡，优先补齐试运行样本、人工 REVIEW、质量/成本/故障采集和 agent-native package 闭环。
+4. 试运行闭环达标后，再决定是否推进单团队早期 GA。
 
 ## TP-E13-03 Release Switch Standard
 
