@@ -153,6 +153,7 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
                 completed.stdout,
             )
             self.assertIn('--postgres-dsn postgresql://validator', completed.stdout)
+            self.assertIn('--require-postgres', completed.stdout)
             self.assertIn('--postgres-soak-iterations 88', completed.stdout)
             self.assertIn('--postgres-ga-iterations 99', completed.stdout)
             self.assertIn('--allow-secondary-failures', completed.stdout)

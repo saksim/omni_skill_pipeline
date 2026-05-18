@@ -16,7 +16,9 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         content = SCRIPT_PATH.read_text(encoding="utf-8")
 
         self.assertIn("preflight_source_tree()", content)
+        self.assertIn("preflight_release_environment()", content)
         self.assertIn("run_step source_preflight preflight_source_tree", content)
+        self.assertIn("missing OMNI_TEST_POSTGRES_DSN", content)
         self.assertIn("docs/current/contracts/SKILL.template.md", content)
         self.assertIn("docs/current/contracts/skill.schema.json", content)
         self.assertIn("docs/current/contracts/skill-graph.schema.json", content)
@@ -55,6 +57,13 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         self.assertIn("e13-release-switch-decision-report.json", content)
         self.assertIn("e13-postgres-soak-benchmark-report.json", content)
         self.assertIn("e13-postgres-ga-benchmark-report.json", content)
+
+    def test_release_validation_requires_postgres_evidence(self) -> None:
+        content = SCRIPT_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("--require-postgres", content)
+        self.assertIn("postgres_dsn_configured=true", content)
+        self.assertIn("postgres_dsn_configured=false", content)
 
     def test_docker_context_keeps_runtime_contracts_visible(self) -> None:
         root_ignore = ROOT_DOCKERIGNORE_PATH.read_text(encoding="utf-8")

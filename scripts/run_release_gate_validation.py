@@ -266,6 +266,7 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
         'review_queue_ga',
         'provider_ga',
         'calibration_ga',
+        '--require-postgres',
         '--postgres-soak-iterations',
         str(int(args.postgres_soak_iterations)),
         '--postgres-ga-iterations',

@@ -226,11 +226,29 @@ capture_meta() {
     echo "release_id=${RELEASE_ID}"
     echo "repo_root=${REPO_ROOT}"
     echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    if [[ -n "${OMNI_TEST_POSTGRES_DSN:-}" ]]; then
+      echo "postgres_dsn_configured=true"
+    else
+      echo "postgres_dsn_configured=false"
+    fi
   } > "${META_DIR}/run.env"
   git rev-parse HEAD > "${META_DIR}/git-head.txt" 2>&1 || true
   git status --short > "${META_DIR}/git-status.txt" 2>&1 || true
   docker version > "${META_DIR}/docker-version.txt" 2>&1 || true
   docker info > "${META_DIR}/docker-info.txt" 2>&1 || true
+}
+
+preflight_release_environment() {
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    return 0
+  fi
+  if [[ -n "${OMNI_TEST_POSTGRES_DSN:-}" ]]; then
+    return 0
+  fi
+
+  echo "missing OMNI_TEST_POSTGRES_DSN; full release validation requires Postgres evidence." >&2
+  echo "Set OMNI_TEST_POSTGRES_DSN='postgresql://omni:omni_pass@127.0.0.1:5432/omni_test' before running this script." >&2
+  return 1
 }
 
 preflight_source_tree() {
@@ -277,6 +295,8 @@ preflight_source_tree() {
       code=1
     fi
   fi
+
+  preflight_release_environment || code=1
 
   return "${code}"
 }
@@ -527,6 +547,7 @@ if stage_succeeded build_test_image && runtime_image_ready; then
       python scripts/run_linux_validation_suite.py \
         --python python3 \
         --keep-going \
+        --require-postgres \
         --container-image-tag "${RUNTIME_IMAGE_TAG}"
 else
   skip_step linux_validation_suite "build_test_image or build_runtime_image did not pass"
