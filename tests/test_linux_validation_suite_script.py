@@ -516,6 +516,41 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
         self.assertIn('Stage failures summary:', completed.stderr)
         self.assertIn('- doc_sync (exit=7)', completed.stderr)
 
+    def test_non_postgres_stages_do_not_inherit_postgres_dsn(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            launcher = Path(tmp_dir) / 'env_probe.py'
+            launcher.write_text(
+                "from __future__ import annotations\n"
+                "import os\n"
+                "import sys\n"
+                "print('dsn-visible=%s' % ('OMNI_TEST_POSTGRES_DSN' in os.environ))\n"
+                "raise SystemExit(3 if 'OMNI_TEST_POSTGRES_DSN' in os.environ else 0)\n",
+                encoding='utf-8',
+            )
+            env = os.environ.copy()
+            env['OMNI_TEST_POSTGRES_DSN'] = 'postgresql://user:secret@127.0.0.1:5432/omni_test'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    '%s %s' % (sys.executable, launcher),
+                    '--stages',
+                    'doc_sync',
+                    '--doc-sync-output',
+                    'probe',
+                    '--output',
+                    '-',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('dsn-visible=False', completed.stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

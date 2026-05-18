@@ -350,15 +350,22 @@ def _write_plan(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 
+def _stage_environment(*, include_postgres_dsn: bool, postgres_dsn: str) -> dict[str, str]:
+    env = os.environ.copy()
+    env.pop('OMNI_TEST_POSTGRES_DSN', None)
+    if include_postgres_dsn and postgres_dsn:
+        env['OMNI_TEST_POSTGRES_DSN'] = postgres_dsn
+    return env
+
+
 def _run_stages(stage_specs: list[StageSpec], *, keep_going: bool = False, postgres_dsn: str = '') -> int:
     failures: list[tuple[str, int]] = []
-    env_override = None
-    if postgres_dsn:
-        env_override = os.environ.copy()
-        env_override['OMNI_TEST_POSTGRES_DSN'] = postgres_dsn
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
-        stage_env = env_override if stage.name == 'ga_gate' else None
+        stage_env = _stage_environment(
+            include_postgres_dsn=stage.name == 'ga_gate',
+            postgres_dsn=postgres_dsn,
+        )
         completed = subprocess.run(stage.command, check=False, env=stage_env)
         if completed.returncode != 0:
             failures.append((stage.name, completed.returncode))

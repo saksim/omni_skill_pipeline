@@ -4016,6 +4016,50 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             self.assertIn('Decision report written:', completed.stdout)
             self.assertTrue(decision_path.exists())
 
+    def test_postgres_dsn_only_reaches_release_gate_runtime(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            launcher = Path(tmp_dir) / 'env_probe.py'
+            launcher.write_text(
+                "from __future__ import annotations\n"
+                "import os\n"
+                "import sys\n"
+                "script = sys.argv[1] if len(sys.argv) > 1 else ''\n"
+                "dsn_visible = 'OMNI_TEST_POSTGRES_DSN' in os.environ\n"
+                "print('%s dsn-visible=%s' % (script, dsn_visible))\n"
+                "if script.endswith('run_release_gate_validation.py'):\n"
+                "    raise SystemExit(0 if dsn_visible else 5)\n"
+                "raise SystemExit(4 if dsn_visible else 0)\n",
+                encoding='utf-8',
+            )
+            decision_path = Path(tmp_dir) / 'release-switch-decision.json'
+            env = os.environ.copy()
+            env['OMNI_TEST_POSTGRES_DSN'] = 'postgresql://user:secret@127.0.0.1:5432/omni_test'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    '%s %s' % (sys.executable, launcher),
+                    '--stages',
+                    'release_gate',
+                    'doc_sync',
+                    '--keep-going',
+                    '--output',
+                    '-',
+                    '--decision-output',
+                    str(decision_path),
+                    '--allow-hold',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('scripts/run_release_gate_validation.py dsn-visible=True', completed.stdout)
+        self.assertIn('scripts/run_doc_sync_check.py dsn-visible=False', completed.stdout)
+
     def test_script_decision_only_can_emit_go_decision(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)

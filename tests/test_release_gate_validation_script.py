@@ -257,6 +257,48 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
         self.assertIn('Stage failures summary:', completed.stderr)
         self.assertIn('- beta_gate (exit=9)', completed.stderr)
 
+    def test_postgres_dsn_only_reaches_ga_gate_runtime(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            launcher = Path(tmp_dir) / 'env_probe.py'
+            launcher.write_text(
+                "from __future__ import annotations\n"
+                "import os\n"
+                "import sys\n"
+                "stage = sys.argv[sys.argv.index('--stages') + 1]\n"
+                "dsn_visible = 'OMNI_TEST_POSTGRES_DSN' in os.environ\n"
+                "print('%s dsn-visible=%s' % (stage, dsn_visible))\n"
+                "if stage == 'postgres_soak':\n"
+                "    raise SystemExit(0 if dsn_visible else 5)\n"
+                "raise SystemExit(4 if dsn_visible else 0)\n",
+                encoding='utf-8',
+            )
+            env = os.environ.copy()
+            env['OMNI_TEST_POSTGRES_DSN'] = 'postgresql://user:secret@127.0.0.1:5432/omni_test'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    '%s %s' % (sys.executable, launcher),
+                    '--stages',
+                    'beta_gate',
+                    'ga_gate',
+                    'roadmap_gate',
+                    '--keep-going',
+                    '--output',
+                    '-',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('ci dsn-visible=False', completed.stdout)
+        self.assertIn('postgres_soak dsn-visible=True', completed.stdout)
+        self.assertIn('roadmap_extension dsn-visible=False', completed.stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

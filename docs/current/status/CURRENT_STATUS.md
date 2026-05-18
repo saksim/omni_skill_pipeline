@@ -2,25 +2,30 @@
 
 ## 判词
 
-当前项目的主判断、GLM 对比、上线缺口与任务卡，统一以 [launch-readiness-master-plan.md](launch-readiness-master-plan.md) 为准。
+当前项目的上线缺口与任务卡，仍以 [launch-readiness-master-plan.md](launch-readiness-master-plan.md) 为历史基线；当前战略定位、竞争判断与后续演化方向，以 [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md) 为准。
 
 ## 当前入口
 
 - 上线整合总卷: [launch-readiness-master-plan.md](launch-readiness-master-plan.md)
+- 蒸馏平台战略评估: [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md)
 - 历史状态快照: [../../history/status/2026-04-24-current-status-pre-launch-master-plan.md](../../history/status/2026-04-24-current-status-pre-launch-master-plan.md)
 - GLM5.1 旧评估归档: [../../history/assessments/2026-04-22-glm-5.1-project-assessment.md](../../history/assessments/2026-04-22-glm-5.1-project-assessment.md)
 
 ## 当前结论
 
 - 内网试运行：可用
-- 受控外部 Beta：尚需补齐 API、可观测性、发布门禁
-- 正式 GA：尚需补齐 worker 语义、repository abstraction、持久层与 review queue
+- 受控外部 Beta：可谨慎承诺，需限制客户数量、数据范围与使用场景
+- 单团队早期 GA：接近但仍需真实负载、真实样本、质量基准与运行手册验证
+- 多租户平台化 SaaS：不应承诺，仍缺租户隔离、权限模型、配额体系、协作 UI 与成本治理
+- 短期战略定位：优先做 Agent Skill Compiler，把任意资料快速编译成 Codex / Claude Code / OpenCode 可用的 `SKILL.md`
+- 长期战略定位：技能蒸馏与治理层，而不是通用 LLM observability 平台
 
 ## 下一跳
 
 1. 先读总卷中的功能矩阵
-2. 再按任务卡顺序执行 `LC-L1-*`
-3. 完成 Beta 阻断项后，再推进 `LC-L2-*`
+2. 再读蒸馏平台战略评估，确认 Skill Compiler 优先级、目标导出格式与后置事项
+3. 再按任务卡顺序执行 `LC-L1-*`
+4. 完成 Beta 阻断项后，再推进 `LC-L2-*`
 
 ## TP-E13-03 Release Switch Standard
 

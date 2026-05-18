@@ -72,6 +72,7 @@ python scripts/run_ci.py
 - V2 施工任务单: [docs/current/architecture/skill-distillation-v2-work-orders.md](docs/current/architecture/skill-distillation-v2-work-orders.md)
 - 当前状态: [docs/current/status/CURRENT_STATUS.md](docs/current/status/CURRENT_STATUS.md)
 - 上线整合总卷: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
+- 蒸馏平台战略评估: [docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md](docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md)
 - 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)
 - API: [docs/current/operations/api.md](docs/current/operations/api.md)
 - CLI: [docs/current/operations/cli.md](docs/current/operations/cli.md)
@@ -88,7 +89,8 @@ python scripts/run_ci.py
 - 多模态主链已经可跑通，并有 `unittest` 回归覆盖。
 - `test_mvp.py` 已覆盖 text / audio / image / video / tabular 主路径。
 - `test_v2_schema_and_corpus.py` 已覆盖 corpus、publication、quality、review artifacts 落盘。
-- 当前最弱环节不是主链能力，而是 API 外部化前的 hardening：auth、request validation、rate limiting、logging/trace、repository abstraction。
+- API schema validation、auth、rate limiting、error contract、trace context、review queue、worker retry/idempotency、Postgres repository 与 release gate 已逐步落地。
+- 短期最弱环节不是主链能力，而是最后一公里：需要把内部 `SkillDocument / SkillGraph` 编译成 Codex / Claude Code / OpenCode 可发现、可触发、可执行的 agent skill package。
 
 ## 目录骨架
 
