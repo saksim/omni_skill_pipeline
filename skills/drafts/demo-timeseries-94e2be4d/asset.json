@@ -1,0 +1,10 @@
+{
+  "modality": "tabular",
+  "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\demo_timeseries.csv",
+  "metadata": {
+    "filename": "demo_timeseries.csv",
+    "row_count": 12,
+    "column_count": 5
+  },
+  "asset_id": "3bf3a0d0-39ed-4266-ae3f-8fa3ade9459b"
+}

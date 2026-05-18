@@ -1,0 +1,186 @@
+{
+  "manifest_id": "e11-perf-cost-baseline-2026-04-25",
+  "manifest_version": "1.0",
+  "created_on": "2026-04-25",
+  "description": "Fixed sample set for TP-E11-04 performance and cost baseline checks.",
+  "samples": [
+    {
+      "sample_id": "T01",
+      "modality": "text",
+      "baseline_metrics": {
+        "duration_ms": 118.2,
+        "token_usage": {
+          "input_tokens": 240,
+          "output_tokens": 84,
+          "total_tokens": 324
+        },
+        "provider_calls": {
+          "text_adapter": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "candidate_metrics": {
+        "duration_ms": 118.2,
+        "token_usage": {
+          "input_tokens": 240,
+          "output_tokens": 84,
+          "total_tokens": 324
+        },
+        "provider_calls": {
+          "text_adapter": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "thresholds": {
+        "max_duration_increase_ratio": 0.2,
+        "max_token_increase_ratio": 0.15,
+        "max_provider_call_increase": 1
+      },
+      "notes": "Text baseline with stable single-modality provider usage."
+    },
+    {
+      "sample_id": "A01",
+      "modality": "audio",
+      "baseline_metrics": {
+        "duration_ms": 236.5,
+        "token_usage": {
+          "input_tokens": 410,
+          "output_tokens": 120,
+          "total_tokens": 530
+        },
+        "provider_calls": {
+          "transcriber": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "candidate_metrics": {
+        "duration_ms": 236.5,
+        "token_usage": {
+          "input_tokens": 410,
+          "output_tokens": 120,
+          "total_tokens": 530
+        },
+        "provider_calls": {
+          "transcriber": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "thresholds": {
+        "max_duration_increase_ratio": 0.2,
+        "max_token_increase_ratio": 0.15,
+        "max_provider_call_increase": 1
+      },
+      "notes": "Audio baseline with one ASR provider call."
+    },
+    {
+      "sample_id": "TS01",
+      "modality": "tabular",
+      "baseline_metrics": {
+        "duration_ms": 302.1,
+        "token_usage": {
+          "input_tokens": 620,
+          "output_tokens": 150,
+          "total_tokens": 770
+        },
+        "provider_calls": {
+          "tabular_adapter": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "candidate_metrics": {
+        "duration_ms": 302.1,
+        "token_usage": {
+          "input_tokens": 620,
+          "output_tokens": 150,
+          "total_tokens": 770
+        },
+        "provider_calls": {
+          "tabular_adapter": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "thresholds": {
+        "max_duration_increase_ratio": 0.25,
+        "max_token_increase_ratio": 0.2,
+        "max_provider_call_increase": 1
+      },
+      "notes": "Timeseries baseline with moderate token usage."
+    },
+    {
+      "sample_id": "I01",
+      "modality": "image",
+      "baseline_metrics": {
+        "duration_ms": 428.4,
+        "token_usage": {
+          "input_tokens": 810,
+          "output_tokens": 190,
+          "total_tokens": 1000
+        },
+        "provider_calls": {
+          "ocr_provider": 1,
+          "image_analyzer": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "candidate_metrics": {
+        "duration_ms": 428.4,
+        "token_usage": {
+          "input_tokens": 810,
+          "output_tokens": 190,
+          "total_tokens": 1000
+        },
+        "provider_calls": {
+          "ocr_provider": 1,
+          "image_analyzer": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "thresholds": {
+        "max_duration_increase_ratio": 0.25,
+        "max_token_increase_ratio": 0.2,
+        "max_provider_call_increase": 2
+      },
+      "notes": "Image baseline includes OCR + scene analysis."
+    },
+    {
+      "sample_id": "V01",
+      "modality": "video",
+      "baseline_metrics": {
+        "duration_ms": 889.7,
+        "token_usage": {
+          "input_tokens": 1320,
+          "output_tokens": 280,
+          "total_tokens": 1600
+        },
+        "provider_calls": {
+          "media_processor": 1,
+          "transcriber": 1,
+          "ocr_provider": 1,
+          "image_analyzer": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "candidate_metrics": {
+        "duration_ms": 889.7,
+        "token_usage": {
+          "input_tokens": 1320,
+          "output_tokens": 280,
+          "total_tokens": 1600
+        },
+        "provider_calls": {
+          "media_processor": 1,
+          "transcriber": 1,
+          "ocr_provider": 1,
+          "image_analyzer": 1,
+          "publication_orchestrator": 1
+        }
+      },
+      "thresholds": {
+        "max_duration_increase_ratio": 0.3,
+        "max_token_increase_ratio": 0.25,
+        "max_provider_call_increase": 2
+      },
+      "notes": "Video baseline keeps the heaviest provider footprint."
+    }
+  ]
+}

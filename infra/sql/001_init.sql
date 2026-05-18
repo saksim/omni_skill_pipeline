@@ -79,16 +79,55 @@ CREATE TABLE skill_versions (
 
 CREATE INDEX idx_skill_versions_skill_id ON skill_versions(skill_id);
 
+CREATE TABLE publications (
+    publication_id UUID PRIMARY KEY,
+    skill_id UUID NOT NULL REFERENCES skills(skill_id) ON DELETE CASCADE,
+    publication_type TEXT NOT NULL,
+    path TEXT,
+    content JSONB NOT NULL DEFAULT '{}'::jsonb,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_publications_skill_id ON publications(skill_id);
+CREATE INDEX idx_publications_type ON publications(publication_type);
+
 CREATE TABLE review_tasks (
     review_task_id UUID PRIMARY KEY,
     skill_id UUID NOT NULL REFERENCES skills(skill_id) ON DELETE CASCADE,
-    assigned_to TEXT,
-    status TEXT NOT NULL DEFAULT 'pending',
-    review_notes TEXT,
+    decision TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'review_pending',
+    reason_codes JSONB NOT NULL DEFAULT '[]'::jsonb,
+    revision_suggestions JSONB NOT NULL DEFAULT '[]'::jsonb,
+    score_snapshot JSONB NOT NULL DEFAULT '{}'::jsonb,
+    thresholds JSONB NOT NULL DEFAULT '{}'::jsonb,
+    review_notes TEXT NOT NULL DEFAULT '',
+    queue_status TEXT NOT NULL DEFAULT 'pending',
+    claimed_by TEXT,
+    claimed_at TIMESTAMPTZ,
+    consumed_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     closed_at TIMESTAMPTZ
 );
 
 CREATE INDEX idx_review_tasks_skill_id ON review_tasks(skill_id);
 CREATE INDEX idx_review_tasks_status ON review_tasks(status);
+CREATE INDEX idx_review_tasks_queue_status ON review_tasks(queue_status);
 
+CREATE TABLE lineage_links (
+    lineage_link_id UUID PRIMARY KEY,
+    skill_id UUID NOT NULL REFERENCES skills(skill_id) ON DELETE CASCADE,
+    related_skill_id TEXT NOT NULL,
+    relation_type TEXT NOT NULL,
+    confidence NUMERIC(4, 3) NOT NULL DEFAULT 0.000,
+    reason TEXT NOT NULL DEFAULT '',
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (skill_id, related_skill_id, relation_type)
+);
+
+CREATE INDEX idx_lineage_links_skill_id ON lineage_links(skill_id);
+CREATE INDEX idx_lineage_links_related_skill_id ON lineage_links(related_skill_id);
+CREATE INDEX idx_lineage_links_relation_type ON lineage_links(relation_type);

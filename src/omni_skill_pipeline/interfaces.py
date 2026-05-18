@@ -1,15 +1,27 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Protocol, Sequence, TypeVar, runtime_checkable
+from typing import Any, Protocol, Sequence, TypeAlias, TypeVar, runtime_checkable
 
 from omni_skill_pipeline.models import (
+    AudioDistillRequest,
+    CorpusAssetInput,
+    CorpusDistillRequest,
+    DistillBundle,
     DistillGoal,
+    EvidenceNode,
     EvidenceUnit,
+    ImageDistillRequest,
     Insight,
+    LoadedCorpus,
     LoadedAsset,
     Modality,
+    RequestMixin,
+    SemanticAtom,
     SkillDocument,
+    TabularDistillRequest,
+    TextDistillRequest,
+    VideoDistillRequest,
 )
 from omni_skill_pipeline.providers.base import (
     FrameAnalysis,
@@ -20,6 +32,14 @@ from omni_skill_pipeline.providers.base import (
 )
 
 ReqT = TypeVar('ReqT')
+AssetRequestT = TypeVar('AssetRequestT', bound=RequestMixin)
+AssetDistillRequest: TypeAlias = (
+    TextDistillRequest
+    | AudioDistillRequest
+    | ImageDistillRequest
+    | TabularDistillRequest
+    | VideoDistillRequest
+)
 
 
 @runtime_checkable
@@ -29,8 +49,64 @@ class DistillAdapter(Protocol[ReqT]):
 
 
 @runtime_checkable
+class ArtifactRepository(Protocol):
+    def save_bundle(self, bundle: DistillBundle) -> dict[str, str]:
+        ...
+
+
+@runtime_checkable
+class ReviewQueueRepository(Protocol):
+    def list_review_queue(
+        self,
+        *,
+        queue_status: str | None = 'pending',
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        ...
+
+    def claim_review_task(
+        self,
+        review_task_id: str | None = None,
+        *,
+        consumer: str = 'review-consumer',
+    ) -> dict[str, Any] | None:
+        ...
+
+    def close_review_task(
+        self,
+        review_task_id: str,
+        *,
+        status: str = 'published',
+        closed_by: str = 'review-operator',
+        review_notes: str = '',
+    ) -> dict[str, Any] | None:
+        ...
+
+    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, Any] | None:
+        ...
+
+
+@runtime_checkable
 class InsightExtractor(Protocol):
     def extract(self, evidence_units: Sequence[EvidenceUnit]) -> list[Insight]:
+        ...
+
+
+@runtime_checkable
+class AtomExtractor(Protocol):
+    def extract(self, evidence_nodes: Sequence[EvidenceNode]) -> list[SemanticAtom]:
+        ...
+
+
+@runtime_checkable
+class CorpusAssetRequestBuilder(Protocol):
+    def build(self, asset: CorpusAssetInput, goal: DistillGoal) -> AssetDistillRequest:
+        ...
+
+
+@runtime_checkable
+class CorpusLoader(Protocol):
+    def load_corpus(self, request: CorpusDistillRequest) -> LoadedCorpus:
         ...
 
 

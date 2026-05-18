@@ -1,12 +1,21 @@
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
+from functools import lru_cache
+import io
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Any, TYPE_CHECKING, Sequence
 
 import numpy as np
-import pandas as pd
-from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
+
+if TYPE_CHECKING:
+    import pandas as pd
+else:
+    class _PandasNamespace(object):
+        DataFrame = Any
+
+    pd = _PandasNamespace()  # type: ignore[assignment]
 
 from omni_skill_pipeline.models import (
     Asset,
@@ -16,7 +25,30 @@ from omni_skill_pipeline.models import (
     Modality,
     TabularDistillRequest,
 )
+from omni_skill_pipeline.extraction.modality.timeseries_parser import TimeSeriesSemanticParser
 from omni_skill_pipeline.utils import unique_preserve_order
+
+
+@lru_cache(maxsize=1)
+def _pandas_runtime():
+    # Some environments ship optional pandas deps built against old NumPy ABI,
+    # which emit noisy diagnostics on stderr during import even when pandas works.
+    with contextlib.redirect_stderr(io.StringIO()):
+        import pandas as pd_runtime
+        from pandas.api.types import is_datetime64_any_dtype as is_datetime64_any_dtype_runtime
+        from pandas.api.types import is_numeric_dtype as is_numeric_dtype_runtime
+
+    return pd_runtime, is_datetime64_any_dtype_runtime, is_numeric_dtype_runtime
+
+
+def _is_datetime_dtype(series: Any) -> bool:
+    _, is_datetime64_any_dtype_runtime, _ = _pandas_runtime()
+    return bool(is_datetime64_any_dtype_runtime(series))
+
+
+def _is_numeric(series: Any) -> bool:
+    _, _, is_numeric_dtype_runtime = _pandas_runtime()
+    return bool(is_numeric_dtype_runtime(series))
 
 
 @dataclass(slots=True)
@@ -26,11 +58,23 @@ class TimeSeriesSignal:
     pct_change: float | None
     largest_jump_timestamp: str | None
     largest_jump_value: float | None
+    baseline_mean: float | None
+    baseline_std: float | None
+    baseline_min: float | None
+    baseline_max: float | None
+    recent_mean: float | None
+    drift_score: float | None
+    drift_label: str
+    change_points: list[tuple[str, float]]
+    anomaly_intervals: list[tuple[str, str]]
     anomaly_timestamps: list[str]
 
 
 class TabularAdapter(object):
     SUPPORTED_SUFFIXES = {'.csv', '.tsv', '.txt', '.json', '.xlsx', '.xls'}
+
+    def __init__(self, timeseries_parser: TimeSeriesSemanticParser | None = None) -> None:
+        self.timeseries_parser = timeseries_parser or TimeSeriesSemanticParser()
 
     def load(self, request: TabularDistillRequest) -> LoadedAsset:
         request.validate()
@@ -61,7 +105,7 @@ class TabularAdapter(object):
         if entity_columns:
             evidence_units.append(self._entity_evidence(asset.asset_id, frame, entity_columns))
 
-        numeric_columns = [column for column in frame.columns if is_numeric_dtype(frame[column])]
+        numeric_columns = [column for column in frame.columns if _is_numeric(frame[column])]
         if numeric_columns:
             evidence_units.extend(self._numeric_profile_evidence(asset.asset_id, frame, numeric_columns))
 
@@ -88,20 +132,21 @@ class TabularAdapter(object):
         )
 
     def _read_frame(self, path: Path) -> pd.DataFrame:
+        pd_runtime, _, _ = _pandas_runtime()
         suffix = path.suffix.lower()
         if suffix not in self.SUPPORTED_SUFFIXES:
             raise ValueError('Unsupported tabular format: %s' % suffix)
         if suffix == '.csv':
-            return pd.read_csv(path)
+            return pd_runtime.read_csv(path)
         if suffix in {'.tsv', '.txt'}:
-            return pd.read_csv(path, sep='\t')
+            return pd_runtime.read_csv(path, sep='\t')
         if suffix == '.json':
             try:
-                return pd.read_json(path)
+                return pd_runtime.read_json(path)
             except ValueError:
-                return pd.read_json(path, lines=True)
+                return pd_runtime.read_json(path, lines=True)
         if suffix in {'.xlsx', '.xls'}:
-            return pd.read_excel(path)
+            return pd_runtime.read_excel(path)
         raise ValueError('Unsupported tabular format: %s' % suffix)
 
     def _schema_evidence(self, asset_id: str, frame: pd.DataFrame) -> EvidenceUnit:
@@ -164,9 +209,10 @@ class TabularAdapter(object):
         frame: pd.DataFrame,
         numeric_columns: Sequence[str],
     ) -> list[EvidenceUnit]:
+        pd_runtime, _, _ = _pandas_runtime()
         evidence: list[EvidenceUnit] = []
         for index, column in enumerate(numeric_columns[:8], start=1):
-            series = pd.to_numeric(frame[column], errors='coerce').dropna()
+            series = pd_runtime.to_numeric(frame[column], errors='coerce').dropna()
             if series.empty:
                 continue
             quantiles = series.quantile([0.1, 0.5, 0.9]).to_dict()
@@ -243,6 +289,25 @@ class TabularAdapter(object):
                     signal.largest_jump_timestamp or 'none',
                     self._format_optional(signal.largest_jump_value),
                 ),
+                'baseline_mean=%s baseline_std=%s baseline_range=%s..%s'
+                % (
+                    self._format_optional(signal.baseline_mean),
+                    self._format_optional(signal.baseline_std),
+                    self._format_optional(signal.baseline_min),
+                    self._format_optional(signal.baseline_max),
+                ),
+                'recent_mean=%s drift_label=%s drift_score=%s'
+                % (
+                    self._format_optional(signal.recent_mean),
+                    signal.drift_label,
+                    self._format_optional(signal.drift_score),
+                ),
+                'change_points=%s'
+                % (
+                    ', '.join('%s(delta=%s)' % (item[0], self._format_optional(item[1])) for item in signal.change_points[:6])
+                    if signal.change_points
+                    else 'none'
+                ),
                 'anomaly_timestamps=%s'
                 % (', '.join(signal.anomaly_timestamps[:5]) if signal.anomaly_timestamps else 'none'),
                 '1. Sort %s by %s before comparing local deltas.' % (column, time_column),
@@ -262,11 +327,20 @@ class TabularAdapter(object):
                     tags=['timeseries', column],
                 )
             )
-            if signal.anomaly_timestamps:
+            should_emit_event = bool(signal.anomaly_timestamps or signal.change_points or signal.anomaly_intervals)
+            if should_emit_event:
                 event_lines = [
                     'Detected anomaly windows for %s' % column,
                     'When anomalies cluster, inspect the shared upstream dependency before per-row debugging.',
                 ]
+                if signal.change_points:
+                    event_lines.append('change_point_candidates:')
+                    for timestamp, delta in signal.change_points[:8]:
+                        event_lines.append('- change_point=%s delta=%s' % (timestamp, self._format_optional(delta)))
+                if signal.anomaly_intervals:
+                    event_lines.append('anomaly_intervals:')
+                    for start, end in signal.anomaly_intervals[:6]:
+                        event_lines.append('- anomaly_interval=%s -> %s' % (start, end))
                 for timestamp in signal.anomaly_timestamps[:8]:
                     event_lines.append('- anomaly_at=%s' % timestamp)
                 evidence.append(
@@ -276,7 +350,9 @@ class TabularAdapter(object):
                         content_type=ContentType.EVENT,
                         content='\n'.join(event_lines),
                         confidence=0.78,
-                        tags=['anomaly', column],
+                        tags=unique_preserve_order(
+                            ['anomaly', column, 'timeseries:baseline', 'timeseries:change_point', 'timeseries:drift']
+                        ),
                     )
                 )
         return evidence
@@ -310,15 +386,16 @@ class TabularAdapter(object):
         if explicit and explicit in frame.columns:
             return explicit
         for column in frame.columns:
-            if is_datetime64_any_dtype(frame[column]):
+            if _is_datetime_dtype(frame[column]):
                 return column
         candidates = []
         for column in frame.columns:
             lowered = column.lower()
             if any(token in lowered for token in ('time', 'date', 'timestamp', 'ts')):
                 candidates.append(column)
+        pd_runtime, _, _ = _pandas_runtime()
         for column in candidates:
-            parsed = pd.to_datetime(frame[column], errors='coerce', utc=False)
+            parsed = pd_runtime.to_datetime(frame[column], errors='coerce', utc=False)
             if parsed.notna().mean() >= 0.7:
                 frame[column] = parsed
                 return column
@@ -326,8 +403,9 @@ class TabularAdapter(object):
 
     def _prepare_time_frame(self, frame: pd.DataFrame, time_column: str) -> pd.DataFrame:
         prepared = frame.copy()
-        if not is_datetime64_any_dtype(prepared[time_column]):
-            prepared[time_column] = pd.to_datetime(prepared[time_column], errors='coerce', utc=False)
+        if not _is_datetime_dtype(prepared[time_column]):
+            pd_runtime, _, _ = _pandas_runtime()
+            prepared[time_column] = pd_runtime.to_datetime(prepared[time_column], errors='coerce', utc=False)
         prepared = prepared.dropna(subset=[time_column]).sort_values(time_column).reset_index(drop=True)
         return prepared
 
@@ -339,7 +417,7 @@ class TabularAdapter(object):
     ) -> list[str]:
         if explicit_columns:
             return [column for column in explicit_columns if column in frame.columns][:max_series]
-        numeric_columns = [column for column in frame.columns if is_numeric_dtype(frame[column])]
+        numeric_columns = [column for column in frame.columns if _is_numeric(frame[column])]
         return numeric_columns[:max_series]
 
     def _resolve_entity_columns(self, frame: pd.DataFrame, explicit_columns: Sequence[str]) -> list[str]:
@@ -348,7 +426,7 @@ class TabularAdapter(object):
         candidates = []
         for column in frame.columns:
             series = frame[column]
-            if is_numeric_dtype(series):
+            if _is_numeric(series):
                 continue
             cardinality = series.astype(str).nunique(dropna=True)
             if 1 < cardinality <= 12:
@@ -356,11 +434,28 @@ class TabularAdapter(object):
         return candidates[:3]
 
     def _summarize_signal(self, frame: pd.DataFrame, time_column: str, value_column: str) -> TimeSeriesSignal:
-        series = pd.to_numeric(frame[value_column], errors='coerce')
+        pd_runtime, _, _ = _pandas_runtime()
+        series = pd_runtime.to_numeric(frame[value_column], errors='coerce')
         valid = frame.loc[series.notna(), [time_column]].copy()
         valid[value_column] = series.dropna().values
         if valid.empty:
-            return TimeSeriesSignal(value_column, 'flat', None, None, None, [])
+            return TimeSeriesSignal(
+                value_column,
+                'flat',
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                'stable',
+                [],
+                [],
+                [],
+            )
 
         values = valid[value_column].astype(float)
         pct_change = None
@@ -378,7 +473,8 @@ class TabularAdapter(object):
         jump_index = diffs.idxmax() if len(diffs.dropna()) else None
         largest_jump_timestamp = None
         largest_jump_value = None
-        if jump_index is not None and not pd.isna(jump_index):
+        pd_runtime, _, _ = _pandas_runtime()
+        if jump_index is not None and not pd_runtime.isna(jump_index):
             timestamp = valid.loc[jump_index, time_column]
             largest_jump_timestamp = str(timestamp)
             largest_jump_value = float(diffs.loc[jump_index])
@@ -391,13 +487,27 @@ class TabularAdapter(object):
             anomaly_rows = valid.loc[z_scores > 2.5, time_column]
             anomaly_timestamps = [str(item) for item in anomaly_rows.head(8).tolist()]
 
+        semantic = self.timeseries_parser.parse(
+            timestamps=valid[time_column].tolist(),
+            values=[float(item) for item in values.tolist()],
+        )
+
         return TimeSeriesSignal(
             column=value_column,
             trend_label=trend_label,
             pct_change=pct_change,
             largest_jump_timestamp=largest_jump_timestamp,
             largest_jump_value=largest_jump_value,
-            anomaly_timestamps=unique_preserve_order(anomaly_timestamps),
+            baseline_mean=semantic.baseline_mean,
+            baseline_std=semantic.baseline_std,
+            baseline_min=semantic.baseline_min,
+            baseline_max=semantic.baseline_max,
+            recent_mean=semantic.recent_mean,
+            drift_score=semantic.drift_score,
+            drift_label=semantic.drift_label,
+            change_points=[(item.timestamp, item.delta) for item in semantic.change_points],
+            anomaly_intervals=[(item.start_timestamp, item.end_timestamp) for item in semantic.anomaly_intervals],
+            anomaly_timestamps=unique_preserve_order(semantic.anomaly_timestamps + anomaly_timestamps),
         )
 
     def _format_optional(self, value: float | None, suffix: str = '') -> str:

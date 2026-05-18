@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
 
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
+    CorpusDistillRequest,
     DistillGoal,
     ImageDistillRequest,
+    PublicationType,
     TabularDistillRequest,
     TextDistillRequest,
     VideoDistillRequest,
@@ -61,6 +65,31 @@ def build_parser() -> argparse.ArgumentParser:
     video_parser.add_argument('--dedupe-distance', type=int)
     _attach_goal_args(video_parser)
 
+    corpus_parser = subparsers.add_parser('distill-corpus', help='Distill a multi-asset corpus')
+    corpus_parser.add_argument('--name', help='Optional corpus name')
+    corpus_parser.add_argument(
+        '--asset',
+        action='append',
+        default=[],
+        help='Corpus asset spec. Use "modality=source_uri" or JSON object string. Repeat for multi-asset input.',
+    )
+    corpus_parser.add_argument('--tag', dest='tags', action='append', default=[])
+    corpus_parser.add_argument('--metadata-json', default='')
+    payload_group = corpus_parser.add_mutually_exclusive_group()
+    payload_group.add_argument('--payload-file', help='Path to JSON payload matching CorpusDistillRequest.')
+    payload_group.add_argument('--payload-json', help='Inline JSON payload matching CorpusDistillRequest.')
+    corpus_parser.add_argument(
+        '--publication',
+        default=PublicationType.SKILL_MARKDOWN.value,
+        help='Preferred publication type to print (skill_markdown/skill_json/checklist_json/decision_tree_json).',
+    )
+    corpus_parser.add_argument(
+        '--show-publications',
+        action='store_true',
+        help='Print available publication types and review status.',
+    )
+    _attach_goal_args(corpus_parser)
+
     subparsers.add_parser('show-template', help='Print SKILL template path and content')
     return parser
 
@@ -83,6 +112,193 @@ def _goal_from_args(args: argparse.Namespace) -> DistillGoal:
             'domain': args.domain,
         }
     )
+
+
+def _parse_json_object(raw: str, *, field_name: str) -> dict:
+    text = str(raw or '').strip()
+    if not text:
+        return {}
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise ValueError('Invalid JSON for %s: %s' % (field_name, exc)) from exc
+    if not isinstance(payload, dict):
+        raise ValueError('%s must be a JSON object.' % field_name)
+    return payload
+
+
+def _parse_corpus_asset_spec(raw: str, *, index: int) -> dict:
+    text = str(raw or '').strip()
+    if not text:
+        raise ValueError('Corpus asset spec cannot be empty.')
+    if text.startswith('{'):
+        payload = _parse_json_object(text, field_name='asset')
+        payload.setdefault('role', 'primary' if index == 0 else 'supporting')
+        return payload
+    if '=' not in text:
+        raise ValueError('Corpus asset spec must be "modality=source_uri" or JSON object string.')
+    modality, source_uri = text.split('=', 1)
+    modality_text = modality.strip()
+    source_uri_text = source_uri.strip()
+    if not modality_text or not source_uri_text:
+        raise ValueError('Corpus asset spec must include both modality and source_uri.')
+    return {
+        'modality': modality_text,
+        'source_uri': source_uri_text,
+        'role': 'primary' if index == 0 else 'supporting',
+    }
+
+
+def _corpus_request_from_args(args: argparse.Namespace) -> CorpusDistillRequest:
+    if args.payload_file:
+        payload_text = Path(args.payload_file).read_text(encoding='utf-8')
+        return CorpusDistillRequest.from_dict(_parse_json_object(payload_text, field_name='payload-file'))
+
+    if args.payload_json:
+        return CorpusDistillRequest.from_dict(_parse_json_object(args.payload_json, field_name='payload-json'))
+
+    assets_payload = [
+        _parse_corpus_asset_spec(spec, index=index)
+        for index, spec in enumerate(args.asset)
+    ]
+    if not assets_payload:
+        raise ValueError('distill-corpus requires at least one --asset or --payload-file/--payload-json.')
+
+    metadata_payload = _parse_json_object(args.metadata_json, field_name='metadata-json') if args.metadata_json else {}
+    request_payload = {
+        'name': str(args.name or '').strip(),
+        'assets': assets_payload,
+        'goal': _goal_from_args(args).to_dict(),
+        'tags': [str(item).strip() for item in (args.tags or []) if str(item).strip()],
+        'metadata': metadata_payload,
+    }
+    return CorpusDistillRequest.from_dict(request_payload)
+
+
+def _normalize_publication_type(raw: str) -> str:
+    normalized = str(raw or '').strip().lower()
+    if not normalized:
+        return PublicationType.SKILL_MARKDOWN.value
+    if normalized.startswith('publication_'):
+        normalized = normalized[len('publication_') :]
+    return normalized
+
+
+def _supported_publication_types() -> list[str]:
+    return [item.value for item in PublicationType]
+
+
+def _resolve_available_publications(bundle) -> list[str]:
+    available: list[str] = []
+
+    publications = getattr(bundle, 'publications', None)
+    if isinstance(publications, list):
+        for publication in publications:
+            publication_type = getattr(publication, 'publication_type', None)
+            value = getattr(publication_type, 'value', None)
+            if value is None and isinstance(publication, dict):
+                value = publication.get('publication_type')
+            if value is None:
+                continue
+            normalized = _normalize_publication_type(str(value))
+            if normalized and normalized not in available:
+                available.append(normalized)
+
+    adapter_metadata = getattr(bundle, 'adapter_metadata', {})
+    if isinstance(adapter_metadata, dict):
+        types_payload = adapter_metadata.get('publication_types', [])
+        if isinstance(types_payload, list):
+            for value in types_payload:
+                normalized = _normalize_publication_type(str(value))
+                if normalized and normalized not in available:
+                    available.append(normalized)
+
+    artifacts = getattr(bundle, 'artifacts', {})
+    if isinstance(artifacts, dict):
+        for key in artifacts:
+            key_text = str(key or '').strip().lower()
+            if not key_text.startswith('publication_'):
+                continue
+            normalized = _normalize_publication_type(key_text)
+            if normalized and normalized not in available:
+                available.append(normalized)
+
+    return available
+
+
+def _resolve_publication_path(bundle, publication_type: str) -> str:
+    requested = _normalize_publication_type(publication_type)
+    artifacts = getattr(bundle, 'artifacts', {})
+    if not isinstance(artifacts, dict):
+        return ''
+
+    preferred_key = 'publication_%s' % requested
+    preferred_path = str(artifacts.get(preferred_key, '')).strip()
+    if preferred_path:
+        return preferred_path
+
+    fallback_keys = {
+        PublicationType.SKILL_MARKDOWN.value: 'skill_markdown',
+        PublicationType.SKILL_JSON.value: 'skill',
+    }
+    fallback_key = fallback_keys.get(requested, '')
+    if fallback_key:
+        fallback_path = str(artifacts.get(fallback_key, '')).strip()
+        if fallback_path:
+            return fallback_path
+
+    return str(artifacts.get('skill_markdown', '')).strip()
+
+
+def _resolve_review_task_payload(bundle) -> dict:
+    review_task = getattr(bundle, 'review_task', None)
+    if hasattr(review_task, 'to_dict'):
+        payload = review_task.to_dict()
+        if isinstance(payload, dict):
+            return payload
+    if isinstance(review_task, dict):
+        return dict(review_task)
+
+    adapter_metadata = getattr(bundle, 'adapter_metadata', {})
+    if not isinstance(adapter_metadata, dict):
+        return {}
+
+    review_task_payload = adapter_metadata.get('review_task')
+    if isinstance(review_task_payload, dict):
+        return dict(review_task_payload)
+    review_policy_payload = adapter_metadata.get('review_policy')
+    if isinstance(review_policy_payload, dict):
+        return {
+            'decision': str(review_policy_payload.get('decision', '')).strip(),
+            'status': str(review_policy_payload.get('status', '')).strip(),
+            'reason_codes': review_policy_payload.get('reason_codes', []),
+        }
+    return {}
+
+
+def _print_corpus_summary(bundle, *, requested_publication: str, show_publications: bool) -> None:
+    available_publications = _resolve_available_publications(bundle)
+    if show_publications:
+        print('selected_publication=%s' % requested_publication)
+        print('available_publications=%s' % ','.join(available_publications))
+
+    review_payload = _resolve_review_task_payload(bundle)
+    if review_payload:
+        status = str(review_payload.get('status', '')).strip() or 'unknown'
+        decision = str(review_payload.get('decision', '')).strip() or 'unknown'
+        review_task_id = str(review_payload.get('review_task_id', '')).strip() or '-'
+        reason_codes_payload = review_payload.get('reason_codes', [])
+        reason_codes: list[str] = []
+        if isinstance(reason_codes_payload, list):
+            for item in reason_codes_payload:
+                reason_code = str(item).strip()
+                if reason_code and reason_code not in reason_codes:
+                    reason_codes.append(reason_code)
+        reason_codes_text = ','.join(reason_codes) if reason_codes else '-'
+        print(
+            'review_status=%s decision=%s review_task_id=%s reason_codes=%s'
+            % (status, decision, review_task_id, reason_codes_text)
+        )
 
 
 def main(argv: list = None) -> int:
@@ -160,6 +376,26 @@ def main(argv: list = None) -> int:
             )
         )
         print(bundle.artifacts.get('skill_markdown', ''))
+        return 0
+
+    if args.command == 'distill-corpus':
+        try:
+            request = _corpus_request_from_args(args)
+        except ValueError as exc:
+            parser.error(str(exc))
+        requested_publication = _normalize_publication_type(args.publication)
+        if requested_publication not in _supported_publication_types():
+            parser.error(
+                'Unsupported publication type: %s (valid: %s)'
+                % (requested_publication, ', '.join(_supported_publication_types()))
+            )
+        bundle = service.distill_corpus(request)
+        print(_resolve_publication_path(bundle, requested_publication))
+        _print_corpus_summary(
+            bundle,
+            requested_publication=requested_publication,
+            show_publications=args.show_publications,
+        )
         return 0
 
     if args.command == 'show-template':

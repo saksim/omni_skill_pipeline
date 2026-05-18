@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from omni_skill_pipeline.extraction.modality.audio_parser import AudioSemanticParser
 from omni_skill_pipeline.interfaces import AudioTranscriber
 from omni_skill_pipeline.models import Asset, AudioDistillRequest, ContentType, EvidenceUnit, LoadedAsset, Modality
 from omni_skill_pipeline.providers.base import TranscriptSegment, TranscriptionResult
@@ -13,9 +14,15 @@ from omni_skill_pipeline.utils import read_text_file, split_paragraphs, unique_p
 
 class AudioAdapter(object):
     SIDECAR_SUFFIXES = ('.txt', '.md', '.srt', '.json')
+    EXPLICIT_SIDECAR_MARKERS = ('.transcript', '.transcription', '.caption', '.captions')
 
-    def __init__(self, transcriber: AudioTranscriber | None = None) -> None:
+    def __init__(
+        self,
+        transcriber: AudioTranscriber | None = None,
+        semantic_parser: AudioSemanticParser | None = None,
+    ) -> None:
         self.transcriber = transcriber
+        self.semantic_parser = semantic_parser or AudioSemanticParser()
 
     def load(self, request: AudioDistillRequest) -> LoadedAsset:
         request.validate()
@@ -27,11 +34,16 @@ class AudioAdapter(object):
             metadata={'transcript_source': transcript_source, 'language': transcript_result.language},
         )
         evidence_units = self._build_evidence(asset.asset_id, transcript_result)
+        semantic_counts = self._collect_utterance_act_counts(evidence_units)
         return LoadedAsset(
             asset=asset,
             evidence_units=evidence_units,
             title_hint=title_hint,
-            adapter_metadata={'transcript_source': transcript_source},
+            adapter_metadata={
+                'transcript_source': transcript_source,
+                'utterance_act_counts': semantic_counts,
+                'provider_calls': self._provider_calls_for_transcript_source(transcript_source),
+            },
         )
 
     def _resolve_transcript(self, request: AudioDistillRequest) -> tuple[TranscriptionResult, str, str]:
@@ -48,7 +60,7 @@ class AudioAdapter(object):
 
         if request.audio_path:
             audio_path = Path(request.audio_path)
-            sidecar = self._find_sidecar(audio_path)
+            sidecar = self._find_sidecar(audio_path, include_legacy_same_stem=self.transcriber is None)
             if sidecar:
                 return (
                     self._parse_transcript_payload(self._load_transcript_path(sidecar)),
@@ -67,7 +79,17 @@ class AudioAdapter(object):
             return json.loads(path.read_text(encoding='utf-8'))
         return read_text_file(path)
 
-    def _find_sidecar(self, audio_path: Path) -> Optional[Path]:
+    def _find_sidecar(self, audio_path: Path, *, include_legacy_same_stem: bool) -> Optional[Path]:
+        for marker in self.EXPLICIT_SIDECAR_MARKERS:
+            for suffix in self.SIDECAR_SUFFIXES:
+                candidate = audio_path.with_name('%s%s%s' % (audio_path.stem, marker, suffix))
+                if candidate.exists():
+                    return candidate
+        srt_candidate = audio_path.with_suffix('.srt')
+        if srt_candidate.exists():
+            return srt_candidate
+        if not include_legacy_same_stem:
+            return None
         for suffix in self.SIDECAR_SUFFIXES:
             candidate = audio_path.with_suffix(suffix)
             if candidate.exists():
@@ -131,6 +153,8 @@ class AudioAdapter(object):
                 tags = []
                 if segment.speaker:
                     tags.append('speaker:%s' % segment.speaker)
+                semantics = self.semantic_parser.parse(segment.text, segment.speaker)
+                tags.extend(semantics.tags)
                 evidence_units.append(
                     EvidenceUnit(
                         asset_id=asset_id,
@@ -145,6 +169,7 @@ class AudioAdapter(object):
             return evidence_units
 
         for index, paragraph in enumerate(split_paragraphs(transcript_result.text), start=1):
+            semantics = self.semantic_parser.parse(paragraph, None)
             evidence_units.append(
                 EvidenceUnit(
                     asset_id=asset_id,
@@ -152,10 +177,20 @@ class AudioAdapter(object):
                     content_type=ContentType.SPEECH,
                     content=paragraph,
                     confidence=0.72,
-                    tags=[],
+                    tags=unique_preserve_order(semantics.tags),
                 )
             )
         return evidence_units
+
+    def _collect_utterance_act_counts(self, evidence_units: List[EvidenceUnit]) -> Dict[str, int]:
+        counts: Dict[str, int] = {}
+        for unit in evidence_units:
+            for tag in unit.tags:
+                if not tag.startswith('utterance_act:'):
+                    continue
+                act = tag.split(':', 1)[1]
+                counts[act] = counts.get(act, 0) + 1
+        return counts
 
     def _parse_transcript_lines(self, transcript: str) -> List[Dict[str, object]]:
         pattern = re.compile(r'^(?:\[(?P<timestamp>[0-9:\-\. >]+)\]\s*)?(?:(?P<speaker>[^:\]]{1,40}):\s*)?(?P<text>.+)$')
@@ -216,3 +251,18 @@ class AudioAdapter(object):
             return None
         cleaned = str(value).strip()
         return cleaned or None
+
+    def _provider_calls_for_transcript_source(self, transcript_source: str) -> List[Dict[str, object]]:
+        normalized_source = str(transcript_source).strip()
+        if not normalized_source.startswith('provider:'):
+            return []
+        provider_name = normalized_source.split(':', 1)[1].strip() or 'unknown'
+        return [
+            {
+                'channel': 'audio_transcription',
+                'provider': provider_name,
+                'calls': 1,
+                'successes': 1,
+                'failures': 0,
+            }
+        ]

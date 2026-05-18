@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -99,6 +100,7 @@ class FFmpegMediaProcessor(object):
         selected = self._select_distributed_frames(deduped, max_frames=max_frames, duration_seconds=metadata.duration_seconds)
         if not selected:
             raise MediaProcessingError('ffmpeg produced no keyframes.')
+        self._cleanup_unselected_frames(candidates, selected)
         return selected
 
     def _extract_scene_candidates(
@@ -129,7 +131,8 @@ class FFmpegMediaProcessor(object):
             return []
         files = sorted(work_dir.glob('scene_*.jpg'))
         timestamps = self._parse_showinfo_timestamps(process.stderr)
-        return self._build_frames(files, timestamps, source='scene')
+        scene_scores = self._parse_showinfo_scene_scores(process.stderr)
+        return self._build_frames(files, timestamps, source='scene', scene_scores=scene_scores)
 
     def _extract_sampled_candidates(
         self,
@@ -177,12 +180,37 @@ class FFmpegMediaProcessor(object):
         files = sorted(work_dir.glob('fallback_*.jpg'))
         return self._build_frames(files, [], source='fallback')
 
-    def _build_frames(self, files: list[Path], timestamps: list[float], *, source: str) -> list[SampledFrame]:
+    def _build_frames(
+        self,
+        files: list[Path],
+        timestamps: list[float],
+        *,
+        source: str,
+        scene_scores: list[float] | None = None,
+    ) -> list[SampledFrame]:
         frames = []
         for index, file_path in enumerate(files):
             timestamp = timestamps[index] if index < len(timestamps) else None
-            frames.append(SampledFrame(path=file_path, source=source, timestamp_seconds=timestamp))
+            scene_score = scene_scores[index] if scene_scores is not None and index < len(scene_scores) else None
+            frames.append(SampledFrame(path=file_path, source=source, timestamp_seconds=timestamp, scene_score=scene_score))
         return frames
+
+    def _cleanup_unselected_frames(self, candidates: list[SampledFrame], selected: list[SampledFrame]) -> None:
+        selected_paths = {str(frame.path.resolve()) for frame in selected}
+        seen_paths: set[str] = set()
+        for frame in candidates:
+            candidate_path = frame.path
+            candidate_key = str(candidate_path.resolve())
+            if candidate_key in seen_paths:
+                continue
+            seen_paths.add(candidate_key)
+            if candidate_key in selected_paths:
+                continue
+            try:
+                if candidate_path.is_file() or candidate_path.is_symlink():
+                    candidate_path.unlink()
+            except OSError:
+                continue
 
     def _dedupe_frames(self, frames: list[SampledFrame], dedupe_distance: int) -> list[SampledFrame]:
         kept: list[SampledFrame] = []
@@ -272,6 +300,19 @@ class FFmpegMediaProcessor(object):
             except ValueError:
                 continue
         return timestamps
+
+    def _parse_showinfo_scene_scores(self, stderr_output: str) -> list[float]:
+        scores: list[float] = []
+        scene_re = re.compile(r'(?:scene(?:_score)?|lavfi\.scene_score)\s*[:=]\s*(\d+(?:\.\d+)?)', re.IGNORECASE)
+        for line in stderr_output.splitlines():
+            match = scene_re.search(line)
+            if match is None:
+                continue
+            try:
+                scores.append(float(match.group(1)))
+            except ValueError:
+                continue
+        return scores
 
     def _frame_sort_key(self, frame: SampledFrame) -> tuple[float, int, str]:
         timestamp = frame.timestamp_seconds if frame.timestamp_seconds is not None else float('inf')

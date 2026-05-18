@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl docker-cli \
+    && docker --version \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY Dockerfile Dockerfile.test Dockerfile.test.dockerignore .dockerignore ./
+COPY pyproject.toml README.md requirements-dev.txt ./
+COPY src ./src
+COPY apps ./apps
+COPY docs ./docs
+COPY scripts ./scripts
+COPY tests ./tests
+COPY infra/sql ./infra/sql
+COPY .env.example ./.env.example
+
+RUN python -m pip install --upgrade pip \
+    && python -m pip install -r requirements-dev.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+CMD ["python", "scripts/run_ci.py", "--python", "python3", "--keep-going", "--isolate-test-files"]

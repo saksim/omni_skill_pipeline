@@ -1,0 +1,134 @@
+{
+  "manifest_id": "e7-calibration-2026-04-25",
+  "manifest_version": "1.0",
+  "created_on": "2026-04-25",
+  "description": "Calibration dataset linking quality scores to reviewer judgement for threshold tuning.",
+  "samples": [
+    {
+      "sample_id": "CALI-T01",
+      "modality": "text",
+      "quality_scores": {
+        "traceability_score": 0.93,
+        "actionability_score": 0.9,
+        "coverage_score": 0.91,
+        "consistency_score": 0.9,
+        "noise_score": 0.88,
+        "novelty_score": 0.82,
+        "overall_score": 0.89
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.94,
+        "notes": "Procedure is executable and fully traceable."
+      }
+    },
+    {
+      "sample_id": "CALI-A01",
+      "modality": "audio",
+      "quality_scores": {
+        "traceability_score": 0.84,
+        "actionability_score": 0.8,
+        "coverage_score": 0.82,
+        "consistency_score": 0.81,
+        "noise_score": 0.74,
+        "novelty_score": 0.73,
+        "overall_score": 0.82
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.86,
+        "notes": "Minor cleanup only."
+      }
+    },
+    {
+      "sample_id": "CALI-TS01",
+      "modality": "tabular",
+      "quality_scores": {
+        "traceability_score": 0.76,
+        "actionability_score": 0.69,
+        "coverage_score": 0.78,
+        "consistency_score": 0.75,
+        "noise_score": 0.79,
+        "novelty_score": 0.52,
+        "overall_score": 0.72
+      },
+      "reviewer_judgement": {
+        "decision": "review_required",
+        "confidence": 0.82,
+        "notes": "Needs clearer execution steps."
+      }
+    },
+    {
+      "sample_id": "CALI-I01",
+      "modality": "image",
+      "quality_scores": {
+        "traceability_score": 0.64,
+        "actionability_score": 0.58,
+        "coverage_score": 0.63,
+        "consistency_score": 0.67,
+        "noise_score": 0.61,
+        "novelty_score": 0.57,
+        "overall_score": 0.62
+      },
+      "reviewer_judgement": {
+        "decision": "review_required",
+        "confidence": 0.77,
+        "notes": "OCR artifacts still leak into final steps."
+      }
+    },
+    {
+      "sample_id": "CALI-V01",
+      "modality": "video",
+      "quality_scores": {
+        "traceability_score": 0.18,
+        "actionability_score": 0.2,
+        "coverage_score": 0.16,
+        "consistency_score": 0.24,
+        "noise_score": 0.19,
+        "novelty_score": 0.31,
+        "overall_score": 0.22
+      },
+      "reviewer_judgement": {
+        "decision": "reject",
+        "confidence": 0.95,
+        "notes": "Output is unusable without rebuild."
+      }
+    },
+    {
+      "sample_id": "CALI-C01",
+      "modality": "corpus",
+      "quality_scores": {
+        "traceability_score": 0.2,
+        "actionability_score": 0.23,
+        "coverage_score": 0.17,
+        "consistency_score": 0.28,
+        "noise_score": 0.21,
+        "novelty_score": 0.34,
+        "overall_score": 0.31
+      },
+      "reviewer_judgement": {
+        "decision": "reject",
+        "confidence": 0.92,
+        "notes": "Cross-asset evidence conflicts are unresolved."
+      }
+    },
+    {
+      "sample_id": "CALI-T02",
+      "modality": "text",
+      "quality_scores": {
+        "traceability_score": 0.79,
+        "actionability_score": 0.75,
+        "coverage_score": 0.74,
+        "consistency_score": 0.8,
+        "noise_score": 0.79,
+        "novelty_score": 0.58,
+        "overall_score": 0.8
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.72,
+        "notes": "Borderline auto-publish candidate."
+      }
+    }
+  ]
+}

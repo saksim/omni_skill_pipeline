@@ -1,58 +1,98 @@
 # Omni Skill Pipeline
 
-将多模态输入蒸馏为可复用、可追溯、可演化的 `SKILL.md` 技能体系。
+将多模态输入蒸馏为可复用、可追溯、可演化的 `SKILL.md` / `skill.json` / publication artifacts。
 
 ## 判词
 
-这不是“文件转 Markdown 工具”，而是一个 `Evidence -> Skill` 的知识蒸馏内核。
+这不是“文件转 Markdown 工具”，而是一条 `Evidence -> SkillDocument / SkillGraph -> Publication` 的知识蒸馏主链。
 
-当前已接入的输入域：
+## 当前能力
 
-- 文本：`txt / md / markdown / rst / log / json / html / doc / docx / pdf`
-- 音频：`audio -> transcript -> skill`
-- 图像：`image -> OCR + scene -> skill`
-- 视频：`video -> audio + shot/keyframe + OCR + scene -> skill`
-- 表格/时间序列：`tabular/time-series -> TABLE / METRIC / EVENT -> skill`
+- 文本：支持 `txt / md / markdown / rst / log / json / html / doc / docx / pdf`
+- 音频：支持 `audio -> transcript -> skill`，可接 OpenAI ASR
+- 图像：支持 `image -> OCR + scene summary -> skill`
+- 视频：支持 `video -> audio + keyframe + OCR + scene summary -> skill`
+- 表格与时序：支持 `tabular/time-series -> TABLE / METRIC / EVENT -> skill`
+- V2 语义层：已落地 `Corpus`、`EvidenceNode`、`SemanticAtom`、`SkillGraph`、`Publication`
+- 质量门禁：已落地 quality scoring、review policy、review task、review feedback 持久化
+- 输出工件：默认写入 `skills/drafts/`，包含 `SKILL.md`、`skill.json`、`bundle.json`、publication manifest 与 review artifacts
+
+## 快速开始
+
+### 1. 准备 Python 3.11 环境
+
+PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+. .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+POSIX:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+### 2. 验证 CLI 可用
+
+```bash
+python -m omni_skill_pipeline.cli show-template
+```
+
+### 3. 跑一次本地回归
+
+```bash
+python scripts/run_ci.py
+```
 
 ## 入口
 
-- Python interpreter: `D:\code_environment\anaconda_all_css\py311\python.exe`
 - Package root: `src/omni_skill_pipeline/`
+- CLI entry: `src/omni_skill_pipeline/cli.py`
 - API app: `apps/api/main.py`
 - Worker app: `apps/worker/main.py`
+- Template contract: `docs/current/contracts/SKILL.template.md`
+- Skill schema: `docs/current/contracts/skill.schema.json`
 
 ## 文档导航
 
 ### Current
 
-- 文档总索引: [docs/INDEX.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\INDEX.md)
-- 架构入口: [docs/current/architecture/ARCHITECTURE.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\ARCHITECTURE.md)
-- 系统总览: [docs/current/architecture/system-overview.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\system-overview.md)
-- 数据流: [docs/current/architecture/data-flow.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\data-flow.md)
-- Provider: [docs/current/architecture/providers.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\providers.md)
-- 存储: [docs/current/architecture/storage.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\storage.md)
-- 契约: [docs/current/contracts/skill.schema.json](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\contracts\skill.schema.json)
-- 模板: [docs/current/contracts/SKILL.template.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\contracts\SKILL.template.md)
-- 当前状态: [docs/current/status/CURRENT_STATUS.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\CURRENT_STATUS.md)
-- 运行入口: [docs/current/operations/OPERATIONS.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\OPERATIONS.md)
-- CLI: [docs/current/operations/cli.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\cli.md)
-- API: [docs/current/operations/api.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\api.md)
-- Worker: [docs/current/operations/worker.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\worker.md)
-- Environment: [docs/current/operations/env.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\operations\env.md)
+- 总索引: [docs/INDEX.md](docs/INDEX.md)
+- 架构入口: [docs/current/architecture/ARCHITECTURE.md](docs/current/architecture/ARCHITECTURE.md)
+- V2 设计: [docs/current/architecture/skill-distillation-v2.md](docs/current/architecture/skill-distillation-v2.md)
+- V2 路线图: [docs/current/architecture/skill-distillation-v2-roadmap.md](docs/current/architecture/skill-distillation-v2-roadmap.md)
+- V2 开发拆解: [docs/current/architecture/skill-distillation-v2-implementation-backlog.md](docs/current/architecture/skill-distillation-v2-implementation-backlog.md)
+- V2 施工任务单: [docs/current/architecture/skill-distillation-v2-work-orders.md](docs/current/architecture/skill-distillation-v2-work-orders.md)
+- 当前状态: [docs/current/status/CURRENT_STATUS.md](docs/current/status/CURRENT_STATUS.md)
+- 上线整合总卷: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
+- 蒸馏平台战略评估: [docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md](docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md)
+- 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)
+- API: [docs/current/operations/api.md](docs/current/operations/api.md)
+- CLI: [docs/current/operations/cli.md](docs/current/operations/cli.md)
+- Environment: [docs/current/operations/env.md](docs/current/operations/env.md)
+- Testing: [docs/current/operations/testing.md](docs/current/operations/testing.md)
+- 评估入口: [docs/glm-5.1-project-assessment.md](docs/glm-5.1-project-assessment.md)
 
 ### History
 
-- 变更历史: [docs/history/CHANGELOG.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\history\CHANGELOG.md)
+- Changelog: [docs/history/CHANGELOG.md](docs/history/CHANGELOG.md)
 
-## 当前能力
+## 当前工程判断
 
-- 可插拔 Adapter / Provider / Composer 架构
-- OpenAI ASR / LLM / Vision provider
-- Tesseract OCR provider
-- FFmpeg / FFprobe 视频处理链
-- 本地工件仓储：`skill.json / SKILL.md / evidence.json / bundle.json`
+- 多模态主链已经可跑通，并有 `unittest` 回归覆盖。
+- `test_mvp.py` 已覆盖 text / audio / image / video / tabular 主路径。
+- `test_v2_schema_and_corpus.py` 已覆盖 corpus、publication、quality、review artifacts 落盘。
+- API schema validation、auth、rate limiting、error contract、trace context、review queue、worker retry/idempotency、Postgres repository 与 release gate 已逐步落地。
+- 短期最弱环节不是主链能力，而是最后一公里：需要把内部 `SkillDocument / SkillGraph` 编译成 Codex / Claude Code / OpenCode 可发现、可触发、可执行的 agent skill package。
 
-## 当前目录
+## 目录骨架
 
 ```text
 ./README.md
@@ -61,11 +101,5 @@
 ./apps/
 ./examples/
 ./skills/
+./tests/
 ```
-
-## 下一跳
-
-- 看设计细节：去 `docs/current/architecture/`
-- 看运行方法：去 `docs/current/operations/`
-- 看当前进度：去 `docs/current/status/`
-- 看契约定义：去 `docs/current/contracts/`

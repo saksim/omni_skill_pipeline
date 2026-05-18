@@ -1,0 +1,83 @@
+{
+  "baseline_id": "e0-2026-04-20",
+  "created_on": "2026-04-20",
+  "repo_root": "D:\\download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline",
+  "python": "D:\\code_environment\\anaconda_all_css\\py311\\python.exe",
+  "test_command": "$env:PYTHONPATH='src'; & 'D:\\code_environment\\anaconda_all_css\\py311\\python.exe' -m unittest discover -s tests -p 'test_mvp.py'",
+  "test_result": {
+    "status": "passed",
+    "ran": 4
+  },
+  "samples": [
+    {
+      "sample_id": "T01",
+      "modality": "text",
+      "source": "examples\\text_note.md",
+      "command": "$env:PYTHONPATH='src'; & 'D:\\code_environment\\anaconda_all_css\\py311\\python.exe' -m omni_skill_pipeline.cli distill-text --file examples\\text_note.md --domain database",
+      "draft_dir": "skills\\drafts\\postgresql-slow-query-review-7b85a2ed",
+      "skill_markdown": "skills\\drafts\\postgresql-slow-query-review-7b85a2ed\\SKILL.md",
+      "evidence_count": 11,
+      "insight_count": 9,
+      "skill_type": "procedure",
+      "confidence": 0.95,
+      "review_status": "draft",
+      "verdict": "strong_baseline"
+    },
+    {
+      "sample_id": "A01",
+      "modality": "audio",
+      "source": "examples\\audio_transcript.srt",
+      "command": "$env:PYTHONPATH='src'; & 'D:\\code_environment\\anaconda_all_css\\py311\\python.exe' -m omni_skill_pipeline.cli distill-audio --transcript-path examples\\audio_transcript.srt --domain ops",
+      "draft_dir": "skills\\drafts\\audio-transcript-1267b0fb",
+      "skill_markdown": "skills\\drafts\\audio-transcript-1267b0fb\\SKILL.md",
+      "evidence_count": 4,
+      "insight_count": 4,
+      "skill_type": "procedure",
+      "confidence": 0.86,
+      "review_status": "draft",
+      "verdict": "stable_baseline"
+    },
+    {
+      "sample_id": "TS01",
+      "modality": "tabular",
+      "source": "examples\\demo_timeseries.csv",
+      "command": "$env:PYTHONPATH='src'; & 'D:\\code_environment\\anaconda_all_css\\py311\\python.exe' -m omni_skill_pipeline.cli distill-tabular --file examples\\demo_timeseries.csv --time-column timestamp --value-column latency_ms --value-column error_rate --entity-column service --domain incident_response",
+      "draft_dir": "skills\\drafts\\demo-timeseries-94e2be4d",
+      "skill_markdown": "skills\\drafts\\demo-timeseries-94e2be4d\\SKILL.md",
+      "evidence_count": 9,
+      "insight_count": 41,
+      "skill_type": "analysis",
+      "confidence": 0.95,
+      "review_status": "draft",
+      "verdict": "rich_evidence_partial_publication_fit"
+    },
+    {
+      "sample_id": "I01",
+      "modality": "image",
+      "source": "examples\\demo_image.png",
+      "command": "$env:PYTHONPATH='src'; & 'D:\\code_environment\\anaconda_all_css\\py311\\python.exe' -m omni_skill_pipeline.cli distill-image --image-path examples\\demo_image.png --domain observability",
+      "draft_dir": "skills\\drafts\\demo-image-b4fb6b3e",
+      "skill_markdown": "skills\\drafts\\demo-image-b4fb6b3e\\SKILL.md",
+      "evidence_count": 1,
+      "insight_count": 1,
+      "skill_type": "procedure",
+      "confidence": 0.54,
+      "review_status": "draft",
+      "verdict": "low_quality_priority_refactor"
+    },
+    {
+      "sample_id": "V01",
+      "modality": "video",
+      "source": "examples\\demo_video.mp4",
+      "command": "$env:PYTHONPATH='src'; & 'D:\\code_environment\\anaconda_all_css\\py311\\python.exe' -m omni_skill_pipeline.cli distill-video --video-path examples\\demo_video.mp4 --domain incident_response --max-keyframes 6 --scene-threshold 0.32 --dedupe-distance 5",
+      "draft_dir": "skills\\drafts\\demo-video-819af0ea",
+      "skill_markdown": "skills\\drafts\\demo-video-819af0ea\\SKILL.md",
+      "evidence_count": 1,
+      "insight_count": 1,
+      "skill_type": "procedure",
+      "confidence": 0.54,
+      "review_status": "draft",
+      "verdict": "low_quality_priority_refactor"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ logs_*.logs
 
 # 环境变量
 .env
+.env.runtime
 .env.local
 .env.development.local
 .env.test.local
@@ -68,6 +69,7 @@ docker/redis_data/
 # 敏感配置
 config/secrets/
 *.secret
+config/*.runtime.env
 
 # 示例配置（用于参考，实际配置不提交）
 config/im_adapters/*.yaml.example
@@ -77,13 +79,36 @@ config/models/*.yaml.example
 *.tmp
 *.bak
 *.orig
+.tmp_pytest*/
 
 # 测试覆盖率
 .coverage
 htmlcov/
 .pytest_cache/
-test/.tmp_runtime/
 
 # 类型检查
 .mypy_cache/
 .pytype/
+
+# 数据
+*.csv
+*.xlsx
+*.xls
+*.txt
+*.pdf
+*.tar
+*.rar
+*.7z
+*.zip
+
+# 其他垃圾数据
+*.tmp_*
+output/
+*.joblib
+*tests_round*
+*tests_iter*
+*test_round*
+*test_iter*
+artifacts/
+release-artifacts/
+release-artifacts-*.tar.gz

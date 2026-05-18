@@ -2,21 +2,52 @@ from __future__ import annotations
 
 import base64
 import mimetypes
+import time
 from pathlib import Path
-from typing import Sequence
+from typing import Callable, Sequence, TypeVar
 
 from pydantic import BaseModel, Field
 
 from omni_skill_pipeline.config import Settings
 from omni_skill_pipeline.exceptions import ProviderExecutionError, ProviderUnavailableError
-from omni_skill_pipeline.models import Audience, DistillGoal, EvidenceUnit, Insight, Modality, SkillDocument, SkillStep, SkillType
+from omni_skill_pipeline.models import (
+    AtomType,
+    Audience,
+    DistillGoal,
+    EvidenceNode,
+    EvidenceUnit,
+    Insight,
+    Modality,
+    SemanticAtom,
+    SkillDocument,
+    SkillStep,
+    SkillType,
+)
 from omni_skill_pipeline.providers.base import FrameAnalysis, OCRBlock, OCRResult, TranscriptSegment, TranscriptionResult
 from omni_skill_pipeline.utils import unique_preserve_order
 
 try:  # pragma: no cover - optional import boundary
-    from openai import OpenAI
+    from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI
 except ImportError:  # pragma: no cover - optional import boundary
     OpenAI = None
+    OPENAI_TRANSIENT_EXCEPTIONS: tuple[type[Exception], ...] = ()
+else:  # pragma: no cover - optional import boundary
+    OPENAI_TRANSIENT_EXCEPTIONS = (APIConnectionError, APITimeoutError, APIStatusError)
+
+
+T = TypeVar('T')
+
+
+def _new_provider_call_counter() -> dict[str, int]:
+    return {
+        'calls': 0,
+        'attempts': 0,
+        'retries': 0,
+        'successes': 0,
+        'failures': 0,
+        'retryable_failures': 0,
+        'non_retryable_failures': 0,
+    }
 
 
 class SkillDraftStepModel(BaseModel):
@@ -41,6 +72,18 @@ class SkillDraftModel(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
 
 
+class AtomDraftModel(BaseModel):
+    atom_type: str
+    summary: str
+    evidence_refs: list[str] = Field(default_factory=list)
+    confidence: float = 0.74
+    attributes: dict[str, object] = Field(default_factory=dict)
+
+
+class AtomDraftListModel(BaseModel):
+    atoms: list[AtomDraftModel] = Field(default_factory=list)
+
+
 class OCRTextModel(BaseModel):
     text: str
     lines: list[str] = Field(default_factory=list)
@@ -53,7 +96,206 @@ class OpenAIClientMixin(object):
             raise ProviderUnavailableError('openai package is not installed.')
         if not settings.openai_api_key:
             raise ProviderUnavailableError('OPENAI_API_KEY is not configured.')
-        self.client = OpenAI(api_key=settings.openai_api_key, base_url=settings.openai_base_url)
+        self.request_timeout = float(settings.openai_timeout_seconds)
+        self.retry_max_attempts = max(1, int(settings.openai_retry_max_attempts))
+        self.retry_base_delay_seconds = max(0.0, float(settings.openai_retry_base_delay_seconds))
+        self.circuit_breaker_consecutive_failures = max(
+            1,
+            int(getattr(settings, 'openai_circuit_breaker_consecutive_failures', 3)),
+        )
+        self.circuit_breaker_cooldown_seconds = max(
+            0.0,
+            float(getattr(settings, 'openai_circuit_breaker_cooldown_seconds', 30.0)),
+        )
+        self.failure_budget_max_failures = max(
+            1,
+            int(getattr(settings, 'openai_failure_budget_max_failures', 6)),
+        )
+        self.failure_budget_window_seconds = max(
+            1.0,
+            float(getattr(settings, 'openai_failure_budget_window_seconds', 60.0)),
+        )
+        self._consecutive_failures = 0
+        self._failure_timestamps: list[float] = []
+        self._circuit_open_until_monotonic = 0.0
+        self._circuit_open_reason = ''
+        self._provider_call_totals = _new_provider_call_counter()
+        self._provider_call_operations: dict[str, dict[str, int]] = {}
+        self.client = OpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url,
+            timeout=self.request_timeout,
+        )
+
+    def _call_with_retry(self, request_fn: Callable[[], T], *, operation: str) -> T:
+        normalized_operation = str(operation).strip() or 'unknown'
+        self._ensure_provider_audit_state()
+        operation_counter = self._provider_call_operations.setdefault(
+            normalized_operation,
+            _new_provider_call_counter(),
+        )
+        self._provider_call_totals['calls'] += 1
+        operation_counter['calls'] += 1
+        try:
+            self._guard_circuit(normalized_operation)
+        except ProviderExecutionError:
+            self._provider_call_totals['failures'] += 1
+            self._provider_call_totals['non_retryable_failures'] += 1
+            operation_counter['failures'] += 1
+            operation_counter['non_retryable_failures'] += 1
+            raise
+        last_exc: Exception | None = None
+        for attempt in range(1, self.retry_max_attempts + 1):
+            self._provider_call_totals['attempts'] += 1
+            operation_counter['attempts'] += 1
+            if attempt > 1:
+                self._provider_call_totals['retries'] += 1
+                operation_counter['retries'] += 1
+            try:
+                result = request_fn()
+                self._record_success()
+                self._provider_call_totals['successes'] += 1
+                operation_counter['successes'] += 1
+                return result
+            except Exception as exc:
+                last_exc = exc
+                should_retry = attempt < self.retry_max_attempts and self._is_retryable_exception(exc)
+                if should_retry:
+                    self._provider_call_totals['retryable_failures'] += 1
+                    operation_counter['retryable_failures'] += 1
+                    delay_seconds = self.retry_base_delay_seconds * (2 ** (attempt - 1))
+                    if delay_seconds > 0:
+                        time.sleep(delay_seconds)
+                    continue
+                break
+        if last_exc is not None:
+            self._provider_call_totals['failures'] += 1
+            operation_counter['failures'] += 1
+            if self._is_retryable_exception(last_exc):
+                self._provider_call_totals['retryable_failures'] += 1
+                operation_counter['retryable_failures'] += 1
+                self._record_failure(error=last_exc)
+                if self._is_circuit_open():
+                    raise ProviderExecutionError(self._circuit_open_message(normalized_operation)) from last_exc
+            else:
+                self._provider_call_totals['non_retryable_failures'] += 1
+                operation_counter['non_retryable_failures'] += 1
+                self._record_success()
+            raise last_exc
+        raise RuntimeError('OpenAI %s retry loop exhausted without exception.' % normalized_operation)
+
+    def _ensure_provider_audit_state(self) -> None:
+        if not isinstance(getattr(self, '_provider_call_totals', None), dict):
+            self._provider_call_totals = _new_provider_call_counter()
+        if not isinstance(getattr(self, '_provider_call_operations', None), dict):
+            self._provider_call_operations = {}
+
+    def provider_call_audit_snapshot(self) -> dict[str, object]:
+        self._ensure_provider_audit_state()
+        now = time.monotonic()
+        operations = {
+            name: dict(counter)
+            for name, counter in self._provider_call_operations.items()
+            if isinstance(counter, dict) and counter.get('calls', 0) > 0
+        }
+        return {
+            'provider': 'openai',
+            'component': self.__class__.__name__,
+            'totals': dict(self._provider_call_totals),
+            'operations': operations,
+            'circuit_breaker': {
+                'open': self._circuit_open_until_monotonic > now,
+                'retry_after_seconds': max(0.0, self._circuit_open_until_monotonic - now),
+                'reason': self._circuit_open_reason,
+                'consecutive_failures': self._consecutive_failures,
+                'failure_budget': len(self._failure_timestamps),
+                'failure_budget_max': self.failure_budget_max_failures,
+                'failure_budget_window_seconds': self.failure_budget_window_seconds,
+            },
+        }
+
+    def reset_provider_call_audit(self) -> None:
+        self._provider_call_totals = _new_provider_call_counter()
+        self._provider_call_operations = {}
+
+    def _guard_circuit(self, operation: str) -> None:
+        if self._circuit_open_until_monotonic <= 0:
+            return
+        now = time.monotonic()
+        if now >= self._circuit_open_until_monotonic:
+            self._circuit_open_until_monotonic = 0.0
+            self._circuit_open_reason = ''
+            self._consecutive_failures = 0
+            self._failure_timestamps = []
+            return
+        raise ProviderExecutionError(self._circuit_open_message(operation))
+
+    def _record_success(self) -> None:
+        self._consecutive_failures = 0
+        self._prune_failure_timestamps(time.monotonic())
+
+    def _record_failure(self, *, error: Exception) -> None:
+        now = time.monotonic()
+        self._consecutive_failures += 1
+        self._failure_timestamps.append(now)
+        self._prune_failure_timestamps(now)
+        failure_budget_exhausted = len(self._failure_timestamps) >= self.failure_budget_max_failures
+        consecutive_failures_exhausted = self._consecutive_failures >= self.circuit_breaker_consecutive_failures
+        if not failure_budget_exhausted and not consecutive_failures_exhausted:
+            return
+        if consecutive_failures_exhausted:
+            reason = 'consecutive_failures=%s threshold=%s' % (
+                self._consecutive_failures,
+                self.circuit_breaker_consecutive_failures,
+            )
+        else:
+            reason = 'failure_budget=%s/%s window_seconds=%s' % (
+                len(self._failure_timestamps),
+                self.failure_budget_max_failures,
+                self.failure_budget_window_seconds,
+            )
+        self._circuit_open_reason = '%s error=%s' % (reason, error)
+        self._circuit_open_until_monotonic = now + self.circuit_breaker_cooldown_seconds
+
+    def _prune_failure_timestamps(self, now: float) -> None:
+        min_timestamp = now - self.failure_budget_window_seconds
+        self._failure_timestamps = [item for item in self._failure_timestamps if item >= min_timestamp]
+
+    def _is_circuit_open(self) -> bool:
+        return self._circuit_open_until_monotonic > time.monotonic()
+
+    def _circuit_open_message(self, operation: str) -> str:
+        now = time.monotonic()
+        retry_after = max(0.0, self._circuit_open_until_monotonic - now)
+        return (
+            'OpenAI circuit breaker open for %s; retry_after_seconds=%.3f, reason=%s, '
+            'consecutive_failures=%s, failure_budget=%s/%s.'
+            % (
+                operation,
+                retry_after,
+                self._circuit_open_reason or 'unknown',
+                self._consecutive_failures,
+                len(self._failure_timestamps),
+                self.failure_budget_max_failures,
+            )
+        )
+
+    def _is_retryable_exception(self, exc: Exception) -> bool:
+        if OPENAI_TRANSIENT_EXCEPTIONS and isinstance(exc, OPENAI_TRANSIENT_EXCEPTIONS):
+            status_code = getattr(exc, 'status_code', None)
+            if status_code is None:
+                return True
+            return status_code == 429 or status_code >= 500
+
+        status_code = getattr(exc, 'status_code', None)
+        if isinstance(status_code, int):
+            return status_code == 429 or status_code >= 500
+
+        lowered_name = exc.__class__.__name__.lower()
+        lowered_text = str(exc).lower()
+        if 'timeout' in lowered_name or 'connection' in lowered_name:
+            return True
+        return 'temporar' in lowered_text or 'timeout' in lowered_text or 'connection reset' in lowered_text
 
 
 class OpenAIAudioTranscriber(OpenAIClientMixin):
@@ -64,17 +306,23 @@ class OpenAIAudioTranscriber(OpenAIClientMixin):
         language: str | None = None,
         prompt: str | None = None,
     ) -> TranscriptionResult:
-        try:
+        def _request():
             with audio_path.open('rb') as file_handle:
-                response = self.client.audio.transcriptions.create(
+                return self.client.audio.transcriptions.create(
                     file=file_handle,
                     model=self.settings.transcription_model,
                     language=language or self.settings.transcription_language,
                     prompt=prompt,
                     response_format='verbose_json',
                     timestamp_granularities=['segment'],
+                    timeout=self.request_timeout,
                 )
+
+        try:
+            response = self._call_with_retry(_request, operation='transcription')
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI transcription failed: %s' % exc) from exc
 
         segments = []
@@ -107,8 +355,17 @@ class OpenAIVisionAnalyzer(OpenAIClientMixin):
             prompt or 'Describe the key visible entities, UI state, diagrams, and operational cues in this image.',
         )
         try:
-            response = self.client.responses.create(model=self.settings.vision_model, input=input_payload)
+            response = self._call_with_retry(
+                lambda: self.client.responses.create(
+                    model=self.settings.vision_model,
+                    input=input_payload,
+                    timeout=self.request_timeout,
+                ),
+                operation='vision analysis',
+            )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI vision analysis failed: %s' % exc) from exc
 
         summary = (response.output_text or '').strip()
@@ -122,12 +379,18 @@ class OpenAIVisionAnalyzer(OpenAIClientMixin):
             'Extract all readable text from this image. Return only the text content and preserve line breaks.',
         )
         try:
-            response = self.client.responses.parse(
-                model=self.settings.vision_model,
-                input=input_payload,
-                text_format=OCRTextModel,
+            response = self._call_with_retry(
+                lambda: self.client.responses.parse(
+                    model=self.settings.vision_model,
+                    input=input_payload,
+                    text_format=OCRTextModel,
+                    timeout=self.request_timeout,
+                ),
+                operation='vision ocr',
             )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI OCR failed: %s' % exc) from exc
 
         parsed = response.output_parsed
@@ -168,13 +431,19 @@ class OpenAILLMSkillComposer(OpenAIClientMixin):
         evidence_payload = self._build_evidence_payload(evidence_units, insights)
         instructions = self._build_instructions(goal, modality, title_hint)
         try:
-            response = self.client.responses.parse(
-                model=self.settings.llm_model,
-                instructions=instructions,
-                input=evidence_payload,
-                text_format=SkillDraftModel,
+            response = self._call_with_retry(
+                lambda: self.client.responses.parse(
+                    model=self.settings.llm_model,
+                    instructions=instructions,
+                    input=evidence_payload,
+                    text_format=SkillDraftModel,
+                    timeout=self.request_timeout,
+                ),
+                operation='skill composition',
             )
         except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
             raise ProviderExecutionError('OpenAI skill composition failed: %s' % exc) from exc
 
         parsed = response.output_parsed
@@ -252,3 +521,94 @@ class OpenAILLMSkillComposer(OpenAIClientMixin):
             if member.value == normalized:
                 return member
         return SkillType.PROCEDURE
+
+
+class OpenAILLMAtomEnhancer(OpenAIClientMixin):
+    def extract_atoms(
+        self,
+        evidence_nodes: Sequence[EvidenceNode],
+        *,
+        seed_atoms: Sequence[SemanticAtom] | None = None,
+    ) -> list[SemanticAtom]:
+        evidence_ids = {item.evidence_id for item in evidence_nodes}
+        payload = self._build_payload(evidence_nodes, seed_atoms or [])
+        instructions = self._build_instructions()
+        try:
+            response = self._call_with_retry(
+                lambda: self.client.responses.parse(
+                    model=self.settings.llm_model,
+                    instructions=instructions,
+                    input=payload,
+                    text_format=AtomDraftListModel,
+                    timeout=self.request_timeout,
+                ),
+                operation='atom enhancement',
+            )
+        except Exception as exc:  # pragma: no cover - network boundary
+            if isinstance(exc, ProviderExecutionError):
+                raise
+            raise ProviderExecutionError('OpenAI atom enhancement failed: %s' % exc) from exc
+
+        parsed = response.output_parsed
+        if parsed is None:
+            raise ProviderExecutionError('OpenAI atom enhancement returned no structured output.')
+
+        atoms: list[SemanticAtom] = []
+        for item in parsed.atoms:
+            summary = item.summary.strip()
+            if not summary:
+                continue
+            atom_type = self._coerce_atom_type(item.atom_type)
+            refs = self._sanitize_evidence_refs(item.evidence_refs, evidence_ids)
+            attributes = dict(item.attributes)
+            attributes.setdefault('llm_enhanced', True)
+            atoms.append(
+                SemanticAtom(
+                    atom_type=atom_type,
+                    summary=summary,
+                    evidence_refs=refs,
+                    confidence=max(0.0, min(float(item.confidence), 1.0)),
+                    attributes=attributes,
+                )
+            )
+        return atoms
+
+    def _build_instructions(self) -> str:
+        return '\n'.join(
+            [
+                'You enhance semantic atoms extracted from evidence nodes.',
+                'Do not fabricate facts outside evidence.',
+                'Prefer adding missing high-value atoms over rewriting seed atoms.',
+                'Allowed atom_type values: claim, procedure, rule, verification, anti_pattern, entity, event, example, metric_guardrail, question.',
+                'Return compact, executable summaries and attach evidence_refs when possible.',
+            ]
+        )
+
+    def _build_payload(self, evidence_nodes: Sequence[EvidenceNode], seed_atoms: Sequence[SemanticAtom]) -> list[dict[str, object]]:
+        evidence_lines = []
+        for node in evidence_nodes[:24]:
+            evidence_lines.append(
+                '[%s|%s|%s|%s] %s'
+                % (node.evidence_id, node.modality.value, node.content_type.value, node.span_ref, node.text_content[:500])
+            )
+        seed_lines = []
+        for atom in seed_atoms[:24]:
+            seed_lines.append('[%s|%s] %s' % (atom.atom_id, atom.atom_type.value, atom.summary[:300]))
+        text = 'Evidence Nodes:\n%s\n\nSeed Atoms:\n%s' % (
+            '\n'.join(evidence_lines),
+            '\n'.join(seed_lines) if seed_lines else 'None',
+        )
+        return [{'role': 'user', 'content': [{'type': 'input_text', 'text': text}]}]
+
+    def _coerce_atom_type(self, raw_value: str) -> AtomType:
+        normalized = (raw_value or '').strip().lower()
+        for member in AtomType:
+            if member.value == normalized:
+                return member
+        return AtomType.CLAIM
+
+    def _sanitize_evidence_refs(self, refs: Sequence[str], known_ids: set[str]) -> list[str]:
+        cleaned = [str(item).strip() for item in refs if str(item).strip()]
+        if not cleaned:
+            return []
+        return [item for item in unique_preserve_order(cleaned) if item in known_ids]
