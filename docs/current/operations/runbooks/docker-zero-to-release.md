@@ -16,6 +16,17 @@ export OMNI_API_KEY='same-key-used-by-.env.runtime-if-auth-enabled'
 export RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 ```
 
+For the default local PostgreSQL release gate, use:
+
+```bash
+export OMNI_TEST_POSTGRES_DSN='postgresql://omni:omni_pass@127.0.0.1:5432/omni_test'
+```
+
+With that default DSN, `scripts/run_linux_release_test.sh` creates or reuses the
+`omni-release-postgres` container and waits for `pg_isready`. With a custom DSN,
+the database must already be reachable from `docker run --network host`; otherwise
+the `postgres_preflight` stage fails before the release switch.
+
 脚本会依次执行：
 
 1. build test image
@@ -293,6 +304,15 @@ docker run --name omni-release-gate --network host \
   python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
 docker cp omni-release-gate:/app/docs/current/status/baselines ./baselines-from-container
 docker rm -f omni-release-gate
+```
+
+PostgreSQL connectivity can be checked from the same container/network boundary:
+
+```bash
+docker run --rm --network host \
+  -e OMNI_TEST_POSTGRES_DSN="$OMNI_TEST_POSTGRES_DSN" \
+  omni-skill-pipeline:test \
+  python -c "import os, psycopg; c=psycopg.connect(os.environ['OMNI_TEST_POSTGRES_DSN'], connect_timeout=5); c.close(); print('postgres_connectivity=ok')"
 ```
 
 ## Release Decision

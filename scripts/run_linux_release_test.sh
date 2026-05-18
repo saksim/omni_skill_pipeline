@@ -25,6 +25,14 @@ API_PUBLISHED_VOLUME="${API_PUBLISHED_VOLUME:-omni_skill_release_${RELEASE_ID}_p
 API_TMP_MEDIA_VOLUME="${API_TMP_MEDIA_VOLUME:-omni_skill_release_${RELEASE_ID}_tmp_media}"
 RUNTIME_ENV_FILE="${RUNTIME_ENV_FILE:-.env.runtime}"
 COVERAGE_FAIL_UNDER="${COVERAGE_FAIL_UNDER:-50}"
+OMNI_RELEASE_MANAGE_POSTGRES="${OMNI_RELEASE_MANAGE_POSTGRES:-auto}"
+OMNI_RELEASE_POSTGRES_CONTAINER="${OMNI_RELEASE_POSTGRES_CONTAINER:-omni-release-postgres}"
+OMNI_RELEASE_POSTGRES_IMAGE="${OMNI_RELEASE_POSTGRES_IMAGE:-postgres:16}"
+OMNI_RELEASE_POSTGRES_USER="${OMNI_RELEASE_POSTGRES_USER:-omni}"
+OMNI_RELEASE_POSTGRES_PASSWORD="${OMNI_RELEASE_POSTGRES_PASSWORD:-omni_pass}"
+OMNI_RELEASE_POSTGRES_DB="${OMNI_RELEASE_POSTGRES_DB:-omni_test}"
+OMNI_RELEASE_POSTGRES_PORT="${OMNI_RELEASE_POSTGRES_PORT:-5432}"
+OMNI_RELEASE_POSTGRES_WAIT_SECONDS="${OMNI_RELEASE_POSTGRES_WAIT_SECONDS:-30}"
 DRY_RUN=0
 
 mkdir -p "${LOG_DIR}" "${META_DIR}" "${BASELINE_DIR}"
@@ -89,6 +97,10 @@ Environment overrides:
   RUNTIME_ENV_FILE             Runtime env file for API acceptance. Default: .env.runtime
   OMNI_TEST_POSTGRES_DSN       Postgres DSN for full GA/release GO. Set via env;
                                inherited DSNs are not printed in nested plans.
+  OMNI_RELEASE_MANAGE_POSTGRES auto|1|0. Default auto starts/reuses
+                               omni-release-postgres for the default local DSN.
+  OMNI_RELEASE_POSTGRES_*      Managed Postgres container/image/user/password/db/port
+                               knobs used when OMNI_RELEASE_MANAGE_POSTGRES applies.
   OMNI_API_KEY                 Optional API key header for acceptance if auth is enabled.
   COVERAGE_FAIL_UNDER          Coverage gate threshold. Default: 50
   SMOKE_PORT                   Container smoke host port. Default: 18000
@@ -248,6 +260,109 @@ preflight_release_environment() {
 
   echo "missing OMNI_TEST_POSTGRES_DSN; full release validation requires Postgres evidence." >&2
   echo "Set OMNI_TEST_POSTGRES_DSN='postgresql://omni:omni_pass@127.0.0.1:5432/omni_test' before running this script." >&2
+  return 1
+}
+
+default_postgres_dsn() {
+  printf 'postgresql://%s:%s@127.0.0.1:%s/%s' \
+    "${OMNI_RELEASE_POSTGRES_USER}" \
+    "${OMNI_RELEASE_POSTGRES_PASSWORD}" \
+    "${OMNI_RELEASE_POSTGRES_PORT}" \
+    "${OMNI_RELEASE_POSTGRES_DB}"
+}
+
+should_manage_release_postgres() {
+  case "${OMNI_RELEASE_MANAGE_POSTGRES}" in
+    1|true|TRUE|yes|YES)
+      return 0
+      ;;
+    0|false|FALSE|no|NO)
+      return 1
+      ;;
+    auto|"")
+      [[ "${OMNI_TEST_POSTGRES_DSN:-}" == "$(default_postgres_dsn)" ]]
+      return $?
+      ;;
+    *)
+      echo "invalid OMNI_RELEASE_MANAGE_POSTGRES=${OMNI_RELEASE_MANAGE_POSTGRES}; expected auto, 1, or 0" >&2
+      return 2
+      ;;
+  esac
+}
+
+docker_container_exists() {
+  docker ps -a --format '{{.Names}}' | grep -Fxq "${OMNI_RELEASE_POSTGRES_CONTAINER}"
+}
+
+docker_container_running() {
+  docker ps --format '{{.Names}}' | grep -Fxq "${OMNI_RELEASE_POSTGRES_CONTAINER}"
+}
+
+wait_release_postgres() {
+  local attempt
+  for attempt in $(seq 1 "${OMNI_RELEASE_POSTGRES_WAIT_SECONDS}"); do
+    if docker exec "${OMNI_RELEASE_POSTGRES_CONTAINER}" \
+      pg_isready -U "${OMNI_RELEASE_POSTGRES_USER}" -d "${OMNI_RELEASE_POSTGRES_DB}" >/dev/null 2>&1; then
+      echo "managed_postgres_ready=true"
+      return 0
+    fi
+    sleep 1
+  done
+
+  echo "managed Postgres did not become ready within ${OMNI_RELEASE_POSTGRES_WAIT_SECONDS}s" >&2
+  docker logs --tail 80 "${OMNI_RELEASE_POSTGRES_CONTAINER}" >&2 || true
+  return 1
+}
+
+ensure_release_postgres() {
+  if docker_container_running; then
+    echo "managed_postgres_container=running"
+  elif docker_container_exists; then
+    echo "managed_postgres_container=starting"
+    docker start "${OMNI_RELEASE_POSTGRES_CONTAINER}" >/dev/null
+  else
+    echo "managed_postgres_container=creating"
+    docker run -d --name "${OMNI_RELEASE_POSTGRES_CONTAINER}" \
+      -e POSTGRES_USER="${OMNI_RELEASE_POSTGRES_USER}" \
+      -e POSTGRES_PASSWORD="${OMNI_RELEASE_POSTGRES_PASSWORD}" \
+      -e POSTGRES_DB="${OMNI_RELEASE_POSTGRES_DB}" \
+      -p "${OMNI_RELEASE_POSTGRES_PORT}:5432" \
+      "${OMNI_RELEASE_POSTGRES_IMAGE}" >/dev/null
+  fi
+
+  wait_release_postgres
+}
+
+postgres_connectivity_probe() {
+  docker run --rm --network host \
+    -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
+    "${TEST_IMAGE_TAG}" \
+    python -c "import os, psycopg; dsn = os.environ.get('OMNI_TEST_POSTGRES_DSN', '').strip(); assert dsn, 'missing OMNI_TEST_POSTGRES_DSN'; connection = psycopg.connect(dsn, connect_timeout=5); connection.close(); print('postgres_connectivity=ok')"
+}
+
+postgres_preflight() {
+  local probe_output
+
+  if [[ -z "${OMNI_TEST_POSTGRES_DSN:-}" ]]; then
+    echo "missing OMNI_TEST_POSTGRES_DSN; full release validation requires Postgres evidence." >&2
+    return 1
+  fi
+
+  if probe_output="$(postgres_connectivity_probe 2>&1)"; then
+    printf '%s\n' "${probe_output}"
+    return 0
+  fi
+
+  if should_manage_release_postgres; then
+    echo "postgres_connectivity_initial=failed"
+    echo "postgres_management=managed"
+    ensure_release_postgres || return 1
+    postgres_connectivity_probe
+    return $?
+  fi
+
+  printf '%s\n' "${probe_output}" >&2
+  echo "Postgres is not reachable from the test container. Start the database or set OMNI_RELEASE_MANAGE_POSTGRES=1 for a managed local container." >&2
   return 1
 }
 
@@ -500,7 +615,13 @@ else
   skip_step test_image_python "build_test_image did not pass"
 fi
 
-if stage_succeeded build_test_image; then
+if stage_succeeded test_image_python; then
+  run_or_plan_step postgres_preflight postgres_preflight
+else
+  skip_step postgres_preflight "test_image_python did not pass"
+fi
+
+if stage_succeeded build_test_image && stage_succeeded postgres_preflight; then
   run_or_plan_step ci_gate \
     docker run --rm \
       -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
@@ -509,14 +630,14 @@ if stage_succeeded build_test_image; then
         --coverage-fail-under "${COVERAGE_FAIL_UNDER}" \
         --coverage-xml docs/current/status/baselines/coverage.xml
 else
-  skip_step ci_gate "build_test_image did not pass"
+  skip_step ci_gate "build_test_image or postgres_preflight did not pass"
 fi
 
-if stage_succeeded source_preflight && stage_succeeded docker_preflight; then
+if stage_succeeded source_preflight && stage_succeeded docker_preflight && stage_succeeded postgres_preflight; then
   run_or_plan_step build_runtime_image \
     docker build -t "${VERSIONED_RUNTIME_IMAGE_TAG}" -t "${RUNTIME_IMAGE_TAG}" -t "${RUNTIME_IMAGE_ALIAS}" .
 else
-  skip_step build_runtime_image "source_preflight or docker_preflight did not pass"
+  skip_step build_runtime_image "source_preflight, docker_preflight, or postgres_preflight did not pass"
 fi
 
 if stage_succeeded build_test_image && runtime_image_ready; then
