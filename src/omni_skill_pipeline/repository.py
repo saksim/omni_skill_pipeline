@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
@@ -51,6 +52,9 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         review_feedback_payload = self._resolve_review_feedback_payload(bundle)
         if review_feedback_payload:
             artifacts["review_feedback"] = bundle_dir / "review_feedback.json"
+        reviewer_packet_payload = self._resolve_reviewer_packet_payload(bundle)
+        if reviewer_packet_payload:
+            artifacts["reviewer_packet"] = bundle_dir / "reviewer_packet.json"
         review_policy_payload = bundle.adapter_metadata.get("review_policy")
         if isinstance(review_policy_payload, dict) and review_policy_payload:
             artifacts["review_policy"] = bundle_dir / "review_policy.json"
@@ -94,6 +98,11 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
                 json.dumps(redact_sensitive_data(review_feedback_payload), ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
+        if "reviewer_packet" in artifacts:
+            artifacts["reviewer_packet"].write_text(
+                json.dumps(redact_sensitive_data(reviewer_packet_payload), ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
         if "review_policy" in artifacts:
             artifacts["review_policy"].write_text(
                 json.dumps(redact_sensitive_data(review_policy_payload), ensure_ascii=False, indent=2) + "\n",
@@ -103,6 +112,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             bundle=bundle,
             review_task_payload=review_task_payload,
             review_task_path=artifacts.get('review_task'),
+            reviewer_packet_path=artifacts.get('reviewer_packet'),
             bundle_path=artifacts['bundle'],
         )
         if queue_item_path is not None:
@@ -129,6 +139,11 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             payload = self._read_queue_item(item_path)
             if payload is None:
                 continue
+            normalized_status = str(queue_status).strip().lower() if queue_status is not None else ''
+            if normalized_status and normalized_status != 'all':
+                payload_status = str(payload.get('queue_status', '')).strip().lower()
+                if payload_status != normalized_status:
+                    continue
             entries.append(payload)
         entries.sort(key=lambda item: (str(item.get('enqueued_at', '')), str(item.get('review_task_id', ''))))
         return entries[:limit]
@@ -175,7 +190,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         consumed_payload['consumed_at'] = claimed_at
         consumed_payload['claimed_by'] = consumer.strip() or 'review-consumer'
         consumed_path.write_text(json.dumps(consumed_payload, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
-        pending_path.unlink(missing_ok=True)
+        self._retire_queue_file(pending_path, consumed_payload)
         return consumed_payload
 
     def close_review_task(
@@ -226,7 +241,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             encoding='utf-8',
         )
         if source_path != closed_path:
-            source_path.unlink(missing_ok=True)
+            self._retire_queue_file(source_path, closed_payload)
         return closed_payload
 
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
@@ -243,12 +258,19 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             return dict(payload)
         return {}
 
+    def _resolve_reviewer_packet_payload(self, bundle: DistillBundle) -> dict[str, Any]:
+        payload = bundle.adapter_metadata.get('reviewer_packet')
+        if isinstance(payload, dict):
+            return dict(payload)
+        return {}
+
     def _enqueue_review_task(
         self,
         *,
         bundle: DistillBundle,
         review_task_payload: dict[str, Any],
         review_task_path: Path | None,
+        reviewer_packet_path: Path | None,
         bundle_path: Path,
     ) -> Path | None:
         if not self._should_enqueue_review_task(review_task_payload):
@@ -259,9 +281,9 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         consumed_path = self.review_queue_consumed_dir / pending_path.name
         closed_path = self.review_queue_closed_dir / pending_path.name
         if consumed_path.exists():
-            consumed_path.unlink()
+            self._remove_queue_file(consumed_path)
         if closed_path.exists():
-            closed_path.unlink()
+            self._remove_queue_file(closed_path)
 
         queue_item = {
             'review_task_id': review_task_id,
@@ -280,6 +302,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             'queue_status': 'pending',
             'enqueued_at': utc_now_iso(),
             'review_task_path': str(review_task_path) if review_task_path is not None else '',
+            'reviewer_packet_path': str(reviewer_packet_path) if reviewer_packet_path is not None else '',
             'bundle_path': str(bundle_path),
         }
         pending_path.write_text(
@@ -299,6 +322,27 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         self.review_queue_pending_dir.mkdir(parents=True, exist_ok=True)
         self.review_queue_consumed_dir.mkdir(parents=True, exist_ok=True)
         self.review_queue_closed_dir.mkdir(parents=True, exist_ok=True)
+
+    def _remove_queue_file(self, path: Path) -> None:
+        try:
+            path.unlink(missing_ok=True)
+        except PermissionError:
+            try:
+                os.remove(path)
+            except PermissionError:
+                return
+
+    def _retire_queue_file(self, path: Path, payload: dict[str, Any]) -> None:
+        if not path.exists():
+            return
+        try:
+            path.write_text(
+                json.dumps(redact_sensitive_data(payload), ensure_ascii=False, indent=2) + "\n",
+                encoding='utf-8',
+            )
+        except OSError:
+            pass
+        self._remove_queue_file(path)
 
     def _iter_review_queue_files(self, queue_status: str | None) -> list[Path]:
         normalized = str(queue_status).strip().lower() if queue_status is not None else ''

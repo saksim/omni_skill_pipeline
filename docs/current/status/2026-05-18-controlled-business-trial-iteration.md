@@ -281,6 +281,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 
 ### CBT-04 Reviewer Packet Generator
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: make human review faster and more consistent.
 - Files: `src/omni_skill_pipeline/review/`, `src/omni_skill_pipeline/repository.py`, tests under `tests/`
@@ -290,6 +291,13 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Acceptance:
   - Every controlled-trial output has a review packet artifact.
   - Tests cover at least one single-asset case and one mixed-corpus case.
+- Evidence:
+  - Added `src/omni_skill_pipeline/review/packet.py` with `ReviewerPacketBuilder`.
+  - Reviewer packet includes input summary, evidence links, generated skill preview, quality scores, review policy, review feedback, risk flags, and approval checklist.
+  - Modality-specific checklist coverage includes transcript, OCR/visual, keyframe sequence, metrics, and cross-asset consistency checks.
+  - `DistillationService` now generates reviewer packets for single-asset and corpus distillation paths.
+  - `FileArtifactRepository` persists `reviewer_packet.json` and records `reviewer_packet_path` on review queue items.
+  - Added focused tests in `tests/test_reviewer_packet.py` for single-asset and mixed-corpus reviewer packet artifacts.
 
 ### CBT-05 Trial Metrics Collector
 
