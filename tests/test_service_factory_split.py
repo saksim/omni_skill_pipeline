@@ -42,6 +42,8 @@ class ServiceFactorySplitTests(unittest.TestCase):
             max_keyframes=6,
             repo_root=Path('/virtual/repo'),
             template_path=Path('/virtual/template.md'),
+            controlled_trial_review_mode=True,
+            controlled_trial_review_reason_code='controlled_trial_requires_review',
         )
 
         with (
@@ -56,6 +58,7 @@ class ServiceFactorySplitTests(unittest.TestCase):
             patch.object(factory_module, 'TabularAdapter', return_value='tabular-adapter'),
             patch.object(factory_module, 'HeuristicInsightExtractor', return_value='insight-extractor'),
             patch.object(factory_module, '_build_skill_composer', return_value='skill-composer'),
+            patch.object(factory_module, 'ReviewPolicy', return_value='review-policy') as review_policy_cls,
             patch.object(factory_module, 'DistillationService', return_value='service-instance') as service_cls,
         ):
             result = factory_module.build_service(repo_root='repo-root-marker')
@@ -70,6 +73,11 @@ class ServiceFactorySplitTests(unittest.TestCase):
             video_adapter='video-adapter',
             insight_extractor='insight-extractor',
             skill_composer='skill-composer',
+            review_policy='review-policy',
+        )
+        review_policy_cls.assert_called_once_with(
+            force_review_mode=True,
+            force_review_reason_code='controlled_trial_requires_review',
         )
         self.assertEqual(result, 'service-instance')
 

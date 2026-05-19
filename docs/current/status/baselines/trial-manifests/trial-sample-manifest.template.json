@@ -1,0 +1,25 @@
+{
+  "manifest_id": "cbt02-trial-sample-template",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Template manifest for controlled business trial sample intake.",
+  "samples": [
+    {
+      "sample_id": "sample-text-001",
+      "modality": "text",
+      "scenario": "incident postmortem to diagnostic skill",
+      "source_owner": "ops-team",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "asset-text-001",
+          "asset_type": "document",
+          "uri": "examples/trial/text/incident-postmortem.md"
+        }
+      ],
+      "review_owner": "review-team",
+      "target_package_format": "codex",
+      "expected_output_type": "diagnostic_skill"
+    }
+  ]
+}

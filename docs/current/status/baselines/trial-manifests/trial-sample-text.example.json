@@ -1,0 +1,30 @@
+{
+  "manifest_id": "cbt02-trial-sample-text",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Controlled trial text sample manifest example.",
+  "samples": [
+    {
+      "sample_id": "text-001",
+      "modality": "text",
+      "scenario": "database slow-query notes to review skill",
+      "source_owner": "dba-team",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "text-asset-001",
+          "asset_type": "markdown",
+          "uri": "examples/trial/text/slow-query-notes.md"
+        },
+        {
+          "asset_id": "text-asset-002",
+          "asset_type": "pdf",
+          "uri": "examples/trial/text/query-bottleneck-summary.pdf"
+        }
+      ],
+      "review_owner": "trial-reviewer-a",
+      "target_package_format": "codex",
+      "expected_output_type": "dba_review_skill"
+    }
+  ]
+}

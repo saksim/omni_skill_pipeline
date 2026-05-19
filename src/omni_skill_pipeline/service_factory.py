@@ -23,6 +23,7 @@ from omni_skill_pipeline.providers.fallback import (
 from omni_skill_pipeline.providers.media import FFmpegMediaProcessor
 from omni_skill_pipeline.providers.openai_provider import OpenAIAudioTranscriber, OpenAILLMSkillComposer, OpenAIVisionAnalyzer
 from omni_skill_pipeline.providers.tesseract import TesseractOCRProvider
+from omni_skill_pipeline.quality.review_policy import ReviewPolicy
 from omni_skill_pipeline.repository import FileArtifactRepository
 from omni_skill_pipeline.service import DistillationService
 
@@ -103,6 +104,12 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
         video_adapter=video_adapter,
         insight_extractor=HeuristicInsightExtractor(),
         skill_composer=_build_skill_composer(settings),
+        review_policy=ReviewPolicy(
+            force_review_mode=bool(getattr(settings, 'controlled_trial_review_mode', False)),
+            force_review_reason_code=str(
+                getattr(settings, 'controlled_trial_review_reason_code', 'controlled_trial_requires_review')
+            ),
+        ),
     )
     logger.info(
         'Distillation service initialized.',

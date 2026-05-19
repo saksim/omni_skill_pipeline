@@ -3,6 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Mapping
 
+from omni_skill_pipeline.utils import unique_preserve_order
+
+CONTROLLED_TRIAL_REVIEW_REASON_CODE = "controlled_trial_requires_review"
+
 
 @dataclass(frozen=True, slots=True)
 class ReviewPolicyThresholds:
@@ -58,39 +62,68 @@ class ReviewPolicyDecision:
 class ReviewPolicy(object):
     """TP-E7-02 review decision policy with explicit thresholds and reason codes."""
 
-    def __init__(self, thresholds: ReviewPolicyThresholds | None = None) -> None:
+    def __init__(
+        self,
+        thresholds: ReviewPolicyThresholds | None = None,
+        *,
+        force_review_mode: bool = False,
+        force_review_reason_code: str = CONTROLLED_TRIAL_REVIEW_REASON_CODE,
+    ) -> None:
         self.thresholds = thresholds or ReviewPolicyThresholds()
+        self.force_review_mode = bool(force_review_mode)
+        normalized_reason_code = str(force_review_reason_code).strip()
+        self.force_review_reason_code = normalized_reason_code or CONTROLLED_TRIAL_REVIEW_REASON_CODE
 
     def decide(self, quality_scores: Mapping[str, object]) -> ReviewPolicyDecision:
         score_snapshot = self._coerce_scores(quality_scores)
         reject_codes = self._reject_reason_codes(score_snapshot)
         if reject_codes:
-            return ReviewPolicyDecision(
+            decision = ReviewPolicyDecision(
                 decision="reject",
                 reason_codes=reject_codes,
                 thresholds=self.thresholds.to_dict(),
                 score_snapshot=score_snapshot,
             )
+            return self._apply_force_review_mode(decision)
 
         if self._can_auto_publish(score_snapshot):
             codes = ["A_MEETS_ALL_THRESHOLDS"]
             if score_snapshot.get("novelty_score", 0.0) >= 0.8:
                 codes.append("A_HIGH_NOVELTY")
-            return ReviewPolicyDecision(
+            decision = ReviewPolicyDecision(
                 decision="auto_publish",
                 reason_codes=codes,
                 thresholds=self.thresholds.to_dict(),
                 score_snapshot=score_snapshot,
             )
+            return self._apply_force_review_mode(decision)
 
         review_codes = self._review_reason_codes(score_snapshot)
         if not review_codes:
             review_codes = ["Q_MANUAL_REVIEW_DEFAULT"]
-        return ReviewPolicyDecision(
+        decision = ReviewPolicyDecision(
             decision="review_required",
             reason_codes=review_codes,
             thresholds=self.thresholds.to_dict(),
             score_snapshot=score_snapshot,
+        )
+        return self._apply_force_review_mode(decision)
+
+    def _apply_force_review_mode(self, decision: ReviewPolicyDecision) -> ReviewPolicyDecision:
+        if not self.force_review_mode:
+            return decision
+
+        if decision.decision == "auto_publish":
+            reason_codes = [self.force_review_reason_code]
+        else:
+            reason_codes = unique_preserve_order([*decision.reason_codes, self.force_review_reason_code])
+        if not reason_codes:
+            reason_codes = [self.force_review_reason_code]
+        return ReviewPolicyDecision(
+            decision="review_required",
+            reason_codes=reason_codes,
+            thresholds=dict(decision.thresholds),
+            score_snapshot=dict(decision.score_snapshot),
         )
 
     def _coerce_scores(self, quality_scores: Mapping[str, object]) -> dict[str, float]:

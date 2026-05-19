@@ -18,7 +18,7 @@
 ### Status
 
 - [Current Status](current/status/CURRENT_STATUS.md)
-- [Launch Readiness Master Plan](current/status/launch-readiness-master-plan.md)
+- [Launch Readiness Master Plan (Historical Baseline, 2026-04-24)](current/status/launch-readiness-master-plan.md)
 - [Distillation Platform Strategy Assessment](current/status/2026-05-17-distillation-platform-strategy-assessment.md)
 - [Controlled Business Trial Iteration](current/status/2026-05-18-controlled-business-trial-iteration.md)
 - [E0 Baseline Pack](current/status/baselines/README.md)

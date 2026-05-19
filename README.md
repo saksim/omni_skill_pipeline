@@ -71,7 +71,7 @@ python scripts/run_ci.py
 - V2 开发拆解: [docs/current/architecture/skill-distillation-v2-implementation-backlog.md](docs/current/architecture/skill-distillation-v2-implementation-backlog.md)
 - V2 施工任务单: [docs/current/architecture/skill-distillation-v2-work-orders.md](docs/current/architecture/skill-distillation-v2-work-orders.md)
 - 当前状态: [docs/current/status/CURRENT_STATUS.md](docs/current/status/CURRENT_STATUS.md)
-- 上线整合总卷: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
+- 上线整合总卷（历史基线，2026-04-24）: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
 - 蒸馏平台战略评估: [docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md](docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md)
 - 受控业务试运行下一迭代: [docs/current/status/2026-05-18-controlled-business-trial-iteration.md](docs/current/status/2026-05-18-controlled-business-trial-iteration.md)
 - 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)

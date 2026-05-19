@@ -39,6 +39,19 @@ class OpenAIProviderConfigTests(unittest.TestCase):
         self.assertEqual(settings.openai_failure_budget_max_failures, 9)
         self.assertEqual(settings.openai_failure_budget_window_seconds, 120.0)
 
+    def test_load_settings_reads_controlled_trial_review_mode_flags(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_CONTROLLED_TRIAL_REVIEW_MODE': 'true',
+                'OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE': 'trial_gate_manual_review',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertTrue(settings.controlled_trial_review_mode)
+        self.assertEqual(settings.controlled_trial_review_reason_code, 'trial_gate_manual_review')
+
     def test_client_mixin_wires_timeout_to_openai_client(self) -> None:
         captured_kwargs: dict[str, object] = {}
 

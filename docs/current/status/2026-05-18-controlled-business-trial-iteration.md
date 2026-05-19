@@ -220,6 +220,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 
 ### CBT-01 Completed Capability Snapshot
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: keep docs aligned with the latest `GO` state.
 - Files: `docs/current/status/CURRENT_STATUS.md`, `README.md`, `docs/INDEX.md`
@@ -229,9 +230,14 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Keep the 2026-05-17 strategy assessment as the strategic direction.
 - Acceptance:
   - A new contributor can identify current capability, trial target, and next task-card entry from `README.md` or `docs/INDEX.md`.
+- Evidence:
+  - `README.md` now keeps the controlled-trial doc and strategy doc as active entry points while marking `launch-readiness-master-plan.md` as the historical 2026-04-24 baseline.
+  - `docs/INDEX.md` now labels the launch-readiness master plan as historical baseline and keeps controlled-trial iteration as the active status entry.
+  - `CURRENT_STATUS.md` already records latest `GO`, controlled business trial scope, and the controlled-trial iteration doc as the execution entry.
 
 ### CBT-02 Trial Sample Manifest
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: define a machine-readable manifest for controlled trial samples.
 - Files: `docs/current/status/baselines/`, optional `scripts/validate_trial_manifest.py`, tests under `tests/`
@@ -241,9 +247,15 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Acceptance:
   - Invalid manifests fail with actionable messages.
   - Example manifests exist for text, audio, image, video, tabular, and mixed corpus.
+- Evidence:
+  - Added template `docs/current/status/baselines/trial-manifests/trial-sample-manifest.template.json` with required fields: `modality`, `scenario`, `source_owner`, `sensitivity`, `asset_list`, `review_owner`, `target_package_format`, `expected_output_type`.
+  - Added modality examples: `trial-sample-text.example.json`, `trial-sample-audio.example.json`, `trial-sample-image.example.json`, `trial-sample-video.example.json`, `trial-sample-tabular.example.json`, `trial-sample-mixed-corpus.example.json`.
+  - Added validator `scripts/validate_trial_manifest.py` with actionable errors for missing required fields and unsupported `sensitivity`/`modality`/`target_package_format`.
+  - Added focused tests `tests/test_validate_trial_manifest_script.py` for valid manifest pass path plus invalid-field actionable failure paths.
 
 ### CBT-03 Default Human Review Mode
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: ensure controlled-trial outputs default to human review.
 - Files: `src/omni_skill_pipeline/quality/`, `src/omni_skill_pipeline/service.py`, `docs/current/operations/`
@@ -253,6 +265,19 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Document how to enable and disable the mode.
 - Acceptance:
   - Tests prove trial mode prevents auto-publish even when quality score is high.
+- Evidence:
+  - Added controlled-trial review config in `src/omni_skill_pipeline/config.py` and `.env.example`:
+    - `OMNI_CONTROLLED_TRIAL_REVIEW_MODE`
+    - `OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE` (default `controlled_trial_requires_review`)
+  - Wired service composition to enforce review mode through `ReviewPolicy` in `src/omni_skill_pipeline/service_factory.py`.
+  - Updated review policy `src/omni_skill_pipeline/quality/review_policy.py` to force `review_required` while preserving score snapshots and persisting the reason code.
+  - Added tests proving high-quality scores still become `review_required` under trial mode and reason code is persisted:
+    - `tests/test_review_policy.py`
+    - `tests/test_v2_models.py`
+    - `tests/test_review_feedback.py`
+    - `tests/test_openai_provider_config.py`
+    - `tests/test_service_factory_split.py`
+  - Documented enable/disable behavior in `docs/current/operations/env.md`.
 
 ### CBT-04 Reviewer Packet Generator
 

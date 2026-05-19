@@ -38,6 +38,8 @@ class Settings:
     video_scene_threshold: float
     video_frame_dedupe_distance: int
     prefer_llm_composer: bool
+    controlled_trial_review_mode: bool
+    controlled_trial_review_reason_code: str
 
 
 def get_repo_root() -> Path:
@@ -104,4 +106,9 @@ def load_settings(repo_root: Path = None) -> Settings:
         video_scene_threshold=float(os.getenv('OMNI_VIDEO_SCENE_THRESHOLD', '0.32')),
         video_frame_dedupe_distance=int(os.getenv('OMNI_VIDEO_FRAME_DEDUPE_DISTANCE', '5')),
         prefer_llm_composer=_env_flag('OMNI_PREFER_LLM_COMPOSER', True),
+        controlled_trial_review_mode=_env_flag('OMNI_CONTROLLED_TRIAL_REVIEW_MODE', False),
+        controlled_trial_review_reason_code=(
+            str(os.getenv('OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE', 'controlled_trial_requires_review')).strip()
+            or 'controlled_trial_requires_review'
+        ),
     )

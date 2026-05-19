@@ -1,0 +1,30 @@
+{
+  "manifest_id": "cbt02-trial-sample-video",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Controlled trial video sample manifest example.",
+  "samples": [
+    {
+      "sample_id": "video-001",
+      "modality": "video",
+      "scenario": "screen recording walkthrough to SOP skill",
+      "source_owner": "product-ops",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "video-asset-001",
+          "asset_type": "video",
+          "uri": "examples/trial/video/feature-release-walkthrough.mp4"
+        },
+        {
+          "asset_id": "video-asset-002",
+          "asset_type": "subtitle",
+          "uri": "examples/trial/video/feature-release-walkthrough.srt"
+        }
+      ],
+      "review_owner": "trial-reviewer-d",
+      "target_package_format": "portable",
+      "expected_output_type": "sop_skill"
+    }
+  ]
+}

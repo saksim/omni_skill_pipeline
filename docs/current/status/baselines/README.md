@@ -16,6 +16,22 @@
   - 机器可读的样本与基线草稿映射
 - `e8-dual-write-benchmark-report.json`（由 `scripts/benchmark_dual_write.py` 生成）
   - file-only 与 file+postgres dual-write 的基础时延报告
+- [trial-manifests/README.md](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\status\baselines\trial-manifests\README.md)
+  - CBT-02 受控业务试运行样本 manifest 模板、6 类示例和校验入口
+
+## CBT-02 Trial Sample Manifest
+
+- Template: `docs/current/status/baselines/trial-manifests/trial-sample-manifest.template.json`
+- Examples:
+  - `docs/current/status/baselines/trial-manifests/trial-sample-text.example.json`
+  - `docs/current/status/baselines/trial-manifests/trial-sample-audio.example.json`
+  - `docs/current/status/baselines/trial-manifests/trial-sample-image.example.json`
+  - `docs/current/status/baselines/trial-manifests/trial-sample-video.example.json`
+  - `docs/current/status/baselines/trial-manifests/trial-sample-tabular.example.json`
+  - `docs/current/status/baselines/trial-manifests/trial-sample-mixed-corpus.example.json`
+- Validation script: `scripts/validate_trial_manifest.py`
+- Linux example:
+  - `python scripts/validate_trial_manifest.py --manifest docs/current/status/baselines/trial-manifests/trial-sample-text.example.json --output docs/current/status/baselines/trial-manifests/trial-sample-text.validation.json`
 
 ## 用法
 

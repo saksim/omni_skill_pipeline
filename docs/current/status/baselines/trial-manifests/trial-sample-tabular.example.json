@@ -1,0 +1,25 @@
+{
+  "manifest_id": "cbt02-trial-sample-tabular",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Controlled trial tabular sample manifest example.",
+  "samples": [
+    {
+      "sample_id": "tabular-001",
+      "modality": "tabular",
+      "scenario": "latency and error report to guardrail skill",
+      "source_owner": "service-operations",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "tabular-asset-001",
+          "asset_type": "csv",
+          "uri": "examples/trial/tabular/latency-error-report.csv"
+        }
+      ],
+      "review_owner": "trial-reviewer-e",
+      "target_package_format": "codex",
+      "expected_output_type": "metric_guardrail_skill"
+    }
+  ]
+}

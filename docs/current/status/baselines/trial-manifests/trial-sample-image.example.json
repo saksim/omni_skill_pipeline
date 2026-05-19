@@ -1,0 +1,30 @@
+{
+  "manifest_id": "cbt02-trial-sample-image",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Controlled trial image sample manifest example.",
+  "samples": [
+    {
+      "sample_id": "image-001",
+      "modality": "image",
+      "scenario": "dashboard screenshots to alert diagnostic skill",
+      "source_owner": "platform-observability",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "image-asset-001",
+          "asset_type": "png",
+          "uri": "examples/trial/image/service-latency-dashboard.png"
+        },
+        {
+          "asset_id": "image-asset-002",
+          "asset_type": "png",
+          "uri": "examples/trial/image/error-rate-trend.png"
+        }
+      ],
+      "review_owner": "trial-reviewer-c",
+      "target_package_format": "opencode",
+      "expected_output_type": "alert_diagnostic_skill"
+    }
+  ]
+}

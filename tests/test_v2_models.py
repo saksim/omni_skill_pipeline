@@ -206,6 +206,20 @@ class V2ModelTests(unittest.TestCase):
         self.assertEqual(payload['score_snapshot']['overall_score'], 0.69)
         self.assertEqual(payload['thresholds']['auto_publish_min_actionability'], 0.72)
 
+    def test_review_task_controlled_trial_reason_code_maps_to_manual_review_suggestion(self) -> None:
+        task = ReviewTask.from_review_policy(
+            skill_id='skill-controlled-trial',
+            review_policy={
+                'decision': ReviewDecision.REVIEW_REQUIRED.value,
+                'reason_codes': ['controlled_trial_requires_review'],
+                'score_snapshot': {'overall_score': 0.91},
+            },
+        )
+        payload = task.to_dict()
+        self.assertEqual(payload['decision'], 'review_required')
+        self.assertIn('controlled_trial_requires_review', payload['reason_codes'])
+        self.assertIn('S_MANUAL_REVIEW_REQUIRED', payload['revision_suggestions'])
+
     def test_review_task_auto_publish_is_marked_published(self) -> None:
         task = ReviewTask.from_review_policy(
             skill_id='skill-2',

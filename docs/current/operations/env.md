@@ -88,6 +88,8 @@ python -m pip install -r requirements-dev.txt
 ## Behavior Variable
 
 - `OMNI_PREFER_LLM_COMPOSER`: 默认 `true`
+- `OMNI_CONTROLLED_TRIAL_REVIEW_MODE`: 默认 `false`。设为 `true` 后，所有蒸馏结果都会强制 `review_required`，不会 auto-publish。
+- `OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE`: 默认 `controlled_trial_requires_review`。用于持久化受控试运行强制人工审核的原因码。
 
 ## Notes
 

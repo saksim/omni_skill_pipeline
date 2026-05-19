@@ -64,6 +64,19 @@ class ReviewFeedbackEngineTests(unittest.TestCase):
         policy_action_codes = {item["action_code"] for item in payload["policy_actions"]}
         self.assertIn("POLICY_CAPTURE_SUCCESS_PATTERN", policy_action_codes)
 
+    def test_feedback_controlled_trial_review_reason_generates_manual_review_category(self) -> None:
+        task = ReviewTask(
+            skill_id="skill-4",
+            decision=ReviewDecision.REVIEW_REQUIRED,
+            reason_codes=["controlled_trial_requires_review"],
+            revision_suggestions=["S_MANUAL_REVIEW_REQUIRED"],
+            status=ReviewStatus.REVIEW_PENDING,
+        )
+        payload = self.engine.build(task).to_dict()
+        self.assertEqual(payload["decision"], "review_required")
+        self.assertIn("manual_review", payload["categories"])
+        self.assertIn("CHECK_MANUAL_REVIEW_OUTCOME", payload["follow_up_checks"])
+
 
 if __name__ == "__main__":
     unittest.main()
