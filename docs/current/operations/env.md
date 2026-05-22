@@ -90,6 +90,7 @@ python -m pip install -r requirements-dev.txt
 - `OMNI_PREFER_LLM_COMPOSER`: 默认 `true`
 - `OMNI_CONTROLLED_TRIAL_REVIEW_MODE`: 默认 `false`。设为 `true` 后，所有蒸馏结果都会强制 `review_required`，不会 auto-publish。
 - `OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE`: 默认 `controlled_trial_requires_review`。用于持久化受控试运行强制人工审核的原因码。
+- `OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT`: 默认 `220`（最小 `21`）。控制 portable `SKILL.md` 主体最大行数，长证据会外置到 `publications/references/`。
 
 ## Notes
 

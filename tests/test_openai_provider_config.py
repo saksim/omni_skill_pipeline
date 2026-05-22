@@ -52,6 +52,17 @@ class OpenAIProviderConfigTests(unittest.TestCase):
         self.assertTrue(settings.controlled_trial_review_mode)
         self.assertEqual(settings.controlled_trial_review_reason_code, 'trial_gate_manual_review')
 
+    def test_load_settings_reads_portable_skill_markdown_line_limit(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT': '150',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertEqual(settings.portable_skill_markdown_line_limit, 150)
+
     def test_client_mixin_wires_timeout_to_openai_client(self) -> None:
         captured_kwargs: dict[str, object] = {}
 

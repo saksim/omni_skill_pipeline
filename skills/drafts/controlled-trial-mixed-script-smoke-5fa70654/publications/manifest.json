@@ -1,0 +1,92 @@
+[
+  {
+    "publication_id": "56c70f05-74b5-494e-af7b-70e7f8141e62",
+    "publication_type": "skill_markdown",
+    "path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-mixed-script-smoke-5fa70654\\publications\\SKILL.md",
+    "relative_path": "SKILL.md",
+    "metadata": {
+      "source": "skill_graph",
+      "graph_id": "0f5b029b-955f-4547-ae54-e1c195449715",
+      "skill_id": "0f5b029b-955f-4547-ae54-e1c195449715",
+      "version": "0.1.0",
+      "renderer": "portable_skill_markdown_v1",
+      "evidence_refs": [
+        "62393358-bc80-496b-8ca8-5794249245fa",
+        "2e4fd979-0d2c-4467-9d10-cf5fe0cc03f2",
+        "4b8184e6-af49-42d1-8dfb-f25a86e69e36",
+        "84efaefb-d64a-436a-90ed-c60b6f8aacaf",
+        "dca9a799-58a2-4593-8e58-8de8d988bbdb",
+        "144be5e0-9328-4503-871c-842beb44f8b8",
+        "a343e90a-ecde-41e3-8e37-da03b9d8b18e",
+        "f12a8f6a-6096-4089-940d-4d0aba8ae413",
+        "c58490b7-a607-44d2-a51f-f2730fdcee97",
+        "658d096b-be86-40d8-8ae0-4c75d4f7f1d5",
+        "0329f173-5bf1-448a-b19c-be701c4428df",
+        "6e5d47b7-3ca0-4530-a151-2cee6d304bd7",
+        "58cb4d0b-7af7-4674-a30a-cdae9c3ccb73",
+        "45f0819a-5521-4c4c-a388-c84f796076b9"
+      ]
+    },
+    "evidence_refs": [
+      "62393358-bc80-496b-8ca8-5794249245fa",
+      "2e4fd979-0d2c-4467-9d10-cf5fe0cc03f2",
+      "4b8184e6-af49-42d1-8dfb-f25a86e69e36",
+      "84efaefb-d64a-436a-90ed-c60b6f8aacaf",
+      "dca9a799-58a2-4593-8e58-8de8d988bbdb",
+      "144be5e0-9328-4503-871c-842beb44f8b8",
+      "a343e90a-ecde-41e3-8e37-da03b9d8b18e",
+      "f12a8f6a-6096-4089-940d-4d0aba8ae413",
+      "c58490b7-a607-44d2-a51f-f2730fdcee97",
+      "658d096b-be86-40d8-8ae0-4c75d4f7f1d5",
+      "0329f173-5bf1-448a-b19c-be701c4428df",
+      "6e5d47b7-3ca0-4530-a151-2cee6d304bd7",
+      "58cb4d0b-7af7-4674-a30a-cdae9c3ccb73",
+      "45f0819a-5521-4c4c-a388-c84f796076b9"
+    ]
+  },
+  {
+    "publication_id": "e1c2cec0-ad51-4bad-beef-3cd699dd75ce",
+    "publication_type": "skill_json",
+    "path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-mixed-script-smoke-5fa70654\\publications\\skill.json",
+    "relative_path": "skill.json",
+    "metadata": {
+      "source": "skill_graph",
+      "graph_id": "0f5b029b-955f-4547-ae54-e1c195449715",
+      "skill_id": "0f5b029b-955f-4547-ae54-e1c195449715",
+      "version": "0.1.0",
+      "renderer": "skill_json_v1_compat",
+      "evidence_refs": [
+        "62393358-bc80-496b-8ca8-5794249245fa",
+        "2e4fd979-0d2c-4467-9d10-cf5fe0cc03f2",
+        "4b8184e6-af49-42d1-8dfb-f25a86e69e36",
+        "84efaefb-d64a-436a-90ed-c60b6f8aacaf",
+        "dca9a799-58a2-4593-8e58-8de8d988bbdb",
+        "144be5e0-9328-4503-871c-842beb44f8b8",
+        "a343e90a-ecde-41e3-8e37-da03b9d8b18e",
+        "f12a8f6a-6096-4089-940d-4d0aba8ae413",
+        "c58490b7-a607-44d2-a51f-f2730fdcee97",
+        "658d096b-be86-40d8-8ae0-4c75d4f7f1d5",
+        "0329f173-5bf1-448a-b19c-be701c4428df",
+        "6e5d47b7-3ca0-4530-a151-2cee6d304bd7",
+        "58cb4d0b-7af7-4674-a30a-cdae9c3ccb73",
+        "45f0819a-5521-4c4c-a388-c84f796076b9"
+      ]
+    },
+    "evidence_refs": [
+      "62393358-bc80-496b-8ca8-5794249245fa",
+      "2e4fd979-0d2c-4467-9d10-cf5fe0cc03f2",
+      "4b8184e6-af49-42d1-8dfb-f25a86e69e36",
+      "84efaefb-d64a-436a-90ed-c60b6f8aacaf",
+      "dca9a799-58a2-4593-8e58-8de8d988bbdb",
+      "144be5e0-9328-4503-871c-842beb44f8b8",
+      "a343e90a-ecde-41e3-8e37-da03b9d8b18e",
+      "f12a8f6a-6096-4089-940d-4d0aba8ae413",
+      "c58490b7-a607-44d2-a51f-f2730fdcee97",
+      "658d096b-be86-40d8-8ae0-4c75d4f7f1d5",
+      "0329f173-5bf1-448a-b19c-be701c4428df",
+      "6e5d47b7-3ca0-4530-a151-2cee6d304bd7",
+      "58cb4d0b-7af7-4674-a30a-cdae9c3ccb73",
+      "45f0819a-5521-4c4c-a388-c84f796076b9"
+    ]
+  }
+]

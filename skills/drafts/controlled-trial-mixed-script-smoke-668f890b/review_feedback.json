@@ -1,0 +1,55 @@
+{
+  "review_task_id": "58d151ab-6060-4257-9caa-d84303d9277d",
+  "skill_id": "668f890b-1794-4588-b5ea-a216a4925403",
+  "decision": "review_required",
+  "status": "review_pending",
+  "reason_codes": [
+    "controlled_trial_requires_review"
+  ],
+  "categories": [
+    "manual_review"
+  ],
+  "atom_actions": [],
+  "graph_actions": [],
+  "policy_actions": [
+    {
+      "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+      "target": "policy",
+      "intent": "escalate_manual_review",
+      "reason_code": "MANUAL_REVIEW_FALLBACK",
+      "params": {
+        "priority": "medium"
+      }
+    }
+  ],
+  "revision_suggestions": [
+    "S_MANUAL_REVIEW_REQUIRED"
+  ],
+  "follow_up_checks": [
+    "CHECK_MANUAL_REVIEW_OUTCOME"
+  ],
+  "score_snapshot": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 1.0,
+    "overall_score": 1.0
+  },
+  "thresholds": {
+    "auto_publish_min_overall": 0.82,
+    "auto_publish_min_traceability": 0.78,
+    "auto_publish_min_actionability": 0.72,
+    "auto_publish_min_coverage": 0.7,
+    "auto_publish_min_consistency": 0.78,
+    "auto_publish_min_noise": 0.68,
+    "auto_publish_min_novelty": 0.55,
+    "reject_max_overall": 0.35,
+    "reject_max_traceability": 0.2,
+    "reject_max_actionability": 0.22,
+    "reject_max_coverage": 0.18,
+    "reject_max_consistency": 0.3,
+    "reject_max_noise": 0.22
+  }
+}

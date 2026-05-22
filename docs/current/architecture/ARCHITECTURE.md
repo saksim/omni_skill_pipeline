@@ -9,6 +9,8 @@
 - [Retrieval Backend Decision](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\retrieval-backend-decision.md)
 - [Lifecycle Decision Engine](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\lifecycle-decision-engine.md)
 - [Publication Multi-View Baseline](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\publication-multi-view-baseline.md)
+- [Agent Skill Package Model](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\agent-skill-package-model.md)
+- [Portable Skill Renderer](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\portable-skill-renderer.md)
 - [Review Queue Operations Surface](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\review-queue-operations-surface.md)
 - [Skill Distillation V2](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2.md)
 - [Skill Distillation V2 Roadmap](D:\download\gaming\new_program\data_helper\3_omni_skill_pipeline\docs\current\architecture\skill-distillation-v2-roadmap.md)

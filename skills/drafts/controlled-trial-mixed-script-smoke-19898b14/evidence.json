@@ -1,0 +1,205 @@
+[
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1",
+    "content_type": "text",
+    "content": "Incident Postmortem (Sanitized)",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "evidence_id": "024c2fa2-ae71-4010-a5bc-e52e17f0a7e7"
+  },
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1.1",
+    "content_type": "text",
+    "content": "Summary",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.1",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "b39baa04-be8a-46b9-b6f6-3007930614d0"
+  },
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1.1:paragraph:0001",
+    "content_type": "text",
+    "content": "An index regression and stale statistics amplified query latency during a controlled rollout.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.1",
+      "block:paragraph"
+    ],
+    "evidence_id": "2eca5d9d-affa-4b98-950c-548ad1731c73"
+  },
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1.2",
+    "content_type": "text",
+    "content": "Timeline",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.2",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "b525e595-a3f1-4279-9e20-1f5f5a3ca2af"
+  },
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1.2:paragraph:0002",
+    "content_type": "text",
+    "content": "- 08:10 UTC: latency alert fired.\n- 08:16 UTC: oncall confirmed row estimate mismatch.\n- 08:28 UTC: mitigated by rollback + stats refresh.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.2",
+      "block:paragraph"
+    ],
+    "evidence_id": "9b403488-aafa-4c5c-a132-3dd942eca2f5"
+  },
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1.3",
+    "content_type": "text",
+    "content": "Lessons",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.3",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "b5606c08-d83d-4afd-8d60-2a82e2e3fe97"
+  },
+  {
+    "asset_id": "944ef8eb-8876-4c2b-b769-c18cf60ed815",
+    "span_ref": "section:1.3:paragraph:0003",
+    "content_type": "text",
+    "content": "1. Validate estimator accuracy before index decisions.\n2. Keep rollout guardrails tied to latency and error-rate together.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.3",
+      "block:paragraph"
+    ],
+    "evidence_id": "c9c5f6fe-c3cd-44bb-8e19-a071693c9c94"
+  },
+  {
+    "asset_id": "21c1a7d6-26b5-4779-a0a0-c2f56403e89f",
+    "span_ref": "image:ocr:0001",
+    "content_type": "ocr",
+    "content": "Fixture OCR: incident dashboard\nstatus: degraded",
+    "speaker": null,
+    "confidence": 0.78,
+    "tags": [
+      "engine:fixture-ocr",
+      "block:ocr_full"
+    ],
+    "evidence_id": "0ea663bc-0502-4320-9d65-e692d0d81403"
+  },
+  {
+    "asset_id": "21c1a7d6-26b5-4779-a0a0-c2f56403e89f",
+    "span_ref": "image:region:0001",
+    "content_type": "ocr",
+    "content": "Fixture OCR: incident dashboard",
+    "speaker": null,
+    "confidence": 0.91,
+    "tags": [
+      "engine:fixture-ocr",
+      "block:region",
+      "source:ocr_group",
+      "layout_role:text",
+      "region_size:1"
+    ],
+    "evidence_id": "d3e443e4-52f1-4627-8ab4-9926d29168f9"
+  },
+  {
+    "asset_id": "21c1a7d6-26b5-4779-a0a0-c2f56403e89f",
+    "span_ref": "image:region:0002",
+    "content_type": "ocr",
+    "content": "status: degraded",
+    "speaker": null,
+    "confidence": 0.89,
+    "tags": [
+      "engine:fixture-ocr",
+      "block:region",
+      "source:ocr_group",
+      "layout_role:status",
+      "region_size:1"
+    ],
+    "evidence_id": "18c901aa-727a-4189-acd8-d2269d66122f"
+  },
+  {
+    "asset_id": "21c1a7d6-26b5-4779-a0a0-c2f56403e89f",
+    "span_ref": "image:scene:0001",
+    "content_type": "scene",
+    "content": "Fixture scene summary for incident-dashboard.",
+    "speaker": null,
+    "confidence": 0.72,
+    "tags": [
+      "fixture",
+      "scene",
+      "png"
+    ],
+    "evidence_id": "5ebf3962-52b8-4694-a326-3b38eec2b52c"
+  },
+  {
+    "asset_id": "21c1a7d6-26b5-4779-a0a0-c2f56403e89f",
+    "span_ref": "image:layout:0001",
+    "content_type": "scene",
+    "content": "Fixture scene summary for incident-dashboard.",
+    "speaker": null,
+    "confidence": 0.74,
+    "tags": [
+      "block:layout",
+      "source:scene_summary",
+      "layout_role:dashboard",
+      "fixture",
+      "scene",
+      "png"
+    ],
+    "evidence_id": "8bab1f70-6487-4186-a424-72218bebe9bd"
+  },
+  {
+    "asset_id": "eaecca13-2721-48fb-b5b5-8c6c7071140d",
+    "span_ref": "section:1",
+    "content_type": "text",
+    "content": "Incident Review Transcript (Sanitized)",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "evidence_id": "95a9ded2-9753-4d70-a24c-675322a500a6"
+  },
+  {
+    "asset_id": "eaecca13-2721-48fb-b5b5-8c6c7071140d",
+    "span_ref": "section:1:paragraph:0001",
+    "content_type": "text",
+    "content": "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback.\n[00:01:02] Engineer: We merged duplicate alerts into one timeline and recovery signal stabilized.\n[00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1",
+      "block:paragraph"
+    ],
+    "evidence_id": "dbb5bdbb-1f10-4deb-952b-04b7073c9e1b"
+  }
+]

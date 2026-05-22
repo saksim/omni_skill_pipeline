@@ -44,6 +44,7 @@ class ServiceFactorySplitTests(unittest.TestCase):
             template_path=Path('/virtual/template.md'),
             controlled_trial_review_mode=True,
             controlled_trial_review_reason_code='controlled_trial_requires_review',
+            portable_skill_markdown_line_limit=220,
         )
 
         with (
@@ -58,6 +59,7 @@ class ServiceFactorySplitTests(unittest.TestCase):
             patch.object(factory_module, 'TabularAdapter', return_value='tabular-adapter'),
             patch.object(factory_module, 'HeuristicInsightExtractor', return_value='insight-extractor'),
             patch.object(factory_module, '_build_skill_composer', return_value='skill-composer'),
+            patch.object(factory_module, '_build_publication_orchestrator', return_value='publication-orchestrator') as publication_orchestrator_cls,
             patch.object(factory_module, 'ReviewPolicy', return_value='review-policy') as review_policy_cls,
             patch.object(factory_module, 'DistillationService', return_value='service-instance') as service_cls,
         ):
@@ -73,7 +75,12 @@ class ServiceFactorySplitTests(unittest.TestCase):
             video_adapter='video-adapter',
             insight_extractor='insight-extractor',
             skill_composer='skill-composer',
+            publication_orchestrator='publication-orchestrator',
             review_policy='review-policy',
+        )
+        publication_orchestrator_cls.assert_called_once_with(
+            insight_extractor='insight-extractor',
+            portable_skill_line_limit=220,
         )
         review_policy_cls.assert_called_once_with(
             force_review_mode=True,

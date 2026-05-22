@@ -199,6 +199,9 @@ class CorpusServiceTests(unittest.TestCase):
         publication_markdown = Path(bundle.artifacts['publication_skill_markdown']).read_text(encoding='utf-8')
         self.assertEqual(bundle.skill_markdown, legacy_markdown)
         self.assertEqual(bundle.skill_markdown, publication_markdown)
+        references_dir = Path(bundle.artifacts['publication_skill_markdown']).parent / 'references'
+        self.assertTrue((references_dir / 'evidence.md').exists())
+        self.assertTrue((references_dir / 'examples.md').exists())
         quality_payload = json.loads(Path(bundle.artifacts['quality_score']).read_text(encoding='utf-8'))
         for key in (
             'traceability_score',

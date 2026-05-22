@@ -227,6 +227,8 @@ class DistillationService(object):
                 evidence_nodes=loaded_corpus.evidence_nodes,
                 corpus_assets=[item.to_dict() for item in loaded_corpus.corpus.assets],
                 cross_asset_refs=cross_asset_refs,
+                request_payload=redact_sensitive_data(request.to_dict()),
+                references_payload=self._resolve_publication_references(publications),
             )
             bundle = DistillBundle(
                 asset=primary_loaded.asset,
@@ -360,6 +362,8 @@ class DistillationService(object):
             publications=publications,
             skill_graph=skill_graph,
             evidence_nodes=evidence_nodes,
+            request_payload=redact_sensitive_data(request.to_dict()),
+            references_payload=self._resolve_publication_references(publications),
         )
         bundle = DistillBundle(
             asset=loaded.asset,
@@ -641,6 +645,24 @@ class DistillationService(object):
             evidence_nodes=evidence_nodes,
             skill=skill,
         )
+
+    def _resolve_publication_references(self, publications: list[Publication]) -> dict[str, str]:
+        for publication in publications:
+            if publication.publication_type.value != 'skill_markdown':
+                continue
+            if not isinstance(publication.content, dict):
+                continue
+            references = publication.content.get('references')
+            if not isinstance(references, dict):
+                continue
+            output: dict[str, str] = {}
+            for key, value in references.items():
+                path_text = str(key).strip().replace('\\', '/')
+                if not path_text:
+                    continue
+                output[path_text] = str(value)
+            return output
+        return {}
 
     def _build_cross_asset_refs_for_packet(
         self,

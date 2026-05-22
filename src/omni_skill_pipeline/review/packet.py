@@ -14,6 +14,7 @@ from omni_skill_pipeline.models import (
     utc_now_iso,
 )
 from omni_skill_pipeline.utils import unique_preserve_order
+from omni_skill_pipeline.validation import collect_trial_security_risk_labels
 
 
 class ReviewerPacketBuilder(object):
@@ -34,6 +35,8 @@ class ReviewerPacketBuilder(object):
         evidence_nodes: Sequence[EvidenceNode] = (),
         corpus_assets: Sequence[dict[str, Any]] = (),
         cross_asset_refs: Sequence[dict[str, Any]] = (),
+        request_payload: dict[str, Any] | None = None,
+        references_payload: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         modalities = self._resolve_modalities(skill=skill, skill_graph=skill_graph, corpus=corpus)
         evidence_links = self._build_evidence_links(evidence_units=evidence_units, evidence_nodes=evidence_nodes)
@@ -69,6 +72,9 @@ class ReviewerPacketBuilder(object):
                 review_task=review_task,
                 quality_scores=quality_scores,
                 cross_asset_refs=cross_asset_refs,
+                skill_markdown=skill_markdown,
+                request_payload=request_payload,
+                references_payload=references_payload,
             ),
             'approval_checklist': self._build_approval_checklist(
                 modalities=modalities,
@@ -171,6 +177,9 @@ class ReviewerPacketBuilder(object):
         review_task: ReviewTask,
         quality_scores: dict[str, Any],
         cross_asset_refs: Sequence[dict[str, Any]],
+        skill_markdown: str,
+        request_payload: dict[str, Any] | None,
+        references_payload: dict[str, str] | None,
     ) -> list[dict[str, str]]:
         flags: list[dict[str, str]] = []
         for code in review_task.reason_codes:
@@ -191,6 +200,13 @@ class ReviewerPacketBuilder(object):
             overall_score = 0.0
         if overall_score < 0.5:
             flags.append({'code': 'low_overall_quality_score', 'severity': 'high', 'source': 'quality_score'})
+        flags.extend(
+            collect_trial_security_risk_labels(
+                skill_markdown=skill_markdown,
+                request_payload=request_payload or {},
+                references=references_payload or {},
+            )
+        )
         return self._dedupe_flags(flags)
 
     def _build_approval_checklist(

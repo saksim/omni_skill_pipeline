@@ -1,0 +1,61 @@
+{
+  "name": "controlled trial mixed script smoke",
+  "goal": {
+    "goal_type": "build_skill",
+    "audience": "self",
+    "rigor": "draft",
+    "granularity": "task",
+    "domain": "controlled_trial"
+  },
+  "assets": [
+    {
+      "asset_id": "56061965-97e7-4ed8-9f2e-e138d8092616",
+      "modality": "text",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "role": "primary",
+      "title_hint": "document",
+      "metadata": {
+        "filename": "incident-postmortem.md",
+        "language": "mixed"
+      }
+    },
+    {
+      "asset_id": "ca53561f-508d-42c6-9248-0295ed176d01",
+      "modality": "image",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png",
+      "role": "supporting",
+      "title_hint": "screenshot",
+      "metadata": {
+        "filename": "incident-dashboard.png",
+        "width": 640,
+        "height": 360,
+        "format": "PNG"
+      }
+    },
+    {
+      "asset_id": "fd700e8e-387c-4a6a-9f70-f34c8d486e73",
+      "modality": "text",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md",
+      "role": "supporting",
+      "title_hint": "transcript",
+      "metadata": {
+        "filename": "incident-review-transcript.md",
+        "language": "mixed"
+      }
+    }
+  ],
+  "tags": [
+    "controlled_trial",
+    "fixture_manifest"
+  ],
+  "metadata": {
+    "sample_id": "mixed-loop-001",
+    "asset_count": 3,
+    "modalities": [
+      "text",
+      "image"
+    ]
+  },
+  "created_at": "2026-05-21T04:22:15Z",
+  "corpus_id": "c0ae908e-f504-4ea2-b3c2-7206075a85f8"
+}

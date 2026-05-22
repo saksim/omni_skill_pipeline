@@ -40,6 +40,7 @@ class Settings:
     prefer_llm_composer: bool
     controlled_trial_review_mode: bool
     controlled_trial_review_reason_code: str
+    portable_skill_markdown_line_limit: int
 
 
 def get_repo_root() -> Path:
@@ -110,5 +111,9 @@ def load_settings(repo_root: Path = None) -> Settings:
         controlled_trial_review_reason_code=(
             str(os.getenv('OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE', 'controlled_trial_requires_review')).strip()
             or 'controlled_trial_requires_review'
+        ),
+        portable_skill_markdown_line_limit=max(
+            int(os.getenv('OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT', '220')),
+            21,
         ),
     )

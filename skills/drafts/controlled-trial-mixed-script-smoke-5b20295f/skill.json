@@ -1,0 +1,78 @@
+{
+  "name": "controlled trial mixed script smoke",
+  "goal": "Distill controlled_trial material into a build_skill for self. Seed: Incident Postmortem (Sanitized)",
+  "source_modality": "text",
+  "skill_type": "procedure",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert text evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Source document",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Confirm the source material matches the declared distillation goal."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "08:10 UTC: latency alert fired.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "08:16 UTC: oncall confirmed row estimate mismatch.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 3,
+      "action": "08:28 UTC: mitigated by rollback + stats refresh.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 4,
+      "action": "Validate estimator accuracy before index decisions.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 5,
+      "action": "Keep rollout guardrails tied to latency and error-rate together.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [],
+  "anti_patterns": [],
+  "verification": [
+    "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback.",
+    "[00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints."
+  ],
+  "evidence_refs": [
+    "9c593f16-05ef-4154-aaf2-984cac2b5de2@section:1",
+    "9ba67dcd-4f0d-4d1b-8baf-5cb8942c1a24@section:1.1",
+    "e1a08eeb-cd08-4f14-adaa-1ab753c17f29@section:1.1:paragraph:0001",
+    "4863f222-740d-42b5-be9a-c62d4320c085@section:1.2",
+    "b9eaae3b-0362-432a-a900-6c097f4f4519@section:1.2:paragraph:0002",
+    "87565b9c-e3a3-4bc0-a37d-aee4b28fbaa1@section:1.3",
+    "160c7e62-0842-43c7-850a-b7cff7750a21@section:1.3:paragraph:0003",
+    "c72ed2e3-1a21-4610-9015-5ef4fba54aa1@image:ocr:0001",
+    "eab5f57a-d493-45de-af2c-6fa5a898f8e8@image:region:0001",
+    "4ea76167-3ff6-4edc-8c1e-3a59b4499a70@image:region:0002",
+    "514e44f9-456d-4069-a71d-b109367d6e8b@image:scene:0001",
+    "fd14b0c8-aa6f-42c5-ae6e-5ec087cbe145@image:layout:0001",
+    "17d3417d-b7d4-49b1-9697-719bbe460759@section:1",
+    "06787245-3f4d-487b-a3eb-cd476e818c1c@section:1:paragraph:0001"
+  ],
+  "confidence": 0.9,
+  "version": "0.1.0",
+  "summary": "Incident Postmortem (Sanitized)",
+  "tags": [
+    "controlled_trial",
+    "text",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-05-20T13:21:19Z",
+  "skill_id": "5b20295f-c4a6-4acb-b031-3fb0656929b0"
+}

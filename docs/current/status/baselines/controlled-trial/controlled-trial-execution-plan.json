@@ -1,0 +1,47 @@
+{
+  "generated_at_utc": "2026-05-20T13:22:04Z",
+  "manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\trial-manifests\\trial-sample-mixed-corpus.example.json",
+  "manifest_id": "cbt02-trial-sample-mixed-corpus",
+  "sample_count": 1,
+  "use_fixture_stubs": true,
+  "force_review_mode": true,
+  "review_reason_code": "controlled_trial_requires_review",
+  "samples": [
+    {
+      "sample_id": "mixed-001",
+      "modality": "mixed_corpus",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "mixed-asset-001",
+          "asset_type": "document",
+          "uri": "examples/trial/mixed/incident-postmortem.md",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+          "inferred_modality": "text"
+        },
+        {
+          "asset_id": "mixed-asset-002",
+          "asset_type": "screenshot",
+          "uri": "examples/trial/mixed/incident-dashboard.png",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png",
+          "inferred_modality": "image"
+        },
+        {
+          "asset_id": "mixed-asset-003",
+          "asset_type": "transcript",
+          "uri": "examples/trial/mixed/incident-review-transcript.md",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    }
+  ]
+}

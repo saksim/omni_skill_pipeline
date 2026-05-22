@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from omni_skill_pipeline.assembly.publication_builder import PublicationBuilder
+from omni_skill_pipeline.publication import DEFAULT_PORTABLE_SKILL_LINE_LIMIT
 from omni_skill_pipeline.assembly.skill_graph_builder import SkillGraphBuilder
 from omni_skill_pipeline.interfaces import AtomExtractor
 from omni_skill_pipeline.models import DistillGoal, GoalType, Publication, PublicationType, SkillDocument, SkillGraph
@@ -9,6 +10,9 @@ from omni_skill_pipeline.utils import unique_preserve_order
 
 
 class PublicationHarmonizer(object):
+    def __init__(self, *, portable_skill_line_limit: int = DEFAULT_PORTABLE_SKILL_LINE_LIMIT) -> None:
+        self.portable_skill_line_limit = max(int(portable_skill_line_limit), 21)
+
     def harmonize(
         self,
         publications: list[Publication],
@@ -25,14 +29,19 @@ class PublicationHarmonizer(object):
             if publication.publication_type == PublicationType.SKILL_MARKDOWN:
                 has_markdown_publication = True
                 publication.path = 'SKILL.md'
+                content = dict(publication.content)
+                line_limit = int(content.get('line_limit') or self.portable_skill_line_limit)
                 publication.content = {
-                    **dict(publication.content),
+                    **content,
                     'filename': 'SKILL.md',
                     'text': str(dict(publication.content).get('text') or markdown_text),
                     'graph_id': skill_graph.graph_id,
                     'skill_id': skill.skill_id,
+                    'line_count': int(content.get('line_count') or len(str(content.get('text') or markdown_text).splitlines())),
+                    'line_limit': max(line_limit, 21),
+                    'references': dict(content.get('references') or {}),
                 }
-                publication.metadata['renderer'] = 'skill_markdown_v1_compat'
+                publication.metadata['renderer'] = str(content.get('renderer') or publication.metadata.get('renderer') or 'portable_skill_markdown_v1')
             elif publication.publication_type == PublicationType.SKILL_JSON:
                 publication.path = 'skill.json'
                 publication.content = {
@@ -54,6 +63,9 @@ class PublicationHarmonizer(object):
                         'text': markdown_text,
                         'graph_id': skill_graph.graph_id,
                         'skill_id': skill.skill_id,
+                        'line_count': len(markdown_text.splitlines()),
+                        'line_limit': self.portable_skill_line_limit,
+                        'references': {},
                     },
                     path='SKILL.md',
                     metadata={
@@ -61,7 +73,7 @@ class PublicationHarmonizer(object):
                         'graph_id': skill_graph.graph_id,
                         'skill_id': skill.skill_id,
                         'version': skill_graph.version,
-                        'renderer': 'skill_markdown_v1_compat',
+                        'renderer': 'portable_skill_markdown_v1',
                         'evidence_refs': unique_preserve_order(skill_graph.evidence_refs),
                     },
                 ),

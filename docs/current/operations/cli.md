@@ -91,6 +91,49 @@ python -m omni_skill_pipeline.cli distill-corpus \
   --payload-file examples/corpus_payload.json
 ```
 
+### export-skill
+
+```bash
+python -m omni_skill_pipeline.cli export-skill \
+  --bundle skills/drafts/sample-skill-12345678/bundle.json \
+  --target codex \
+  --output-root .
+```
+
+Supported targets:
+
+- `codex` -> `.codex/skills/<skill-name>/SKILL.md`
+- `claude-code` -> `.claude/skills/<skill-name>/SKILL.md`
+- `opencode` -> `.opencode/skill/<skill-name>/SKILL.md`
+- `portable` -> `skills/portable/<skill-name>/SKILL.md`
+- `all` -> export every target above in one command
+
+### validate-skill
+
+```bash
+python -m omni_skill_pipeline.cli validate-skill \
+  --package skills/portable/sample-skill \
+  --max-lines 500
+```
+
+Exit code contract:
+
+- `0`: package passed usability/safety validation.
+- `2`: package failed with explicit `failure_codes` and issue lines.
+
+### run_trial_security_gate.py
+
+```bash
+python scripts/run_trial_security_gate.py \
+  --bundle skills/drafts/sample-skill-12345678/bundle.json \
+  --output docs/current/status/baselines/controlled-trial/trial-security-gate-report.json
+```
+
+Exit code contract:
+
+- `0`: trial security gate passed.
+- `2`: trial security gate failed with explicit `failure_codes`.
+
 ### show-template
 
 ```bash
@@ -99,6 +142,8 @@ python -m omni_skill_pipeline.cli show-template
 
 ## Notes
 
+- `export-skill` exports an existing `bundle.json` to the selected target layout and writes `agent_skill_package.json`.
+- `export-skill` now enforces CBT-13 trial security gate before writing any target layout.
 - `distill-corpus` 默认打印所选 publication 路径（默认 `skill_markdown`，可通过 `--publication` 选择）。
 - `distill-corpus` 会打印 `review_status`、`decision`、`review_task_id` 与 `reason_codes`，便于接 review queue。
 - 使用 `--show-publications` 可额外打印 `selected_publication` 与 `available_publications`。

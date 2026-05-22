@@ -1,0 +1,42 @@
+{
+  "review_task_id": "6b44e112-675d-4c15-89b7-a747c2d60fd6",
+  "skill_id": "5fa70654-40f8-4ff0-b010-c9f96ad009a2",
+  "decision": "review_required",
+  "status": "review_pending",
+  "reason_codes": [
+    "controlled_trial_requires_review"
+  ],
+  "revision_suggestions": [
+    "S_MANUAL_REVIEW_REQUIRED"
+  ],
+  "score_snapshot": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 1.0,
+    "overall_score": 1.0
+  },
+  "thresholds": {
+    "auto_publish_min_overall": 0.82,
+    "auto_publish_min_traceability": 0.78,
+    "auto_publish_min_actionability": 0.72,
+    "auto_publish_min_coverage": 0.7,
+    "auto_publish_min_consistency": 0.78,
+    "auto_publish_min_noise": 0.68,
+    "auto_publish_min_novelty": 0.55,
+    "reject_max_overall": 0.35,
+    "reject_max_traceability": 0.2,
+    "reject_max_actionability": 0.22,
+    "reject_max_coverage": 0.18,
+    "reject_max_consistency": 0.3,
+    "reject_max_noise": 0.22
+  },
+  "review_notes": "",
+  "queue_status": "pending",
+  "enqueued_at": "2026-05-20T13:21:55Z",
+  "review_task_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-mixed-script-smoke-5fa70654\\review_task.json",
+  "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-mixed-script-smoke-5fa70654\\reviewer_packet.json",
+  "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-mixed-script-smoke-5fa70654\\bundle.json"
+}

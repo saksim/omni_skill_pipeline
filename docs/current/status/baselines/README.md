@@ -33,6 +33,79 @@
 - Linux example:
   - `python scripts/validate_trial_manifest.py --manifest docs/current/status/baselines/trial-manifests/trial-sample-text.example.json --output docs/current/status/baselines/trial-manifests/trial-sample-text.validation.json`
 
+## CBT-05 Trial Metrics Collector
+
+- Manifest template: `docs/current/status/baselines/trial-metrics/trial-metrics-manifest.template.json`
+- JSON report output: `docs/current/status/baselines/trial-metrics/trial-metrics-report.json`
+- Markdown summary output: `docs/current/status/baselines/trial-metrics/trial-metrics-summary.md`
+- Runner script: `scripts/run_trial_metrics_collector.py`
+- Linux example:
+  - `python scripts/run_trial_metrics_collector.py --manifest docs/current/status/baselines/trial-metrics/trial-metrics-manifest.template.json --output docs/current/status/baselines/trial-metrics/trial-metrics-report.json --summary-output docs/current/status/baselines/trial-metrics/trial-metrics-summary.md --fail-on-ga-blocker`
+
+## CBT-10 Multimodal Trial Fixtures
+
+- Fixture pack root: `examples/trial/`
+- Fixture coverage:
+  - `examples/trial/text/` (markdown + tiny PDF placeholder)
+  - `examples/trial/audio/` (audio stub + transcript sidecar)
+  - `examples/trial/image/` (dashboard screenshot stubs)
+  - `examples/trial/video/` (video stub + subtitle sidecar)
+  - `examples/trial/tabular/` (latency/error CSV)
+  - `examples/trial/mixed/` (mini incident bundle)
+- Focused offline test: `tests/test_trial_fixtures.py`
+- Linux example:
+  - `python -m unittest tests.test_trial_fixtures`
+
+## CBT-11 End-to-End Trial Runner
+
+- Runner script: `scripts/run_controlled_trial.py`
+- Operations runbook: `docs/current/operations/runbooks/controlled-trial-loop.md`
+- Default output directory: `docs/current/status/baselines/controlled-trial/`
+- Key outputs:
+  - `controlled-trial-execution-plan.json`
+  - `controlled-trial-run-report.json`
+  - `trial-metrics-manifest.json`
+  - `trial-metrics-report.json`
+  - `trial-metrics-summary.md`
+- Linux dry-run example:
+  - `python scripts/run_controlled_trial.py --manifest docs/current/status/baselines/trial-manifests/trial-sample-mixed-corpus.example.json --output-dir docs/current/status/baselines/controlled-trial --dry-run`
+- Linux fixture smoke example:
+  - `python scripts/run_controlled_trial.py --manifest docs/current/status/baselines/trial-manifests/trial-sample-mixed-corpus.example.json --output-dir docs/current/status/baselines/controlled-trial --use-fixture-stubs --target portable --simulated-agent-smoke-result passed --release-decision GO`
+
+## CBT-12 Agent Smoke Protocol
+
+- Operations runbook: `docs/current/operations/runbooks/agent-smoke-protocol.md`
+- Recording script: `scripts/run_agent_smoke_record.py`
+- Status report output (default): `docs/current/status/baselines/controlled-trial/agent-smoke-report.json`
+- Focused script test: `tests/test_agent_smoke_record_script.py`
+- Linux record example:
+  - `python scripts/run_agent_smoke_record.py --skill-id trial-skill-001 --agent codex --status agent_smoke_passed --reason "Selected expected skill and produced expected checklist." --trigger-prompt "Use the incident runbook skill to triage the sample issue." --expected-skill-selection incident-runbook-skill --expected-task-output "Checklist with rollback and validation steps." --selected-skill incident-runbook-skill --observed-task-output "Produced checklist with rollback and validation."`
+
+## CBT-13 Trial Security Gate
+
+- Security gate script: `scripts/run_trial_security_gate.py`
+- Validation module: `src/omni_skill_pipeline/validation/trial_security_gate.py`
+- Exporter gate point: `src/omni_skill_pipeline/exporters/agent_skill_exporter.py` (blocks export on gate failure)
+- Controlled-trial runner integration: `scripts/run_controlled_trial.py` (records `trial_security_gate_report`)
+- Linux example:
+  - `python scripts/run_trial_security_gate.py --bundle docs/current/status/baselines/controlled-trial/simulated-approval/mixed-001-bundle.approved.json --output docs/current/status/baselines/controlled-trial/trial-security-gate-report.json`
+
+## CBT-14 Trial Report and GO/GA Decision
+
+- Final report template: `docs/current/status/baselines/controlled-trial/controlled-trial-final-report.template.md`
+- Decision set (controlled-trial launch decision):
+  - `CONTINUE_TRIAL`
+  - `EXPAND_BETA`
+  - `HOLD_FOR_REMEDIATION`
+  - `GA_CANDIDATE` (enter GA-readiness review only, not direct GA declaration)
+- Required evidence inputs:
+  - `docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json`
+  - `docs/current/status/baselines/controlled-trial/trial-metrics-report.json`
+  - `docs/current/status/baselines/controlled-trial/trial-metrics-summary.md`
+  - `docs/current/status/baselines/controlled-trial/agent-smoke-report.json`
+- Linux example:
+  - `cp docs/current/status/baselines/controlled-trial/controlled-trial-final-report.template.md docs/current/status/baselines/controlled-trial/controlled-trial-final-report.md`
+
 ## 用法
 
 每次推进 V2 任一阶段时，都应执行以下动作：

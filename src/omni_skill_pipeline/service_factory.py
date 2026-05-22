@@ -22,6 +22,7 @@ from omni_skill_pipeline.providers.fallback import (
 )
 from omni_skill_pipeline.providers.media import FFmpegMediaProcessor
 from omni_skill_pipeline.providers.openai_provider import OpenAIAudioTranscriber, OpenAILLMSkillComposer, OpenAIVisionAnalyzer
+from omni_skill_pipeline.publication import PortableSkillRenderer
 from omni_skill_pipeline.providers.tesseract import TesseractOCRProvider
 from omni_skill_pipeline.quality.review_policy import ReviewPolicy
 from omni_skill_pipeline.repository import FileArtifactRepository
@@ -79,6 +80,7 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
     repository = FileArtifactRepository(settings.draft_dir)
     audio_adapter = _build_audio_adapter(settings)
     ocr_provider, analyzer = _build_image_capabilities(settings)
+    insight_extractor = HeuristicInsightExtractor()
     video_adapter = VideoAdapter(
         media_processor=FFmpegMediaProcessor(
             binary=settings.ffmpeg_bin,
@@ -102,8 +104,12 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
         image_adapter=ImageAdapter(ocr_provider=ocr_provider, analyzer=analyzer),
         tabular_adapter=TabularAdapter(),
         video_adapter=video_adapter,
-        insight_extractor=HeuristicInsightExtractor(),
+        insight_extractor=insight_extractor,
         skill_composer=_build_skill_composer(settings),
+        publication_orchestrator=_build_publication_orchestrator(
+            insight_extractor=insight_extractor,
+            portable_skill_line_limit=settings.portable_skill_markdown_line_limit,
+        ),
         review_policy=ReviewPolicy(
             force_review_mode=bool(getattr(settings, 'controlled_trial_review_mode', False)),
             force_review_reason_code=str(
@@ -121,3 +127,23 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
         },
     )
     return service
+
+
+def _build_publication_orchestrator(*, insight_extractor, portable_skill_line_limit: int):
+    from omni_skill_pipeline.assembly.publication_builder import PublicationBuilder
+    from omni_skill_pipeline.assembly.skill_graph_builder import SkillGraphBuilder
+    from omni_skill_pipeline.extraction import LegacyInsightAtomExtractor
+    from omni_skill_pipeline.publication_orchestrator import PublicationHarmonizer, PublicationOrchestrator
+
+    atom_extractor = LegacyInsightAtomExtractor(insight_extractor=insight_extractor)
+    publication_builder = PublicationBuilder(
+        portable_skill_line_limit=portable_skill_line_limit,
+        portable_skill_renderer=PortableSkillRenderer(line_limit=portable_skill_line_limit),
+    )
+    harmonizer = PublicationHarmonizer(portable_skill_line_limit=portable_skill_line_limit)
+    return PublicationOrchestrator(
+        atom_extractor=atom_extractor,
+        skill_graph_builder=SkillGraphBuilder(),
+        publication_builder=publication_builder,
+        harmonizer=harmonizer,
+    )

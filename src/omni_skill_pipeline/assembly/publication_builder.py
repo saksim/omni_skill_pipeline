@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Sequence
 
 from omni_skill_pipeline.models import Publication, PublicationType, SkillGraph
-from omni_skill_pipeline.render import render_skill_markdown
+from omni_skill_pipeline.publication import DEFAULT_PORTABLE_SKILL_LINE_LIMIT, PortableSkillRenderer
 from omni_skill_pipeline.transformers import skill_graph_to_document
 from omni_skill_pipeline.utils import unique_preserve_order
 
@@ -13,6 +13,16 @@ class PublicationBuilder(object):
         PublicationType.SKILL_MARKDOWN,
         PublicationType.SKILL_JSON,
     )
+
+    def __init__(
+        self,
+        *,
+        portable_skill_line_limit: int = DEFAULT_PORTABLE_SKILL_LINE_LIMIT,
+        portable_skill_renderer: PortableSkillRenderer | None = None,
+    ) -> None:
+        self.portable_skill_renderer = portable_skill_renderer or PortableSkillRenderer(
+            line_limit=portable_skill_line_limit
+        )
 
     def build(
         self,
@@ -58,16 +68,21 @@ class PublicationBuilder(object):
             'version': graph.version,
         }
         if publication_type == PublicationType.SKILL_MARKDOWN:
+            portable = self.portable_skill_renderer.render(skill=skill, graph=graph)
             return Publication(
                 publication_type=publication_type,
                 content={
                     'filename': 'SKILL.md',
-                    'text': render_skill_markdown(skill),
+                    'text': portable.skill_markdown,
+                    'description': portable.description,
+                    'line_count': portable.line_count,
+                    'line_limit': portable.line_limit,
+                    'references': portable.references,
                     'graph_id': graph.graph_id,
                     'skill_id': skill.skill_id,
                 },
                 path='SKILL.md',
-                metadata={**metadata, 'renderer': 'skill_markdown_v1'},
+                metadata={**metadata, 'renderer': 'portable_skill_markdown_v1'},
             )
         if publication_type == PublicationType.SKILL_JSON:
             return Publication(

@@ -428,13 +428,34 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
     def _write_publication_file(self, target: Path, publication: Publication) -> None:
         if publication.publication_type.value == 'skill_markdown':
             text = ''
+            references: dict[str, Any] = {}
             if isinstance(publication.content, dict):
                 text = str(publication.content.get('text', '') or '')
+                references_payload = publication.content.get('references')
+                if isinstance(references_payload, dict):
+                    references = references_payload
             target.write_text(str(redact_sensitive_data(text)), encoding='utf-8')
+            self._write_publication_references(target.parent, references)
             return
         payload = publication.content if isinstance(publication.content, dict) else {'content': publication.content}
         payload = redact_sensitive_data(payload)
         target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    def _write_publication_references(self, publications_dir: Path, references: dict[str, Any]) -> None:
+        if not references:
+            return
+        for raw_relative_path, raw_content in references.items():
+            relative_path = str(raw_relative_path).strip().replace('\\', '/')
+            if not relative_path:
+                continue
+            normalized_parts = [part for part in relative_path.split('/') if part and part != '.']
+            if not normalized_parts or any(part == '..' for part in normalized_parts):
+                continue
+            target = publications_dir
+            for part in normalized_parts:
+                target = target / part
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(str(redact_sensitive_data(raw_content)), encoding='utf-8')
 
     def _build_cross_asset_refs(self, bundle: DistillBundle) -> list[dict[str, Any]]:
         if bundle.corpus is None or len(bundle.corpus.assets) < 2:

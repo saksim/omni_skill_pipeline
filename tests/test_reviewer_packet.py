@@ -74,7 +74,7 @@ class ReviewerPacketTests(unittest.TestCase):
             name='Dashboard Review Skill',
             goal='Review degraded dashboard screenshots.',
             source_modality=Modality.IMAGE,
-            steps=[SkillStep(step=1, action='Check degraded service banner.')],
+            steps=[SkillStep(step=1, action='Check degraded service banner at C:\\Users\\alice\\private.txt.')],
             evidence_refs=[evidence.evidence_id],
             summary='Review dashboard evidence before acting.',
         )
@@ -91,6 +91,7 @@ class ReviewerPacketTests(unittest.TestCase):
         self.assertEqual(packet['evidence_links'][0]['evidence_id'], evidence.evidence_id)
         self.assertIn('quality_scores', packet)
         self.assertTrue(any(item['code'] == 'image_requires_ocr_review' for item in packet['risk_flags']))
+        self.assertTrue(any(item['code'] == 'trial_security_private_local_absolute_path' for item in packet['risk_flags']))
         checklist_ids = {item['check_id'] for item in packet['approval_checklist']}
         self.assertIn('ocr_visual_check', checklist_ids)
 
@@ -208,6 +209,7 @@ class ReviewerPacketTests(unittest.TestCase):
         checklist_ids = {item['check_id'] for item in packet['approval_checklist']}
         self.assertIn('cross_asset_consistency', checklist_ids)
         self.assertIn('transcript_check', checklist_ids)
+        self.assertFalse(any(item['code'].startswith('trial_security_') for item in packet['risk_flags']))
 
     def _build_mock_service(
         self,

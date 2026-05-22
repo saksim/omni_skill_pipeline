@@ -1,0 +1,345 @@
+[
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1",
+    "text_content": "Incident Postmortem (Sanitized)",
+    "payload": {
+      "legacy_content": "Incident Postmortem (Sanitized)"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "9c593f16-05ef-4154-aaf2-984cac2b5de2"
+  },
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.1",
+    "text_content": "Summary",
+    "payload": {
+      "legacy_content": "Summary"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.1",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "9ba67dcd-4f0d-4d1b-8baf-5cb8942c1a24"
+  },
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.1:paragraph:0001",
+    "text_content": "An index regression and stale statistics amplified query latency during a controlled rollout.",
+    "payload": {
+      "legacy_content": "An index regression and stale statistics amplified query latency during a controlled rollout."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.1",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "e1a08eeb-cd08-4f14-adaa-1ab753c17f29"
+  },
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.2",
+    "text_content": "Timeline",
+    "payload": {
+      "legacy_content": "Timeline"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.2",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "4863f222-740d-42b5-be9a-c62d4320c085"
+  },
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.2:paragraph:0002",
+    "text_content": "- 08:10 UTC: latency alert fired.\n- 08:16 UTC: oncall confirmed row estimate mismatch.\n- 08:28 UTC: mitigated by rollback + stats refresh.",
+    "payload": {
+      "legacy_content": "- 08:10 UTC: latency alert fired.\n- 08:16 UTC: oncall confirmed row estimate mismatch.\n- 08:28 UTC: mitigated by rollback + stats refresh."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.2",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "b9eaae3b-0362-432a-a900-6c097f4f4519"
+  },
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.3",
+    "text_content": "Lessons",
+    "payload": {
+      "legacy_content": "Lessons"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.3",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "87565b9c-e3a3-4bc0-a37d-aee4b28fbaa1"
+  },
+  {
+    "asset_id": "ce40320a-4f4c-4476-a628-cd5fcf11c54a",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.3:paragraph:0003",
+    "text_content": "1. Validate estimator accuracy before index decisions.\n2. Keep rollout guardrails tied to latency and error-rate together.",
+    "payload": {
+      "legacy_content": "1. Validate estimator accuracy before index decisions.\n2. Keep rollout guardrails tied to latency and error-rate together."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.3",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "160c7e62-0842-43c7-850a-b7cff7750a21"
+  },
+  {
+    "asset_id": "dcc0ddb2-60dd-4351-852f-45a3c5f6fcc9",
+    "modality": "image",
+    "content_type": "ocr",
+    "span_ref": "image:ocr:0001",
+    "text_content": "Fixture OCR: incident dashboard\nstatus: degraded",
+    "payload": {
+      "legacy_content": "Fixture OCR: incident dashboard\nstatus: degraded"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.78,
+    "tags": [
+      "engine:fixture-ocr",
+      "block:ocr_full"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "c72ed2e3-1a21-4610-9015-5ef4fba54aa1"
+  },
+  {
+    "asset_id": "dcc0ddb2-60dd-4351-852f-45a3c5f6fcc9",
+    "modality": "image",
+    "content_type": "ocr",
+    "span_ref": "image:region:0001",
+    "text_content": "Fixture OCR: incident dashboard",
+    "payload": {
+      "legacy_content": "Fixture OCR: incident dashboard"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.91,
+    "tags": [
+      "engine:fixture-ocr",
+      "block:region",
+      "source:ocr_group",
+      "layout_role:text",
+      "region_size:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "eab5f57a-d493-45de-af2c-6fa5a898f8e8"
+  },
+  {
+    "asset_id": "dcc0ddb2-60dd-4351-852f-45a3c5f6fcc9",
+    "modality": "image",
+    "content_type": "ocr",
+    "span_ref": "image:region:0002",
+    "text_content": "status: degraded",
+    "payload": {
+      "legacy_content": "status: degraded"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.89,
+    "tags": [
+      "engine:fixture-ocr",
+      "block:region",
+      "source:ocr_group",
+      "layout_role:status",
+      "region_size:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "4ea76167-3ff6-4edc-8c1e-3a59b4499a70"
+  },
+  {
+    "asset_id": "dcc0ddb2-60dd-4351-852f-45a3c5f6fcc9",
+    "modality": "image",
+    "content_type": "scene",
+    "span_ref": "image:scene:0001",
+    "text_content": "Fixture scene summary for incident-dashboard.",
+    "payload": {
+      "legacy_content": "Fixture scene summary for incident-dashboard."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.72,
+    "tags": [
+      "fixture",
+      "scene",
+      "png"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "514e44f9-456d-4069-a71d-b109367d6e8b"
+  },
+  {
+    "asset_id": "dcc0ddb2-60dd-4351-852f-45a3c5f6fcc9",
+    "modality": "image",
+    "content_type": "scene",
+    "span_ref": "image:layout:0001",
+    "text_content": "Fixture scene summary for incident-dashboard.",
+    "payload": {
+      "legacy_content": "Fixture scene summary for incident-dashboard."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.74,
+    "tags": [
+      "block:layout",
+      "source:scene_summary",
+      "layout_role:dashboard",
+      "fixture",
+      "scene",
+      "png"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "fd14b0c8-aa6f-42c5-ae6e-5ec087cbe145"
+  },
+  {
+    "asset_id": "0c5ed50a-c756-41ff-aea5-1a348a808d76",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1",
+    "text_content": "Incident Review Transcript (Sanitized)",
+    "payload": {
+      "legacy_content": "Incident Review Transcript (Sanitized)"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "17d3417d-b7d4-49b1-9697-719bbe460759"
+  },
+  {
+    "asset_id": "0c5ed50a-c756-41ff-aea5-1a348a808d76",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1:paragraph:0001",
+    "text_content": "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback.\n[00:01:02] Engineer: We merged duplicate alerts into one timeline and recovery signal stabilized.\n[00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints.",
+    "payload": {
+      "legacy_content": "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback.\n[00:01:02] Engineer: We merged duplicate alerts into one timeline and recovery signal stabilized.\n[00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "06787245-3f4d-487b-a3eb-cd476e818c1c"
+  }
+]

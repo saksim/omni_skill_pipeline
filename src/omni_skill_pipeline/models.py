@@ -131,6 +131,20 @@ class ReviewDecision(str, Enum):
     REJECT = 'reject'
 
 
+class AgentSkillTarget(str, Enum):
+    CODEX = 'codex'
+    CLAUDE_CODE = 'claude-code'
+    OPENCODE = 'opencode'
+    PORTABLE = 'portable'
+    ALL = 'all'
+
+
+class AgentSkillValidationStatus(str, Enum):
+    PENDING = 'pending'
+    PASSED = 'passed'
+    FAILED = 'failed'
+
+
 EnumType = TypeVar('EnumType', bound=Enum)
 
 
@@ -506,6 +520,99 @@ class Publication(SerializableMixin):
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=utc_now_iso)
     publication_id: str = field(default_factory=new_id)
+
+
+@dataclass(slots=True)
+class AgentSkillPackageFile(SerializableMixin):
+    relative_path: str
+    category: str = 'primary'
+    required: bool = True
+    media_type: str = 'text/markdown'
+    size_bytes: Optional[int] = None
+    sha256: str = ''
+
+    def validate(self) -> None:
+        if not self.relative_path.strip():
+            raise ValueError('AgentSkillPackageFile.relative_path is required.')
+        if not self.category.strip():
+            raise ValueError('AgentSkillPackageFile.category is required.')
+        if not self.media_type.strip():
+            raise ValueError('AgentSkillPackageFile.media_type is required.')
+        if self.size_bytes is not None and self.size_bytes < 0:
+            raise ValueError('AgentSkillPackageFile.size_bytes must be >= 0.')
+
+
+@dataclass(slots=True)
+class AgentSkillPackageReference(SerializableMixin):
+    reference_id: str
+    title: str
+    source_uri: str
+    reference_type: str = 'evidence'
+    evidence_refs: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.reference_id.strip():
+            raise ValueError('AgentSkillPackageReference.reference_id is required.')
+        if not self.title.strip():
+            raise ValueError('AgentSkillPackageReference.title is required.')
+        if not self.source_uri.strip():
+            raise ValueError('AgentSkillPackageReference.source_uri is required.')
+
+
+@dataclass(slots=True)
+class AgentSkillPackageSourceBundle(SerializableMixin):
+    bundle_id: str = ''
+    graph_id: str = ''
+    skill_id: str = ''
+    corpus_id: str = ''
+    artifact_manifest_path: str = ''
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        source_identifiers = (
+            self.bundle_id,
+            self.graph_id,
+            self.skill_id,
+            self.corpus_id,
+            self.artifact_manifest_path,
+        )
+        if not any(str(item).strip() for item in source_identifiers):
+            raise ValueError('AgentSkillPackageSourceBundle requires at least one source identifier.')
+
+
+@dataclass(slots=True)
+class AgentSkillPackage(SerializableMixin):
+    package_name: str
+    description: str
+    target: AgentSkillTarget
+    files: List[AgentSkillPackageFile] = field(default_factory=list)
+    references: List[AgentSkillPackageReference] = field(default_factory=list)
+    validation_status: AgentSkillValidationStatus = AgentSkillValidationStatus.PENDING
+    source_bundle: AgentSkillPackageSourceBundle = field(default_factory=AgentSkillPackageSourceBundle)
+    review_status: ReviewStatus = ReviewStatus.DRAFT
+    hashes: Dict[str, str] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=utc_now_iso)
+    package_id: str = field(default_factory=new_id)
+
+    def validate(self) -> None:
+        if not self.package_name.strip():
+            raise ValueError('AgentSkillPackage.package_name is required.')
+        if not self.description.strip():
+            raise ValueError('AgentSkillPackage.description is required.')
+        if not self.files:
+            raise ValueError('AgentSkillPackage.files cannot be empty.')
+        for item in self.files:
+            item.validate()
+        for reference in self.references:
+            reference.validate()
+        self.source_bundle.validate()
+        for key, value in self.hashes.items():
+            if not str(key).strip():
+                raise ValueError('AgentSkillPackage.hashes keys must be non-empty.')
+            if not str(value).strip():
+                raise ValueError('AgentSkillPackage.hashes values must be non-empty.')
 
 
 @dataclass(slots=True)

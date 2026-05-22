@@ -234,6 +234,13 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - `README.md` now keeps the controlled-trial doc and strategy doc as active entry points while marking `launch-readiness-master-plan.md` as the historical 2026-04-24 baseline.
   - `docs/INDEX.md` now labels the launch-readiness master plan as historical baseline and keeps controlled-trial iteration as the active status entry.
   - `CURRENT_STATUS.md` already records latest `GO`, controlled business trial scope, and the controlled-trial iteration doc as the execution entry.
+  - 2026-05-21 iterative re-check: verified all three entry docs still maintain the same controlled-trial/strategy/historical-baseline routing and did not regress after CBT-02+ updates.
+  - 2026-05-21 iterative re-check (run 2): re-verified `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` keep controlled-trial as the active execution entry, strategy assessment as direction, and launch-readiness as historical baseline.
+  - 2026-05-22 iterative re-check (run 3): re-validated `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` keep controlled-trial iteration as the active execution entry, strategy assessment as direction, and `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-22 iterative re-check (run 4): confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still route contributors to controlled trial as the active execution path, keep strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-22 iterative re-check (run 5): confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` continue to point to controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-22 iterative re-check (run 6): re-confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still expose controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and preserve `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-22 iterative re-check (run 7): re-validated `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still keep controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
 
 ### CBT-02 Trial Sample Manifest
 
@@ -252,6 +259,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Added modality examples: `trial-sample-text.example.json`, `trial-sample-audio.example.json`, `trial-sample-image.example.json`, `trial-sample-video.example.json`, `trial-sample-tabular.example.json`, `trial-sample-mixed-corpus.example.json`.
   - Added validator `scripts/validate_trial_manifest.py` with actionable errors for missing required fields and unsupported `sensitivity`/`modality`/`target_package_format`.
   - Added focused tests `tests/test_validate_trial_manifest_script.py` for valid manifest pass path plus invalid-field actionable failure paths.
+  - 2026-05-22 iterative re-check (run 1): re-validated the CBT-02 artifact set (`trial-manifest` template/examples, `validate_trial_manifest.py`, and `tests/test_validate_trial_manifest_script.py`) and confirmed manifest validation plus focused script tests still pass without regression.
 
 ### CBT-03 Default Human Review Mode
 
@@ -278,6 +286,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `tests/test_openai_provider_config.py`
     - `tests/test_service_factory_split.py`
   - Documented enable/disable behavior in `docs/current/operations/env.md`.
+  - 2026-05-22 iterative re-check (run 1): re-ran focused CBT-03 review-mode tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`) and confirmed controlled-trial mode still forces `review_required` with persisted `controlled_trial_requires_review` reason code.
 
 ### CBT-04 Reviewer Packet Generator
 
@@ -301,6 +310,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 
 ### CBT-05 Trial Metrics Collector
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: record whether the trial is working.
 - Files: `scripts/`, `src/omni_skill_pipeline/quality/`, `docs/current/status/baselines/`, tests under `tests/`
@@ -310,9 +320,22 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Acceptance:
   - Report includes all success criteria fields from this document.
   - A failing report clearly states which GA discussion condition failed.
+- Evidence:
+  - Added collector module `src/omni_skill_pipeline/quality/trial_metrics.py`:
+    - Aggregates review outcome, reviewer edit distance, latency, provider/runtime failures, retry count, artifact count, and cost placeholder fields.
+    - Evaluates all trial success criteria and emits explicit failing condition IDs.
+    - Marks critical GA blockers through `ga_discussion_blocked`.
+  - Added CLI/report runner `scripts/run_trial_metrics_collector.py`:
+    - Emits JSON report and Markdown summary.
+    - Supports `--fail-on-ga-blocker` for non-zero exit when critical GA conditions fail.
+  - Added baseline template `docs/current/status/baselines/trial-metrics/trial-metrics-manifest.template.json`.
+  - Added focused tests:
+    - `tests/test_trial_metrics_collector.py`
+    - `tests/test_trial_metrics_collector_script.py`
 
 ### CBT-06 Agent Skill Package Model
 
+- Status: Complete
 - Recommended model: Codex 5.5 for design, Codex 5.3 for implementation
 - Goal: add a first-class package model for generated agent skills.
 - Files: `src/omni_skill_pipeline/models.py`, `docs/current/architecture/`, tests under `tests/`
@@ -323,9 +346,29 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Acceptance:
   - Model serializes cleanly.
   - Existing V2 model tests continue to pass.
+- Evidence:
+  - Added package-domain enums and models in `src/omni_skill_pipeline/models.py`:
+    - `AgentSkillTarget`
+    - `AgentSkillValidationStatus`
+    - `AgentSkillPackage`
+    - `AgentSkillPackageFile`
+    - `AgentSkillPackageReference`
+    - `AgentSkillPackageSourceBundle`
+  - Added focused package validation contract (`AgentSkillPackage.validate`) that enforces:
+    - required package name/description and non-empty file list
+    - per-file and per-reference required field checks
+    - source-bundle identifier presence
+    - non-empty hash key/value pairs
+  - Added focused tests in `tests/test_v2_models.py`:
+    - `test_agent_skill_package_serialization_and_validation`
+    - `test_agent_skill_package_validate_requires_source_bundle_identifier`
+  - Added architecture doc `docs/current/architecture/agent-skill-package-model.md` and linked it in:
+    - `docs/current/architecture/ARCHITECTURE.md`
+    - `docs/INDEX.md`
 
 ### CBT-07 Portable Skill Renderer
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: render a clean agent-native `SKILL.md`.
 - Files: `src/omni_skill_pipeline/assembly/`, `src/omni_skill_pipeline/publication/`, tests under `tests/`
@@ -337,9 +380,31 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Acceptance:
   - Renderer tests assert frontmatter, required sections, and references split.
   - Main `SKILL.md` stays under the configured line limit.
+- Evidence:
+  - Added portable renderer module `src/omni_skill_pipeline/publication/portable_skill_renderer.py` and package export `src/omni_skill_pipeline/publication/__init__.py`.
+  - `PublicationBuilder` now renders `PublicationType.SKILL_MARKDOWN` through `PortableSkillRenderer` with:
+    - YAML frontmatter (`name`, `description`)
+    - required sections (`Workflow`, `Decision Rules`, `Validation`, `Failure Modes`, `References`)
+    - split references payload (`references/evidence.md`, `references/examples.md`)
+    - line budget metadata (`line_count`, `line_limit`)
+  - Added configurable line budget:
+    - `Settings.portable_skill_markdown_line_limit`
+    - env var `OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT` (default `220`, floor `21`)
+    - `.env.example` and `docs/current/operations/env.md` updated
+  - `FileArtifactRepository` now writes markdown publication sidecar references into publication output tree:
+    - `publications/references/evidence.md`
+    - `publications/references/examples.md`
+  - Added focused tests:
+    - `tests/test_portable_skill_renderer.py`
+    - `tests/test_publication_builder.py`
+    - `tests/test_publication_orchestrator_split.py`
+    - `tests/test_v2_schema_and_corpus.py`
+    - `tests/test_service_factory_split.py`
+    - `tests/test_openai_provider_config.py`
 
 ### CBT-08 Target Exporters
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: export packages for Codex, Claude Code, OpenCode, portable, and all targets.
 - Files: `src/omni_skill_pipeline/cli.py`, `src/omni_skill_pipeline/exporters/`, `docs/current/operations/cli.md`, tests under `tests/`
@@ -349,9 +414,21 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Write target-specific directory layouts.
 - Acceptance:
   - CLI smoke tests prove every target writes `SKILL.md` to the expected path.
+- Evidence:
+  - Added exporter module `src/omni_skill_pipeline/exporters/agent_skill_exporter.py` and package export `src/omni_skill_pipeline/exporters/__init__.py`.
+  - Added CLI command `export-skill` in `src/omni_skill_pipeline/cli.py` with `--bundle`, `--target`, `--output-root`, and support for `codex/claude-code/opencode/portable/all`.
+  - Export now writes target-specific layouts and package metadata artifact `agent_skill_package.json` per target directory.
+  - Added CLI operation doc updates in `docs/current/operations/cli.md` for `export-skill` usage and target mappings.
+  - Added focused CLI smoke tests in `tests/test_cli.py`:
+    - `test_export_skill_codex_target_writes_expected_layout`
+    - `test_export_skill_claude_code_target_writes_expected_layout`
+    - `test_export_skill_opencode_target_writes_expected_layout`
+    - `test_export_skill_portable_target_writes_expected_layout`
+    - `test_export_skill_all_target_writes_all_layouts`
 
 ### CBT-09 Skill Usability Validator
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: reject packages that are not safe or usable enough for trial.
 - Files: `src/omni_skill_pipeline/validation/`, `scripts/`, tests under `tests/`
@@ -360,9 +437,25 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Emit explicit failure codes.
 - Acceptance:
   - Validator catches missing frontmatter, weak description, leaked absolute path, token-like secret, and missing review approval.
+- Evidence:
+  - Added validator module `src/omni_skill_pipeline/validation/skill_usability.py` with explicit failure codes for:
+    - frontmatter contract and name/description quality
+    - required sections and max line budget
+    - references directory presence/content
+    - absolute-path leakage and token-like secret leakage
+    - dangerous command markers and missing review approval signal
+  - Added validation exports in `src/omni_skill_pipeline/validation/__init__.py`.
+  - Added script runner `scripts/run_skill_usability_validator.py` returning non-zero on failed validation and emitting JSON with `failure_codes`.
+  - Added CLI command `validate-skill` in `src/omni_skill_pipeline/cli.py` with package-level status and failure-code output.
+  - Added focused tests:
+    - `tests/test_skill_usability_validator.py`
+    - `tests/test_skill_usability_validator_script.py`
+    - `tests/test_cli.py` (`validate-skill` pass/fail coverage)
+  - Updated CLI docs `docs/current/operations/cli.md` with validator usage and exit-code contract.
 
 ### CBT-10 Multimodal Trial Fixtures
 
+- Status: Complete
 - Recommended model: Codex 5.3
 - Goal: create non-sensitive fixture packs for all trial modalities.
 - Files: `examples/`, `docs/current/status/baselines/`, tests under `tests/`
@@ -371,9 +464,23 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Avoid binary bloat. Use stubs where full media would be too large.
 - Acceptance:
   - CI can run fixture-based tests without network access and without real provider calls.
+- Evidence:
+  - Added sanitized multimodal fixture pack under `examples/trial/`:
+    - `text/slow-query-notes.md`, `text/query-bottleneck-summary.pdf`
+    - `audio/incident-review-call.wav`, `audio/incident-review-call.transcript.md`
+    - `image/service-latency-dashboard.png`, `image/error-rate-trend.png`
+    - `video/feature-release-walkthrough.mp4`, `video/feature-release-walkthrough.srt`
+    - `tabular/latency-error-report.csv`
+    - `mixed/incident-postmortem.md`, `mixed/incident-dashboard.png`, `mixed/incident-review-transcript.md`
+  - Added fixture inventory and usage notes: `examples/trial/README.md`.
+  - Added focused offline fixture test suite `tests/test_trial_fixtures.py`:
+    - validates all CBT-02 trial-manifest asset paths exist locally
+    - runs text/audio/image/video/tabular distillation using fixture stubs without network/provider calls
+    - runs mixed-corpus distillation loop on fixture bundle without network/provider calls
 
 ### CBT-11 End-to-End Trial Runner
 
+- Status: Complete
 - Recommended model: Codex 5.5 for flow review, Codex 5.3 for script implementation
 - Goal: run one controlled-trial loop reproducibly.
 - Files: `scripts/run_controlled_trial.py`, `docs/current/operations/runbooks/`, tests under `tests/`
@@ -388,9 +495,26 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Acceptance:
   - Dry-run mode produces an execution plan.
   - Smoke test runs fully on fixtures.
+- Evidence:
+  - Added runner script `scripts/run_controlled_trial.py` with full CBT-11 sequence:
+    - trial-manifest validation
+    - distillation request execution (single-asset and mixed corpus)
+    - forced review mode through `OMNI_CONTROLLED_TRIAL_REVIEW_MODE`
+    - reviewer packet presence check
+    - simulated approval patch on bundle payload
+    - target export + skill usability validation
+    - trial-metrics manifest/report/summary generation
+  - Added fixture-provider path (`--use-fixture-stubs`) for offline smoke execution without external provider/network requirements.
+  - Added focused script tests `tests/test_controlled_trial_runner_script.py`:
+    - dry-run execution plan generation
+    - fixture smoke loop producing run report + metrics outputs
+  - Added runbook `docs/current/operations/runbooks/controlled-trial-loop.md` and runbook index/baseline entry updates:
+    - `docs/current/operations/runbooks/README.md`
+    - `docs/current/status/baselines/README.md`
 
 ### CBT-12 Agent Smoke Protocol
 
+- Status: Complete
 - Recommended model: Codex 5.5
 - Goal: define how approved skills are tested in a real agent workflow.
 - Files: `docs/current/operations/runbooks/`, optional `scripts/`
@@ -400,9 +524,30 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Keep live-agent runs separate from offline CI unless automation becomes reliable.
 - Acceptance:
   - Every approved trial skill can be marked `agent_smoke_passed`, `agent_smoke_failed`, or `not_run` with reason.
+- Evidence:
+  - Added runbook `docs/current/operations/runbooks/agent-smoke-protocol.md` with:
+    - manual smoke check flow for Codex, Claude Code, and OpenCode
+    - trigger prompt contract
+    - expected skill selection/output contract
+    - explicit failure recording contract
+    - live-agent/offline-CI separation rule for controlled trial
+  - Added recorder script `scripts/run_agent_smoke_record.py`:
+    - records one status row per `skill_id + agent`
+    - supports statuses `agent_smoke_passed`, `agent_smoke_failed`, `not_run`
+    - enforces non-empty `reason`
+    - maps status to metrics-compatible `agent_smoke_result` (`passed`/`failed`/`not_run`)
+    - writes/updates report `docs/current/status/baselines/controlled-trial/agent-smoke-report.json`
+  - Added focused tests `tests/test_agent_smoke_record_script.py` covering:
+    - pass path record creation
+    - failure path contract enforcement (`agent_smoke_failed` requires `--failure-code`)
+    - upsert path updating existing `skill_id + agent` record
+  - Updated runbook index and baseline index:
+    - `docs/current/operations/runbooks/README.md`
+    - `docs/current/status/baselines/README.md`
 
 ### CBT-13 Trial Security Gate
 
+- Status: Complete
 - Recommended model: Codex 5.5 for policy, Codex 5.3 for implementation
 - Goal: block unsafe trial artifacts before package export.
 - Files: `src/omni_skill_pipeline/redaction.py`, `src/omni_skill_pipeline/validation/`, `scripts/`, tests under `tests/`
@@ -412,9 +557,40 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Attach risk labels to reviewer packet.
 - Acceptance:
   - Tests prove unsafe packages fail before export.
+- Evidence:
+  - Added dedicated gate module `src/omni_skill_pipeline/validation/trial_security_gate.py`:
+    - reuses existing sensitive-key redaction heuristics (`is_sensitive_key`) and extends package-level blocking checks.
+    - rejects secret/token leak patterns, private local absolute path leaks, dangerous production command markers, and unapproved sensitive data classes.
+    - emits deterministic failure codes:
+      - `TRIAL_SECRET_LEAK`
+      - `TRIAL_PRIVATE_LOCAL_ABSOLUTE_PATH`
+      - `TRIAL_DANGEROUS_PRODUCTION_COMMAND`
+      - `TRIAL_UNAPPROVED_SENSITIVE_DATA_CLASS`
+    - emits reviewer-packet-compatible `risk_labels`.
+  - Added gate runner `scripts/run_trial_security_gate.py`:
+    - validates one bundle before export and returns non-zero on failure.
+    - supports JSON output for audit evidence.
+  - Enforced exporter pre-check in `src/omni_skill_pipeline/exporters/agent_skill_exporter.py`:
+    - `export-skill` now fails fast before writing any target layout if trial security gate fails.
+    - source URI mapping for exported evidence references now follows per-asset `corpus_assets` ownership when available.
+  - Attached CBT-13 risk labels into reviewer packet generation in:
+    - `src/omni_skill_pipeline/review/packet.py`
+    - `src/omni_skill_pipeline/service.py`
+    - risk labels now include `source=trial_security_gate` when unsafe markers are present.
+  - Integrated gate into `scripts/run_controlled_trial.py`:
+    - checks simulated-approved bundle before export.
+    - records `trial_security_gate_report` per sample in run report.
+  - Added focused tests:
+    - `tests/test_trial_security_gate.py`
+    - `tests/test_trial_security_gate_script.py`
+    - `tests/test_agent_skill_exporter_security_gate.py`
+    - `tests/test_reviewer_packet.py` (risk-label coverage)
+    - `tests/test_cli.py` (`export-skill` gate-failure path)
+    - `tests/test_controlled_trial_runner_script.py` (`trial_security_gate_report` presence)
 
 ### CBT-14 Trial Report and GO/GA Decision
 
+- Status: Complete
 - Recommended model: Codex 5.5
 - Goal: convert trial evidence into a decision.
 - Files: `docs/current/status/baselines/`, `docs/current/status/`
@@ -424,6 +600,17 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Define decisions: `CONTINUE_TRIAL`, `EXPAND_BETA`, `HOLD_FOR_REMEDIATION`, `GA_CANDIDATE`.
 - Acceptance:
   - A reviewer can decide the next launch level from the report without reading raw artifacts.
+- Evidence:
+  - Added final report template `docs/current/status/baselines/controlled-trial/controlled-trial-final-report.template.md` with:
+    - required evidence input section for `controlled-trial-run-report.json`, `trial-metrics-report.json`, `trial-metrics-summary.md`, `agent-smoke-report.json`, and security-gate evidence.
+    - required metric sections covering modality coverage, approval rate, reviewer edit distance, agent smoke success, cost, failures, and reviewer notes.
+    - decision section with constrained decision set:
+      - `CONTINUE_TRIAL`
+      - `EXPAND_BETA`
+      - `HOLD_FOR_REMEDIATION`
+      - `GA_CANDIDATE`
+    - explicit rule that `GA_CANDIDATE` means entering GA-readiness review, not direct GA declaration.
+  - Updated baseline index `docs/current/status/baselines/README.md` with CBT-14 entry and report-template path, so reviewers can locate the decision template from the baseline entry doc.
 
 ## Recommended Execution Order
 

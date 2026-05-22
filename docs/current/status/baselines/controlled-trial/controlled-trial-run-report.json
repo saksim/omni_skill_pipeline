@@ -1,0 +1,64 @@
+{
+  "run_id": "controlled-trial-20260520T132204Z",
+  "generated_at_utc": "2026-05-20T13:22:04Z",
+  "manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\trial-manifests\\trial-sample-mixed-corpus.example.json",
+  "plan_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-execution-plan.json",
+  "sample_count": 1,
+  "use_fixture_stubs": true,
+  "force_review_mode": true,
+  "review_reason_code": "controlled_trial_requires_review",
+  "samples": [
+    {
+      "sample_id": "mixed-001",
+      "modality": "mixed_corpus",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-bundle-to-runbook-skill-5c9eccb3\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-bundle-to-runbook-skill-5c9eccb3\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\mixed-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 27,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "loop_metrics": {
+        "loop_id": "mixed-001",
+        "status": "complete",
+        "modality": "mixed_corpus",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 82.693,
+        "provider_failure_count": 0,
+        "provider_call_count": 2,
+        "retry_count": 0,
+        "artifact_count": 20,
+        "estimated_cost_usd": 0.0
+      }
+    }
+  ],
+  "metrics_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-manifest.json",
+  "metrics_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+  "metrics_summary_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-summary.md",
+  "metrics_status": "fail",
+  "ga_discussion_blocked": true
+}

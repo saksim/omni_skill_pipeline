@@ -3,8 +3,8 @@ from __future__ import annotations
 import importlib
 import io
 import json
-import sys
 import tempfile
+import sys
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -193,6 +193,275 @@ class CliCorpusCommandTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertIn('skills/drafts/demo-corpus/publications/decision_tree.json', output)
+
+    def test_export_skill_codex_target_writes_expected_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_export_bundle(root)
+            exit_code, output = _run_cli(
+                [
+                    'export-skill',
+                    '--bundle',
+                    str(bundle_path),
+                    '--target',
+                    'codex',
+                    '--output-root',
+                    str(root / 'out'),
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('target=codex', output)
+            skill_path = root / 'out' / '.codex' / 'skills' / 'sample-skill' / 'SKILL.md'
+            package_path = root / 'out' / '.codex' / 'skills' / 'sample-skill' / 'agent_skill_package.json'
+            self.assertTrue(skill_path.is_file())
+            self.assertTrue(package_path.is_file())
+
+    def test_export_skill_claude_code_target_writes_expected_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_export_bundle(root)
+            exit_code, output = _run_cli(
+                [
+                    'export-skill',
+                    '--bundle',
+                    str(bundle_path),
+                    '--target',
+                    'claude-code',
+                    '--output-root',
+                    str(root / 'out'),
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('target=claude-code', output)
+            skill_path = root / 'out' / '.claude' / 'skills' / 'sample-skill' / 'SKILL.md'
+            self.assertTrue(skill_path.is_file())
+
+    def test_export_skill_opencode_target_writes_expected_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_export_bundle(root)
+            exit_code, output = _run_cli(
+                [
+                    'export-skill',
+                    '--bundle',
+                    str(bundle_path),
+                    '--target',
+                    'opencode',
+                    '--output-root',
+                    str(root / 'out'),
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('target=opencode', output)
+            skill_path = root / 'out' / '.opencode' / 'skill' / 'sample-skill' / 'SKILL.md'
+            self.assertTrue(skill_path.is_file())
+
+    def test_export_skill_portable_target_writes_expected_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_export_bundle(root)
+            exit_code, output = _run_cli(
+                [
+                    'export-skill',
+                    '--bundle',
+                    str(bundle_path),
+                    '--target',
+                    'portable',
+                    '--output-root',
+                    str(root / 'out'),
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('target=portable', output)
+            skill_path = root / 'out' / 'skills' / 'portable' / 'sample-skill' / 'SKILL.md'
+            self.assertTrue(skill_path.is_file())
+
+    def test_export_skill_all_target_writes_all_layouts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_export_bundle(root)
+            exit_code, output = _run_cli(
+                [
+                    'export-skill',
+                    '--bundle',
+                    str(bundle_path),
+                    '--target',
+                    'all',
+                    '--output-root',
+                    str(root / 'out'),
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('target=codex', output)
+            self.assertIn('target=claude-code', output)
+            self.assertIn('target=opencode', output)
+            self.assertIn('target=portable', output)
+            self.assertTrue((root / 'out' / '.codex' / 'skills' / 'sample-skill' / 'SKILL.md').is_file())
+            self.assertTrue((root / 'out' / '.claude' / 'skills' / 'sample-skill' / 'SKILL.md').is_file())
+            self.assertTrue((root / 'out' / '.opencode' / 'skill' / 'sample-skill' / 'SKILL.md').is_file())
+            self.assertTrue((root / 'out' / 'skills' / 'portable' / 'sample-skill' / 'SKILL.md').is_file())
+
+    def test_export_skill_rejects_bundle_failing_trial_security_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_export_bundle(root, unsafe=True)
+
+            module = importlib.import_module('omni_skill_pipeline.cli')
+            module = importlib.reload(module)
+            with patch.object(module, 'build_service', return_value=_CapturingService()):
+                with self.assertRaises(SystemExit) as exc_info:
+                    module.main(
+                        [
+                            'export-skill',
+                            '--bundle',
+                            str(bundle_path),
+                            '--target',
+                            'portable',
+                            '--output-root',
+                            str(root / 'out'),
+                        ]
+                    )
+            self.assertEqual(exc_info.exception.code, 2)
+
+    def test_validate_skill_command_passes_for_safe_package(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            package_dir = self._write_validated_package(root, approved=True)
+            exit_code, output = _run_cli(
+                [
+                    'validate-skill',
+                    '--package',
+                    str(package_dir),
+                    '--max-lines',
+                    '500',
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('status=pass', output)
+            self.assertNotIn('failure_codes=', output)
+
+    def test_validate_skill_command_reports_failure_codes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            package_dir = self._write_validated_package(root, approved=False)
+            exit_code, output = _run_cli(
+                [
+                    'validate-skill',
+                    '--package',
+                    str(package_dir),
+                    '--max-lines',
+                    '500',
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 2)
+            self.assertIn('status=fail', output)
+            self.assertIn('failure_codes=REVIEW_APPROVAL_MISSING', output)
+
+    def _write_export_bundle(self, root: Path, *, unsafe: bool = False) -> Path:
+        bundle_dir = root / 'bundle'
+        publication_dir = bundle_dir / 'publications'
+        references_dir = publication_dir / 'references'
+        references_dir.mkdir(parents=True, exist_ok=True)
+        (publication_dir / 'SKILL.md').write_text(
+            (
+                '---\nname: "sample-skill"\ndescription: "sample description"\n---\n\n# Sample Skill\n\n'
+                '## Workflow\n1. %s\n\n## Decision Rules\n- keep review\n\n## Validation\n- verify output\n\n'
+                '## Failure Modes\n- do not auto publish\n'
+            )
+            % ('Read C:\\Users\\alice\\secrets.txt.' if unsafe else 'Review evidence before publish.'),
+            encoding='utf-8',
+        )
+        (references_dir / 'evidence.md').write_text('# Evidence\n', encoding='utf-8')
+        payload = {
+            'skill': {
+                'name': 'Sample Skill',
+                'summary': 'Sample description',
+                'skill_id': 'skill-123',
+                'review_status': 'review_pending',
+            },
+            'skill_graph': {'graph_id': 'graph-123'},
+            'corpus': {'corpus_id': 'corpus-123'},
+            'evidence_units': [
+                {'evidence_id': 'ev-1', 'span_ref': 'line:1'},
+                {'evidence_id': 'ev-2', 'span_ref': 'line:2'},
+            ],
+            'asset': {'source_uri': 'file:///examples/sample.md'},
+            'artifacts': {
+                'publication_skill_markdown': str(publication_dir / 'SKILL.md'),
+                'publication_manifest': str(publication_dir / 'manifest.json'),
+            },
+            'request_payload': {
+                'sensitivity': 'restricted' if unsafe else 'internal',
+            },
+        }
+        bundle_path = bundle_dir / 'bundle.json'
+        bundle_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+        return bundle_path
+
+    def _write_validated_package(self, root: Path, *, approved: bool) -> Path:
+        package_dir = root / 'validated-package'
+        references_dir = package_dir / 'references'
+        references_dir.mkdir(parents=True, exist_ok=True)
+        (package_dir / 'SKILL.md').write_text(
+            '\n'.join(
+                [
+                    '---',
+                    'name: "sample-skill"',
+                    (
+                        'description: "Use when the user asks to triage an incident, '
+                        'validate evidence, and prepare a reviewed remediation plan."'
+                    ),
+                    '---',
+                    '',
+                    '# Sample Skill',
+                    '',
+                    '## Workflow',
+                    '1. Collect evidence and summarize findings.',
+                    '',
+                    '## Decision Rules',
+                    '- If evidence conflicts, escalate to reviewer.',
+                    '',
+                    '## Validation',
+                    '- Confirm every action maps to evidence refs.',
+                    '',
+                    '## Failure Modes',
+                    '- Do not auto-publish before review approval.',
+                    '',
+                    '## References',
+                    '- [Evidence](references/evidence.md)',
+                ]
+            )
+            + '\n',
+            encoding='utf-8',
+        )
+        (references_dir / 'evidence.md').write_text('# Evidence\n', encoding='utf-8')
+        (package_dir / 'agent_skill_package.json').write_text(
+            json.dumps(
+                {
+                    'review_status': 'published' if approved else 'review_pending',
+                    'package_name': 'sample-skill',
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + '\n',
+            encoding='utf-8',
+        )
+        return package_dir
 
 
 if __name__ == '__main__':

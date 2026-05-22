@@ -5,8 +5,10 @@ import json
 import sys
 from pathlib import Path
 
+from omni_skill_pipeline.exporters import AgentSkillExporter
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
+    AgentSkillTarget,
     CorpusDistillRequest,
     DistillGoal,
     ImageDistillRequest,
@@ -16,6 +18,7 @@ from omni_skill_pipeline.models import (
     VideoDistillRequest,
 )
 from omni_skill_pipeline.service import build_service
+from omni_skill_pipeline.validation import validate_skill_package
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -89,6 +92,25 @@ def build_parser() -> argparse.ArgumentParser:
         help='Print available publication types and review status.',
     )
     _attach_goal_args(corpus_parser)
+
+    export_parser = subparsers.add_parser('export-skill', help='Export an agent skill package from an existing bundle')
+    export_parser.add_argument('--bundle', required=True, help='Path to a distillation bundle.json file.')
+    export_parser.add_argument(
+        '--target',
+        default=AgentSkillTarget.PORTABLE.value,
+        help='Export target (codex/claude-code/opencode/portable/all).',
+    )
+    export_parser.add_argument(
+        '--output-root',
+        default='.',
+        help='Root directory where target package layouts are written.',
+    )
+    validate_parser = subparsers.add_parser(
+        'validate-skill',
+        help='Validate an exported skill package for controlled-trial usability/safety rules',
+    )
+    validate_parser.add_argument('--package', required=True, help='Exported package directory path.')
+    validate_parser.add_argument('--max-lines', type=int, default=500, help='Max allowed SKILL.md line count.')
 
     subparsers.add_parser('show-template', help='Print SKILL template path and content')
     return parser
@@ -186,6 +208,17 @@ def _normalize_publication_type(raw: str) -> str:
 
 def _supported_publication_types() -> list[str]:
     return [item.value for item in PublicationType]
+
+
+def _normalize_export_target(raw: str) -> AgentSkillTarget:
+    normalized = str(raw or '').strip().lower()
+    if not normalized:
+        return AgentSkillTarget.PORTABLE
+    try:
+        return AgentSkillTarget(normalized)
+    except ValueError as exc:
+        valid = ', '.join(item.value for item in AgentSkillTarget)
+        raise ValueError('Unsupported export target: %s (valid: %s)' % (normalized, valid)) from exc
 
 
 def _resolve_available_publications(bundle) -> list[str]:
@@ -405,6 +438,35 @@ def main(argv: list = None) -> int:
         print(settings.template_path)
         print(settings.template_path.read_text(encoding='utf-8'))
         return 0
+
+    if args.command == 'export-skill':
+        try:
+            export_target = _normalize_export_target(args.target)
+        except ValueError as exc:
+            parser.error(str(exc))
+        exporter = AgentSkillExporter(output_root=Path(args.output_root))
+        try:
+            results = exporter.export_from_bundle(bundle_path=Path(args.bundle), target=export_target)
+        except ValueError as exc:
+            parser.error(str(exc))
+        for result in results:
+            print(
+                'target=%s skill=%s package=%s'
+                % (result.target.value, result.skill_path, result.package_path)
+            )
+        return 0
+
+    if args.command == 'validate-skill':
+        report = validate_skill_package(
+            package_path=Path(args.package),
+            max_lines=int(args.max_lines),
+        )
+        print('status=%s package=%s skill=%s' % (report.status, report.package_path, report.skill_path))
+        if report.failure_codes:
+            print('failure_codes=%s' % ','.join(report.failure_codes))
+        for issue in report.issues:
+            print('issue[%s]=%s' % (issue.code, issue.message))
+        return 0 if report.status == 'pass' else 2
 
     parser.print_help(sys.stderr)
     return 1

@@ -6,6 +6,8 @@
 
 - [Architecture](current/architecture/ARCHITECTURE.md)
 - [Skill Distillation V2](current/architecture/skill-distillation-v2.md)
+- [Agent Skill Package Model](current/architecture/agent-skill-package-model.md)
+- [Portable Skill Renderer](current/architecture/portable-skill-renderer.md)
 - [Skill Distillation V2 Roadmap](current/architecture/skill-distillation-v2-roadmap.md)
 - [Skill Distillation V2 Implementation Backlog](current/architecture/skill-distillation-v2-implementation-backlog.md)
 - [Skill Distillation V2 Work Orders](current/architecture/skill-distillation-v2-work-orders.md)
