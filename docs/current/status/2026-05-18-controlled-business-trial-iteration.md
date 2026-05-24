@@ -241,6 +241,8 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - 2026-05-22 iterative re-check (run 5): confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` continue to point to controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
   - 2026-05-22 iterative re-check (run 6): re-confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still expose controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and preserve `launch-readiness-master-plan.md` as historical baseline only.
   - 2026-05-22 iterative re-check (run 7): re-validated `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still keep controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-23 iterative re-check (run 8): re-validated `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still route contributors to controlled business trial as active execution, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-23 iterative re-check (run 9): re-confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still route contributors to controlled business trial as the active execution path, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
 
 ### CBT-02 Trial Sample Manifest
 
@@ -260,6 +262,8 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Added validator `scripts/validate_trial_manifest.py` with actionable errors for missing required fields and unsupported `sensitivity`/`modality`/`target_package_format`.
   - Added focused tests `tests/test_validate_trial_manifest_script.py` for valid manifest pass path plus invalid-field actionable failure paths.
   - 2026-05-22 iterative re-check (run 1): re-validated the CBT-02 artifact set (`trial-manifest` template/examples, `validate_trial_manifest.py`, and `tests/test_validate_trial_manifest_script.py`) and confirmed manifest validation plus focused script tests still pass without regression.
+  - 2026-05-23 iterative re-check (run 2): re-ran `validate_trial_manifest.py` across all six modality example manifests and `tests.test_validate_trial_manifest_script`; confirmed required-field/support-level validation paths remain passing without regression, and doc sync remains green.
+  - 2026-05-23 iterative re-check (run 3): re-ran `validate_trial_manifest.py --output -` for all six modality example manifests (`text/audio/image/video/tabular/mixed-corpus`), re-ran `python -m unittest tests.test_validate_trial_manifest_script` (3 tests), and re-ran `python scripts/run_doc_sync_check.py --output -`; all remained passing with no regression.
 
 ### CBT-03 Default Human Review Mode
 
@@ -287,6 +291,8 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `tests/test_service_factory_split.py`
   - Documented enable/disable behavior in `docs/current/operations/env.md`.
   - 2026-05-22 iterative re-check (run 1): re-ran focused CBT-03 review-mode tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`) and confirmed controlled-trial mode still forces `review_required` with persisted `controlled_trial_requires_review` reason code.
+  - 2026-05-23 iterative re-check (run 2): re-ran focused CBT-03 review-mode tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`) and confirmed controlled-trial mode still forces `review_required` with persisted `controlled_trial_requires_review` reason code; doc sync remains green.
+  - 2026-05-23 iterative re-check (run 3): re-verified controlled-trial review-mode wiring in `config.py`/`service_factory.py`/`review_policy.py` plus `docs/current/operations/env.md`, re-ran focused tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`), and re-ran `python scripts/run_doc_sync_check.py --output -`; all remained passing with `review_required` enforced and reason code persisted as `controlled_trial_requires_review`.
 
 ### CBT-04 Reviewer Packet Generator
 
@@ -332,6 +338,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Added focused tests:
     - `tests/test_trial_metrics_collector.py`
     - `tests/test_trial_metrics_collector_script.py`
+  - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-05 metrics tests (`tests.test_trial_metrics_collector`, `tests.test_trial_metrics_collector_script`) and confirmed trial metrics JSON/Markdown outputs plus GA-blocker condition reporting remain passing; doc sync also remains green.
 
 ### CBT-06 Agent Skill Package Model
 
@@ -365,6 +372,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Added architecture doc `docs/current/architecture/agent-skill-package-model.md` and linked it in:
     - `docs/current/architecture/ARCHITECTURE.md`
     - `docs/INDEX.md`
+  - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-06 model tests (`tests.test_v2_models`) and confirmed `AgentSkillPackage` serialization/validation contracts remain passing with no regression; doc sync also remains green.
 
 ### CBT-07 Portable Skill Renderer
 
@@ -401,6 +409,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `tests/test_v2_schema_and_corpus.py`
     - `tests/test_service_factory_split.py`
     - `tests/test_openai_provider_config.py`
+  - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-07 renderer tests (`tests.test_portable_skill_renderer`, `tests.test_publication_builder`, `tests.test_publication_orchestrator_split`, `tests.test_v2_schema_and_corpus`, `tests.test_service_factory_split`, `tests.test_openai_provider_config`) and confirmed YAML frontmatter/required sections/reference split/line-budget behaviors remain passing; doc sync also remains green.
 
 ### CBT-08 Target Exporters
 
@@ -425,6 +434,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `test_export_skill_opencode_target_writes_expected_layout`
     - `test_export_skill_portable_target_writes_expected_layout`
     - `test_export_skill_all_target_writes_all_layouts`
+  - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-08 export-target CLI smoke tests (`tests.test_cli.CliCorpusCommandTests.test_export_skill_codex_target_writes_expected_layout`, `tests.test_cli.CliCorpusCommandTests.test_export_skill_claude_code_target_writes_expected_layout`, `tests.test_cli.CliCorpusCommandTests.test_export_skill_opencode_target_writes_expected_layout`, `tests.test_cli.CliCorpusCommandTests.test_export_skill_portable_target_writes_expected_layout`, `tests.test_cli.CliCorpusCommandTests.test_export_skill_all_target_writes_all_layouts`) and confirmed all target layouts still write expected `SKILL.md` artifacts; doc sync also remains green.
 
 ### CBT-09 Skill Usability Validator
 
@@ -452,6 +462,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `tests/test_skill_usability_validator_script.py`
     - `tests/test_cli.py` (`validate-skill` pass/fail coverage)
   - Updated CLI docs `docs/current/operations/cli.md` with validator usage and exit-code contract.
+  - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-09 validator tests (`tests.test_skill_usability_validator`, `tests.test_skill_usability_validator_script`, `tests.test_cli.CliCorpusCommandTests.test_validate_skill_command_passes_for_safe_package`, `tests.test_cli.CliCorpusCommandTests.test_validate_skill_command_reports_failure_codes`) and confirmed usability failure-code contracts plus `validate-skill` CLI pass/fail paths remain passing; doc sync also remains green.
 
 ### CBT-10 Multimodal Trial Fixtures
 
