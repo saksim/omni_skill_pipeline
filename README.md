@@ -74,6 +74,7 @@ python scripts/run_ci.py
 - 上线整合总卷（历史基线，2026-04-24）: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
 - 蒸馏平台战略评估: [docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md](docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md)
 - 受控业务试运行下一迭代: [docs/current/status/2026-05-18-controlled-business-trial-iteration.md](docs/current/status/2026-05-18-controlled-business-trial-iteration.md)
+- 广义产品上线施工计划: [docs/current/status/2026-05-25-broad-product-launch-plan.md](docs/current/status/2026-05-25-broad-product-launch-plan.md)
 - 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)
 - API: [docs/current/operations/api.md](docs/current/operations/api.md)
 - CLI: [docs/current/operations/cli.md](docs/current/operations/cli.md)
@@ -94,6 +95,8 @@ python scripts/run_ci.py
 - API schema validation、auth、rate limiting、error contract、trace context、review queue、worker retry/idempotency、Postgres repository 与 release gate 已逐步落地。
 - 受控业务试运行阶段要求限制客户/团队、限制多模态场景、限制数据范围，所有产物默认人工 REVIEW。
 - 短期最弱环节不是主链能力，而是最后一公里：需要把内部 `SkillDocument / SkillGraph` 稳定编译成 Codex / Claude Code / OpenCode 可发现、可触发、可执行的 agent skill package，并用真实业务闭环证明质量。
+- 广义产品上线不再沿用旧 L1/L2 缺口清单直接开工；后续以 `GL-*` 任务组推进受控外部 Beta、单团队 GA review 和平台化能力建设。
+- 广义产品上线 readiness gate 已落地：`python scripts/run_launch_readiness_gate.py --output - --summary-output -` 会输出 `HOLD` / `READY_FOR_CONTROLLED_BETA` 等机器可读判定；当前仓库仍因 trial 覆盖不足保持 `HOLD`。
 
 ## 目录骨架
 
