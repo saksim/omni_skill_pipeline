@@ -42,6 +42,13 @@ This directory preserves comparable baseline evidence packs for controlled-trial
     - `ingested_loop_manifest_count`
     - `skipped_non_loop_manifest_count`
     - `skipped_non_loop_manifest_paths`
+    - `duplicate_resolution_count`
+    - `duplicate_resolution_records`
+    - `launch_gate_alignment.target_launch_modalities`
+    - `launch_gate_alignment.covered_target_launch_modalities`
+    - `launch_gate_alignment.missing_target_launch_modalities`
+    - `launch_gate_alignment.recommended_next_modalities`
+    - `launch_gate_alignment.launch_gate_eligible_complete_loop_count_by_modality`
   - strict mode example:
     - `python scripts/run_real_trial_loop_collection.py --loop-manifest-dir docs/current/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --strict-loop-manifest-contract --output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
 

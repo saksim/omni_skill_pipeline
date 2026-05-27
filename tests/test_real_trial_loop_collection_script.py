@@ -122,6 +122,11 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             blockers = set(alignment.get("blockers", []))
             self.assertIn("real_loop_volume_below_threshold", blockers)
             self.assertIn("real_loop_modality_coverage_below_threshold", blockers)
+            self.assertEqual(alignment.get("target_launch_modalities"), ["text", "audio", "image", "video"])
+            self.assertEqual(alignment.get("covered_target_launch_modalities"), [])
+            self.assertEqual(alignment.get("missing_target_launch_modalities"), ["text", "audio", "image", "video"])
+            self.assertEqual(alignment.get("recommended_next_modalities"), ["text", "audio", "image", "video"])
+            self.assertEqual(alignment.get("launch_gate_eligible_complete_loop_count_by_modality"), {})
 
             summary_text = summary_path.read_text(encoding="utf-8")
             self.assertIn("Program status: `COLLECTION_INCOMPLETE`", summary_text)
@@ -192,6 +197,12 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             self.assertEqual(alignment.get("blockers"), [])
             self.assertEqual(alignment.get("launch_gate_eligible_complete_loop_count"), 3)
             self.assertEqual(alignment.get("launch_gate_eligible_modality_count"), 3)
+            self.assertEqual(
+                alignment.get("launch_gate_eligible_complete_loop_count_by_modality"),
+                {"text": 1, "audio": 1, "image": 1},
+            )
+            self.assertEqual(alignment.get("missing_target_launch_modalities"), ["video"])
+            self.assertEqual(alignment.get("recommended_next_modalities"), [])
 
     def test_real_loop_missing_trace_triggers_blocker_and_fail_on_blocker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -478,6 +489,12 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             self.assertEqual(report.get("input_loop_manifest_dir_count"), 1)
             self.assertEqual(alignment.get("missing_complete_loops_to_threshold"), 0)
             self.assertEqual(alignment.get("missing_modalities_to_threshold"), 0)
+            self.assertEqual(alignment.get("missing_target_launch_modalities"), [])
+            self.assertEqual(alignment.get("recommended_next_modalities"), [])
+            self.assertEqual(
+                alignment.get("launch_gate_eligible_complete_loop_count_by_modality"),
+                {"audio": 1, "image": 1, "text": 1, "video": 1},
+            )
 
     def test_loop_manifest_dir_skips_non_manifest_json_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -575,6 +592,79 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 2)
             self.assertIn("Loop manifest loops must be a list", completed.stderr)
+
+    def test_duplicate_loop_ids_keep_newer_review_trace_record(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            run_report_old = tmp_path / "run-report-old.json"
+            run_report_new = tmp_path / "run-report-new.json"
+            report_path = tmp_path / "collection-report.json"
+
+            old_row = _loop_metrics(
+                loop_id="real-text-dup-001",
+                modality="text",
+                evidence_origin="real",
+                launch_gate_eligible=True,
+            )
+            old_row["reviewed_at_utc"] = "2026-05-26T00:05:00Z"
+            old_row["collected_at_utc"] = "2026-05-26T00:00:00Z"
+            old_row["source_reference"] = "ticket://old"
+            run_report_old.write_text(
+                json.dumps(_run_report_payload([old_row]), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+            new_row = _loop_metrics(
+                loop_id="real-text-dup-001",
+                modality="text",
+                evidence_origin="real",
+                launch_gate_eligible=True,
+            )
+            new_row["reviewed_at_utc"] = "2026-05-27T00:05:00Z"
+            new_row["collected_at_utc"] = "2026-05-27T00:00:00Z"
+            new_row["source_reference"] = "ticket://new"
+            run_report_new.write_text(
+                json.dumps(_run_report_payload([new_row]), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--run-report",
+                    str(run_report_old),
+                    "--run-report",
+                    str(run_report_new),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--manifest-output",
+                    "-",
+                    "--minimum-complete-loops",
+                    "1",
+                    "--minimum-modalities",
+                    "1",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report.get("duplicate_resolution_count"), 1)
+            self.assertIn("real-text-dup-001", report.get("duplicate_loop_ids", []))
+            resolution_records = report.get("duplicate_resolution_records", [])
+            self.assertEqual(len(resolution_records), 1)
+            self.assertEqual(
+                resolution_records[0].get("resolution_reason"),
+                "newer_reviewed_at_utc",
+            )
+            selected_loop_rows = report.get("collected_real_launch_gate_eligible_loops", [])
+            self.assertEqual(len(selected_loop_rows), 1)
+            self.assertEqual(selected_loop_rows[0].get("source_reference"), "ticket://new")
 
 
 if __name__ == "__main__":

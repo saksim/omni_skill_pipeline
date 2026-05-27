@@ -90,8 +90,23 @@ The collection report now includes:
 - `ingested_loop_manifest_count`
 - `skipped_non_loop_manifest_count`
 - `skipped_non_loop_manifest_paths`
+- `duplicate_resolution_count`
+- `duplicate_resolution_records`
 - `launch_gate_alignment.missing_complete_loops_to_threshold`
 - `launch_gate_alignment.missing_modalities_to_threshold`
+- `launch_gate_alignment.target_launch_modalities`
+- `launch_gate_alignment.covered_target_launch_modalities`
+- `launch_gate_alignment.missing_target_launch_modalities`
+- `launch_gate_alignment.recommended_next_modalities`
+- `launch_gate_alignment.launch_gate_eligible_complete_loop_count_by_modality`
+
+Duplicate loop ids (`loop_id`) are resolved deterministically:
+
+- prefer row with newer `reviewed_at_utc`
+- if equal/missing, prefer newer `collected_at_utc`
+- if still tied, use stable source-path ordering
+
+This keeps batch evidence accumulation idempotent while preserving an audit record in `duplicate_resolution_records`.
 
 ## Strict Blocker Mode
 
@@ -172,6 +187,15 @@ python scripts/run_real_trial_launch_evidence.py \
   --fail-on-hold
 ```
 
+Optional explicit launch-modality target set for GL-20 gap diagnostics:
+
+```bash
+python scripts/run_real_trial_loop_collection.py \
+  --loop-manifest-dir docs/current/status/baselines/real-trial-loop-collection/manifests \
+  --loop-manifest-pattern "*.json" \
+  --target-launch-modalities "text,audio,image,video"
+```
+
 ## GL-16 Evidence Pack Contract
 
 GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable reviewer/operator handoff:
@@ -181,6 +205,7 @@ GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable revie
 - evidence classification:
   - total loop/modality coverage
   - launch-gate-eligible real loop/modality coverage
+  - target modality coverage and modality-specific next-gap suggestions
   - missing real source/reviewer trace counts
 - launch-gate blocker summary
 

@@ -885,6 +885,98 @@ Strengthening path:
     - `python scripts/run_doc_sync_check.py --output -`
     - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage` pending launch-gate-eligible real loop/modality threshold.)
 
+### GL-19 Real Loop Duplicate Resolution Traceability
+
+- Status: Complete
+- Goal: make real external Beta loop accumulation deterministic and auditable when batch inputs contain duplicate `loop_id` rows across multiple reports/manifests.
+- Files:
+  - `scripts/run_real_trial_loop_collection.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_loop_collection_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-12 collector duplicate handling from opaque overwrite to deterministic resolution:
+    - prefer newer `reviewed_at_utc`
+    - fallback to newer `collected_at_utc`
+    - final stable source-path tie-breaker
+  - Emit duplicate-resolution audit fields in collection report:
+    - `duplicate_resolution_count`
+    - `duplicate_resolution_records`
+  - Expose the same duplicate-resolution audit fields in GL-16 evidence pack `input_sources`.
+  - Keep launch evidence policy unchanged: no fixture-as-real promotion and no launch-gate bypass.
+- Acceptance:
+  - Duplicate `loop_id` inputs keep a deterministic selected row instead of non-deterministic last-write behavior.
+  - Collection/evidence-pack outputs include machine-readable duplicate-resolution audit traces.
+  - Launch readiness remains policy-bound by `run_launch_readiness_gate.py`.
+- Evidence:
+  - 2026-05-27: updated `scripts/run_real_trial_loop_collection.py`:
+    - added deterministic duplicate resolver and UTC timestamp parsing helper
+    - collection report now emits `duplicate_resolution_count` and `duplicate_resolution_records`
+    - summary output now includes duplicate-resolution count
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - GL-16 evidence pack `input_sources` now includes duplicate-resolution audit fields
+  - 2026-05-27: added focused tests:
+    - `tests/test_real_trial_loop_collection_script.py`:
+      - `test_duplicate_loop_ids_keep_newer_review_trace_record`
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - `test_pipeline_evidence_pack_exposes_duplicate_resolution`
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_loop_collection_script tests.test_real_trial_launch_evidence_script` (17 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-20 Real Loop Threshold Gap Diagnostics
+
+- Status: Complete
+- Goal: make the remaining controlled external Beta launch-threshold blocker actionable by emitting modality-specific gap diagnostics (not only aggregate missing counts) in collection outputs and GL-16 evidence pack.
+- Files:
+  - `scripts/run_real_trial_loop_collection.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_loop_collection_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-12 collector with target-modality diagnostics contract:
+    - `target_launch_modalities`
+    - `covered_target_launch_modalities`
+    - `missing_target_launch_modalities`
+    - `recommended_next_modalities`
+    - `launch_gate_eligible_complete_loop_count_by_modality`
+  - Add collector option `--target-launch-modalities` (default `text,audio,image,video`) to keep diagnostics explicit and auditable.
+  - Expose the same modality-gap diagnostics in GL-16 evidence pack `evidence_classification`.
+  - Keep launch policy unchanged: readiness decision still owned by `run_launch_readiness_gate.py`; no relaxed/dry-run/fixture bypass.
+- Acceptance:
+  - Collector report provides modality-specific gap diagnostics alongside existing threshold counters.
+  - GL-16 evidence pack includes the same diagnostics for reviewer/operator handoff.
+  - Baseline launch decision remains `HOLD` until real launch-gate-eligible loops/modalities truly meet threshold.
+- Evidence:
+  - 2026-05-27: updated `scripts/run_real_trial_loop_collection.py`:
+    - added `--target-launch-modalities`
+    - launch-gate alignment now emits:
+      - `target_launch_modalities`
+      - `covered_target_launch_modalities`
+      - `missing_target_launch_modalities`
+      - `recommended_next_modalities`
+      - `launch_gate_eligible_complete_loop_count_by_modality`
+    - summary now surfaces target/missing/recommended modalities and per-modality complete-loop counts.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - GL-16 evidence pack `evidence_classification` now includes GL-20 modality-gap diagnostics fields.
+  - 2026-05-27: updated focused tests:
+    - `tests/test_real_trial_loop_collection_script.py`
+    - `tests/test_real_trial_launch_evidence_script.py`
+  - 2026-05-27: updated operator/docs entrypoints:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_loop_collection_script tests.test_real_trial_launch_evidence_script` (17 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
 ## Execution Rules For GL Work
 
 - Execute `GL-*` in numeric order unless a later card is explicitly marked as independent.
@@ -897,9 +989,9 @@ Strengthening path:
 
 ## Recommended Next Step
 
-Proceed with `GL-19` (or next newly-defined GL card) to continue collecting launch-gate-eligible real external Beta loops and close the remaining readiness threshold gap (`>=10` complete real loops, `>=4` modalities).
+Proceed with `GL-21` (or next newly-defined GL card) to continue collecting launch-gate-eligible real external Beta loops and close the remaining readiness threshold gap (`>=10` complete real loops, `>=4` modalities).
 
 Reason:
 
-- `GL-01` through `GL-18` are complete; the batch intake path now supports mixed JSON directories without brittle failure and still supports strict contract enforcement.
+- `GL-01` through `GL-20` are complete; threshold-gap diagnostics are now modality-specific and operationally actionable.
 - The remaining blocker is still real launch-gate-eligible loop/modality volume in baseline evidence, not contract/tooling coverage.

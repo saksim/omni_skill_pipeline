@@ -46,6 +46,7 @@ DEFAULT_MANIFEST_PATH = (
 )
 
 SUPPORTED_EVIDENCE_ORIGINS = {"real", "fixture", "synthetic"}
+DEFAULT_TARGET_LAUNCH_MODALITIES = ("text", "audio", "image", "video")
 
 
 def _utc_now_iso() -> str:
@@ -134,6 +135,14 @@ def _parse_args() -> argparse.Namespace:
         help="Minimum launch-gate-eligible modality coverage from real loops.",
     )
     parser.add_argument(
+        "--target-launch-modalities",
+        default=",".join(DEFAULT_TARGET_LAUNCH_MODALITIES),
+        help=(
+            "Comma-separated target modalities used for gap diagnostics "
+            "(default: text,audio,image,video)."
+        ),
+    )
+    parser.add_argument(
         "--release-decision",
         default="GO",
         choices=["GO", "HOLD"],
@@ -200,6 +209,20 @@ def _is_utc_timestamp(value: Any) -> bool:
     return parsed.tzinfo is not None
 
 
+def _utc_timestamp_to_epoch_seconds(value: Any) -> float | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.timestamp()
+
+
 def _normalize_evidence_origin(raw: Any, *, loop_id: str) -> str:
     normalized = str(raw if raw is not None else "unspecified").strip().lower() or "unspecified"
     if normalized != "unspecified" and normalized not in SUPPORTED_EVIDENCE_ORIGINS:
@@ -208,6 +231,22 @@ def _normalize_evidence_origin(raw: Any, *, loop_id: str) -> str:
             % (loop_id, normalized, ", ".join(sorted(SUPPORTED_EVIDENCE_ORIGINS)))
         )
     return normalized
+
+
+def _parse_target_launch_modalities(value: str) -> list[str]:
+    tokens = [str(item).strip().lower() for item in str(value or "").split(",")]
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for token in tokens:
+        if not token:
+            continue
+        if token in seen:
+            continue
+        seen.add(token)
+        ordered.append(token)
+    if not ordered:
+        raise ValueError("target-launch-modalities must contain at least one modality.")
+    return ordered
 
 
 def _normalize_loop_row(loop_metrics: dict[str, Any], *, sample_id: str, source_report_path: Path) -> dict[str, Any]:
@@ -281,10 +320,55 @@ def _collect_loop_rows(
     run_reports: list[Path],
     loop_manifests: list[Path],
     strict_loop_manifest_contract: bool,
-) -> tuple[list[dict[str, Any]], list[str], list[str]]:
+) -> tuple[list[dict[str, Any]], list[str], list[str], list[dict[str, Any]]]:
     deduped: dict[str, dict[str, Any]] = {}
     duplicates: list[str] = []
     skipped_non_loop_manifest_paths: list[str] = []
+    duplicate_resolution_records: list[dict[str, Any]] = []
+
+    def _loop_recency_key(loop_row: dict[str, Any]) -> tuple[int, float, int, float, str]:
+        reviewed_at_epoch = _utc_timestamp_to_epoch_seconds(loop_row.get("reviewed_at_utc"))
+        collected_at_epoch = _utc_timestamp_to_epoch_seconds(loop_row.get("collected_at_utc"))
+        return (
+            1 if reviewed_at_epoch is not None else 0,
+            reviewed_at_epoch if reviewed_at_epoch is not None else -1.0,
+            1 if collected_at_epoch is not None else 0,
+            collected_at_epoch if collected_at_epoch is not None else -1.0,
+            str(loop_row.get("source_report_path", "")),
+        )
+
+    def _resolve_duplicate_loop(
+        *,
+        existing_row: dict[str, Any],
+        candidate_row: dict[str, Any],
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        existing_key = _loop_recency_key(existing_row)
+        candidate_key = _loop_recency_key(candidate_row)
+        selected_row = candidate_row if candidate_key > existing_key else existing_row
+
+        existing_reviewed = _utc_timestamp_to_epoch_seconds(existing_row.get("reviewed_at_utc"))
+        candidate_reviewed = _utc_timestamp_to_epoch_seconds(candidate_row.get("reviewed_at_utc"))
+        existing_collected = _utc_timestamp_to_epoch_seconds(existing_row.get("collected_at_utc"))
+        candidate_collected = _utc_timestamp_to_epoch_seconds(candidate_row.get("collected_at_utc"))
+        if candidate_reviewed != existing_reviewed:
+            reason = "newer_reviewed_at_utc"
+        elif candidate_collected != existing_collected:
+            reason = "newer_collected_at_utc"
+        else:
+            reason = "stable_source_path_tiebreaker"
+
+        resolution_record = {
+            "loop_id": str(existing_row.get("loop_id", "")),
+            "resolution_reason": reason,
+            "existing_source_report_path": str(existing_row.get("source_report_path", "")),
+            "candidate_source_report_path": str(candidate_row.get("source_report_path", "")),
+            "selected_source_report_path": str(selected_row.get("source_report_path", "")),
+            "existing_reviewed_at_utc": str(existing_row.get("reviewed_at_utc", "")),
+            "candidate_reviewed_at_utc": str(candidate_row.get("reviewed_at_utc", "")),
+            "existing_collected_at_utc": str(existing_row.get("collected_at_utc", "")),
+            "candidate_collected_at_utc": str(candidate_row.get("collected_at_utc", "")),
+        }
+        return selected_row, resolution_record
 
     for path in run_reports:
         payload = _read_json(path)
@@ -302,7 +386,14 @@ def _collect_loop_rows(
             loop_id = str(row["loop_id"])
             if loop_id in deduped:
                 duplicates.append(loop_id)
-            deduped[loop_id] = row
+                selected_row, resolution_record = _resolve_duplicate_loop(
+                    existing_row=deduped[loop_id],
+                    candidate_row=row,
+                )
+                deduped[loop_id] = selected_row
+                duplicate_resolution_records.append(resolution_record)
+            else:
+                deduped[loop_id] = row
 
     for path in loop_manifests:
         payload = _read_json(path)
@@ -320,8 +411,20 @@ def _collect_loop_rows(
             loop_id = str(row["loop_id"])
             if loop_id in deduped:
                 duplicates.append(loop_id)
-            deduped[loop_id] = row
-    return list(deduped.values()), sorted(set(duplicates)), skipped_non_loop_manifest_paths
+                selected_row, resolution_record = _resolve_duplicate_loop(
+                    existing_row=deduped[loop_id],
+                    candidate_row=row,
+                )
+                deduped[loop_id] = selected_row
+                duplicate_resolution_records.append(resolution_record)
+            else:
+                deduped[loop_id] = row
+    return (
+        list(deduped.values()),
+        sorted(set(duplicates)),
+        skipped_non_loop_manifest_paths,
+        duplicate_resolution_records,
+    )
 
 
 def _resolve_loop_manifest_paths(
@@ -358,8 +461,10 @@ def _build_collection_report(
     loop_manifest_dirs: list[Path],
     duplicate_loop_ids: list[str],
     skipped_non_loop_manifest_paths: list[str],
+    duplicate_resolution_records: list[dict[str, Any]],
     minimum_complete_loops: int,
     minimum_modalities: int,
+    target_launch_modalities: list[str],
 ) -> dict[str, Any]:
     evidence_origin_counts: dict[str, int] = {}
     launch_gate_ineligible_reason_counts: dict[str, int] = {}
@@ -369,6 +474,7 @@ def _build_collection_report(
     real_loops: list[dict[str, Any]] = []
     real_eligible_complete_loops: list[dict[str, Any]] = []
     launch_gate_modalities: set[str] = set()
+    launch_gate_eligible_complete_loop_count_by_modality: dict[str, int] = {}
 
     for loop in loops:
         evidence_origin = str(loop.get("evidence_origin", "unspecified"))
@@ -401,11 +507,21 @@ def _build_collection_report(
             and str(loop.get("status", "")).strip().lower() == "complete"
         ):
             real_eligible_complete_loops.append(loop)
-            launch_gate_modalities.add(str(loop.get("modality", "")).strip().lower())
+            modality = str(loop.get("modality", "")).strip().lower()
+            launch_gate_modalities.add(modality)
+            if modality:
+                launch_gate_eligible_complete_loop_count_by_modality[modality] = (
+                    launch_gate_eligible_complete_loop_count_by_modality.get(modality, 0) + 1
+                )
 
     launch_gate_eligible_complete_loop_count = len(real_eligible_complete_loops)
     launch_gate_eligible_modalities = sorted(item for item in launch_gate_modalities if item)
     launch_gate_eligible_modality_count = len(launch_gate_eligible_modalities)
+    missing_complete_loops_to_threshold = max(0, minimum_complete_loops - launch_gate_eligible_complete_loop_count)
+    missing_modalities_to_threshold = max(0, minimum_modalities - launch_gate_eligible_modality_count)
+    covered_target_launch_modalities = [item for item in target_launch_modalities if item in launch_gate_modalities]
+    missing_target_launch_modalities = [item for item in target_launch_modalities if item not in launch_gate_modalities]
+    recommended_next_modalities = missing_target_launch_modalities[:missing_modalities_to_threshold]
 
     blockers: list[str] = []
     if missing_trace_count > 0:
@@ -434,19 +550,24 @@ def _build_collection_report(
         "input_source_count": len(run_report_paths) + len(loop_manifest_paths),
         "deduplicated_loop_count": len(loops),
         "duplicate_loop_ids": duplicate_loop_ids,
+        "duplicate_resolution_count": len(duplicate_resolution_records),
+        "duplicate_resolution_records": duplicate_resolution_records,
         "evidence_origin_counts": evidence_origin_counts,
         "launch_gate_ineligible_reason_counts": launch_gate_ineligible_reason_counts,
         "launch_gate_alignment": {
             "program_status": program_status,
             "minimum_complete_loops": minimum_complete_loops,
             "minimum_modalities": minimum_modalities,
+            "target_launch_modalities": target_launch_modalities,
+            "covered_target_launch_modalities": covered_target_launch_modalities,
+            "missing_target_launch_modalities": missing_target_launch_modalities,
             "launch_gate_eligible_complete_loop_count": launch_gate_eligible_complete_loop_count,
             "launch_gate_eligible_modalities": launch_gate_eligible_modalities,
             "launch_gate_eligible_modality_count": launch_gate_eligible_modality_count,
-            "missing_complete_loops_to_threshold": max(
-                0, minimum_complete_loops - launch_gate_eligible_complete_loop_count
-            ),
-            "missing_modalities_to_threshold": max(0, minimum_modalities - launch_gate_eligible_modality_count),
+            "launch_gate_eligible_complete_loop_count_by_modality": launch_gate_eligible_complete_loop_count_by_modality,
+            "missing_complete_loops_to_threshold": missing_complete_loops_to_threshold,
+            "missing_modalities_to_threshold": missing_modalities_to_threshold,
+            "recommended_next_modalities": recommended_next_modalities,
             "real_evidence_loop_count": len(real_loops),
             "real_evidence_missing_source_trace_count": missing_trace_count,
             "real_evidence_missing_review_trace_count": missing_review_trace_count,
@@ -519,6 +640,16 @@ def _render_summary(report: dict[str, Any]) -> str:
         ),
         "- Launch-gate-eligible modality list: `%s`"
         % ", ".join(str(item) for item in alignment.get("launch_gate_eligible_modalities", []) if str(item).strip()),
+        "- Target launch modalities: `%s`"
+        % ", ".join(str(item) for item in alignment.get("target_launch_modalities", []) if str(item).strip()),
+        "- Missing target launch modalities: `%s`"
+        % ", ".join(
+            str(item) for item in alignment.get("missing_target_launch_modalities", []) if str(item).strip()
+        ),
+        "- Recommended next modalities: `%s`"
+        % ", ".join(str(item) for item in alignment.get("recommended_next_modalities", []) if str(item).strip()),
+        "- Launch-gate-eligible complete loop count by modality: `%s`"
+        % str(alignment.get("launch_gate_eligible_complete_loop_count_by_modality", {})),
         "- Real loops missing source trace: `%s`"
         % str(alignment.get("real_evidence_missing_source_trace_count", 0)),
         "- Real loops missing review trace: `%s`"
@@ -528,6 +659,7 @@ def _render_summary(report: dict[str, Any]) -> str:
             str(report.get("ingested_loop_manifest_count", 0)),
             str(report.get("input_loop_manifest_count", 0)),
         ),
+        "- Duplicate loop ids resolved: `%s`" % str(report.get("duplicate_resolution_count", 0)),
         "- Skipped non-loop-manifest JSON files: `%s`" % str(report.get("skipped_non_loop_manifest_count", 0)),
         "",
         "## Blockers",
@@ -565,12 +697,13 @@ def main() -> int:
     manifest_path = None if str(args.manifest_output).strip() == "-" else Path(args.manifest_output).resolve()
 
     try:
+        target_launch_modalities = _parse_target_launch_modalities(str(args.target_launch_modalities))
         missing_paths = [path for path in run_report_paths if not path.is_file()]
         missing_paths.extend(path for path in loop_manifest_paths if not path.is_file())
         if missing_paths:
             raise ValueError("Missing run report path(s): %s" % ", ".join(str(path) for path in missing_paths))
 
-        loops, duplicate_loop_ids, skipped_non_loop_manifest_paths = _collect_loop_rows(
+        loops, duplicate_loop_ids, skipped_non_loop_manifest_paths, duplicate_resolution_records = _collect_loop_rows(
             run_reports=run_report_paths,
             loop_manifests=loop_manifest_paths,
             strict_loop_manifest_contract=bool(args.strict_loop_manifest_contract),
@@ -585,8 +718,10 @@ def main() -> int:
             loop_manifest_dirs=loop_manifest_dirs,
             duplicate_loop_ids=duplicate_loop_ids,
             skipped_non_loop_manifest_paths=skipped_non_loop_manifest_paths,
+            duplicate_resolution_records=duplicate_resolution_records,
             minimum_complete_loops=max(1, int(args.minimum_complete_loops)),
             minimum_modalities=max(1, int(args.minimum_modalities)),
+            target_launch_modalities=target_launch_modalities,
         )
         summary = _render_summary(report)
         manifest = _build_trial_metrics_manifest(

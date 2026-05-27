@@ -413,6 +413,8 @@ def _build_evidence_pack(
             "skipped_non_loop_manifest_paths": collection_report.get("skipped_non_loop_manifest_paths", []),
             "input_loop_manifest_dir_count": int(collection_report.get("input_loop_manifest_dir_count", 0) or 0),
             "loop_manifest_dirs": collection_report.get("source_loop_manifest_dirs", []),
+            "duplicate_resolution_count": int(collection_report.get("duplicate_resolution_count", 0) or 0),
+            "duplicate_resolution_records": collection_report.get("duplicate_resolution_records", []),
         },
         "evidence_classification": {
             "evidence_origin_counts": collection_report.get("evidence_origin_counts", {}),
@@ -421,6 +423,13 @@ def _build_evidence_pack(
             "total_complete_modalities": trial_metrics.get("complete_modalities", []),
             "launch_gate_eligible_complete_loop_count": int(launch_gate_evidence.get("complete_loop_count", 0) or 0),
             "launch_gate_eligible_complete_modalities": launch_gate_evidence.get("complete_modalities", []),
+            "target_launch_modalities": collection_alignment.get("target_launch_modalities", []),
+            "covered_target_launch_modalities": collection_alignment.get("covered_target_launch_modalities", []),
+            "missing_target_launch_modalities": collection_alignment.get("missing_target_launch_modalities", []),
+            "recommended_next_modalities": collection_alignment.get("recommended_next_modalities", []),
+            "launch_gate_eligible_complete_loop_count_by_modality": collection_alignment.get(
+                "launch_gate_eligible_complete_loop_count_by_modality", {}
+            ),
             "real_evidence_missing_source_trace_count": int(
                 launch_gate_evidence.get("real_evidence_missing_source_trace_count", 0) or 0
             ),

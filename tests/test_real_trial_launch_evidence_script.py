@@ -193,6 +193,14 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get("launch_gate_eligible_complete_modalities"),
                 ["text"],
             )
+            self.assertEqual(classification.get("target_launch_modalities"), ["text", "audio", "image", "video"])
+            self.assertEqual(classification.get("covered_target_launch_modalities"), ["text"])
+            self.assertEqual(classification.get("missing_target_launch_modalities"), ["audio", "image", "video"])
+            self.assertEqual(classification.get("recommended_next_modalities"), [])
+            self.assertEqual(
+                classification.get("launch_gate_eligible_complete_loop_count_by_modality"),
+                {"text": 1},
+            )
             self.assertEqual(evidence_pack_payload.get("stage"), "controlled_external_beta")
             self.assertEqual(evidence_pack_payload.get("gate_summary", {}).get("failed_checks"), [])
 
@@ -503,6 +511,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             classification = evidence_pack_payload.get("evidence_classification", {})
             self.assertEqual(classification.get("missing_complete_loops_to_threshold"), 0)
             self.assertEqual(classification.get("missing_modalities_to_threshold"), 0)
+            self.assertEqual(classification.get("missing_target_launch_modalities"), [])
+            self.assertEqual(classification.get("recommended_next_modalities"), [])
+            self.assertEqual(
+                classification.get("launch_gate_eligible_complete_loop_count_by_modality"),
+                {"audio": 1, "image": 1, "text": 1, "video": 1},
+            )
 
     def test_pipeline_manifest_dir_skips_non_manifest_json_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -664,6 +678,99 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 2, completed.stderr + completed.stdout)
             self.assertIn("Loop manifest loops must be a list", completed.stderr)
+
+    def test_pipeline_evidence_pack_exposes_duplicate_resolution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_old = root / "manifest-old.json"
+            manifest_new = root / "manifest-new.json"
+            release_report = root / "release-switch.json"
+            current_status = root / "CURRENT_STATUS.md"
+            agent_smoke = root / "agent-smoke.json"
+            doc_sync = root / "doc-sync.json"
+            ops_readiness = root / "ops-readiness.json"
+            evidence_pack = root / "real-trial-launch-evidence-pack.json"
+
+            old_row = _loop_row(
+                loop_id="real-text-dup-001",
+                modality="text",
+                evidence_origin="real",
+                launch_gate_eligible=True,
+            )
+            old_row["reviewed_at_utc"] = "2026-05-26T00:05:00Z"
+            old_row["collected_at_utc"] = "2026-05-26T00:00:00Z"
+
+            new_row = _loop_row(
+                loop_id="real-text-dup-001",
+                modality="text",
+                evidence_origin="real",
+                launch_gate_eligible=True,
+            )
+            new_row["reviewed_at_utc"] = "2026-05-27T00:05:00Z"
+            new_row["collected_at_utc"] = "2026-05-27T00:00:00Z"
+
+            _write_json(manifest_old, {"manifest_id": "old", "loops": [old_row]})
+            _write_json(manifest_new, {"manifest_id": "new", "loops": [new_row]})
+            _write_json(release_report, _release_report("GO"))
+            current_status.write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(agent_smoke, _agent_smoke_report())
+            _write_json(doc_sync, _doc_sync_report())
+            _write_json(ops_readiness, _ops_readiness_report())
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest",
+                    str(manifest_old),
+                    "--loop-manifest",
+                    str(manifest_new),
+                    "--collection-report-output",
+                    str(root / "collection-report.json"),
+                    "--collection-summary-output",
+                    str(root / "collection-summary.md"),
+                    "--real-trial-manifest-output",
+                    str(root / "real-manifest.json"),
+                    "--trial-metrics-report-output",
+                    str(root / "trial-metrics-report.json"),
+                    "--trial-metrics-summary-output",
+                    str(root / "trial-metrics-summary.md"),
+                    "--launch-readiness-output",
+                    str(root / "launch-readiness-report.json"),
+                    "--launch-readiness-summary-output",
+                    str(root / "launch-readiness-summary.md"),
+                    "--evidence-pack-output",
+                    str(evidence_pack),
+                    "--release-switch-report",
+                    str(release_report),
+                    "--current-status-doc",
+                    str(current_status),
+                    "--agent-smoke-report",
+                    str(agent_smoke),
+                    "--doc-sync-report",
+                    str(doc_sync),
+                    "--operations-readiness-report",
+                    str(ops_readiness),
+                    "--no-run-doc-sync",
+                    "--minimum-complete-loops",
+                    "1",
+                    "--minimum-modalities",
+                    "1",
+                    "--max-evidence-age-hours",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr + completed.stdout)
+            evidence_pack_payload = json.loads(evidence_pack.read_text(encoding="utf-8"))
+            input_sources = evidence_pack_payload.get("input_sources", {})
+            self.assertEqual(input_sources.get("duplicate_resolution_count"), 1)
+            records = input_sources.get("duplicate_resolution_records", [])
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0].get("resolution_reason"), "newer_reviewed_at_utc")
 
 
 if __name__ == "__main__":
