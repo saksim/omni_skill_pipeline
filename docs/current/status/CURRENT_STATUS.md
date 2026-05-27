@@ -11,6 +11,7 @@
 - 上线整合总卷: [launch-readiness-master-plan.md](launch-readiness-master-plan.md)
 - 蒸馏平台战略评估: [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md)
 - 受控业务试运行下一迭代: [2026-05-18-controlled-business-trial-iteration.md](2026-05-18-controlled-business-trial-iteration.md)
+- 广义产品上线施工计划: [2026-05-25-broad-product-launch-plan.md](2026-05-25-broad-product-launch-plan.md)
 - 历史状态快照: [../../history/status/2026-04-24-current-status-pre-launch-master-plan.md](../../history/status/2026-04-24-current-status-pre-launch-master-plan.md)
 - GLM5.1 旧评估归档: [../../history/assessments/2026-04-22-glm-5.1-project-assessment.md](../../history/assessments/2026-04-22-glm-5.1-project-assessment.md)
 
@@ -23,6 +24,8 @@
 - 多租户平台化 SaaS：不应承诺，仍缺租户隔离、权限模型、配额体系、协作 UI 与成本治理
 - 短期战略定位：优先做 Agent Skill Compiler，把任意资料快速编译成 Codex / Claude Code / OpenCode 可用的 `SKILL.md`
 - 长期战略定位：技能蒸馏与治理层，而不是通用 LLM observability 平台
+- 广义产品上线施工：使用 [2026-05-25-broad-product-launch-plan.md](2026-05-25-broad-product-launch-plan.md) 中的 `GL-*` 任务组，先完成受控外部 Beta gate，再推进单团队 GA review，最后推进平台化 SaaS 基础能力。
+- 广义产品上线 readiness gate：`GL-01` 已落地 `scripts/run_launch_readiness_gate.py`，当前机器判定为 `HOLD`，唯一 blocker 是 trial 覆盖不足（`complete_loops=1/10`，`modalities=1/4`）。
 
 ## 最新 GO 证据
 
@@ -55,6 +58,7 @@
 2. 再读 [2026-05-17-distillation-platform-strategy-assessment.md](2026-05-17-distillation-platform-strategy-assessment.md)，确认 Skill Compiler 优先级、目标导出格式与后置事项。
 3. 执行 `CBT-*` 任务卡，优先补齐试运行样本、人工 REVIEW、质量/成本/故障采集和 agent-native package 闭环。
 4. 试运行闭环达标后，再决定是否推进单团队早期 GA。
+5. 按 [2026-05-25-broad-product-launch-plan.md](2026-05-25-broad-product-launch-plan.md) 推进 `GL-*`：`GL-01` 到 `GL-15` 已完成，当前下一张是 `GL-16`（或主文档新增下一卡）；在真实 launch-gate-eligible loop 未达到阈值前，launch readiness 继续保持 `HOLD`。
 
 ## TP-E13-03 Release Switch Standard
 

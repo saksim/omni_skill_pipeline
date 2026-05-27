@@ -145,6 +145,14 @@ class AgentSkillValidationStatus(str, Enum):
     FAILED = 'failed'
 
 
+class MembershipRole(str, Enum):
+    OWNER = 'owner'
+    OPERATOR = 'operator'
+    REVIEWER = 'reviewer'
+    CONTRIBUTOR = 'contributor'
+    VIEWER = 'viewer'
+
+
 EnumType = TypeVar('EnumType', bound=Enum)
 
 
@@ -582,6 +590,120 @@ class AgentSkillPackageSourceBundle(SerializableMixin):
 
 
 @dataclass(slots=True)
+class Organization(SerializableMixin):
+    organization_id: str
+    name: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.organization_id.strip():
+            raise ValueError('Organization.organization_id is required.')
+        if not self.name.strip():
+            raise ValueError('Organization.name is required.')
+
+
+@dataclass(slots=True)
+class Project(SerializableMixin):
+    project_id: str
+    organization_id: str
+    name: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.project_id.strip():
+            raise ValueError('Project.project_id is required.')
+        if not self.organization_id.strip():
+            raise ValueError('Project.organization_id is required.')
+        if not self.name.strip():
+            raise ValueError('Project.name is required.')
+
+
+@dataclass(slots=True)
+class TenantUser(SerializableMixin):
+    user_id: str
+    organization_id: str
+    name: str
+    email: str = ''
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.user_id.strip():
+            raise ValueError('TenantUser.user_id is required.')
+        if not self.organization_id.strip():
+            raise ValueError('TenantUser.organization_id is required.')
+        if not self.name.strip():
+            raise ValueError('TenantUser.name is required.')
+
+
+@dataclass(slots=True)
+class Membership(SerializableMixin):
+    membership_id: str
+    organization_id: str
+    project_id: str
+    user_id: str
+    role: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.membership_id.strip():
+            raise ValueError('Membership.membership_id is required.')
+        if not self.organization_id.strip():
+            raise ValueError('Membership.organization_id is required.')
+        if not self.project_id.strip():
+            raise ValueError('Membership.project_id is required.')
+        if not self.user_id.strip():
+            raise ValueError('Membership.user_id is required.')
+        parse_enum(MembershipRole, self.role, 'role')
+
+
+@dataclass(slots=True)
+class TenantQuotaPolicy(SerializableMixin):
+    quota_id: str = ''
+    organization_id: str = ''
+    project_id: str = ''
+    distill_requests_per_window: int = 0
+    review_actions_per_window: int = 0
+    window_seconds: int = 60
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if self.distill_requests_per_window < 0:
+            raise ValueError('TenantQuotaPolicy.distill_requests_per_window must be >= 0.')
+        if self.review_actions_per_window < 0:
+            raise ValueError('TenantQuotaPolicy.review_actions_per_window must be >= 0.')
+        if self.window_seconds <= 0:
+            raise ValueError('TenantQuotaPolicy.window_seconds must be > 0.')
+
+
+@dataclass(slots=True)
+class TenantAPIKey(SerializableMixin):
+    api_key_id: str
+    api_key: str
+    organization_id: str
+    project_id: str
+    user_id: str
+    role: str
+    scopes: List[str] = field(default_factory=list)
+    revoked: bool = False
+    quota_policy: TenantQuotaPolicy = field(default_factory=TenantQuotaPolicy)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.api_key_id.strip():
+            raise ValueError('TenantAPIKey.api_key_id is required.')
+        if not self.api_key.strip():
+            raise ValueError('TenantAPIKey.api_key is required.')
+        if not self.organization_id.strip():
+            raise ValueError('TenantAPIKey.organization_id is required.')
+        if not self.project_id.strip():
+            raise ValueError('TenantAPIKey.project_id is required.')
+        if not self.user_id.strip():
+            raise ValueError('TenantAPIKey.user_id is required.')
+        parse_enum(MembershipRole, self.role, 'role')
+        self.quota_policy.validate()
+
+
+@dataclass(slots=True)
 class AgentSkillPackage(SerializableMixin):
     package_name: str
     description: str
@@ -891,6 +1013,7 @@ class TextDistillRequest(RequestMixin):
     content: Optional[str] = None
     file_path: Optional[str] = None
     goal: DistillGoal = field(default_factory=DistillGoal)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> 'TextDistillRequest':
@@ -899,6 +1022,7 @@ class TextDistillRequest(RequestMixin):
             content=payload.get('content'),
             file_path=payload.get('file_path'),
             goal=DistillGoal.from_dict(payload.get('goal')),
+            metadata=payload.get('metadata', {}) if isinstance(payload.get('metadata'), dict) else {},
         )
 
     def validate(self) -> None:
@@ -915,6 +1039,7 @@ class AudioDistillRequest(RequestMixin):
     language: Optional[str] = None
     prompt: Optional[str] = None
     goal: DistillGoal = field(default_factory=DistillGoal)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> 'AudioDistillRequest':
@@ -926,6 +1051,7 @@ class AudioDistillRequest(RequestMixin):
             language=payload.get('language'),
             prompt=payload.get('prompt'),
             goal=DistillGoal.from_dict(payload.get('goal')),
+            metadata=payload.get('metadata', {}) if isinstance(payload.get('metadata'), dict) else {},
         )
 
     def validate(self) -> None:
@@ -938,6 +1064,7 @@ class ImageDistillRequest(RequestMixin):
     image_path: str
     title: Optional[str] = None
     goal: DistillGoal = field(default_factory=DistillGoal)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> 'ImageDistillRequest':
@@ -945,6 +1072,7 @@ class ImageDistillRequest(RequestMixin):
             image_path=payload['image_path'],
             title=payload.get('title'),
             goal=DistillGoal.from_dict(payload.get('goal')),
+            metadata=payload.get('metadata', {}) if isinstance(payload.get('metadata'), dict) else {},
         )
 
     def validate(self) -> None:
@@ -961,6 +1089,7 @@ class TabularDistillRequest(RequestMixin):
     entity_columns: List[str] = field(default_factory=list)
     max_series: int = 6
     goal: DistillGoal = field(default_factory=DistillGoal)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> 'TabularDistillRequest':
@@ -972,6 +1101,7 @@ class TabularDistillRequest(RequestMixin):
             entity_columns=[str(item) for item in payload.get('entity_columns', [])],
             max_series=int(payload.get('max_series', 6)),
             goal=DistillGoal.from_dict(payload.get('goal')),
+            metadata=payload.get('metadata', {}) if isinstance(payload.get('metadata'), dict) else {},
         )
 
     def validate(self) -> None:
@@ -994,6 +1124,7 @@ class VideoDistillRequest(RequestMixin):
     scene_threshold: Optional[float] = None
     dedupe_distance: Optional[int] = None
     goal: DistillGoal = field(default_factory=DistillGoal)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> 'VideoDistillRequest':
@@ -1009,6 +1140,7 @@ class VideoDistillRequest(RequestMixin):
             scene_threshold=payload.get('scene_threshold'),
             dedupe_distance=payload.get('dedupe_distance'),
             goal=DistillGoal.from_dict(payload.get('goal')),
+            metadata=payload.get('metadata', {}) if isinstance(payload.get('metadata'), dict) else {},
         )
 
     def validate(self) -> None:

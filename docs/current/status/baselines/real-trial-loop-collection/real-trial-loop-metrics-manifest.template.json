@@ -1,0 +1,63 @@
+﻿{
+  "manifest_id": "gl12-real-trial-loop-metrics-manifest",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-26",
+  "description": "GL-12 real trial loop collection template. This manifest is for launch-gate evidence tracking only and must not be treated as GA declaration.",
+  "release_gate": {
+    "latest_release_decision": "GO",
+    "evidence_ref": "docs/current/status/baselines/e13-release-switch-decision-report.json"
+  },
+  "operator_signoff": {
+    "cost_per_accepted_skill_accepted": true,
+    "notes": "Operator accepted cost per accepted skill for controlled external Beta evidence tracking."
+  },
+  "loops": [
+    {
+      "loop_id": "real-text-001",
+      "status": "complete",
+      "modality": "text",
+      "evidence_origin": "real",
+      "launch_gate_eligible": true,
+      "source_system": "pilot-ops",
+      "source_reference": "ticket://INC-2001",
+      "collected_at_utc": "2026-05-26T00:00:00Z",
+      "review_task_id": "review-INC-2001",
+      "reviewed_by": "reviewer-a",
+      "reviewed_at_utc": "2026-05-26T00:05:00Z",
+      "review_outcome": "approved",
+      "revisions_before_approval": 1,
+      "reviewer_edit_distance_pct": 18.0,
+      "agent_smoke_result": "passed",
+      "published_without_review": false,
+      "critical_secret_or_pii_leak": false,
+      "high_severity_incident": false,
+      "latency_ms": 910.0,
+      "provider_failure_count": 0,
+      "provider_call_count": 2,
+      "retry_count": 0,
+      "artifact_count": 8,
+      "estimated_cost_usd": 0.31
+    },
+    {
+      "loop_id": "fixture-text-001",
+      "status": "complete",
+      "modality": "text",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+      "review_outcome": "approved",
+      "revisions_before_approval": 1,
+      "reviewer_edit_distance_pct": 20.0,
+      "agent_smoke_result": "passed",
+      "published_without_review": false,
+      "critical_secret_or_pii_leak": false,
+      "high_severity_incident": false,
+      "latency_ms": 840.0,
+      "provider_failure_count": 0,
+      "provider_call_count": 0,
+      "retry_count": 0,
+      "artifact_count": 8,
+      "estimated_cost_usd": 0.0
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "package_name": "incident-bundle-to-runbook-skill",
+  "description": "Incident Postmortem (Sanitized)",
+  "target": "portable",
+  "files": [
+    {
+      "relative_path": "references/evidence.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 829,
+      "sha256": "8284fbbb19ce19bc6add9b51ae1875f2ee7a5000983540926501b00a9ee237b7"
+    },
+    {
+      "relative_path": "references/examples.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 72,
+      "sha256": "bfbea8af2fb778bcc9afe359a1192b7878dc2abfd5a719d775faf918e240da10"
+    },
+    {
+      "relative_path": "SKILL.md",
+      "category": "primary",
+      "required": true,
+      "media_type": "text/markdown",
+      "size_bytes": 1120,
+      "sha256": "afd55d3262878a1e55e05b4aa8e28a62c2d8af8e7497a867602431c920b11781"
+    }
+  ],
+  "references": [
+    {
+      "reference_id": "7bad92e6-4c65-4a3b-af71-7973617d6258",
+      "title": "Evidence 7bad92e6-4c65-4a3b-af71-7973617d6258 (section:1)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "7bad92e6-4c65-4a3b-af71-7973617d6258"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "1766fac0-d596-40cb-81b1-ad4d0ed33682",
+      "title": "Evidence 1766fac0-d596-40cb-81b1-ad4d0ed33682 (section:1.1)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "1766fac0-d596-40cb-81b1-ad4d0ed33682"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "b05005ab-bdf5-43a4-8a58-3ca3155d6223",
+      "title": "Evidence b05005ab-bdf5-43a4-8a58-3ca3155d6223 (section:1.1:paragraph:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "b05005ab-bdf5-43a4-8a58-3ca3155d6223"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "85b5a85e-d137-48d3-b8a6-5122e4e16304",
+      "title": "Evidence 85b5a85e-d137-48d3-b8a6-5122e4e16304 (section:1.2)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "85b5a85e-d137-48d3-b8a6-5122e4e16304"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "c645cf2b-741f-4db6-adaf-f29392355713",
+      "title": "Evidence c645cf2b-741f-4db6-adaf-f29392355713 (section:1.2:paragraph:0002)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "c645cf2b-741f-4db6-adaf-f29392355713"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "ce408498-9529-447f-aea3-d3d5e3ad7068",
+      "title": "Evidence ce408498-9529-447f-aea3-d3d5e3ad7068 (section:1.3)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "ce408498-9529-447f-aea3-d3d5e3ad7068"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "3899902d-f9b9-4cf8-ad7b-c7ee18d9ad4c",
+      "title": "Evidence 3899902d-f9b9-4cf8-ad7b-c7ee18d9ad4c (section:1.3:paragraph:0003)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "3899902d-f9b9-4cf8-ad7b-c7ee18d9ad4c"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "a7908289-863a-48b4-9676-7eaeac9b7b26",
+      "title": "Evidence a7908289-863a-48b4-9676-7eaeac9b7b26 (image:ocr:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "a7908289-863a-48b4-9676-7eaeac9b7b26"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "237b20ba-b9f5-40be-a5bd-88ab50179055",
+      "title": "Evidence 237b20ba-b9f5-40be-a5bd-88ab50179055 (image:region:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "237b20ba-b9f5-40be-a5bd-88ab50179055"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "bdaac3ef-d353-4ef7-a20e-1ffc338b35e2",
+      "title": "Evidence bdaac3ef-d353-4ef7-a20e-1ffc338b35e2 (image:region:0002)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "bdaac3ef-d353-4ef7-a20e-1ffc338b35e2"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "f39dc917-a28f-4be5-a362-e5b0de5a2f0a",
+      "title": "Evidence f39dc917-a28f-4be5-a362-e5b0de5a2f0a (image:scene:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "f39dc917-a28f-4be5-a362-e5b0de5a2f0a"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "00dc82d5-8dbd-45da-8473-7357c3bdbc03",
+      "title": "Evidence 00dc82d5-8dbd-45da-8473-7357c3bdbc03 (image:layout:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "00dc82d5-8dbd-45da-8473-7357c3bdbc03"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "2d252899-7cc7-4f91-b981-dbbb099977a3",
+      "title": "Evidence 2d252899-7cc7-4f91-b981-dbbb099977a3 (section:1)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "2d252899-7cc7-4f91-b981-dbbb099977a3"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "50d4b934-edaa-4cf2-888f-894f6c6c725a",
+      "title": "Evidence 50d4b934-edaa-4cf2-888f-894f6c6c725a (section:1:paragraph:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "50d4b934-edaa-4cf2-888f-894f6c6c725a"
+      ],
+      "metadata": {}
+    }
+  ],
+  "validation_status": "passed",
+  "source_bundle": {
+    "bundle_id": "simulated-approval",
+    "graph_id": "24ecc253-75ac-4fd5-bb30-03427e2daae9",
+    "skill_id": "d57097a2-d20f-438d-93a2-f5e48ee0ec10",
+    "corpus_id": "b48f0d50-49df-4410-985b-beebd59a4b6a",
+    "artifact_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-bundle-to-runbook-skill-d57097a2\\publications\\manifest.json",
+    "metadata": {}
+  },
+  "review_status": "published",
+  "hashes": {
+    "package_files_sha256": "fbd492000ad8d2724a6aa6a7c513a185ed37ec68eb4764047d772304a71d6a89",
+    "skill_markdown_sha256": "afd55d3262878a1e55e05b4aa8e28a62c2d8af8e7497a867602431c920b11781"
+  },
+  "metadata": {
+    "target_layout": "skills/portable/incident-bundle-to-runbook-skill",
+    "export_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-mixed-001-bundle.approved.json",
+    "schema_version": "agent_skill_package.v1"
+  },
+  "created_at": "2026-05-25T10:17:09Z",
+  "package_id": "df8db0d3-f92c-41bf-9010-f0f40f0b8e28"
+}

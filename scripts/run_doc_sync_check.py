@@ -36,6 +36,9 @@ DEFAULT_LAUNCH_BETA_RUNBOOK_PATH = (
 DEFAULT_DOCKER_ZERO_TO_RELEASE_RUNBOOK_PATH = (
     REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'docker-zero-to-release.md'
 )
+DEFAULT_PRODUCTION_OPS_RUNBOOK_PATH = (
+    REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'production-operations-baseline.md'
+)
 DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
 
 _MARKDOWN_LINK_PATTERN = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
@@ -88,6 +91,11 @@ def _parse_args() -> argparse.Namespace:
         '--docker-zero-to-release-runbook',
         default=str(DEFAULT_DOCKER_ZERO_TO_RELEASE_RUNBOOK_PATH),
         help='Docker-first zero-to-release runbook path.',
+    )
+    parser.add_argument(
+        '--production-ops-runbook',
+        default=str(DEFAULT_PRODUCTION_OPS_RUNBOOK_PATH),
+        help='Production operations baseline runbook path.',
     )
     parser.add_argument(
         '--output',
@@ -468,6 +476,45 @@ def _check_docker_zero_to_release_runbook_completeness(
     }
 
 
+def _check_production_ops_runbook_completeness(
+    production_ops_runbook_text: str,
+) -> dict[str, Any]:
+    required_headings = [
+        '## Deploy Workflow',
+        '## Validation Workflow',
+        '## Rollback Workflow',
+        '## Backup Workflow',
+        '## Restore Workflow',
+        '## Incident Response Workflow',
+        '## Log Inspection Workflow',
+        '## Alert Workflow',
+        '## Evidence Collection Workflow',
+    ]
+    required_markers = [
+        'python scripts/run_release_gate_validation.py',
+        'python scripts/run_launch_readiness_gate.py',
+        'python scripts/run_doc_sync_check.py --output',
+        'python scripts/run_ops_readiness_evidence.py',
+        'docker run --rm -d',
+        'docker logs',
+    ]
+    missing_required_headings = [
+        item for item in required_headings if item not in production_ops_runbook_text
+    ]
+    missing_required_markers = [
+        item for item in required_markers if item not in production_ops_runbook_text
+    ]
+    missing_any = missing_required_headings or missing_required_markers
+    return {
+        'name': 'production_ops_runbook_completeness',
+        'status': 'fail' if missing_any else 'pass',
+        'details': {
+            'missing_required_headings': missing_required_headings,
+            'missing_required_markers': missing_required_markers,
+        },
+    }
+
+
 def _build_report(*, checks: list[dict[str, Any]]) -> dict[str, Any]:
     failed = [check for check in checks if check.get('status') != 'pass']
     return {
@@ -520,6 +567,7 @@ def main() -> int:
         'release_history_doc': Path(args.release_history_doc).resolve(),
         'launch_beta_runbook': Path(args.launch_beta_runbook).resolve(),
         'docker_zero_to_release_runbook': Path(args.docker_zero_to_release_runbook).resolve(),
+        'production_ops_runbook': Path(args.production_ops_runbook).resolve(),
     }
 
     checks: list[dict[str, Any]] = [_check_required_files(paths)]
@@ -539,6 +587,7 @@ def main() -> int:
         release_history_doc_text = _read_utf8(paths['release_history_doc'])
         launch_beta_runbook_text = _read_utf8(paths['launch_beta_runbook'])
         docker_zero_to_release_runbook_text = _read_utf8(paths['docker_zero_to_release_runbook'])
+        production_ops_runbook_text = _read_utf8(paths['production_ops_runbook'])
 
         checks.extend(
             [
@@ -552,6 +601,7 @@ def main() -> int:
                 _check_release_switch_standard(release_standard_doc_text, release_history_doc_text),
                 _check_launch_beta_runbook_completeness(launch_beta_runbook_text),
                 _check_docker_zero_to_release_runbook_completeness(docker_zero_to_release_runbook_text),
+                _check_production_ops_runbook_completeness(production_ops_runbook_text),
                 _check_stale_pending_tp_markers(
                     tp_source_text,
                     {
@@ -567,6 +617,9 @@ def main() -> int:
                         'docs/current/operations/runbooks/launch-beta.md': launch_beta_runbook_text,
                         'docs/current/operations/runbooks/docker-zero-to-release.md': (
                             docker_zero_to_release_runbook_text
+                        ),
+                        'docs/current/operations/runbooks/production-operations-baseline.md': (
+                            production_ops_runbook_text
                         ),
                     },
                 ),
@@ -587,4 +640,3 @@ def main() -> int:
 
 if __name__ == '__main__':
     raise SystemExit(main())
-

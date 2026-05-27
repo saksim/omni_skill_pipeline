@@ -78,6 +78,27 @@ class VideoParserTests(unittest.TestCase):
         self.assertTrue(any("aligned_frame:frame:0001@1.00s" in tag for item in subtitle_alignments for tag in item.tags))
         self.assertTrue(any("aligned_frame:frame:0003@16.00s" in tag for item in subtitle_alignments for tag in item.tags))
 
+    def test_video_parser_aligns_subtitle_when_timestamp_start_is_missing(self) -> None:
+        parser = VideoStructureParser()
+        frames = [
+            SampledFrame(path=Path("f1.jpg"), source="scene", timestamp_seconds=1.0, scene_score=0.68),
+            SampledFrame(path=Path("f2.jpg"), source="timeline", timestamp_seconds=5.0),
+        ]
+        evidence_units = [
+            EvidenceUnit(
+                asset_id="asset-video",
+                span_ref="video:timestamp:bad-7.00",
+                content_type=ContentType.SPEECH,
+                content="Fallback to available end timestamp when start is malformed.",
+                tags=["utterance_act:note", "source:audio_track"],
+                confidence=0.8,
+            )
+        ]
+        parsed = parser.parse(frames=frames, evidence_units=evidence_units)
+        subtitle_alignments = [item for item in parsed.evidence_blocks if ":subtitle:" in item.span_ref]
+        self.assertEqual(len(subtitle_alignments), 1)
+        self.assertTrue(any("alignment_mode:nearest_time" in tag for tag in subtitle_alignments[0].tags))
+
 
 if __name__ == "__main__":
     unittest.main()

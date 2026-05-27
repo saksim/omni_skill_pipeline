@@ -1,0 +1,145 @@
+{
+  "schema_version": "operations_readiness.v1",
+  "generated_at_utc": "2026-05-25T14:15:34.207405+00:00",
+  "overall_status": "pass",
+  "check_count": 10,
+  "pass_count": 10,
+  "fail_count": 0,
+  "failed_checks": [],
+  "checks": [
+    {
+      "id": "release_gate_report_file",
+      "status": "pass",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-release-gate-validation-plan.json",
+      "expected": "readable file",
+      "details": "Required operations evidence file must exist."
+    },
+    {
+      "id": "launch_readiness_report_file",
+      "status": "pass",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\broad-launch-readiness-report.json",
+      "expected": "readable file",
+      "details": "Required operations evidence file must exist."
+    },
+    {
+      "id": "doc_sync_report_file",
+      "status": "pass",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-doc-sync-check-report.json",
+      "expected": "readable file",
+      "details": "Required operations evidence file must exist."
+    },
+    {
+      "id": "launch_beta_runbook_file",
+      "status": "pass",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\launch-beta.md",
+      "expected": "readable file",
+      "details": "Required operations evidence file must exist."
+    },
+    {
+      "id": "docker_zero_to_release_runbook_file",
+      "status": "pass",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\docker-zero-to-release.md",
+      "expected": "readable file",
+      "details": "Required operations evidence file must exist."
+    },
+    {
+      "id": "production_ops_runbook_file",
+      "status": "pass",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\production-operations-baseline.md",
+      "expected": "readable file",
+      "details": "Required operations evidence file must exist."
+    },
+    {
+      "id": "release_gate_operations_binding",
+      "status": "pass",
+      "actual": {
+        "stage_names": [
+          "beta_gate",
+          "ga_gate",
+          "roadmap_gate"
+        ],
+        "invalid_command_stages": []
+      },
+      "expected": {
+        "required_stage_names": [
+          "beta_gate",
+          "ga_gate",
+          "roadmap_gate"
+        ],
+        "command_contains": "scripts/run_linux_validation_suite.py"
+      },
+      "details": "Operations readiness must bind to existing release-gate stage packs."
+    },
+    {
+      "id": "launch_readiness_operations_binding",
+      "status": "pass",
+      "actual": {
+        "decision": "HOLD",
+        "release_switch_go_status": "pass",
+        "strict_evidence_status": "pass"
+      },
+      "expected": {
+        "decision_in": [
+          "HOLD",
+          "READY_FOR_CONTROLLED_BETA",
+          "READY_FOR_GA_REVIEW",
+          "READY_FOR_PLATFORM_BETA"
+        ],
+        "release_switch_go_status": "pass",
+        "strict_evidence_status": "pass"
+      },
+      "details": "Operations evidence must stay bound to launch-readiness strict-evidence contracts."
+    },
+    {
+      "id": "doc_sync_contract",
+      "status": "pass",
+      "actual": {
+        "status": "pass",
+        "failed_count": 0
+      },
+      "expected": {
+        "status": "pass",
+        "failed_count": 0
+      },
+      "details": "Doc-sync must pass before operations evidence can be treated as launch-claimable."
+    },
+    {
+      "id": "production_ops_runbook_contract",
+      "status": "pass",
+      "actual": {
+        "missing_headings": [],
+        "missing_markers": []
+      },
+      "expected": {
+        "required_headings": [
+          "## Deploy Workflow",
+          "## Validation Workflow",
+          "## Rollback Workflow",
+          "## Backup Workflow",
+          "## Restore Workflow",
+          "## Incident Response Workflow",
+          "## Log Inspection Workflow",
+          "## Alert Workflow",
+          "## Evidence Collection Workflow"
+        ],
+        "required_markers": [
+          "python scripts/run_release_gate_validation.py",
+          "python scripts/run_launch_readiness_gate.py",
+          "python scripts/run_ops_readiness_evidence.py",
+          "python scripts/run_doc_sync_check.py --output",
+          "docker logs",
+          "docker run --rm -d"
+        ]
+      },
+      "details": "Production operations baseline runbook must define deploy/rollback/backup/restore/incident/alert workflows."
+    }
+  ],
+  "evidence_paths": {
+    "release_gate_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-release-gate-validation-plan.json",
+    "launch_readiness_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\broad-launch-readiness-report.json",
+    "doc_sync_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-doc-sync-check-report.json",
+    "launch_beta_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\launch-beta.md",
+    "docker_zero_to_release_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\docker-zero-to-release.md",
+    "production_ops_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\production-operations-baseline.md"
+  }
+}

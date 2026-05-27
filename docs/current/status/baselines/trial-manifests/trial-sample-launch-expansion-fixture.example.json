@@ -1,0 +1,248 @@
+{
+  "manifest_id": "gl02-trial-sample-launch-expansion-fixture",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-25",
+  "description": "GL-02 launch expansion fixture manifest. This pack expands coverage to 10 loops across 6 modalities while explicitly marking fixture evidence as not launch-gate eligible.",
+  "samples": [
+    {
+      "sample_id": "gl02-text-001",
+      "modality": "text",
+      "scenario": "database slow-query notes to review skill",
+      "source_owner": "dba-team",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "text-asset-001",
+          "asset_type": "markdown",
+          "uri": "examples/trial/text/slow-query-notes.md"
+        },
+        {
+          "asset_id": "text-asset-002",
+          "asset_type": "pdf",
+          "uri": "examples/trial/text/query-bottleneck-summary.pdf"
+        }
+      ],
+      "review_owner": "trial-reviewer-a",
+      "target_package_format": "portable",
+      "expected_output_type": "dba_review_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-text-002",
+      "modality": "text",
+      "scenario": "slow query remediation follow-up notes to review skill",
+      "source_owner": "dba-team",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "text-asset-003",
+          "asset_type": "markdown",
+          "uri": "examples/trial/text/slow-query-notes.md"
+        }
+      ],
+      "review_owner": "trial-reviewer-a",
+      "target_package_format": "portable",
+      "expected_output_type": "dba_review_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-audio-001",
+      "modality": "audio",
+      "scenario": "incident review call to runbook update skill",
+      "source_owner": "sre-team",
+      "sensitivity": "confidential",
+      "asset_list": [
+        {
+          "asset_id": "audio-asset-001",
+          "asset_type": "audio",
+          "uri": "examples/trial/audio/incident-review-call.wav"
+        },
+        {
+          "asset_id": "audio-asset-002",
+          "asset_type": "transcript",
+          "uri": "examples/trial/audio/incident-review-call.transcript.md"
+        }
+      ],
+      "review_owner": "trial-reviewer-b",
+      "target_package_format": "portable",
+      "expected_output_type": "runbook_update_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-audio-002",
+      "modality": "audio",
+      "scenario": "audio follow-up call to runbook revision skill",
+      "source_owner": "sre-team",
+      "sensitivity": "confidential",
+      "asset_list": [
+        {
+          "asset_id": "audio-asset-003",
+          "asset_type": "audio",
+          "uri": "examples/trial/audio/incident-review-call.wav"
+        },
+        {
+          "asset_id": "audio-asset-004",
+          "asset_type": "transcript",
+          "uri": "examples/trial/audio/incident-review-call.transcript.md"
+        }
+      ],
+      "review_owner": "trial-reviewer-b",
+      "target_package_format": "portable",
+      "expected_output_type": "runbook_update_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-image-001",
+      "modality": "image",
+      "scenario": "dashboard screenshots to alert diagnostic skill",
+      "source_owner": "platform-observability",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "image-asset-001",
+          "asset_type": "png",
+          "uri": "examples/trial/image/service-latency-dashboard.png"
+        },
+        {
+          "asset_id": "image-asset-002",
+          "asset_type": "png",
+          "uri": "examples/trial/image/error-rate-trend.png"
+        }
+      ],
+      "review_owner": "trial-reviewer-c",
+      "target_package_format": "portable",
+      "expected_output_type": "alert_diagnostic_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-image-002",
+      "modality": "image",
+      "scenario": "image-based service health inspection skill",
+      "source_owner": "platform-observability",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "image-asset-003",
+          "asset_type": "png",
+          "uri": "examples/trial/image/error-rate-trend.png"
+        }
+      ],
+      "review_owner": "trial-reviewer-c",
+      "target_package_format": "portable",
+      "expected_output_type": "alert_diagnostic_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-video-001",
+      "modality": "video",
+      "scenario": "screen recording walkthrough to SOP skill",
+      "source_owner": "product-ops",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "video-asset-001",
+          "asset_type": "video",
+          "uri": "examples/trial/video/feature-release-walkthrough.mp4"
+        },
+        {
+          "asset_id": "video-asset-002",
+          "asset_type": "subtitle",
+          "uri": "examples/trial/video/feature-release-walkthrough.srt"
+        }
+      ],
+      "review_owner": "trial-reviewer-d",
+      "target_package_format": "portable",
+      "expected_output_type": "sop_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-video-002",
+      "modality": "video",
+      "scenario": "video rerun for operation checklist skill",
+      "source_owner": "product-ops",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "video-asset-003",
+          "asset_type": "video",
+          "uri": "examples/trial/video/feature-release-walkthrough.mp4"
+        },
+        {
+          "asset_id": "video-asset-004",
+          "asset_type": "subtitle",
+          "uri": "examples/trial/video/feature-release-walkthrough.srt"
+        }
+      ],
+      "review_owner": "trial-reviewer-d",
+      "target_package_format": "portable",
+      "expected_output_type": "sop_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-tabular-001",
+      "modality": "tabular",
+      "scenario": "latency and error report to guardrail skill",
+      "source_owner": "service-operations",
+      "sensitivity": "internal",
+      "asset_list": [
+        {
+          "asset_id": "tabular-asset-001",
+          "asset_type": "csv",
+          "uri": "examples/trial/tabular/latency-error-report.csv"
+        }
+      ],
+      "review_owner": "trial-reviewer-e",
+      "target_package_format": "portable",
+      "expected_output_type": "metric_guardrail_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    },
+    {
+      "sample_id": "gl02-mixed-001",
+      "modality": "mixed_corpus",
+      "scenario": "incident bundle to runbook skill",
+      "source_owner": "incident-response",
+      "sensitivity": "confidential",
+      "asset_list": [
+        {
+          "asset_id": "mixed-asset-001",
+          "asset_type": "document",
+          "uri": "examples/trial/mixed/incident-postmortem.md"
+        },
+        {
+          "asset_id": "mixed-asset-002",
+          "asset_type": "screenshot",
+          "uri": "examples/trial/mixed/incident-dashboard.png"
+        },
+        {
+          "asset_id": "mixed-asset-003",
+          "asset_type": "transcript",
+          "uri": "examples/trial/mixed/incident-review-transcript.md"
+        }
+      ],
+      "review_owner": "trial-reviewer-f",
+      "target_package_format": "portable",
+      "expected_output_type": "runbook_skill",
+      "evidence_origin": "fixture",
+      "launch_gate_eligible": false,
+      "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible"
+    }
+  ]
+}

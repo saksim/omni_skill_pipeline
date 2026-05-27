@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from statistics import median
 from typing import Any
+
+SUPPORTED_EVIDENCE_ORIGINS = {"real", "fixture", "synthetic"}
 
 
 def _to_float(value: Any) -> float:
@@ -33,8 +36,38 @@ def _to_ratio(numerator: float, denominator: float) -> float:
     return numerator / denominator
 
 
+def _to_bool(value: Any, *, default: bool = False) -> bool:
+    if value is None:
+        return bool(default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if not normalized:
+            return bool(default)
+        if normalized in {"1", "true", "yes", "y", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "n", "off"}:
+            return False
+    return bool(default)
+
+
 def _round(value: float) -> float:
     return round(float(value), 4)
+
+
+def _is_utc_timestamp(value: Any) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return False
+    normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,9 +115,18 @@ class TrialMetricsCollector(object):
 
         complete_loops = 0
         complete_modalities: set[str] = set()
+        launch_gate_complete_loops = 0
+        launch_gate_complete_modalities: set[str] = set()
+        launch_gate_eligible_loop_count = 0
+        launch_gate_ineligible_loop_count = 0
+        launch_gate_unlabeled_loop_count = 0
+        evidence_origin_counts: dict[str, int] = {}
+        launch_gate_ineligible_reason_counts: dict[str, int] = {}
         unreviewed_published_count = 0
         critical_secret_pii_leak_count = 0
         high_severity_incident_count = 0
+        real_evidence_missing_source_trace_count = 0
+        real_evidence_missing_review_trace_count = 0
 
         review_outcome_counts: dict[str, int] = {}
         review_evaluable_count = 0
@@ -113,6 +155,67 @@ class TrialMetricsCollector(object):
             if not modality:
                 raise ValueError("Loop %s is missing modality." % loop_id)
 
+            evidence_origin = str(item.get("evidence_origin", "unspecified")).strip().lower()
+            if not evidence_origin:
+                evidence_origin = "unspecified"
+            if evidence_origin not in SUPPORTED_EVIDENCE_ORIGINS and evidence_origin != "unspecified":
+                raise ValueError(
+                    "Loop %s evidence_origin must be one of %s (or omitted as unspecified)."
+                    % (loop_id, ", ".join(sorted(SUPPORTED_EVIDENCE_ORIGINS)))
+                )
+            evidence_origin_counts[evidence_origin] = evidence_origin_counts.get(evidence_origin, 0) + 1
+            if evidence_origin == "unspecified":
+                launch_gate_unlabeled_loop_count += 1
+
+            if evidence_origin == "real":
+                source_system = str(item.get("source_system", "")).strip()
+                source_reference = str(item.get("source_reference", "")).strip()
+                collected_at_utc = item.get("collected_at_utc")
+                if not source_system or not source_reference or not _is_utc_timestamp(collected_at_utc):
+                    real_evidence_missing_source_trace_count += 1
+                review_task_id = str(item.get("review_task_id", "")).strip()
+                reviewed_by = str(item.get("reviewed_by", "")).strip()
+                reviewed_at_utc = item.get("reviewed_at_utc")
+                if not review_task_id or not reviewed_by or not _is_utc_timestamp(reviewed_at_utc):
+                    real_evidence_missing_review_trace_count += 1
+
+            tenant_scope = item.get("tenant_scope")
+            if tenant_scope is not None:
+                if not isinstance(tenant_scope, dict):
+                    raise ValueError("Loop %s tenant_scope must be an object when provided." % loop_id)
+                organization_id = str(tenant_scope.get("organization_id", "")).strip()
+                project_id = str(tenant_scope.get("project_id", "")).strip()
+                if not organization_id:
+                    raise ValueError("Loop %s tenant_scope.organization_id is required when tenant_scope is provided." % loop_id)
+                if not project_id:
+                    raise ValueError("Loop %s tenant_scope.project_id is required when tenant_scope is provided." % loop_id)
+
+            launch_gate_eligible_raw = item.get("launch_gate_eligible", None)
+            launch_gate_eligible = (
+                _to_bool(launch_gate_eligible_raw, default=False)
+                if launch_gate_eligible_raw is not None
+                else evidence_origin == "real"
+            )
+            if launch_gate_eligible and evidence_origin != "real":
+                raise ValueError("Loop %s cannot be launch_gate_eligible unless evidence_origin is real." % loop_id)
+            if launch_gate_eligible:
+                launch_gate_eligible_loop_count += 1
+            else:
+                launch_gate_ineligible_loop_count += 1
+                ineligible_reason = str(item.get("launch_gate_ineligible_reason", "")).strip()
+                if not ineligible_reason:
+                    if evidence_origin == "fixture":
+                        ineligible_reason = "fixture_evidence_not_launch_gate_eligible"
+                    elif evidence_origin == "synthetic":
+                        ineligible_reason = "synthetic_evidence_not_launch_gate_eligible"
+                    elif evidence_origin == "unspecified":
+                        ineligible_reason = "missing_evidence_origin_label"
+                    else:
+                        ineligible_reason = "explicitly_marked_not_launch_gate_eligible"
+                launch_gate_ineligible_reason_counts[ineligible_reason] = (
+                    launch_gate_ineligible_reason_counts.get(ineligible_reason, 0) + 1
+                )
+
             status = str(item.get("status", "complete")).strip().lower()
             if status not in {"complete", "incomplete"}:
                 raise ValueError("Loop %s status must be complete or incomplete." % loop_id)
@@ -120,6 +223,9 @@ class TrialMetricsCollector(object):
             if is_complete:
                 complete_loops += 1
                 complete_modalities.add(modality)
+                if launch_gate_eligible:
+                    launch_gate_complete_loops += 1
+                    launch_gate_complete_modalities.add(modality)
 
             review_outcome = str(item.get("review_outcome", "unknown")).strip().lower()
             if review_outcome:
@@ -174,6 +280,11 @@ class TrialMetricsCollector(object):
             latest_release_decision=latest_release_decision,
             complete_loops=complete_loops,
             complete_modalities=len(complete_modalities),
+            launch_gate_complete_loops=launch_gate_complete_loops,
+            launch_gate_complete_modalities=len(launch_gate_complete_modalities),
+            launch_gate_unlabeled_loop_count=launch_gate_unlabeled_loop_count,
+            real_evidence_missing_source_trace_count=real_evidence_missing_source_trace_count,
+            real_evidence_missing_review_trace_count=real_evidence_missing_review_trace_count,
             unreviewed_published_count=unreviewed_published_count,
             critical_secret_pii_leak_count=critical_secret_pii_leak_count,
             high_severity_incident_count=high_severity_incident_count,
@@ -194,6 +305,17 @@ class TrialMetricsCollector(object):
                 "loop_count": len(loops_raw),
                 "complete_loop_count": complete_loops,
                 "complete_modalities": sorted(complete_modalities),
+                "launch_gate_evidence": {
+                    "complete_loop_count": launch_gate_complete_loops,
+                    "complete_modalities": sorted(launch_gate_complete_modalities),
+                    "eligible_loop_count": launch_gate_eligible_loop_count,
+                    "ineligible_loop_count": launch_gate_ineligible_loop_count,
+                    "unlabeled_loop_count": launch_gate_unlabeled_loop_count,
+                    "real_evidence_missing_source_trace_count": real_evidence_missing_source_trace_count,
+                    "real_evidence_missing_review_trace_count": real_evidence_missing_review_trace_count,
+                    "evidence_origin_counts": evidence_origin_counts,
+                    "ineligible_reason_counts": launch_gate_ineligible_reason_counts,
+                },
                 "review_outcome_counts": review_outcome_counts,
                 "reviewer_edit_distance_pct": {
                     "median": _round(median_reviewer_edit_distance_pct),
@@ -248,6 +370,11 @@ class TrialMetricsCollector(object):
         latest_release_decision: str,
         complete_loops: int,
         complete_modalities: int,
+        launch_gate_complete_loops: int,
+        launch_gate_complete_modalities: int,
+        launch_gate_unlabeled_loop_count: int,
+        real_evidence_missing_source_trace_count: int,
+        real_evidence_missing_review_trace_count: int,
         unreviewed_published_count: int,
         critical_secret_pii_leak_count: int,
         high_severity_incident_count: int,
@@ -287,6 +414,50 @@ class TrialMetricsCollector(object):
                     "minimum_complete_loops": thresholds.minimum_complete_loops,
                     "minimum_modalities": thresholds.minimum_modalities,
                 },
+            },
+            {
+                "id": "launch_gate_eligible_loop_volume_and_modality_coverage",
+                "description": "At least 10 launch-gate-eligible complete loops across at least 4 modalities.",
+                "critical_ga_gate": True,
+                "status": (
+                    "pass"
+                    if launch_gate_complete_loops >= thresholds.minimum_complete_loops
+                    and launch_gate_complete_modalities >= thresholds.minimum_modalities
+                    else "fail"
+                ),
+                "actual": {
+                    "complete_loops": launch_gate_complete_loops,
+                    "modalities": launch_gate_complete_modalities,
+                },
+                "expected": {
+                    "minimum_complete_loops": thresholds.minimum_complete_loops,
+                    "minimum_modalities": thresholds.minimum_modalities,
+                    "evidence_origin": "real",
+                },
+            },
+            {
+                "id": "loop_evidence_origin_labeled",
+                "description": "Every trial loop has explicit evidence origin labeling.",
+                "critical_ga_gate": True,
+                "status": "pass" if launch_gate_unlabeled_loop_count == 0 else "fail",
+                "actual": {"unlabeled_loop_count": launch_gate_unlabeled_loop_count},
+                "expected": {"unlabeled_loop_count": 0},
+            },
+            {
+                "id": "real_evidence_source_trace_complete",
+                "description": "Every real-evidence loop has source_system, source_reference, and collected_at_utc.",
+                "critical_ga_gate": True,
+                "status": "pass" if real_evidence_missing_source_trace_count == 0 else "fail",
+                "actual": {"missing_source_trace_count": real_evidence_missing_source_trace_count},
+                "expected": {"missing_source_trace_count": 0},
+            },
+            {
+                "id": "real_evidence_review_trace_complete",
+                "description": "Every real-evidence loop has review_task_id, reviewed_by, and reviewed_at_utc.",
+                "critical_ga_gate": True,
+                "status": "pass" if real_evidence_missing_review_trace_count == 0 else "fail",
+                "actual": {"missing_review_trace_count": real_evidence_missing_review_trace_count},
+                "expected": {"missing_review_trace_count": 0},
             },
             {
                 "id": "no_unreviewed_publication",
@@ -410,6 +581,23 @@ def render_trial_metrics_markdown_summary(report: dict[str, Any]) -> str:
         "- Complete loops: `%s`" % str(metrics.get("complete_loop_count", 0)),
         "- Modalities covered: `%s`"
         % ", ".join(str(item) for item in metrics.get("complete_modalities", []) if str(item).strip()),
+        "- Launch-gate eligible complete loops: `%s`"
+        % str(metrics.get("launch_gate_evidence", {}).get("complete_loop_count", 0)),
+        "- Launch-gate eligible modalities: `%s`"
+        % (
+            ", ".join(
+                str(item)
+                for item in metrics.get("launch_gate_evidence", {}).get("complete_modalities", [])
+                if str(item).strip()
+            )
+            or "none"
+        ),
+        "- Real evidence missing source trace count: `%s`"
+        % str(metrics.get("launch_gate_evidence", {}).get("real_evidence_missing_source_trace_count", 0)),
+        "- Real evidence missing review trace count: `%s`"
+        % str(metrics.get("launch_gate_evidence", {}).get("real_evidence_missing_review_trace_count", 0)),
+        "- Evidence origins: `%s`"
+        % str(metrics.get("launch_gate_evidence", {}).get("evidence_origin_counts", {})),
         "- Reviewer approval rate (<=1 revision): `%s`"
         % str(metrics.get("review_quality", {}).get("approval_rate_after_one_revision", 0.0)),
         "- Median reviewer edit distance (%%): `%s`"

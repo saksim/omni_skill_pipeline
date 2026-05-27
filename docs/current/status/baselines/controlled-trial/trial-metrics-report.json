@@ -1,5 +1,5 @@
 {
-  "manifest_id": "cbt11-controlled-trial-loop",
+  "manifest_id": "gl12-real-trial-loop-collection",
   "manifest_version": "1.0",
   "thresholds": {
     "minimum_complete_loops": 10,
@@ -10,35 +10,55 @@
     "maximum_provider_failure_rate": 0.05
   },
   "trial_metrics": {
-    "loop_count": 1,
-    "complete_loop_count": 1,
+    "loop_count": 10,
+    "complete_loop_count": 10,
     "complete_modalities": [
-      "mixed_corpus"
+      "audio",
+      "image",
+      "mixed_corpus",
+      "tabular",
+      "text",
+      "video"
     ],
+    "launch_gate_evidence": {
+      "complete_loop_count": 0,
+      "complete_modalities": [],
+      "eligible_loop_count": 0,
+      "ineligible_loop_count": 10,
+      "unlabeled_loop_count": 0,
+      "real_evidence_missing_source_trace_count": 0,
+      "real_evidence_missing_review_trace_count": 0,
+      "evidence_origin_counts": {
+        "fixture": 10
+      },
+      "ineligible_reason_counts": {
+        "fixture_evidence_not_launch_gate_eligible": 10
+      }
+    },
     "review_outcome_counts": {
-      "approved": 1
+      "approved": 10
     },
     "reviewer_edit_distance_pct": {
       "median": 20.0,
-      "samples": 1
+      "samples": 10
     },
     "latency_ms": {
-      "average": 82.693,
-      "samples": 1
+      "average": 106.1698,
+      "samples": 10
     },
     "provider_runtime": {
       "provider_failure_count_total": 0,
-      "provider_call_count_total": 2,
+      "provider_call_count_total": 22,
       "provider_failure_rate": 0.0,
       "retry_count_total": 0,
       "retry_count_average_per_loop": 0.0
     },
     "artifact_count": {
-      "total": 20,
-      "average_per_loop": 20.0
+      "total": 173,
+      "average_per_loop": 17.3
     },
     "cost_placeholder": {
-      "approved_skill_count": 1,
+      "approved_skill_count": 10,
       "approved_skill_missing_cost_count": 0,
       "cost_per_accepted_skill_usd": 0.0,
       "accepted_by_operator": true
@@ -49,8 +69,8 @@
       "high_severity_incident_count": 0
     },
     "review_quality": {
-      "review_evaluable_count": 1,
-      "approved_after_one_revision_count": 1,
+      "review_evaluable_count": 10,
+      "approved_after_one_revision_count": 10,
       "approval_rate_after_one_revision": 1.0,
       "approved_with_not_run_smoke_count": 0,
       "agent_smoke_success_rate": 1.0
@@ -58,12 +78,12 @@
   },
   "success_criteria": {
     "status": "fail",
-    "passed_count": 9,
+    "passed_count": 13,
     "failed_count": 1,
     "failed_conditions": [
       {
-        "id": "loop_volume_and_modality_coverage",
-        "description": "At least 10 complete loops across at least 4 modalities."
+        "id": "launch_gate_eligible_loop_volume_and_modality_coverage",
+        "description": "At least 10 launch-gate-eligible complete loops across at least 4 modalities."
       }
     ],
     "conditions": [
@@ -79,14 +99,65 @@
         "id": "loop_volume_and_modality_coverage",
         "description": "At least 10 complete loops across at least 4 modalities.",
         "critical_ga_gate": true,
-        "status": "fail",
+        "status": "pass",
         "actual": {
-          "complete_loops": 1,
-          "modalities": 1
+          "complete_loops": 10,
+          "modalities": 6
         },
         "expected": {
           "minimum_complete_loops": 10,
           "minimum_modalities": 4
+        }
+      },
+      {
+        "id": "launch_gate_eligible_loop_volume_and_modality_coverage",
+        "description": "At least 10 launch-gate-eligible complete loops across at least 4 modalities.",
+        "critical_ga_gate": true,
+        "status": "fail",
+        "actual": {
+          "complete_loops": 0,
+          "modalities": 0
+        },
+        "expected": {
+          "minimum_complete_loops": 10,
+          "minimum_modalities": 4,
+          "evidence_origin": "real"
+        }
+      },
+      {
+        "id": "loop_evidence_origin_labeled",
+        "description": "Every trial loop has explicit evidence origin labeling.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "unlabeled_loop_count": 0
+        },
+        "expected": {
+          "unlabeled_loop_count": 0
+        }
+      },
+      {
+        "id": "real_evidence_source_trace_complete",
+        "description": "Every real-evidence loop has source_system, source_reference, and collected_at_utc.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "missing_source_trace_count": 0
+        },
+        "expected": {
+          "missing_source_trace_count": 0
+        }
+      },
+      {
+        "id": "real_evidence_review_trace_complete",
+        "description": "Every real-evidence loop has review_task_id, reviewed_by, and reviewed_at_utc.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "missing_review_trace_count": 0
+        },
+        "expected": {
+          "missing_review_trace_count": 0
         }
       },
       {
@@ -151,7 +222,7 @@
         "critical_ga_gate": false,
         "status": "pass",
         "actual": {
-          "approved_skill_count": 1,
+          "approved_skill_count": 10,
           "approved_skill_missing_cost_count": 0,
           "accepted_by_operator": true
         },

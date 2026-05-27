@@ -12,11 +12,16 @@ from uuid import uuid4
 
 from omni_skill_pipeline.api_schemas import (
     AudioDistillRequestSchema,
+    ConsoleViewsRequestSchema,
     CorpusDistillRequestSchema,
     DistillGoalSchema,
+    GovernanceDeletionRequestSchema,
+    GovernanceRetentionPolicyUpsertRequestSchema,
+    GovernanceScopeRequestSchema,
     ImageDistillRequestSchema,
     ReviewQueueClaimRequestSchema,
     ReviewQueueCloseRequestSchema,
+    ReviewQueueDecisionRequestSchema,
     TabularDistillRequestSchema,
     TextDistillRequestSchema,
     VideoDistillRequestSchema,
@@ -39,6 +44,9 @@ from omni_skill_pipeline.models import (
 from omni_skill_pipeline.config import load_settings
 from omni_skill_pipeline.logging_utils import configure_logging, reset_request_context, set_request_context
 from omni_skill_pipeline.service import build_service
+from omni_skill_pipeline.tenant_access import TenantAccessRegistry, TenantIdentity
+from omni_skill_pipeline.governance import GovernanceLedger
+from omni_skill_pipeline.platform_console import build_platform_console_views
 
 try:
     from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
@@ -64,12 +72,17 @@ READINESS_REQUIRED_ROUTES = (
     '/v1/review/queue',
     '/v1/review/queue/claim',
     '/v1/review/queue/{review_task_id}/close',
+    '/v1/review/queue/{review_task_id}/decision',
     '/v1/distill/text',
     '/v1/distill/audio',
     '/v1/distill/image',
     '/v1/distill/tabular',
     '/v1/distill/video',
     '/v1/distill/corpus',
+    '/v1/governance/report',
+    '/v1/governance/retention-policy',
+    '/v1/governance/deletion',
+    '/v1/console/views',
 )
 
 
@@ -345,6 +358,7 @@ def create_app():
         if isinstance(service_repository, ReviewQueueRepository)
         else None
     )
+    governance_ledger = GovernanceLedger(settings.governance_ledger_dir)
     limiter = (
         InMemoryRateLimiter(
             max_requests=max(rate_limit_requests, 1),
@@ -353,20 +367,148 @@ def create_app():
         if rate_limit_requests > 0
         else None
     )
+    tenant_registry = TenantAccessRegistry.from_settings(settings)
 
     def _require_api_key(
         x_api_key: str | None = Header(default=None, alias='X-API-Key'),
         authorization: str | None = Header(default=None, alias='Authorization'),
     ) -> None:
-        if not expected_api_key:
+        provided = _extract_provided_api_key(x_api_key, authorization)
+        if tenant_registry is not None:
+            auth_result = tenant_registry.authenticate(provided)
+            if auth_result.identity is None:
+                status_code = 401 if auth_result.failure_code == 'missing_api_key' else 403
+                raise HTTPException(status_code=status_code, detail=auth_result.message or 'Invalid API key.')
             return
 
-        provided = _extract_provided_api_key(x_api_key, authorization)
+        if not expected_api_key:
+            return
 
         if not provided:
             raise HTTPException(status_code=401, detail='Missing API key.')
         if not hmac.compare_digest(provided, expected_api_key):
             raise HTTPException(status_code=403, detail='Invalid API key.')
+
+    def _resolve_tenant_identity(
+        *,
+        x_api_key: str | None,
+        authorization: str | None,
+    ) -> TenantIdentity | None:
+        if tenant_registry is None:
+            return None
+        provided = _extract_provided_api_key(x_api_key, authorization)
+        auth_result = tenant_registry.authenticate(provided)
+        return auth_result.identity
+
+    def _tenant_scope_dict(scope_payload: Any) -> dict[str, str]:
+        if scope_payload is None:
+            return {}
+        if hasattr(scope_payload, 'model_dump'):
+            scope_payload = scope_payload.model_dump()
+        if not isinstance(scope_payload, dict):
+            return {}
+        organization_id = str(scope_payload.get('organization_id', '')).strip()
+        project_id = str(scope_payload.get('project_id', '')).strip()
+        output: dict[str, str] = {}
+        if organization_id:
+            output['organization_id'] = organization_id
+        if project_id:
+            output['project_id'] = project_id
+        return output
+
+    def _tenant_scope_from_identity(identity: TenantIdentity | None) -> dict[str, str]:
+        if identity is None:
+            return {}
+        return {
+            'organization_id': identity.organization_id,
+            'project_id': identity.project_id,
+        }
+
+    def _resolve_governance_scope(
+        *,
+        tenant_identity: TenantIdentity | None,
+        requested_organization_id: str,
+        requested_project_id: str,
+    ) -> dict[str, str]:
+        scope = _tenant_scope_from_identity(tenant_identity)
+        organization_id = str(requested_organization_id or '').strip()
+        project_id = str(requested_project_id or '').strip()
+        if organization_id:
+            scope['organization_id'] = organization_id
+        if project_id:
+            scope['project_id'] = project_id
+        return {key: value for key, value in scope.items() if str(value).strip()}
+
+    def _enforce_tenant_authorization(
+        *,
+        request: Request,
+        action: str,
+        x_api_key: str | None,
+        authorization: str | None,
+        requested_scope: dict[str, Any] | None,
+    ) -> TenantIdentity | None:
+        if tenant_registry is None:
+            return None
+        identity = _resolve_tenant_identity(x_api_key=x_api_key, authorization=authorization)
+        if identity is None:
+            raise HTTPException(status_code=403, detail='Invalid API key.')
+        if not tenant_registry.authorize(identity=identity, action=action):
+            raise HTTPException(status_code=403, detail='Tenant role is not authorized for this operation.')
+        if not tenant_registry.validate_requested_scope(identity=identity, requested_scope=requested_scope):
+            raise HTTPException(status_code=403, detail='Cross-tenant scope is not allowed.')
+        allowed, retry_after = tenant_registry.enforce_quota(identity=identity, action=action)
+        if not allowed:
+            raise HTTPException(
+                status_code=429,
+                detail='Tenant quota exceeded.',
+                headers={'Retry-After': str(retry_after)},
+            )
+        request.state.tenant_identity = identity
+        return identity
+
+    def _inject_tenant_scope_metadata(
+        *,
+        payload_metadata: dict[str, Any] | None,
+        tenant_identity: TenantIdentity | None,
+        requested_scope: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        metadata = dict(payload_metadata or {})
+        if tenant_identity is None:
+            return metadata
+        tenant_scope = tenant_identity.to_scope_dict()
+        requested = _tenant_scope_dict(requested_scope)
+        if requested:
+            tenant_scope.update({
+                'organization_id': requested.get('organization_id', tenant_scope.get('organization_id', '')),
+                'project_id': requested.get('project_id', tenant_scope.get('project_id', '')),
+            })
+        metadata['tenant_scope'] = tenant_scope
+        return metadata
+
+    def _record_review_governance_event(
+        *,
+        event_type: str,
+        status: str,
+        review_task_id: str,
+        tenant_identity: TenantIdentity | None,
+        reason_codes: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        scope = _tenant_scope_from_identity(tenant_identity)
+        governance_ledger.record_audit_event(
+            {
+                **scope,
+                'event_type': event_type,
+                'status': status,
+                'review_task_id': str(review_task_id).strip(),
+                'actor': tenant_identity.user_id if tenant_identity is not None else '',
+                'api_key_id': tenant_identity.api_key_id if tenant_identity is not None else '',
+                'metadata': {
+                    **(metadata or {}),
+                    'reason_codes': list(reason_codes or []),
+                },
+            }
+        )
 
     def _rate_limit_identity(
         request: Request,
@@ -545,64 +687,258 @@ def create_app():
 
     @app.get('/v1/review/queue')
     def list_review_queue(
+        request: Request,
         queue_status: str | None = Query(default='pending'),
         limit: int = Query(default=100, ge=1, le=1000),
         repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
-        return {'items': repository.list_review_queue(queue_status=queue_status, limit=limit)}
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.read',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=None,
+        )
+        tenant_scope = None if tenant_identity is None else {
+            'organization_id': tenant_identity.organization_id,
+            'project_id': tenant_identity.project_id,
+        }
+        return {
+            'items': repository.list_review_queue(
+                queue_status=queue_status,
+                limit=limit,
+                tenant_scope=tenant_scope,
+            )
+        }
 
     @app.post('/v1/review/queue/claim')
     def claim_review_queue_item(
+        request: Request,
         payload: ReviewQueueClaimRequestSchema,
         repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
-        claimed = repository.claim_review_task(review_task_id=payload.review_task_id, consumer=payload.consumer)
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.write',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
+        tenant_scope = None if tenant_identity is None else {
+            'organization_id': tenant_identity.organization_id,
+            'project_id': tenant_identity.project_id,
+        }
+        claimed = repository.claim_review_task(
+            review_task_id=payload.review_task_id,
+            consumer=payload.consumer,
+            tenant_scope=tenant_scope,
+        )
         if claimed is None:
             raise HTTPException(status_code=404, detail='No review task available to claim.')
+        _record_review_governance_event(
+            event_type='review_claimed',
+            status='success',
+            review_task_id=str(claimed.get('review_task_id', '')),
+            tenant_identity=tenant_identity,
+            metadata={'consumer': payload.consumer},
+        )
         return claimed
 
     @app.post('/v1/review/queue/{review_task_id}/close')
     def close_review_queue_item(
+        request: Request,
         review_task_id: str,
         payload: ReviewQueueCloseRequestSchema,
         repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.write',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
+        tenant_scope = None if tenant_identity is None else {
+            'organization_id': tenant_identity.organization_id,
+            'project_id': tenant_identity.project_id,
+        }
         closed = repository.close_review_task(
             review_task_id,
             status=payload.status,
             closed_by=payload.closed_by,
             review_notes=payload.review_notes,
+            decision=payload.decision,
+            reason_codes=payload.reason_codes,
+            reviewer_edits=payload.reviewer_edits,
+            tenant_scope=tenant_scope,
         )
         if closed is None:
             raise HTTPException(status_code=404, detail='Review task not found: %s' % review_task_id.strip())
+        _record_review_governance_event(
+            event_type='review_closed',
+            status='success',
+            review_task_id=str(closed.get('review_task_id', '')).strip() or review_task_id.strip(),
+            tenant_identity=tenant_identity,
+            reason_codes=list(payload.reason_codes),
+            metadata={
+                'decision': str(closed.get('decision', '')).strip(),
+                'final_status': str(closed.get('status', '')).strip(),
+            },
+        )
+        decision_text = str(closed.get('decision', '')).strip().lower()
+        if decision_text == 'approve':
+            scope = _tenant_scope_from_identity(tenant_identity)
+            governance_ledger.record_cost_entry(
+                {
+                    **scope,
+                    'run_id': str(closed.get('review_task_id', '')).strip() or review_task_id.strip(),
+                    'skill_id': str(closed.get('skill_id', '')).strip(),
+                    'bundle_id': str(closed.get('skill_id', '')).strip(),
+                    'event_kind': 'accepted_package',
+                    'provider': 'review_queue',
+                    'operation': 'review.approve',
+                    'call_count': 1,
+                    'failure_count': 0,
+                    'estimated_cost_usd': 0.0,
+                    'currency': 'USD',
+                    'metadata': {
+                        'source': 'review_queue_close',
+                        'review_task_id': str(closed.get('review_task_id', '')).strip() or review_task_id.strip(),
+                        'closed_by': str(closed.get('closed_by', '')).strip(),
+                    },
+                }
+            )
+        return closed
+
+    @app.post('/v1/review/queue/{review_task_id}/decision')
+    def update_review_queue_decision(
+        request: Request,
+        review_task_id: str,
+        payload: ReviewQueueDecisionRequestSchema,
+        repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.write',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
+        tenant_scope = None if tenant_identity is None else {
+            'organization_id': tenant_identity.organization_id,
+            'project_id': tenant_identity.project_id,
+        }
+        update_fn = getattr(repository, 'update_review_task_decision', None)
+        if update_fn is None:
+            raise HTTPException(status_code=503, detail='Review queue decision operation is not configured.')
+        closed = update_fn(
+            review_task_id,
+            decision=payload.decision,
+            reviewer=payload.reviewer,
+            reason_codes=payload.reason_codes,
+            review_notes=payload.review_notes,
+            reviewer_edits=payload.reviewer_edits,
+            status=payload.status,
+            tenant_scope=tenant_scope,
+        )
+        if closed is None:
+            raise HTTPException(status_code=404, detail='Review task not found: %s' % review_task_id.strip())
+        _record_review_governance_event(
+            event_type='review_decision_applied',
+            status='success',
+            review_task_id=str(closed.get('review_task_id', '')).strip() or review_task_id.strip(),
+            tenant_identity=tenant_identity,
+            reason_codes=list(payload.reason_codes),
+            metadata={
+                'decision': payload.decision,
+                'final_status': str(closed.get('status', '')).strip(),
+            },
+        )
+        if payload.decision == 'approve':
+            scope = _tenant_scope_from_identity(tenant_identity)
+            governance_ledger.record_cost_entry(
+                {
+                    **scope,
+                    'run_id': str(closed.get('review_task_id', '')).strip() or review_task_id.strip(),
+                    'skill_id': str(closed.get('skill_id', '')).strip(),
+                    'bundle_id': str(closed.get('skill_id', '')).strip(),
+                    'event_kind': 'accepted_package',
+                    'provider': 'review_queue',
+                    'operation': 'review.approve',
+                    'call_count': 1,
+                    'failure_count': 0,
+                    'estimated_cost_usd': 0.0,
+                    'currency': 'USD',
+                    'metadata': {
+                        'source': 'review_queue_decision',
+                        'review_task_id': str(closed.get('review_task_id', '')).strip() or review_task_id.strip(),
+                        'closed_by': str(closed.get('closed_by', '')).strip(),
+                    },
+                }
+            )
         return closed
 
     @app.post('/v1/distill/text')
     def distill_text(
+        request: Request,
         payload: TextDistillRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='distill.execute',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
         request = TextDistillRequest(
             title=payload.title,
             content=payload.content,
             file_path=payload.file_path,
             goal=_goal_from_schema(payload.goal),
+            metadata=_inject_tenant_scope_metadata(
+                payload_metadata=payload.metadata,
+                tenant_identity=tenant_identity,
+                requested_scope=payload.tenant_scope,
+            ),
         )
         return _build_distill_response(service.distill_text(request))
 
     @app.post('/v1/distill/audio')
     def distill_audio(
+        request: Request,
         payload: AudioDistillRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='distill.execute',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
         request = AudioDistillRequest(
             title=payload.title,
             audio_path=payload.audio_path,
@@ -611,28 +947,58 @@ def create_app():
             language=payload.language,
             prompt=payload.prompt,
             goal=_goal_from_schema(payload.goal),
+            metadata=_inject_tenant_scope_metadata(
+                payload_metadata=payload.metadata,
+                tenant_identity=tenant_identity,
+                requested_scope=payload.tenant_scope,
+            ),
         )
         return _build_distill_response(service.distill_audio(request))
 
     @app.post('/v1/distill/image')
     def distill_image(
+        request: Request,
         payload: ImageDistillRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='distill.execute',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
         request = ImageDistillRequest(
             image_path=payload.image_path,
             title=payload.title,
             goal=_goal_from_schema(payload.goal),
+            metadata=_inject_tenant_scope_metadata(
+                payload_metadata=payload.metadata,
+                tenant_identity=tenant_identity,
+                requested_scope=payload.tenant_scope,
+            ),
         )
         return _build_distill_response(service.distill_image(request))
 
     @app.post('/v1/distill/tabular')
     def distill_tabular(
+        request: Request,
         payload: TabularDistillRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='distill.execute',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
         request = TabularDistillRequest(
             file_path=payload.file_path,
             title=payload.title,
@@ -641,15 +1007,30 @@ def create_app():
             entity_columns=payload.entity_columns,
             max_series=payload.max_series,
             goal=_goal_from_schema(payload.goal),
+            metadata=_inject_tenant_scope_metadata(
+                payload_metadata=payload.metadata,
+                tenant_identity=tenant_identity,
+                requested_scope=payload.tenant_scope,
+            ),
         )
         return _build_distill_response(service.distill_tabular(request))
 
     @app.post('/v1/distill/video')
     def distill_video(
+        request: Request,
         payload: VideoDistillRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='distill.execute',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
         request = VideoDistillRequest(
             video_path=payload.video_path,
             title=payload.title,
@@ -662,17 +1043,183 @@ def create_app():
             scene_threshold=payload.scene_threshold,
             dedupe_distance=payload.dedupe_distance,
             goal=_goal_from_schema(payload.goal),
+            metadata=_inject_tenant_scope_metadata(
+                payload_metadata=payload.metadata,
+                tenant_identity=tenant_identity,
+                requested_scope=payload.tenant_scope,
+            ),
         )
         return _build_distill_response(service.distill_video(request))
 
     @app.post('/v1/distill/corpus')
     def distill_corpus(
+        request: Request,
         payload: CorpusDistillRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
         _auth: None = Depends(_require_api_key),
         _rate_limit: None = Depends(_enforce_rate_limit),
     ):
-        request = CorpusDistillRequest.from_dict(payload.model_dump())
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='distill.execute',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope=_tenant_scope_dict(payload.tenant_scope),
+        )
+        payload_dict = payload.model_dump()
+        payload_dict['metadata'] = _inject_tenant_scope_metadata(
+            payload_metadata=payload.metadata,
+            tenant_identity=tenant_identity,
+            requested_scope=payload.tenant_scope,
+        )
+        request = CorpusDistillRequest.from_dict(payload_dict)
         return _build_distill_response(service.distill_corpus(request))
+
+    @app.post('/v1/governance/report')
+    def governance_report(
+        request: Request,
+        payload: GovernanceScopeRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.read',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope={
+                'organization_id': payload.organization_id,
+                'project_id': payload.project_id,
+            },
+        )
+        scope = _resolve_governance_scope(
+            tenant_identity=tenant_identity,
+            requested_organization_id=payload.organization_id,
+            requested_project_id=payload.project_id,
+        )
+        return governance_ledger.build_report(
+            tenant_scope=scope,
+            include_cost_entries=bool(payload.include_cost_entries),
+            include_audit_events=bool(payload.include_audit_events),
+            include_deletion_records=bool(payload.include_deletion_records),
+            include_retention_policies=bool(payload.include_retention_policies),
+            limit=int(payload.limit),
+        )
+
+    @app.post('/v1/governance/retention-policy')
+    def governance_upsert_retention_policy(
+        request: Request,
+        payload: GovernanceRetentionPolicyUpsertRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.write',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope={
+                'organization_id': payload.organization_id,
+                'project_id': payload.project_id,
+            },
+        )
+        scope = _resolve_governance_scope(
+            tenant_identity=tenant_identity,
+            requested_organization_id=payload.organization_id,
+            requested_project_id=payload.project_id,
+        )
+        result = governance_ledger.upsert_retention_policy(
+            {
+                **payload.model_dump(),
+                **scope,
+                'updated_by': payload.updated_by or (
+                    tenant_identity.user_id if tenant_identity is not None else 'governance-operator'
+                ),
+            }
+        )
+        return {'policy': result}
+
+    @app.post('/v1/governance/deletion')
+    def governance_record_deletion(
+        request: Request,
+        payload: GovernanceDeletionRequestSchema,
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.write',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope={
+                'organization_id': payload.organization_id,
+                'project_id': payload.project_id,
+            },
+        )
+        scope = _resolve_governance_scope(
+            tenant_identity=tenant_identity,
+            requested_organization_id=payload.organization_id,
+            requested_project_id=payload.project_id,
+        )
+        result = governance_ledger.record_deletion_event(
+            {
+                **payload.model_dump(),
+                **scope,
+                'actor': payload.actor or (
+                    tenant_identity.user_id if tenant_identity is not None else 'governance-operator'
+                ),
+                'api_key_id': payload.api_key_id or (
+                    tenant_identity.api_key_id if tenant_identity is not None else ''
+                ),
+            }
+        )
+        return {'deletion_record': result}
+
+    @app.post('/v1/console/views')
+    def platform_console_views(
+        request: Request,
+        payload: ConsoleViewsRequestSchema,
+        repository: ReviewQueueRepository = Depends(_require_review_queue_repository),
+        x_api_key: str | None = Header(default=None, alias='X-API-Key'),
+        authorization: str | None = Header(default=None, alias='Authorization'),
+        _auth: None = Depends(_require_api_key),
+        _rate_limit: None = Depends(_enforce_rate_limit),
+    ):
+        tenant_identity = _enforce_tenant_authorization(
+            request=request,
+            action='review.read',
+            x_api_key=x_api_key,
+            authorization=authorization,
+            requested_scope={
+                'organization_id': payload.organization_id,
+                'project_id': payload.project_id,
+            },
+        )
+        scope = _resolve_governance_scope(
+            tenant_identity=tenant_identity,
+            requested_organization_id=payload.organization_id,
+            requested_project_id=payload.project_id,
+        )
+        review_queue_items = repository.list_review_queue(
+            queue_status=payload.queue_status,
+            limit=int(payload.limit),
+            tenant_scope=scope,
+        )
+        return build_platform_console_views(
+            repo_root=settings.repo_root,
+            draft_dir=settings.draft_dir,
+            governance_ledger=governance_ledger,
+            tenant_scope=scope,
+            review_queue_items=review_queue_items,
+            limit=int(payload.limit),
+        )
 
     return app
 

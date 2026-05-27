@@ -1,0 +1,570 @@
+{
+  "schema_version": "quality_feedback_loop.v1",
+  "generated_at_utc": "2026-05-25T17:24:32Z",
+  "source_run_id": "controlled-trial-20260525T101709Z",
+  "config": {
+    "repeat_threshold": 2,
+    "reviewer_edit_distance_threshold": 25.0
+  },
+  "summary": {
+    "sample_count": 10,
+    "remediation_plan_count": 10,
+    "regression_case_count": 0,
+    "calibration_sample_count": 10,
+    "decision_counts": {
+      "review_required": 10
+    },
+    "top_repeated_defects": []
+  },
+  "remediation_plans": [
+    {
+      "plan_id": "cd704c60-f82f-41ae-ae89-afb6c4a00a09",
+      "review_task_id": "00199f9f-3344-45c4-adb2-46623808e436",
+      "skill_id": "28a66f6e-663a-4eb5-9040-b864061a1125",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "070d577b-189c-445c-9970-c3e280bed772",
+      "review_task_id": "1ce28eeb-d192-4b98-90d1-265b45d994f1",
+      "skill_id": "2d3d0baf-a80f-4b15-b649-6ecb35e8f1ea",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "37b5b07b-39bc-4d6f-9eb5-62610a873f90",
+      "review_task_id": "02e2d982-d8d0-44fe-80f5-078ed1f4ba5a",
+      "skill_id": "6b9cc854-cc45-42b8-9a23-5c56ee3b7950",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "4ed22d14-9b5f-47ae-9b96-a7cb275b74ad",
+      "review_task_id": "73d9197e-dd2f-4b75-81e1-dd95b50aa6c7",
+      "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "0f632517-d847-4683-9947-2fb56ac90924",
+      "review_task_id": "d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07",
+      "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "09792c75-396e-4c84-a7f9-d9f969e96aa7",
+      "review_task_id": "f9235ab9-7745-4956-97c0-fa0beb0dbbc1",
+      "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "867cb663-1f23-433b-ae22-9b5ff3bec760",
+      "review_task_id": "6911b30f-0678-4b36-a31d-12383c3d95ed",
+      "skill_id": "a5643d72-bdbf-4038-9448-baf3c553c4e7",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "78b96a5b-cbc6-4fc8-be66-f365bdb88ac7",
+      "review_task_id": "0521af47-2967-4ce9-a747-db22cb5019c9",
+      "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "f3daefa2-9a12-4a3e-948e-25cbc7b17054",
+      "review_task_id": "c5581006-0d73-4bcc-ba0c-71a22adac164",
+      "skill_id": "1163495b-059b-4b72-af24-89394382042d",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    },
+    {
+      "plan_id": "4c425e4a-cce1-47c6-aa4e-dd92946e8c1b",
+      "review_task_id": "d78c34d2-d69e-465b-a754-bc95063d5898",
+      "skill_id": "d57097a2-d20f-438d-93a2-f5e48ee0ec10",
+      "decision": "review_required",
+      "status": "review_pending",
+      "next_action": "run_targeted_remediation",
+      "summary": "Prepared 1 remediation steps for review_required; next action: run_targeted_remediation.",
+      "categories": [
+        "manual_review"
+      ],
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "steps": [
+        {
+          "step_id": "remediate-01",
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "description": "Apply POLICY_ESCALATE_MANUAL_REVIEW on policy via escalate_manual_review.",
+          "priority": "low",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "created_at": "2026-05-25T17:24:32Z"
+    }
+  ],
+  "regression_cases": [],
+  "calibration_manifest": {
+    "manifest_id": "quality-feedback-loop-calibration",
+    "manifest_version": "1.0",
+    "generated_at_utc": "2026-05-25T17:24:32Z",
+    "description": "Calibration dataset generated from controlled-trial feedback loop outputs.",
+    "samples": [
+      {
+        "sample_id": "gl02-text-001",
+        "modality": "text",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 1.0,
+          "overall_score": 1.0
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-text-002",
+        "modality": "text",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9923,
+          "overall_score": 0.9987
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-audio-001",
+        "modality": "audio",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.8958,
+          "overall_score": 0.9826
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-audio-002",
+        "modality": "audio",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9153,
+          "overall_score": 0.9859
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-image-001",
+        "modality": "image",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.8333,
+          "overall_score": 0.9722
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-image-002",
+        "modality": "image",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9017,
+          "overall_score": 0.9836
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-video-001",
+        "modality": "video",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.7453,
+          "overall_score": 0.9576
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-video-002",
+        "modality": "video",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.736,
+          "overall_score": 0.956
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-tabular-001",
+        "modality": "tabular",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.7473,
+          "overall_score": 0.9579
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      },
+      {
+        "sample_id": "gl02-mixed-001",
+        "modality": "mixed_corpus",
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.988,
+          "overall_score": 0.998
+        },
+        "reviewer_judgement": {
+          "decision": "auto_publish",
+          "confidence": 0.85,
+          "notes": "Derived from loop review_outcome=approved"
+        }
+      }
+    ]
+  }
+}

@@ -1,14 +1,254 @@
 {
-  "generated_at_utc": "2026-05-20T13:22:04Z",
-  "manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\trial-manifests\\trial-sample-mixed-corpus.example.json",
-  "manifest_id": "cbt02-trial-sample-mixed-corpus",
-  "sample_count": 1,
+  "generated_at_utc": "2026-05-25T10:17:07Z",
+  "manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\trial-manifests\\trial-sample-launch-expansion-fixture.example.json",
+  "manifest_id": "gl02-trial-sample-launch-expansion-fixture",
+  "sample_count": 10,
   "use_fixture_stubs": true,
   "force_review_mode": true,
   "review_reason_code": "controlled_trial_requires_review",
   "samples": [
     {
-      "sample_id": "mixed-001",
+      "sample_id": "gl02-text-001",
+      "modality": "text",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "text-asset-001",
+          "asset_type": "markdown",
+          "uri": "examples/trial/text/slow-query-notes.md",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+          "inferred_modality": "text"
+        },
+        {
+          "asset_id": "text-asset-002",
+          "asset_type": "pdf",
+          "uri": "examples/trial/text/query-bottleneck-summary.pdf",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\query-bottleneck-summary.pdf",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-text-002",
+      "modality": "text",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "text-asset-003",
+          "asset_type": "markdown",
+          "uri": "examples/trial/text/slow-query-notes.md",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-audio-001",
+      "modality": "audio",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "audio-asset-001",
+          "asset_type": "audio",
+          "uri": "examples/trial/audio/incident-review-call.wav",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.wav",
+          "inferred_modality": "audio"
+        },
+        {
+          "asset_id": "audio-asset-002",
+          "asset_type": "transcript",
+          "uri": "examples/trial/audio/incident-review-call.transcript.md",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-audio-002",
+      "modality": "audio",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "audio-asset-003",
+          "asset_type": "audio",
+          "uri": "examples/trial/audio/incident-review-call.wav",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.wav",
+          "inferred_modality": "audio"
+        },
+        {
+          "asset_id": "audio-asset-004",
+          "asset_type": "transcript",
+          "uri": "examples/trial/audio/incident-review-call.transcript.md",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-image-001",
+      "modality": "image",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "image-asset-001",
+          "asset_type": "png",
+          "uri": "examples/trial/image/service-latency-dashboard.png",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+          "inferred_modality": "image"
+        },
+        {
+          "asset_id": "image-asset-002",
+          "asset_type": "png",
+          "uri": "examples/trial/image/error-rate-trend.png",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+          "inferred_modality": "image"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-image-002",
+      "modality": "image",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "image-asset-003",
+          "asset_type": "png",
+          "uri": "examples/trial/image/error-rate-trend.png",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+          "inferred_modality": "image"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-video-001",
+      "modality": "video",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "video-asset-001",
+          "asset_type": "video",
+          "uri": "examples/trial/video/feature-release-walkthrough.mp4",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+          "inferred_modality": "video"
+        },
+        {
+          "asset_id": "video-asset-002",
+          "asset_type": "subtitle",
+          "uri": "examples/trial/video/feature-release-walkthrough.srt",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.srt",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-video-002",
+      "modality": "video",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "video-asset-003",
+          "asset_type": "video",
+          "uri": "examples/trial/video/feature-release-walkthrough.mp4",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+          "inferred_modality": "video"
+        },
+        {
+          "asset_id": "video-asset-004",
+          "asset_type": "subtitle",
+          "uri": "examples/trial/video/feature-release-walkthrough.srt",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.srt",
+          "inferred_modality": "text"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-tabular-001",
+      "modality": "tabular",
+      "target": "portable",
+      "assets": [
+        {
+          "asset_id": "tabular-asset-001",
+          "asset_type": "csv",
+          "uri": "examples/trial/tabular/latency-error-report.csv",
+          "resolved_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\tabular\\latency-error-report.csv",
+          "inferred_modality": "tabular"
+        }
+      ],
+      "steps": [
+        "distill_input",
+        "assert_review_packet",
+        "simulate_human_approval",
+        "export_skill_package",
+        "validate_skill_package",
+        "append_trial_metrics_loop"
+      ]
+    },
+    {
+      "sample_id": "gl02-mixed-001",
       "modality": "mixed_corpus",
       "target": "portable",
       "assets": [

@@ -1,0 +1,235 @@
+{
+  "manifest_id": "cbt-05-trial-metrics-template",
+  "manifest_version": "1.0",
+  "thresholds": {
+    "minimum_complete_loops": 10,
+    "minimum_modalities": 4,
+    "minimum_approval_rate_after_one_revision": 0.8,
+    "maximum_median_reviewer_edit_distance_pct": 25.0,
+    "minimum_agent_smoke_success_rate": 0.8,
+    "maximum_provider_failure_rate": 0.05
+  },
+  "trial_metrics": {
+    "loop_count": 10,
+    "complete_loop_count": 10,
+    "complete_modalities": [
+      "audio",
+      "image",
+      "mixed_corpus",
+      "tabular",
+      "text",
+      "video"
+    ],
+    "launch_gate_evidence": {
+      "complete_loop_count": 9,
+      "complete_modalities": [
+        "audio",
+        "image",
+        "mixed_corpus",
+        "tabular",
+        "text",
+        "video"
+      ],
+      "eligible_loop_count": 9,
+      "ineligible_loop_count": 1,
+      "unlabeled_loop_count": 0,
+      "real_evidence_missing_source_trace_count": 0,
+      "evidence_origin_counts": {
+        "real": 9,
+        "synthetic": 1
+      },
+      "ineligible_reason_counts": {
+        "synthetic_evidence_not_launch_gate_eligible": 1
+      }
+    },
+    "review_outcome_counts": {
+      "approved": 9,
+      "rejected": 1
+    },
+    "reviewer_edit_distance_pct": {
+      "median": 21.0,
+      "samples": 10
+    },
+    "latency_ms": {
+      "average": 1377.0,
+      "samples": 10
+    },
+    "provider_runtime": {
+      "provider_failure_count_total": 1,
+      "provider_call_count_total": 53,
+      "provider_failure_rate": 0.0189,
+      "retry_count_total": 7,
+      "retry_count_average_per_loop": 0.7
+    },
+    "artifact_count": {
+      "total": 98,
+      "average_per_loop": 9.8
+    },
+    "cost_placeholder": {
+      "approved_skill_count": 9,
+      "approved_skill_missing_cost_count": 0,
+      "cost_per_accepted_skill_usd": 0.5389,
+      "accepted_by_operator": true
+    },
+    "safety": {
+      "unreviewed_published_count": 0,
+      "critical_secret_or_pii_leak_count": 0,
+      "high_severity_incident_count": 0
+    },
+    "review_quality": {
+      "review_evaluable_count": 10,
+      "approved_after_one_revision_count": 9,
+      "approval_rate_after_one_revision": 0.9,
+      "approved_with_not_run_smoke_count": 0,
+      "agent_smoke_success_rate": 1.0
+    }
+  },
+  "success_criteria": {
+    "status": "fail",
+    "passed_count": 12,
+    "failed_count": 1,
+    "failed_conditions": [
+      {
+        "id": "launch_gate_eligible_loop_volume_and_modality_coverage",
+        "description": "At least 10 launch-gate-eligible complete loops across at least 4 modalities."
+      }
+    ],
+    "conditions": [
+      {
+        "id": "release_run_go",
+        "description": "Latest release run remains GO.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": "GO",
+        "expected": "GO"
+      },
+      {
+        "id": "loop_volume_and_modality_coverage",
+        "description": "At least 10 complete loops across at least 4 modalities.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "complete_loops": 10,
+          "modalities": 6
+        },
+        "expected": {
+          "minimum_complete_loops": 10,
+          "minimum_modalities": 4
+        }
+      },
+      {
+        "id": "launch_gate_eligible_loop_volume_and_modality_coverage",
+        "description": "At least 10 launch-gate-eligible complete loops across at least 4 modalities.",
+        "critical_ga_gate": true,
+        "status": "fail",
+        "actual": {
+          "complete_loops": 9,
+          "modalities": 6
+        },
+        "expected": {
+          "minimum_complete_loops": 10,
+          "minimum_modalities": 4,
+          "evidence_origin": "real"
+        }
+      },
+      {
+        "id": "loop_evidence_origin_labeled",
+        "description": "Every trial loop has explicit evidence origin labeling.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "unlabeled_loop_count": 0
+        },
+        "expected": {
+          "unlabeled_loop_count": 0
+        }
+      },
+      {
+        "id": "real_evidence_source_trace_complete",
+        "description": "Every real-evidence loop has source_system, source_reference, and collected_at_utc.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "missing_source_trace_count": 0
+        },
+        "expected": {
+          "missing_source_trace_count": 0
+        }
+      },
+      {
+        "id": "no_unreviewed_publication",
+        "description": "Zero unreviewed skills are published.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": 0,
+        "expected": 0
+      },
+      {
+        "id": "no_critical_secret_or_pii_leak",
+        "description": "Zero critical secret/PII leaks in generated artifacts.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": 0,
+        "expected": 0
+      },
+      {
+        "id": "no_high_severity_trial_incident",
+        "description": "Zero high-severity production incidents caused by trial.",
+        "critical_ga_gate": false,
+        "status": "pass",
+        "actual": 0,
+        "expected": 0
+      },
+      {
+        "id": "reviewer_approval_rate",
+        "description": "Reviewer approval rate is at least 80% after no more than one revision.",
+        "critical_ga_gate": false,
+        "status": "pass",
+        "actual": 0.9,
+        "expected_min": 0.8
+      },
+      {
+        "id": "median_reviewer_edit_distance",
+        "description": "Median reviewer edit distance is at or below 25%.",
+        "critical_ga_gate": false,
+        "status": "pass",
+        "actual": 21.0,
+        "expected_max": 25.0
+      },
+      {
+        "id": "agent_smoke_success_rate",
+        "description": "Agent-native skill smoke success rate is at least 80% for approved skills.",
+        "critical_ga_gate": false,
+        "status": "pass",
+        "actual": 1.0,
+        "expected_min": 0.8
+      },
+      {
+        "id": "provider_failure_rate",
+        "description": "Provider/runtime failure rate stays below agreed pilot threshold.",
+        "critical_ga_gate": false,
+        "status": "pass",
+        "actual": 0.0189,
+        "expected_max": 0.05
+      },
+      {
+        "id": "cost_per_accepted_skill",
+        "description": "Cost per accepted skill is recorded and accepted by operator.",
+        "critical_ga_gate": false,
+        "status": "pass",
+        "actual": {
+          "approved_skill_count": 9,
+          "approved_skill_missing_cost_count": 0,
+          "accepted_by_operator": true
+        },
+        "expected": {
+          "approved_skill_count_gt": 0,
+          "approved_skill_missing_cost_count": 0,
+          "accepted_by_operator": true
+        }
+      }
+    ]
+  },
+  "ga_discussion_blocked": true,
+  "overall_status": "fail"
+}

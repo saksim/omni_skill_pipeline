@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from omni_skill_pipeline.exporters import AgentSkillExporter
+from omni_skill_pipeline.governance import GovernanceLedger
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
     AgentSkillTarget,
@@ -111,6 +112,52 @@ def build_parser() -> argparse.ArgumentParser:
     )
     validate_parser.add_argument('--package', required=True, help='Exported package directory path.')
     validate_parser.add_argument('--max-lines', type=int, default=500, help='Max allowed SKILL.md line count.')
+    review_parser = subparsers.add_parser('review-queue', help='Operate review queue tasks through repository runtime.')
+    review_parser.add_argument('--action', required=True, help='list/claim/close/approve/reject/needs-rework')
+    review_parser.add_argument('--review-task-id', default='')
+    review_parser.add_argument('--queue-status', default='pending')
+    review_parser.add_argument('--limit', type=int, default=100)
+    review_parser.add_argument('--consumer', default='review-consumer')
+    review_parser.add_argument('--reviewer', default='review-operator')
+    review_parser.add_argument('--status', default='')
+    review_parser.add_argument('--reason-code', dest='reason_codes', action='append', default=[])
+    review_parser.add_argument('--review-notes', default='')
+    review_parser.add_argument('--reviewer-edits-json', default='')
+    governance_parser = subparsers.add_parser('governance-report', help='Summarize cost/audit/deletion governance records')
+    governance_parser.add_argument('--ledger-root', default='', help='Governance ledger directory (defaults to settings).')
+    governance_parser.add_argument('--organization-id', default='')
+    governance_parser.add_argument('--project-id', default='')
+    governance_parser.add_argument('--include-cost-entries', action='store_true')
+    governance_parser.add_argument('--include-audit-events', action='store_true')
+    governance_parser.add_argument('--include-deletion-records', action='store_true')
+    governance_parser.add_argument('--no-retention-policies', action='store_true')
+    governance_parser.add_argument('--limit', type=int, default=200)
+    deletion_parser = subparsers.add_parser('record-deletion', help='Append a governance deletion record.')
+    deletion_parser.add_argument('--ledger-root', default='', help='Governance ledger directory (defaults to settings).')
+    deletion_parser.add_argument('--organization-id', required=True)
+    deletion_parser.add_argument('--project-id', required=True)
+    deletion_parser.add_argument('--resource-type', default='artifact')
+    deletion_parser.add_argument('--resource-id', required=True)
+    deletion_parser.add_argument('--resource-path', default='')
+    deletion_parser.add_argument('--deletion-mode', default='soft_delete')
+    deletion_parser.add_argument('--status', default='recorded')
+    deletion_parser.add_argument('--actor', default='governance-operator')
+    deletion_parser.add_argument('--api-key-id', default='')
+    deletion_parser.add_argument('--skill-id', default='')
+    deletion_parser.add_argument('--reason', default='')
+    deletion_parser.add_argument('--metadata-json', default='')
+    retention_parser = subparsers.add_parser('upsert-retention-policy', help='Create or update governance retention policy.')
+    retention_parser.add_argument('--ledger-root', default='', help='Governance ledger directory (defaults to settings).')
+    retention_parser.add_argument('--policy-id', default='')
+    retention_parser.add_argument('--organization-id', required=True)
+    retention_parser.add_argument('--project-id', required=True)
+    retention_parser.add_argument('--policy-type', default='artifact_retention')
+    retention_parser.add_argument('--retention-days', type=int, default=30)
+    retention_parser.add_argument('--deletion-mode', default='soft_delete')
+    retention_parser.add_argument('--updated-by', default='governance-operator')
+    retention_parser.add_argument('--disable', action='store_true')
+    retention_parser.add_argument('--allow-delete-without-review', action='store_true')
+    retention_parser.add_argument('--metadata-json', default='')
 
     subparsers.add_parser('show-template', help='Print SKILL template path and content')
     return parser
@@ -309,6 +356,16 @@ def _resolve_review_task_payload(bundle) -> dict:
     return {}
 
 
+def _coerce_reviewer_edits(raw: str) -> dict:
+    payload = _parse_json_object(raw, field_name='reviewer-edits-json')
+    normalized: dict[str, object] = {}
+    for key, value in payload.items():
+        key_text = str(key).strip()
+        if key_text:
+            normalized[key_text] = value
+    return normalized
+
+
 def _print_corpus_summary(bundle, *, requested_publication: str, show_publications: bool) -> None:
     available_publications = _resolve_available_publications(bundle)
     if show_publications:
@@ -467,6 +524,138 @@ def main(argv: list = None) -> int:
         for issue in report.issues:
             print('issue[%s]=%s' % (issue.code, issue.message))
         return 0 if report.status == 'pass' else 2
+
+    if args.command == 'review-queue':
+        repository = getattr(service, 'repository', None)
+        if repository is None:
+            parser.error('Service repository is not configured.')
+        action = str(args.action or '').strip().lower()
+        if action in {'needs-rework', 'needs rework'}:
+            action = 'needs_rework'
+
+        if action == 'list':
+            items = repository.list_review_queue(queue_status=args.queue_status, limit=max(1, int(args.limit)))
+            print(json.dumps({'items': items}, ensure_ascii=False, indent=2))
+            return 0
+
+        if action == 'claim':
+            payload = repository.claim_review_task(
+                review_task_id=str(args.review_task_id or '').strip() or None,
+                consumer=str(args.consumer or '').strip() or 'review-consumer',
+            )
+            if payload is None:
+                return 2
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+            return 0
+
+        reviewer_edits = {}
+        if str(args.reviewer_edits_json or '').strip():
+            reviewer_edits = _coerce_reviewer_edits(args.reviewer_edits_json)
+        reason_codes = [str(item).strip() for item in (args.reason_codes or []) if str(item).strip()]
+
+        if action == 'close':
+            payload = repository.close_review_task(
+                str(args.review_task_id or '').strip(),
+                status=str(args.status or '').strip() or 'published',
+                closed_by=str(args.reviewer or '').strip() or 'review-operator',
+                review_notes=str(args.review_notes or '').strip(),
+                reason_codes=reason_codes,
+                reviewer_edits=reviewer_edits,
+            )
+            if payload is None:
+                return 2
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+            return 0
+
+        if action in {'approve', 'reject', 'needs_rework'}:
+            update_fn = getattr(repository, 'update_review_task_decision', None)
+            if update_fn is None:
+                parser.error('Review queue decision operation is not configured.')
+            payload = update_fn(
+                str(args.review_task_id or '').strip(),
+                decision=action,
+                reviewer=str(args.reviewer or '').strip() or 'review-operator',
+                reason_codes=reason_codes,
+                review_notes=str(args.review_notes or '').strip(),
+                reviewer_edits=reviewer_edits,
+                status=str(args.status or '').strip() or None,
+            )
+            if payload is None:
+                return 2
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+            return 0
+
+        parser.error('Unsupported review-queue action: %s' % action)
+
+    if args.command == 'governance-report':
+        from omni_skill_pipeline.config import load_settings
+
+        settings = load_settings()
+        ledger_root = str(args.ledger_root or '').strip()
+        ledger = GovernanceLedger(Path(ledger_root) if ledger_root else settings.governance_ledger_dir)
+        scope = {}
+        if str(args.organization_id or '').strip():
+            scope['organization_id'] = str(args.organization_id).strip()
+        if str(args.project_id or '').strip():
+            scope['project_id'] = str(args.project_id).strip()
+        payload = ledger.build_report(
+            tenant_scope=scope,
+            include_cost_entries=bool(args.include_cost_entries),
+            include_audit_events=bool(args.include_audit_events),
+            include_deletion_records=bool(args.include_deletion_records),
+            include_retention_policies=not bool(args.no_retention_policies),
+            limit=max(1, int(args.limit)),
+        )
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == 'record-deletion':
+        from omni_skill_pipeline.config import load_settings
+
+        settings = load_settings()
+        ledger_root = str(args.ledger_root or '').strip()
+        ledger = GovernanceLedger(Path(ledger_root) if ledger_root else settings.governance_ledger_dir)
+        payload = ledger.record_deletion_event(
+            {
+                'organization_id': str(args.organization_id).strip(),
+                'project_id': str(args.project_id).strip(),
+                'resource_type': str(args.resource_type or '').strip(),
+                'resource_id': str(args.resource_id or '').strip(),
+                'resource_path': str(args.resource_path or '').strip(),
+                'deletion_mode': str(args.deletion_mode or '').strip(),
+                'status': str(args.status or '').strip(),
+                'actor': str(args.actor or '').strip(),
+                'api_key_id': str(args.api_key_id or '').strip(),
+                'skill_id': str(args.skill_id or '').strip(),
+                'reason': str(args.reason or '').strip(),
+                'metadata': _parse_json_object(args.metadata_json, field_name='metadata-json') if str(args.metadata_json or '').strip() else {},
+            }
+        )
+        print(json.dumps({'deletion_record': payload}, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == 'upsert-retention-policy':
+        from omni_skill_pipeline.config import load_settings
+
+        settings = load_settings()
+        ledger_root = str(args.ledger_root or '').strip()
+        ledger = GovernanceLedger(Path(ledger_root) if ledger_root else settings.governance_ledger_dir)
+        payload = ledger.upsert_retention_policy(
+            {
+                'policy_id': str(args.policy_id or '').strip(),
+                'organization_id': str(args.organization_id).strip(),
+                'project_id': str(args.project_id).strip(),
+                'policy_type': str(args.policy_type or '').strip(),
+                'retention_days': int(args.retention_days),
+                'deletion_mode': str(args.deletion_mode or '').strip(),
+                'updated_by': str(args.updated_by or '').strip(),
+                'enabled': not bool(args.disable),
+                'delete_requires_review_approval': not bool(args.allow_delete_without_review),
+                'metadata': _parse_json_object(args.metadata_json, field_name='metadata-json') if str(args.metadata_json or '').strip() else {},
+            }
+        )
+        print(json.dumps({'policy': payload}, ensure_ascii=False, indent=2))
+        return 0
 
     parser.print_help(sys.stderr)
     return 1

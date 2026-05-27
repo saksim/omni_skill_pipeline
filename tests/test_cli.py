@@ -47,6 +47,7 @@ class _StubBundle(object):
 class _CapturingService(object):
     def __init__(self) -> None:
         self.corpus_requests: list[CorpusDistillRequest] = []
+        self.repository = _StubReviewQueueRepository()
 
     def distill_corpus(self, request: CorpusDistillRequest) -> _StubBundle:
         self.corpus_requests.append(request)
@@ -371,6 +372,56 @@ class CliCorpusCommandTests(unittest.TestCase):
             self.assertIn('status=fail', output)
             self.assertIn('failure_codes=REVIEW_APPROVAL_MISSING', output)
 
+    def test_review_queue_list_command_outputs_items(self) -> None:
+        service = _CapturingService()
+        exit_code, output = _run_cli(
+            [
+                'review-queue',
+                '--action',
+                'list',
+                '--queue-status',
+                'pending',
+                '--limit',
+                '10',
+            ],
+            service,
+        )
+        self.assertEqual(exit_code, 0)
+        payload = json.loads(output)
+        self.assertIn('items', payload)
+        self.assertEqual(len(payload['items']), 1)
+        self.assertEqual(payload['items'][0]['review_task_id'], 'task-1')
+
+    def test_review_queue_approve_command_outputs_closed_item(self) -> None:
+        service = _CapturingService()
+        service.repository.claim_review_task(review_task_id='task-1', consumer='ops')
+        exit_code, output = _run_cli(
+            [
+                'review-queue',
+                '--action',
+                'approve',
+                '--review-task-id',
+                'task-1',
+                '--reviewer',
+                'ops-lead',
+                '--reason-code',
+                'SAFE',
+                '--review-notes',
+                'manual checks passed',
+                '--reviewer-edits-json',
+                '{"skill_markdown_patch":"none"}',
+            ],
+            service,
+        )
+        self.assertEqual(exit_code, 0)
+        payload = json.loads(output)
+        self.assertEqual(payload['review_task_id'], 'task-1')
+        self.assertEqual(payload['decision'], 'approve')
+        self.assertEqual(payload['status'], 'published')
+        self.assertEqual(payload['closed_by'], 'ops-lead')
+        self.assertEqual(payload['reason_codes'], ['SAFE'])
+        self.assertEqual(payload['reviewer_edits'], {'skill_markdown_patch': 'none'})
+
     def _write_export_bundle(self, root: Path, *, unsafe: bool = False) -> Path:
         bundle_dir = root / 'bundle'
         publication_dir = bundle_dir / 'publications'
@@ -462,6 +513,125 @@ class CliCorpusCommandTests(unittest.TestCase):
             encoding='utf-8',
         )
         return package_dir
+
+
+class _StubReviewQueueRepository(object):
+    def __init__(self) -> None:
+        self.pending = {
+            'task-1': {
+                'review_task_id': 'task-1',
+                'skill_id': 'skill-1',
+                'decision': 'review_required',
+                'status': 'review_pending',
+                'queue_status': 'pending',
+                'reason_codes': [],
+                'reviewer_edits': {},
+            }
+        }
+        self.consumed = {}
+        self.closed = {}
+
+    def list_review_queue(self, *, queue_status: str | None = 'pending', limit: int = 100):
+        normalized = str(queue_status or '').strip().lower()
+        if normalized in {'', 'pending'}:
+            items = [dict(item) for item in self.pending.values()]
+        elif normalized == 'consumed':
+            items = [dict(item) for item in self.consumed.values()]
+        elif normalized == 'closed':
+            items = [dict(item) for item in self.closed.values()]
+        elif normalized == 'all':
+            items = [*self.pending.values(), *self.consumed.values(), *self.closed.values()]
+            items = [dict(item) for item in items]
+        else:
+            items = []
+        return items[: max(0, int(limit))]
+
+    def claim_review_task(self, review_task_id: str | None = None, *, consumer: str = 'review-consumer'):
+        target = str(review_task_id or '').strip() or next(iter(self.pending.keys()), '')
+        if not target:
+            return None
+        pending_item = self.pending.pop(target, None)
+        if pending_item is None:
+            return None
+        claimed = dict(pending_item)
+        claimed['queue_status'] = 'consumed'
+        claimed['claimed_by'] = consumer.strip() or 'review-consumer'
+        self.consumed[target] = claimed
+        return dict(claimed)
+
+    def consume_review_task(self, *, consumer: str = 'review-consumer'):
+        return self.claim_review_task(consumer=consumer)
+
+    def close_review_task(
+        self,
+        review_task_id: str,
+        *,
+        status: str = 'published',
+        closed_by: str = 'review-operator',
+        review_notes: str = '',
+        decision: str | None = None,
+        reason_codes=None,
+        reviewer_edits=None,
+    ):
+        target = str(review_task_id).strip()
+        if not target:
+            return None
+        source = self.consumed.pop(target, None) or self.pending.pop(target, None) or self.closed.get(target)
+        if source is None:
+            return None
+        closed = dict(source)
+        closed['queue_status'] = 'closed'
+        closed['status'] = str(status).strip().lower() or 'published'
+        if decision:
+            text = str(decision).strip().lower()
+            if text in {'approve', 'approved'}:
+                closed['decision'] = 'approve'
+            elif text in {'reject', 'rejected'}:
+                closed['decision'] = 'reject'
+            elif text in {'needs_rework', 'needs-rework', 'needs rework'}:
+                closed['decision'] = 'needs_rework'
+        closed['closed_by'] = closed_by.strip() or 'review-operator'
+        closed['review_notes'] = review_notes.strip()
+        if isinstance(reason_codes, list):
+            closed['reason_codes'] = [str(item).strip() for item in reason_codes if str(item).strip()]
+        if isinstance(reviewer_edits, dict):
+            closed['reviewer_edits'] = {str(key).strip(): value for key, value in reviewer_edits.items() if str(key).strip()}
+        self.closed[target] = closed
+        return dict(closed)
+
+    def update_review_task_decision(
+        self,
+        review_task_id: str,
+        *,
+        decision: str,
+        reviewer: str = 'review-operator',
+        reason_codes=None,
+        review_notes: str = '',
+        reviewer_edits=None,
+        status: str | None = None,
+    ):
+        normalized = str(decision).strip().lower()
+        if normalized in {'approved'}:
+            normalized = 'approve'
+        if normalized in {'rejected'}:
+            normalized = 'reject'
+        if normalized in {'needs-rework', 'needs rework'}:
+            normalized = 'needs_rework'
+        if normalized == 'approve':
+            resolved_status = status or 'published'
+        elif normalized == 'reject':
+            resolved_status = status or 'rejected'
+        else:
+            resolved_status = status or 'needs_rework'
+        return self.close_review_task(
+            review_task_id,
+            status=resolved_status,
+            closed_by=reviewer,
+            review_notes=review_notes,
+            decision=normalized,
+            reason_codes=reason_codes,
+            reviewer_edits=reviewer_edits,
+        )
 
 
 if __name__ == '__main__':

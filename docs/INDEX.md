@@ -23,7 +23,10 @@
 - [Launch Readiness Master Plan (Historical Baseline, 2026-04-24)](current/status/launch-readiness-master-plan.md)
 - [Distillation Platform Strategy Assessment](current/status/2026-05-17-distillation-platform-strategy-assessment.md)
 - [Controlled Business Trial Iteration](current/status/2026-05-18-controlled-business-trial-iteration.md)
+- [Broad Product Launch Plan](current/status/2026-05-25-broad-product-launch-plan.md)
 - [E0 Baseline Pack](current/status/baselines/README.md)
+
+Launch gate runner: `python scripts/run_launch_readiness_gate.py --output - --summary-output -`
 
 ### Operations
 

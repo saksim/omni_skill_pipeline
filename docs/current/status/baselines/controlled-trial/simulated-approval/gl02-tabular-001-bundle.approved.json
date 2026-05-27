@@ -1,0 +1,4312 @@
+{
+  "asset": {
+    "modality": "tabular",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\tabular\\latency-error-report.csv",
+    "metadata": {
+      "filename": "latency-error-report.csv",
+      "row_count": 10,
+      "column_count": 5
+    },
+    "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "table:schema:0001",
+      "content_type": "table",
+      "content": "Table schema summary\nRows: 10\nColumns: 5\n1. Confirm row count and dtype assumptions before interpreting the table.\n2. Normalize time zones, units, and duplicated keys before aggregation.\nIf a column mixes numeric and string forms, clean it before trend analysis.\nVerify the business grain of one row before building any skill from this table.\n- timestamp :: str\n- service :: str\n- latency_ms :: int64\n- error_rate :: float64\n- cost_usd :: float64",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "schema"
+      ],
+      "evidence_id": "75191dc1-38fe-4383-9f02-609512837ccc"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "table:missingness:0001",
+      "content_type": "table",
+      "content": "Table missingness profile\n1. Inspect the highest-missing columns before trusting downstream trends.\nIf missingness jumps after a date boundary, inspect upstream ingestion or schema drift.\nVerify whether null means unavailable, zero, or not applicable in the source system.\n- timestamp missing_pct=0.0\n- service missing_pct=0.0\n- latency_ms missing_pct=0.0\n- error_rate missing_pct=0.0\n- cost_usd missing_pct=0.0",
+      "speaker": null,
+      "confidence": 0.88,
+      "tags": [
+        "missingness"
+      ],
+      "evidence_id": "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "table:entities:0001",
+      "content_type": "table",
+      "content": "Entity/group summary\n1. Compare per-entity counts before aggregating the whole table.\nIf one entity dominates the sample, review entity bias before reading the global average.\nTop values for timestamp:\n- 2026-05-18T08:00:00 -> 1 rows\n- 2026-05-18T08:05:00 -> 1 rows\n- 2026-05-18T08:10:00 -> 1 rows\n- 2026-05-18T08:15:00 -> 1 rows\n- 2026-05-18T08:20:00 -> 1 rows",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "entity"
+      ],
+      "evidence_id": "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "table:numeric:0001",
+      "content_type": "metric",
+      "content": "Numeric profile for latency_ms\ncount=10 mean=353.3000 std=177.0017 min=120.0000 max=641.0000\np10=125.4000 median=337.0000 p90=584.3000\n1. Review distribution shape before setting thresholds on latency_ms.\nIf latency_ms shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "latency_ms"
+      ],
+      "evidence_id": "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "table:numeric:0002",
+      "content_type": "metric",
+      "content": "Numeric profile for error_rate\ncount=10 mean=0.0105 std=0.0073 min=0.0020 max=0.0240\np10=0.0020 median=0.0090 p90=0.0195\n1. Review distribution shape before setting thresholds on error_rate.\nIf error_rate shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "error_rate"
+      ],
+      "evidence_id": "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "table:numeric:0003",
+      "content_type": "metric",
+      "content": "Numeric profile for cost_usd\ncount=10 mean=16.9700 std=2.0020 min=14.1000 max=20.0000\np10=14.3700 median=16.8500 p90=19.3700\n1. Review distribution shape before setting thresholds on cost_usd.\nIf cost_usd shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "cost_usd"
+      ],
+      "evidence_id": "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:overview:0001",
+      "content_type": "metric",
+      "content": "Time series overview\ntime_column=timestamp range=2026-05-18 08:00:00 -> 2026-05-18 08:45:00\n1. Sort by timestamp before comparing neighboring measurements.\n2. Investigate abrupt deltas before averaging the full observation window.\nIf anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.\nVerify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "timeseries",
+        "timestamp"
+      ],
+      "evidence_id": "ab980408-59ed-463f-a0de-5c72d3963852"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:metric:0001",
+      "content_type": "metric",
+      "content": "Time series diagnostic for latency_ms\ntrend=upward pct_change=138.3333%\nlargest_jump_timestamp=2026-05-18 08:40:00 largest_jump_value=158.0000\nbaseline_mean=174.5000 baseline_std=58.1270 baseline_range=120.0000..264.0000\nrecent_mean=481.2500 drift_label=upward_drift drift_score=5.2772\nchange_points=2026-05-18 08:20:00(delta=124.0000), 2026-05-18 08:25:00(delta=134.0000), 2026-05-18 08:30:00(delta=119.0000), 2026-05-18 08:40:00(delta=-158.0000), 2026-05-18 08:45:00(delta=-134.0000)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort latency_ms by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend.\nIf latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "latency_ms"
+      ],
+      "evidence_id": "36b4938a-a78e-47bb-820d-581b41ce58cd"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:event:0001",
+      "content_type": "event",
+      "content": "Detected anomaly windows for latency_ms\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=124.0000\n- change_point=2026-05-18 08:25:00 delta=134.0000\n- change_point=2026-05-18 08:30:00 delta=119.0000\n- change_point=2026-05-18 08:40:00 delta=-158.0000\n- change_point=2026-05-18 08:45:00 delta=-134.0000\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "anomaly",
+        "latency_ms",
+        "timeseries:baseline",
+        "timeseries:change_point",
+        "timeseries:drift"
+      ],
+      "evidence_id": "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:metric:0002",
+      "content_type": "metric",
+      "content": "Time series diagnostic for error_rate\ntrend=upward pct_change=200.0000%\nlargest_jump_timestamp=2026-05-18 08:25:00 largest_jump_value=0.0070\nbaseline_mean=0.0037 baseline_std=0.0020 baseline_range=0.0020..0.0070\nrecent_mean=0.0147 drift_label=upward_drift drift_score=5.3755\nchange_points=2026-05-18 08:20:00(delta=0.0050), 2026-05-18 08:25:00(delta=0.0070), 2026-05-18 08:30:00(delta=0.0050), 2026-05-18 08:35:00(delta=-0.0060), 2026-05-18 08:40:00(delta=-0.0070), 2026-05-18 08:45:00(delta=-0.0050)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort error_rate by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend.\nIf error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "error_rate"
+      ],
+      "evidence_id": "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:event:0002",
+      "content_type": "event",
+      "content": "Detected anomaly windows for error_rate\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=0.0050\n- change_point=2026-05-18 08:25:00 delta=0.0070\n- change_point=2026-05-18 08:30:00 delta=0.0050\n- change_point=2026-05-18 08:35:00 delta=-0.0060\n- change_point=2026-05-18 08:40:00 delta=-0.0070\n- change_point=2026-05-18 08:45:00 delta=-0.0050\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "anomaly",
+        "error_rate",
+        "timeseries:baseline",
+        "timeseries:change_point",
+        "timeseries:drift"
+      ],
+      "evidence_id": "e1208740-bb22-4bee-9791-48c251ab0bd5"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:metric:0003",
+      "content_type": "metric",
+      "content": "Time series diagnostic for cost_usd\ntrend=upward pct_change=13.4752%\nlargest_jump_timestamp=2026-05-18 08:20:00 largest_jump_value=1.8000\nbaseline_mean=14.9500 baseline_std=0.7762 baseline_range=14.1000..16.1000\nrecent_mean=18.1750 drift_label=upward_drift drift_score=4.1548\nchange_points=2026-05-18 08:20:00(delta=1.8000), 2026-05-18 08:45:00(delta=-1.6000)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort cost_usd by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend.\nIf cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "cost_usd"
+      ],
+      "evidence_id": "c5272f44-f82f-4978-94d1-141c441e3feb"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "span_ref": "timeseries:event:0003",
+      "content_type": "event",
+      "content": "Detected anomaly windows for cost_usd\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=1.8000\n- change_point=2026-05-18 08:45:00 delta=-1.6000\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "anomaly",
+        "cost_usd",
+        "timeseries:baseline",
+        "timeseries:change_point",
+        "timeseries:drift"
+      ],
+      "evidence_id": "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Confirm row count and dtype assumptions before interpreting the table.",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "a1b16068-76e9-4f68-96e6-5f28a8d53b56"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Normalize time zones, units, and duplicated keys before aggregation.",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "26948296-642b-416a-8763-862ada962cc6"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If a column mixes numeric and string forms, clean it before trend analysis.",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.72,
+      "insight_id": "b3c6bb4d-b35f-4f52-b328-37c994aa997a"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify the business grain of one row before building any skill from this table.",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.75,
+      "insight_id": "1070d8bf-7dde-40c1-b35f-c98564d94f15"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "timestamp :: str",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "97e79f08-bd63-4542-8b53-ae3f81fd5779"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "service :: str",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "5cc4e9a4-c85f-4f97-b989-c4779192c35a"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "latency_ms :: int64",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "5b36740d-4f40-4383-ab66-472fa3fe5d3b"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "error_rate :: float64",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f3091e85-2137-4558-a685-139b4e4c1ac2"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "cost_usd :: float64",
+      "evidence_refs": [
+        "75191dc1-38fe-4383-9f02-609512837ccc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "2e39d2c3-881b-4e16-b3b3-a65e53da8711"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Inspect the highest-missing columns before trusting downstream trends.",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.82,
+      "insight_id": "44043b6c-fb72-47b8-9bd5-d627fef6e957"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.74,
+      "insight_id": "8f2c7863-e1e6-4616-9888-961eebf82cc1"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify whether null means unavailable, zero, or not applicable in the source system.",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.75,
+      "insight_id": "346233d3-8a3b-422f-838e-31f91fd5b38f"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "timestamp missing_pct=0.0",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.82,
+      "insight_id": "237052b9-20c2-4063-8c2f-c803d2f9cd8c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "service missing_pct=0.0",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.82,
+      "insight_id": "522e519c-acd4-4b15-aafb-f7e2bb778c7a"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "latency_ms missing_pct=0.0",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.82,
+      "insight_id": "97a9aef7-706d-4b9d-8619-e9c1817451f0"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "error_rate missing_pct=0.0",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.82,
+      "insight_id": "8a80007d-13f2-439b-bfe3-f80e478e37ff"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "cost_usd missing_pct=0.0",
+      "evidence_refs": [
+        "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+      ],
+      "confidence": 0.82,
+      "insight_id": "cad6e190-6bfb-4624-90af-13767178628e"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Compare per-entity counts before aggregating the whole table.",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.82,
+      "insight_id": "434d1691-efe8-43dc-8331-788c968cd6a4"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If one entity dominates the sample, review entity bias before reading the global average.",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.72,
+      "insight_id": "7463e91e-f60a-4a13-88cb-25fea101cc8b"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "2026-05-18T08:00:00 -> 1 rows",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.82,
+      "insight_id": "3728ba66-f8b5-41c3-a983-2fa8c3be5f7c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "2026-05-18T08:05:00 -> 1 rows",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.82,
+      "insight_id": "1e12c207-0611-4ce8-afaf-7da2e549e55f"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "2026-05-18T08:10:00 -> 1 rows",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.82,
+      "insight_id": "55207f1a-70ec-4b5d-801f-f50c93c4f3d5"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "2026-05-18T08:15:00 -> 1 rows",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d52f36c1-26cd-40bd-aa7a-69e3924e4c77"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "2026-05-18T08:20:00 -> 1 rows",
+      "evidence_refs": [
+        "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+      ],
+      "confidence": 0.82,
+      "insight_id": "26e615b2-9ba5-46db-b813-c8efae77b066"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review distribution shape before setting thresholds on latency_ms.",
+      "evidence_refs": [
+        "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+      ],
+      "confidence": 0.82,
+      "insight_id": "7c164f95-77f3-4282-8751-a9516c1c0cee"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+      "evidence_refs": [
+        "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+      ],
+      "confidence": 0.72,
+      "insight_id": "851d8894-c54b-4a02-8e61-a078d83fe13a"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify extreme rows against source records and unit assumptions.",
+      "evidence_refs": [
+        "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+      ],
+      "confidence": 0.75,
+      "insight_id": "d30d7c86-fe9c-4870-8c34-fd6bfd5e8472"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review distribution shape before setting thresholds on error_rate.",
+      "evidence_refs": [
+        "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+      ],
+      "confidence": 0.82,
+      "insight_id": "e9f92b50-c90a-4c1e-aac4-3654f14597cf"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+      "evidence_refs": [
+        "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+      ],
+      "confidence": 0.72,
+      "insight_id": "9e2bf17a-d9ae-4712-aa5b-f39ae608a0f0"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify extreme rows against source records and unit assumptions.",
+      "evidence_refs": [
+        "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+      ],
+      "confidence": 0.75,
+      "insight_id": "aadf4649-e933-4051-af35-e73f1b4efbcd"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review distribution shape before setting thresholds on cost_usd.",
+      "evidence_refs": [
+        "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+      ],
+      "confidence": 0.82,
+      "insight_id": "b0568d3f-ffad-4c28-b117-6acda18f00d0"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "If cost_usd shows a long tail, inspect outliers before computing a baseline.",
+      "evidence_refs": [
+        "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+      ],
+      "confidence": 0.72,
+      "insight_id": "1c5781fc-e911-4ff6-b092-6c97ba9f650e"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify extreme rows against source records and unit assumptions.",
+      "evidence_refs": [
+        "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+      ],
+      "confidence": 0.75,
+      "insight_id": "bcc91b76-a5b2-414c-9f72-023298f14060"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort by timestamp before comparing neighboring measurements.",
+      "evidence_refs": [
+        "ab980408-59ed-463f-a0de-5c72d3963852"
+      ],
+      "confidence": 0.82,
+      "insight_id": "1b9b95ca-fe86-4790-955e-6417874f3f43"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Investigate abrupt deltas before averaging the full observation window.",
+      "evidence_refs": [
+        "ab980408-59ed-463f-a0de-5c72d3963852"
+      ],
+      "confidence": 0.82,
+      "insight_id": "ed8e00d8-5fe5-4968-b538-60888a379d74"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+      "evidence_refs": [
+        "ab980408-59ed-463f-a0de-5c72d3963852"
+      ],
+      "confidence": 0.74,
+      "insight_id": "10981a53-b287-4a49-8d25-366d80df4c70"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "evidence_refs": [
+        "ab980408-59ed-463f-a0de-5c72d3963852"
+      ],
+      "confidence": 0.75,
+      "insight_id": "a7dcd8a5-79df-46ad-919b-031e6f1f95fc"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort latency_ms by timestamp before comparing local deltas.",
+      "evidence_refs": [
+        "36b4938a-a78e-47bb-820d-581b41ce58cd"
+      ],
+      "confidence": 0.82,
+      "insight_id": "059906e2-fe5c-466e-a443-0c07452284e4"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend.",
+      "evidence_refs": [
+        "36b4938a-a78e-47bb-820d-581b41ce58cd"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f8a85392-37e2-4146-be76-dd2112237c1e"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "evidence_refs": [
+        "36b4938a-a78e-47bb-820d-581b41ce58cd"
+      ],
+      "confidence": 0.74,
+      "insight_id": "3a0fcaa1-991b-4e2b-89ff-f2e67f3e1d96"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each flagged point against neighboring rows and source records.",
+      "evidence_refs": [
+        "36b4938a-a78e-47bb-820d-581b41ce58cd"
+      ],
+      "confidence": 0.75,
+      "insight_id": "e3653b85-07f1-46d5-bb0b-682f8028ba6c"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "When anomalies cluster, inspect the shared upstream dependency before per-row debugging.",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.72,
+      "insight_id": "5cc13b1e-99b1-4984-b6ad-d9b7ff49eef4"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:20:00 delta=124.0000",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "035ba744-dfcf-4fcd-ae3c-2d56a984ec70"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:25:00 delta=134.0000",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "8722d896-23c8-4fe9-81ab-f2a7434e5b09"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:30:00 delta=119.0000",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "3da69783-e838-441c-87a2-b7ed0a35ae5e"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:40:00 delta=-158.0000",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "66a35da0-4d8c-45ae-904c-73854ac4b0d7"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:45:00 delta=-134.0000",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "785b7276-3da8-441d-974b-974db05bff3c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "69fd6252-8923-4aaf-9e8a-49f4bffdddd7"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:20:00",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "cfeb9dc5-19a9-4783-8c1f-38adacee4ac7"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:25:00",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "3a41f30f-0494-4c63-a355-aa99a9a96875"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:30:00",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "da4968f9-5883-47e2-831b-5a11b995eef9"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:35:00",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d64b4a9d-16e5-4f30-aa76-c39a703439a0"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:40:00",
+      "evidence_refs": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "8991f680-aee5-4eee-b562-a12df713b2ec"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort error_rate by timestamp before comparing local deltas.",
+      "evidence_refs": [
+        "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "1d71f30c-cfd5-4fec-a831-6db2be7c4df5"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend.",
+      "evidence_refs": [
+        "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d88fb761-2852-488b-8cfc-44ff4d041cfe"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "evidence_refs": [
+        "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+      ],
+      "confidence": 0.74,
+      "insight_id": "ecd0674d-fe49-4a42-b960-dc5dc427d15a"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each flagged point against neighboring rows and source records.",
+      "evidence_refs": [
+        "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+      ],
+      "confidence": 0.75,
+      "insight_id": "7368442a-7ec9-4f1c-9136-50f50d03bb58"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "When anomalies cluster, inspect the shared upstream dependency before per-row debugging.",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.72,
+      "insight_id": "8b18e008-58bf-4bbb-8c41-b57b30ab69ff"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:20:00 delta=0.0050",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "90714cff-b3a9-457c-9f37-c26e727d508c"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:25:00 delta=0.0070",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "dd8cd8f1-0824-482a-a635-1405511b0027"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:30:00 delta=0.0050",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "919a1e75-3ef3-41aa-88b7-78495190deb3"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:35:00 delta=-0.0060",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "2f7c30d0-ed9f-4f6f-82c0-879109419fe4"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:40:00 delta=-0.0070",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "e93ecfd5-c180-4327-b01c-736dfaac8933"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:45:00 delta=-0.0050",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "a4f044f6-691a-469d-a9c6-9b5aa20480dd"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "914d600a-28db-4e7d-96e8-6111c41e25df"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:20:00",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "69f5efed-bf76-4bf2-a676-cfc224b1d0a5"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:25:00",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "46452db4-ff54-40d1-9592-a504ac6f2122"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:30:00",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "bd8c9250-76ac-4eaf-bee4-3e61ad52bce3"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:35:00",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "2ff8bef9-8fe7-41f4-b993-eca815d6d5b1"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:40:00",
+      "evidence_refs": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "confidence": 0.82,
+      "insight_id": "7f4d7ba1-a170-4fbb-a26c-23409f309f19"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Sort cost_usd by timestamp before comparing local deltas.",
+      "evidence_refs": [
+        "c5272f44-f82f-4978-94d1-141c441e3feb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "876f0f1a-8b10-41ec-b421-87f9c3b443a4"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend.",
+      "evidence_refs": [
+        "c5272f44-f82f-4978-94d1-141c441e3feb"
+      ],
+      "confidence": 0.82,
+      "insight_id": "59f38dbb-e87f-4f59-8bad-ffaae2e2b6ac"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "evidence_refs": [
+        "c5272f44-f82f-4978-94d1-141c441e3feb"
+      ],
+      "confidence": 0.74,
+      "insight_id": "22211b91-485b-4450-ad6b-479daab0a80c"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Verify each flagged point against neighboring rows and source records.",
+      "evidence_refs": [
+        "c5272f44-f82f-4978-94d1-141c441e3feb"
+      ],
+      "confidence": 0.75,
+      "insight_id": "bdd31d37-e574-402c-af00-493c16c522a1"
+    },
+    {
+      "insight_type": "precondition",
+      "summary": "When anomalies cluster, inspect the shared upstream dependency before per-row debugging.",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.72,
+      "insight_id": "2f86205b-a2eb-4c91-aac1-177da77d8f45"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:20:00 delta=1.8000",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "cd711c3c-7173-4c6c-93f5-d839f8f5180a"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "change_point=2026-05-18 08:45:00 delta=-1.6000",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "a02638b4-6cab-417e-a894-b1da0f3f5e61"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "3f38af04-6b2f-42b7-a631-cf0c0d0c24ca"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:20:00",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f6cb757f-e160-4d3e-a7e8-347564aa0e77"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:25:00",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d2ff90ee-733d-41b0-b24d-e99cfd9e4de9"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:30:00",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "c6be3ba4-ccb8-458e-9c52-47356f702454"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:35:00",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "86dad559-2585-4c52-bb57-e47ab290a89d"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "anomaly_at=2026-05-18 08:40:00",
+      "evidence_refs": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "confidence": 0.82,
+      "insight_id": "7456b3c9-165f-4896-bba9-0857143c52a8"
+    }
+  ],
+  "skill": {
+    "name": "latency and error report to guardrail skill",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. No",
+    "source_modality": "tabular",
+    "skill_type": "analysis",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert tabular evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Structured table or time-series dataset",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "If a column mixes numeric and string forms, clean it before trend analysis.",
+      "If one entity dominates the sample, review entity bias before reading the global average.",
+      "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+      "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+      "If cost_usd shows a long tail, inspect outliers before computing a baseline.",
+      "When anomalies cluster, inspect the shared upstream dependency before per-row debugging."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Confirm row count and dtype assumptions before interpreting the table.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Normalize time zones, units, and duplicated keys before aggregation.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "timestamp :: str",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 4,
+        "action": "service :: str",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 5,
+        "action": "latency_ms :: int64",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 6,
+        "action": "error_rate :: float64",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 7,
+        "action": "cost_usd :: float64",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 8,
+        "action": "Inspect the highest-missing columns before trusting downstream trends.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+      "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+      "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+      "If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first."
+    ],
+    "anti_patterns": [],
+    "verification": [
+      "Verify the business grain of one row before building any skill from this table.",
+      "Verify whether null means unavailable, zero, or not applicable in the source system.",
+      "Verify extreme rows against source records and unit assumptions.",
+      "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "Verify each flagged point against neighboring rows and source records."
+    ],
+    "evidence_refs": [
+      "75191dc1-38fe-4383-9f02-609512837ccc@table:schema:0001",
+      "b2b22bb9-655d-4faa-868f-94e62dc7654d@table:missingness:0001",
+      "ff51ae6f-f680-4fd8-b748-50b1f7b33530@table:entities:0001",
+      "5acf4fd3-0a52-4fae-91c5-11954ab42901@table:numeric:0001",
+      "4dc95aa6-224c-4a31-b18b-61620272e0a2@table:numeric:0002",
+      "4de6c334-a9b5-4980-bcfd-4e364fbe46e7@table:numeric:0003",
+      "ab980408-59ed-463f-a0de-5c72d3963852@timeseries:overview:0001",
+      "36b4938a-a78e-47bb-820d-581b41ce58cd@timeseries:metric:0001",
+      "69cc57f6-a16a-48e4-a832-15c9c7fc30cb@timeseries:event:0001",
+      "d5f72618-8cd2-4ee7-af89-307579f9e9fc@timeseries:metric:0002",
+      "e1208740-bb22-4bee-9791-48c251ab0bd5@timeseries:event:0002",
+      "c5272f44-f82f-4978-94d1-141c441e3feb@timeseries:metric:0003",
+      "7ac76580-97d6-4ca1-a169-272ebb1f0811@timeseries:event:0003"
+    ],
+    "confidence": 0.95,
+    "version": "0.1.0",
+    "summary": "Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean it before trend analysis. Verify the busine",
+    "tags": [
+      "controlled_trial",
+      "tabular",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "published",
+    "created_at": "2026-05-25T10:17:09Z",
+    "skill_id": "1163495b-059b-4b72-af24-89394382042d"
+  },
+  "skill_markdown": "---\nname: \"latency and error report to guardrail skill\"\ndescription: \"Use when Use when converting tabular evidence into build_skill.. Confirm row count and dtype assumptions before interpreting the table.\"\n---\n\n# latency and error report to guardrail skill\n\n## Workflow\n1. Confirm row count and dtype assumptions before interpreting the table. (Why: Derived from semantic atom.)\n2. Normalize time zones, units, and duplicated keys before aggregation. (Why: Derived from semantic atom.)\n3. timestamp :: str (Why: Derived from semantic atom.)\n4. service :: str (Why: Derived from semantic atom.)\n5. latency_ms :: int64 (Why: Derived from semantic atom.)\n6. error_rate :: float64 (Why: Derived from semantic atom.)\n7. cost_usd :: float64 (Why: Derived from semantic atom.)\n8. Inspect the highest-missing columns before trusting downstream trends. (Why: Derived from semantic atom.)\n9. timestamp missing_pct=0.0 (Why: Derived from semantic atom.)\n10. service missing_pct=0.0 (Why: Derived from semantic atom.)\n11. latency_ms missing_pct=0.0 (Why: Derived from semantic atom.)\n12. error_rate missing_pct=0.0 (Why: Derived from semantic atom.)\n13. cost_usd missing_pct=0.0 (Why: Derived from semantic atom.)\n14. Compare per-entity counts before aggregating the whole table. (Why: Derived from semantic atom.)\n15. 2026-05-18T08:00:00 -> 1 rows (Why: Derived from semantic atom.)\n16. 2026-05-18T08:05:00 -> 1 rows (Why: Derived from semantic atom.)\n17. 2026-05-18T08:10:00 -> 1 rows (Why: Derived from semantic atom.)\n18. 2026-05-18T08:15:00 -> 1 rows (Why: Derived from semantic atom.)\n19. 2026-05-18T08:20:00 -> 1 rows (Why: Derived from semantic atom.)\n20. Review distribution shape before setting thresholds on latency_ms. (Why: Derived from semantic atom.)\n21. Review distribution shape before setting thresholds on error_rate. (Why: Derived from semantic atom.)\n22. Review distribution shape before setting thresholds on cost_usd. (Why: Derived from semantic atom.)\n23. Sort by timestamp before comparing neighboring measurements. (Why: Derived from semantic atom.)\n24. Investigate abrupt deltas before averaging the full observation window. (Why: Derived from semantic atom.)\n25. Sort latency_ms by timestamp before comparing local deltas. (Why: Derived from semantic atom.)\n26. Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend. (Why: Derived from semantic atom.)\n27. change_point=2026-05-18 08:20:00 delta=124.0000 (Why: Derived from semantic atom.)\n28. change_point=2026-05-18 08:25:00 delta=134.0000 (Why: Derived from semantic atom.)\n29. change_point=2026-05-18 08:30:00 delta=119.0000 (Why: Derived from semantic atom.)\n30. change_point=2026-05-18 08:40:00 delta=-158.0000 (Why: Derived from semantic atom.)\n31. change_point=2026-05-18 08:45:00 delta=-134.0000 (Why: Derived from semantic atom.)\n32. anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n33. anomaly_at=2026-05-18 08:20:00 (Why: Derived from semantic atom.)\n34. anomaly_at=2026-05-18 08:25:00 (Why: Derived from semantic atom.)\n35. anomaly_at=2026-05-18 08:30:00 (Why: Derived from semantic atom.)\n36. anomaly_at=2026-05-18 08:35:00 (Why: Derived from semantic atom.)\n37. anomaly_at=2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n38. Sort error_rate by timestamp before comparing local deltas. (Why: Derived from semantic atom.)\n39. Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend. (Why: Derived from semantic atom.)\n40. change_point=2026-05-18 08:20:00 delta=0.0050 (Why: Derived from semantic atom.)\n41. change_point=2026-05-18 08:25:00 delta=0.0070 (Why: Derived from semantic atom.)\n42. change_point=2026-05-18 08:30:00 delta=0.0050 (Why: Derived from semantic atom.)\n43. change_point=2026-05-18 08:35:00 delta=-0.0060 (Why: Derived from semantic atom.)\n44. change_point=2026-05-18 08:40:00 delta=-0.0070 (Why: Derived from semantic atom.)\n45. change_point=2026-05-18 08:45:00 delta=-0.0050 (Why: Derived from semantic atom.)\n46. anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n47. anomaly_at=2026-05-18 08:20:00 (Why: Derived from semantic atom.)\n48. anomaly_at=2026-05-18 08:25:00 (Why: Derived from semantic atom.)\n49. anomaly_at=2026-05-18 08:30:00 (Why: Derived from semantic atom.)\n50. anomaly_at=2026-05-18 08:35:00 (Why: Derived from semantic atom.)\n51. anomaly_at=2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n52. Sort cost_usd by timestamp before comparing local deltas. (Why: Derived from semantic atom.)\n53. Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend. (Why: Derived from semantic atom.)\n54. change_point=2026-05-18 08:20:00 delta=1.8000 (Why: Derived from semantic atom.)\n55. change_point=2026-05-18 08:45:00 delta=-1.6000 (Why: Derived from semantic atom.)\n56. anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n57. anomaly_at=2026-05-18 08:20:00 (Why: Derived from semantic atom.)\n58. anomaly_at=2026-05-18 08:25:00 (Why: Derived from semantic atom.)\n59. anomaly_at=2026-05-18 08:30:00 (Why: Derived from semantic atom.)\n60. anomaly_at=2026-05-18 08:35:00 (Why: Derived from semantic atom.)\n61. anomaly_at=2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n\n## Decision Rules\n- If a column mixes numeric and string forms, clean it before trend analysis. -> Apply the matching action.\n- If missingness jumps after a date boundary, inspect upstream ingestion or schema drift. -> Apply the matching action.\n- If one entity dominates the sample, review entity bias before reading the global average. -> Apply the matching action.\n- If latency_ms shows a long tail, inspect outliers before computing a baseline. -> Apply the matching action.\n- If error_rate shows a long tail, inspect outliers before computing a baseline. -> Apply the matching action.\n- If cost_usd shows a long tail, inspect outliers before computing a baseline. -> Apply the matching action.\n- If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first. -> Apply the matching action.\n- If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first. -> Apply the matching action.\n- When rule conditions are met. -> When anomalies cluster, inspect the shared upstream dependency before per-row debugging.\n- If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first. -> Apply the matching action.\n- If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first. -> Apply the matching action.\n\n## Validation\n- Verify the business grain of one row before building any skill from this table.\n- Verify whether null means unavailable, zero, or not applicable in the source system.\n- Verify extreme rows against source records and unit assumptions.\n- Verify each anomaly against raw rows immediately before and after the flagged timestamp.\n- Verify each flagged point against neighboring rows and source records.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+  "skill_graph": {
+    "name": "latency and error report to guardrail skill",
+    "goal": "Distill controlled_trial material into build_skill for self.",
+    "source_modalities": [
+      "tabular"
+    ],
+    "audience": "self",
+    "summary": "Confirm row count and dtype assumptions before interpreting the table.",
+    "tags": [
+      "controlled_trial",
+      "skill_graph"
+    ],
+    "domain": "controlled_trial",
+    "trigger": [
+      "Use when converting tabular evidence into build_skill."
+    ],
+    "inputs": [
+      "Structured table or time-series dataset"
+    ],
+    "preconditions": [
+      "Confirm source evidence is complete and correctly scoped to the goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Confirm row count and dtype assumptions before interpreting the table.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "3f9d7cc4-38c2-454f-b286-41fd866cc01f"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "ffc9bc4c-0138-4420-b966-260f32357043"
+      },
+      {
+        "step": 2,
+        "action": "Normalize time zones, units, and duplicated keys before aggregation.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "00280833-7759-42f5-acaf-84aa7e13bfdc"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "755108ed-743e-4efc-975a-79ef534a2556"
+      },
+      {
+        "step": 3,
+        "action": "timestamp :: str",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "f7cce3b6-7249-4837-a3a1-74a9ff2c9b70"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "3d0d21bf-01ba-4aed-a394-33725b8fffe8"
+      },
+      {
+        "step": 4,
+        "action": "service :: str",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "48699983-2fe1-47c1-97b9-c87c7f2fb6e3"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "a94fff89-96d6-483f-8741-74d78fce64d0"
+      },
+      {
+        "step": 5,
+        "action": "latency_ms :: int64",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "80ae2d40-0fc1-4e6f-859f-7c3bacd8dad4"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "d3efc36a-807a-45e8-9740-642f07599b3c"
+      },
+      {
+        "step": 6,
+        "action": "error_rate :: float64",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "f3384efb-5904-4a0a-b7f9-aa9983c0b9e6"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "cc4a40ef-3d67-41b6-b8ff-e7909f9c0d62"
+      },
+      {
+        "step": 7,
+        "action": "cost_usd :: float64",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "5743cf37-24a2-48f6-b881-b6cb2fced4bb"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "a43a7558-7c40-4930-a8c3-7748a7c73fc4"
+      },
+      {
+        "step": 8,
+        "action": "Inspect the highest-missing columns before trusting downstream trends.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "18abea7a-0d6d-49f4-9cb4-09dbfc4eaca2"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "84394446-ec7d-4129-bc80-cb1aeb5229ea"
+      },
+      {
+        "step": 9,
+        "action": "timestamp missing_pct=0.0",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "4f18550e-890b-4f2c-9c26-2900a70dc7a1"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "0311db2c-a9db-40cb-a42b-34c43a69eaaf"
+      },
+      {
+        "step": 10,
+        "action": "service missing_pct=0.0",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "bd23053b-d2ab-4501-9235-68b566a121d3"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "d89b8ee5-45de-4a13-b30e-a46b02f2ca1e"
+      },
+      {
+        "step": 11,
+        "action": "latency_ms missing_pct=0.0",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "1853ce26-80bc-4342-8664-c90499c58975"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "91b6aa50-5989-42ff-bf78-733aede2b77f"
+      },
+      {
+        "step": 12,
+        "action": "error_rate missing_pct=0.0",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "07c0413b-0018-497d-af52-bf3eb32a9f04"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "cd9e988a-87ce-4a80-9318-bd630c7c11cf"
+      },
+      {
+        "step": 13,
+        "action": "cost_usd missing_pct=0.0",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "fd49f8dc-badd-4ea6-be73-f8562ea7746c"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "c1f7e553-0331-46ee-978f-6b72719c8b08"
+      },
+      {
+        "step": 14,
+        "action": "Compare per-entity counts before aggregating the whole table.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "1299c374-35e7-4720-83e5-288f8a604bb0"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "f19fab69-4a6c-4c85-b1e9-96dc6a894cfc"
+      },
+      {
+        "step": 15,
+        "action": "2026-05-18T08:00:00 -> 1 rows",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "00930e75-3bd8-46b7-a126-d3d2b78defb8"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "8932986a-3eec-4a57-8139-d069644c3d2d"
+      },
+      {
+        "step": 16,
+        "action": "2026-05-18T08:05:00 -> 1 rows",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "e3bcff49-5828-45f5-9d59-0fcbf4abe617"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "35a3d6d1-3654-442d-b385-97eb643e8853"
+      },
+      {
+        "step": 17,
+        "action": "2026-05-18T08:10:00 -> 1 rows",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "feeb2a31-cca0-4fc7-ac07-54bd738039fd"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "60d2e484-b890-4872-91f1-6b9930a09635"
+      },
+      {
+        "step": 18,
+        "action": "2026-05-18T08:15:00 -> 1 rows",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "2b76df6c-1157-4281-80e2-41192cf3697d"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "f9d62a6c-62fc-4477-9f6c-f4ea8199132e"
+      },
+      {
+        "step": 19,
+        "action": "2026-05-18T08:20:00 -> 1 rows",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "c3974b1d-644c-4e44-9b3f-2d5831b18190"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "48e5b862-4530-45d6-9214-9567b33a6102"
+      },
+      {
+        "step": 20,
+        "action": "Review distribution shape before setting thresholds on latency_ms.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "af8a17e9-eab7-4073-b2f1-f372a798b2e9"
+        ],
+        "evidence_refs": [
+          "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "4b7e95dc-f3b1-41ec-aedf-9dadae33e6f7"
+      },
+      {
+        "step": 21,
+        "action": "Review distribution shape before setting thresholds on error_rate.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "714ef376-2502-4d06-9776-b211e1816516"
+        ],
+        "evidence_refs": [
+          "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "e87ac6e0-f11a-403f-9d82-73d85b306bd7"
+      },
+      {
+        "step": 22,
+        "action": "Review distribution shape before setting thresholds on cost_usd.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "2ce8410d-6fdb-41d2-97b6-dae80fe90f4a"
+        ],
+        "evidence_refs": [
+          "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "a241fea8-5892-4f86-8185-ea717b6b8149"
+      },
+      {
+        "step": 23,
+        "action": "Sort by timestamp before comparing neighboring measurements.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "92e72847-e076-499e-9230-2a5c1cbca250"
+        ],
+        "evidence_refs": [
+          "ab980408-59ed-463f-a0de-5c72d3963852"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "158497ca-fafd-4373-95b7-4512becababa"
+      },
+      {
+        "step": 24,
+        "action": "Investigate abrupt deltas before averaging the full observation window.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "b6c22208-cc82-4cb4-a758-cf73bd3093d8"
+        ],
+        "evidence_refs": [
+          "ab980408-59ed-463f-a0de-5c72d3963852"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "3ee1cd0b-8777-4d28-90ce-ecc6ac4ee162"
+      },
+      {
+        "step": 25,
+        "action": "Sort latency_ms by timestamp before comparing local deltas.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "f4fc0710-7c94-4260-9d2e-c97dbbfb5335"
+        ],
+        "evidence_refs": [
+          "36b4938a-a78e-47bb-820d-581b41ce58cd"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "1ea4d21c-0d56-4bbc-8040-0dc67e698f4b"
+      },
+      {
+        "step": 26,
+        "action": "Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "61e2df33-f5b2-42cf-ad6a-e09b313cb2a0"
+        ],
+        "evidence_refs": [
+          "36b4938a-a78e-47bb-820d-581b41ce58cd"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "f6e76a38-16dd-4970-8be4-4dca457dfb27"
+      },
+      {
+        "step": 27,
+        "action": "change_point=2026-05-18 08:20:00 delta=124.0000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "2f72fb40-d7d0-4674-9e40-930511a64582"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "6e057bb6-018d-4806-8c70-6aa88f74d1d8"
+      },
+      {
+        "step": 28,
+        "action": "change_point=2026-05-18 08:25:00 delta=134.0000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "e7a841c7-786a-43ae-af86-7311c0d6abf3"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "bfefaa50-1245-4e5d-953a-e879f3e9573a"
+      },
+      {
+        "step": 29,
+        "action": "change_point=2026-05-18 08:30:00 delta=119.0000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "6270d0bf-53e2-427c-a7a3-b8d1a3ead6f7"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "40b60eab-e36b-4029-b355-9684c33991f1"
+      },
+      {
+        "step": 30,
+        "action": "change_point=2026-05-18 08:40:00 delta=-158.0000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "317c81e3-1b24-4f5e-b88e-4ff2c5da7fec"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "93537c8c-163b-4de7-8e94-cde344f09d25"
+      },
+      {
+        "step": 31,
+        "action": "change_point=2026-05-18 08:45:00 delta=-134.0000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "07ab1200-00be-466d-8ec4-f5c346357c0e"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "b12ce286-3eba-4f71-86d3-6b0b30e17439"
+      },
+      {
+        "step": 32,
+        "action": "anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "61936162-c774-433c-9bb3-30b775b14d3a"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "5bfe782b-5d33-4fa9-93b0-112f7bbdc646"
+      },
+      {
+        "step": 33,
+        "action": "anomaly_at=2026-05-18 08:20:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "c4244f41-f801-4791-8f42-29b7e57a4431"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "118da055-4c2c-40a5-b709-dd48133c63db"
+      },
+      {
+        "step": 34,
+        "action": "anomaly_at=2026-05-18 08:25:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "a828cf06-8deb-4dfa-a7e2-c968fc5d1310"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "f273a05e-5ba1-4885-990d-3e22e67d9139"
+      },
+      {
+        "step": 35,
+        "action": "anomaly_at=2026-05-18 08:30:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "9dc5696a-c2b9-401c-b388-a158d762574f"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "16816da6-07db-4d65-9719-68b737474181"
+      },
+      {
+        "step": 36,
+        "action": "anomaly_at=2026-05-18 08:35:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "5c137a98-dfe0-4d78-b83e-0a2a6f0474d8"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "b1a74ae4-58cd-45de-b0a6-e05e07408bac"
+      },
+      {
+        "step": 37,
+        "action": "anomaly_at=2026-05-18 08:40:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "8b0415bd-c86b-4b88-bccc-0793fb0fa082"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "9399c902-2725-460d-88c6-5d1e576352b8"
+      },
+      {
+        "step": 38,
+        "action": "Sort error_rate by timestamp before comparing local deltas.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "6c313ca5-bb52-4f1d-8ded-869f04098780"
+        ],
+        "evidence_refs": [
+          "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "5223a695-7f18-45f1-a7a8-8fba3a3aeae7"
+      },
+      {
+        "step": 39,
+        "action": "Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "c9f63f68-fa5d-4e7e-bf71-5844104b3611"
+        ],
+        "evidence_refs": [
+          "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "ae864f0f-a439-4316-b0f2-a714037ae502"
+      },
+      {
+        "step": 40,
+        "action": "change_point=2026-05-18 08:20:00 delta=0.0050",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "ec4191dd-57be-4cd2-ade9-498ad1df37be"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "a34f4ba4-2bea-43f5-91bf-06f8600f76cc"
+      },
+      {
+        "step": 41,
+        "action": "change_point=2026-05-18 08:25:00 delta=0.0070",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "1ea89531-ce7e-427c-ab19-477763d920c3"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "1c9e44db-333d-407c-baf0-4869dd85a925"
+      },
+      {
+        "step": 42,
+        "action": "change_point=2026-05-18 08:30:00 delta=0.0050",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "28bfd200-d77a-44dd-b9a8-a2ddafb2b1f2"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "b38858b1-654a-4b37-9875-f1c5283dc421"
+      },
+      {
+        "step": 43,
+        "action": "change_point=2026-05-18 08:35:00 delta=-0.0060",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "f5ab605f-16d0-4415-8dd2-cd9eec8f6046"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "12605c3f-1fd6-4dfe-ba7f-57892f5e8881"
+      },
+      {
+        "step": 44,
+        "action": "change_point=2026-05-18 08:40:00 delta=-0.0070",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "026a2133-1627-461c-9c1e-1a4203f28618"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "cbeb1fe9-993c-4b35-b9ae-af19b09f56e0"
+      },
+      {
+        "step": 45,
+        "action": "change_point=2026-05-18 08:45:00 delta=-0.0050",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "16ee7d8b-c81d-4360-a671-c0fb7cd6c904"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "b81c159e-4a3f-42d4-93e8-1a49bc6f22b4"
+      },
+      {
+        "step": 46,
+        "action": "anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "13c56054-6fab-4b10-8f44-24112fd50a09"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "5abe59b6-08ab-4bdd-8b64-9fbfde156bb8"
+      },
+      {
+        "step": 47,
+        "action": "anomaly_at=2026-05-18 08:20:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "86481de7-397a-4063-bd8c-ce50b6b58488"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "25ad31d7-1e39-4e11-9b7d-6a677ce58675"
+      },
+      {
+        "step": 48,
+        "action": "anomaly_at=2026-05-18 08:25:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "7a936f4d-4062-45d0-bb08-bb21542b02e2"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "3fe19f28-f386-48fd-a7fd-e51efd2df454"
+      },
+      {
+        "step": 49,
+        "action": "anomaly_at=2026-05-18 08:30:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "d3e8ef08-c498-4554-88c0-c5e23d2b5299"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "1f46f604-eeda-4c89-a4b2-550f5d960959"
+      },
+      {
+        "step": 50,
+        "action": "anomaly_at=2026-05-18 08:35:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "3ec87443-c273-490a-9b27-80e2a4ece813"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "aeff051a-a02a-496b-92de-ecbc63d40346"
+      },
+      {
+        "step": 51,
+        "action": "anomaly_at=2026-05-18 08:40:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "430a1209-1ff1-4dbd-b495-1ba32eafecbb"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "588b46cf-223c-4662-8d2d-4d53d6e34450"
+      },
+      {
+        "step": 52,
+        "action": "Sort cost_usd by timestamp before comparing local deltas.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "ea54229f-a6f0-4f0d-b01a-0fc7133abf55"
+        ],
+        "evidence_refs": [
+          "c5272f44-f82f-4978-94d1-141c441e3feb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "1c16f682-4c28-48c6-99b9-0146c387bb83"
+      },
+      {
+        "step": 53,
+        "action": "Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "85397a2f-ddea-4031-8147-782bbfcab8d2"
+        ],
+        "evidence_refs": [
+          "c5272f44-f82f-4978-94d1-141c441e3feb"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "60d1668f-dee1-43c4-8c78-4f3b32df2ba1"
+      },
+      {
+        "step": 54,
+        "action": "change_point=2026-05-18 08:20:00 delta=1.8000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "460148e9-a81b-4525-9720-54af3ae9cbd8"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "a443e548-853e-4704-af61-f918fae0feac"
+      },
+      {
+        "step": 55,
+        "action": "change_point=2026-05-18 08:45:00 delta=-1.6000",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "7db1a5e0-83a1-41b2-be25-59d08f79aad5"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "8366bd29-f109-4a8d-bbb7-22b48d04862f"
+      },
+      {
+        "step": 56,
+        "action": "anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "4f0c0d60-edf9-4e67-8fa8-89ecc51aaad6"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "2c49c407-4291-431c-89c6-572ef0d7b5c0"
+      },
+      {
+        "step": 57,
+        "action": "anomaly_at=2026-05-18 08:20:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "f7267104-810a-47de-ab76-91d4ab8400ee"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "b5c1978c-1920-4eaf-84f6-25f2fb481b96"
+      },
+      {
+        "step": 58,
+        "action": "anomaly_at=2026-05-18 08:25:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "aa4200cf-e937-4fd2-88bc-2dc4ddb66776"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "2be99e0c-268e-4649-8ad0-4a818b23f5dd"
+      },
+      {
+        "step": 59,
+        "action": "anomaly_at=2026-05-18 08:30:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "68be299c-7ac2-407a-955a-75d6bfe0bbe9"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "f4af31cb-9f3f-4a25-9110-8e2b8d050f0d"
+      },
+      {
+        "step": 60,
+        "action": "anomaly_at=2026-05-18 08:35:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "c5b0cbb5-9a94-440f-8b9d-f9e832b87e54"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "a5959871-4252-44d8-9820-cd44b7646d05"
+      },
+      {
+        "step": 61,
+        "action": "anomaly_at=2026-05-18 08:40:00",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "aa073394-761d-4164-ad2b-14c81fb681ee"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c"
+      }
+    ],
+    "decisions": [
+      {
+        "condition": "If a column mixes numeric and string forms, clean it before trend analysis.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "24a3368f-da17-45b9-9c36-e5d1db1459d0"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "587ff2bf-ab2e-41a2-b5b4-c0b959e5d46d"
+      },
+      {
+        "condition": "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "f24f7528-7ece-4484-a980-700356e6ed81"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "7b5f3a6b-512f-43d8-adae-1fe49653de98"
+      },
+      {
+        "condition": "If one entity dominates the sample, review entity bias before reading the global average.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "c93a7fe4-684d-4474-87f5-0474f3c1b6a1"
+        ],
+        "evidence_refs": [
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "39f355f4-f208-42a9-b5e4-a0dbeecc7f10"
+      },
+      {
+        "condition": "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "37adaf7d-42e5-4639-950b-dabb5a8ae12c"
+        ],
+        "evidence_refs": [
+          "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "99e8b28a-9f89-4241-b611-7be12181d4f2"
+      },
+      {
+        "condition": "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "f67a9d43-e41c-4356-94a6-d0f2d9d0b268"
+        ],
+        "evidence_refs": [
+          "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "4b9b00c6-5efc-4377-87ba-622a414f6bcb"
+      },
+      {
+        "condition": "If cost_usd shows a long tail, inspect outliers before computing a baseline.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "c0f6b1ec-0271-4c8f-a949-63a589c49e34"
+        ],
+        "evidence_refs": [
+          "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "95f2ea40-573c-495d-8631-45e454226887"
+      },
+      {
+        "condition": "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "9d01d2a5-9012-4e49-be4a-645f5948d569"
+        ],
+        "evidence_refs": [
+          "ab980408-59ed-463f-a0de-5c72d3963852"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "53ac95d2-e10f-4f95-b9ac-7babf988b089"
+      },
+      {
+        "condition": "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "f9137804-3cf1-443a-9d58-4e27d13a8874"
+        ],
+        "evidence_refs": [
+          "36b4938a-a78e-47bb-820d-581b41ce58cd"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "415aab2c-f1d5-4df3-810d-2a01abf03c27"
+      },
+      {
+        "condition": "When rule conditions are met.",
+        "decision": "When anomalies cluster, inspect the shared upstream dependency before per-row debugging.",
+        "rationale": "",
+        "atom_refs": [
+          "78b34adf-c685-4601-8a6a-0a4f3c573de2"
+        ],
+        "evidence_refs": [
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "6a0a50cf-bc7e-425f-bf50-cea0734afbd1"
+      },
+      {
+        "condition": "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "cc7c1703-65bc-4274-812d-287c7ded5790"
+        ],
+        "evidence_refs": [
+          "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "ba6c58a7-93e5-485e-9885-38e11527a72d"
+      },
+      {
+        "condition": "When rule conditions are met.",
+        "decision": "When anomalies cluster, inspect the shared upstream dependency before per-row debugging.",
+        "rationale": "",
+        "atom_refs": [
+          "7002d915-7ec2-4e63-bcda-bfcaa508d8c2"
+        ],
+        "evidence_refs": [
+          "e1208740-bb22-4bee-9791-48c251ab0bd5"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "d4b4d34f-dfa2-4fec-8d7a-70328c7e11bb"
+      },
+      {
+        "condition": "If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "31bf949d-3258-4379-b166-53da59a3d3f6"
+        ],
+        "evidence_refs": [
+          "c5272f44-f82f-4978-94d1-141c441e3feb"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "73ce3068-13ae-43d8-8875-26052edab0ed"
+      },
+      {
+        "condition": "When rule conditions are met.",
+        "decision": "When anomalies cluster, inspect the shared upstream dependency before per-row debugging.",
+        "rationale": "",
+        "atom_refs": [
+          "bd97aa4c-d5db-49e6-86b1-8560c5c0b7a5"
+        ],
+        "evidence_refs": [
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "c946a312-1cc0-483a-ac14-237ccc97b67a"
+      }
+    ],
+    "verifications": [
+      {
+        "check": "Verify the business grain of one row before building any skill from this table.",
+        "expected": "",
+        "atom_refs": [
+          "855f78ef-643a-4557-be0c-99bf94a649ab"
+        ],
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "4cd5dd21-848a-4b2f-b255-c9ed94b1fb46"
+      },
+      {
+        "check": "Verify whether null means unavailable, zero, or not applicable in the source system.",
+        "expected": "",
+        "atom_refs": [
+          "5cb4e7c9-1c77-4918-aa35-1556441dc715"
+        ],
+        "evidence_refs": [
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "a4440356-bbdb-4387-9e87-bc59487b6dfe"
+      },
+      {
+        "check": "Verify extreme rows against source records and unit assumptions.",
+        "expected": "",
+        "atom_refs": [
+          "eaccd77e-c22b-4d31-8008-f31373cc9f30"
+        ],
+        "evidence_refs": [
+          "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "ef2e7389-a0f8-45ec-b4f2-1c2abd72c5e1"
+      },
+      {
+        "check": "Verify extreme rows against source records and unit assumptions.",
+        "expected": "",
+        "atom_refs": [
+          "a2a1db0c-3b4a-4017-9c22-b4f8891458bf"
+        ],
+        "evidence_refs": [
+          "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "ab6e7f10-bb94-4f6f-9817-36049f3d914f"
+      },
+      {
+        "check": "Verify extreme rows against source records and unit assumptions.",
+        "expected": "",
+        "atom_refs": [
+          "f23833f3-381b-455e-9b0b-50bf7873fc69"
+        ],
+        "evidence_refs": [
+          "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "db3a5145-eb64-4dad-8f0f-978c7933aa06"
+      },
+      {
+        "check": "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+        "expected": "",
+        "atom_refs": [
+          "bb331cab-6023-443b-862d-b58f0ec9e7f5"
+        ],
+        "evidence_refs": [
+          "ab980408-59ed-463f-a0de-5c72d3963852"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "b0f06f01-fcad-46a2-b811-5e077ec7d260"
+      },
+      {
+        "check": "Verify each flagged point against neighboring rows and source records.",
+        "expected": "",
+        "atom_refs": [
+          "7621e178-05b0-46b2-936c-13d0a2156c18"
+        ],
+        "evidence_refs": [
+          "36b4938a-a78e-47bb-820d-581b41ce58cd"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "d2eb2ded-c5c4-4db8-831e-25a106807ea4"
+      },
+      {
+        "check": "Verify each flagged point against neighboring rows and source records.",
+        "expected": "",
+        "atom_refs": [
+          "b6ab4225-e160-452c-b12b-3df53cf9e364"
+        ],
+        "evidence_refs": [
+          "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "4018e9fb-ceac-4319-b93b-737caf7f1fc3"
+      },
+      {
+        "check": "Verify each flagged point against neighboring rows and source records.",
+        "expected": "",
+        "atom_refs": [
+          "81b71e17-2d5e-42eb-b44a-4078ad1aa489"
+        ],
+        "evidence_refs": [
+          "c5272f44-f82f-4978-94d1-141c441e3feb"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "0aacdf50-6f94-40f6-9273-6fd3b05689c1"
+      }
+    ],
+    "risks": [],
+    "examples": [],
+    "variables": [],
+    "edges": [
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "755108ed-743e-4efc-975a-79ef534a2556",
+        "target_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "03df473f-75fb-4a87-885b-b678b88703c1"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "3d0d21bf-01ba-4aed-a394-33725b8fffe8",
+        "target_node_id": "755108ed-743e-4efc-975a-79ef534a2556",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "2e302014-25f6-4ae1-b2ad-15ca268b3e1f"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "a94fff89-96d6-483f-8741-74d78fce64d0",
+        "target_node_id": "3d0d21bf-01ba-4aed-a394-33725b8fffe8",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "248ddb3a-4f81-43e1-a341-607596834449"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "d3efc36a-807a-45e8-9740-642f07599b3c",
+        "target_node_id": "a94fff89-96d6-483f-8741-74d78fce64d0",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "de56573f-606e-47fa-a375-cc3bbada83de"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "cc4a40ef-3d67-41b6-b8ff-e7909f9c0d62",
+        "target_node_id": "d3efc36a-807a-45e8-9740-642f07599b3c",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "02c34785-1074-41b4-9db0-f0ab03b267d7"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "a43a7558-7c40-4930-a8c3-7748a7c73fc4",
+        "target_node_id": "cc4a40ef-3d67-41b6-b8ff-e7909f9c0d62",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "0f87b38a-8ba9-4023-8c39-973efb986dec"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "84394446-ec7d-4129-bc80-cb1aeb5229ea",
+        "target_node_id": "a43a7558-7c40-4930-a8c3-7748a7c73fc4",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "424a3282-a33f-447b-99e9-6f42b452d7b1"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "0311db2c-a9db-40cb-a42b-34c43a69eaaf",
+        "target_node_id": "84394446-ec7d-4129-bc80-cb1aeb5229ea",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "73dbc5a9-8cf5-424e-acf8-c7cf78ffec28"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "d89b8ee5-45de-4a13-b30e-a46b02f2ca1e",
+        "target_node_id": "0311db2c-a9db-40cb-a42b-34c43a69eaaf",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "44d6aa08-ea24-4764-a4a7-85b07dc9ca81"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "91b6aa50-5989-42ff-bf78-733aede2b77f",
+        "target_node_id": "d89b8ee5-45de-4a13-b30e-a46b02f2ca1e",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "fe0cdd00-c998-4d58-afc1-d43ac8b67dab"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "cd9e988a-87ce-4a80-9318-bd630c7c11cf",
+        "target_node_id": "91b6aa50-5989-42ff-bf78-733aede2b77f",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "49cd2b8f-804b-4ca2-a9a6-18966f52310a"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "c1f7e553-0331-46ee-978f-6b72719c8b08",
+        "target_node_id": "cd9e988a-87ce-4a80-9318-bd630c7c11cf",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "119e9434-b96a-4409-ae5c-2f765195c25b"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "f19fab69-4a6c-4c85-b1e9-96dc6a894cfc",
+        "target_node_id": "c1f7e553-0331-46ee-978f-6b72719c8b08",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "25e65a5c-b74b-4b29-9492-ea7a775417a1"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "8932986a-3eec-4a57-8139-d069644c3d2d",
+        "target_node_id": "f19fab69-4a6c-4c85-b1e9-96dc6a894cfc",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "fbba9ac9-3a24-4f56-b0dd-6d49d7f1b978"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "35a3d6d1-3654-442d-b385-97eb643e8853",
+        "target_node_id": "8932986a-3eec-4a57-8139-d069644c3d2d",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "c846f9ba-2784-490c-9e8a-f1f21146ac91"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "60d2e484-b890-4872-91f1-6b9930a09635",
+        "target_node_id": "35a3d6d1-3654-442d-b385-97eb643e8853",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "98d453e4-e122-4140-8c47-45dc8cd09649"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "f9d62a6c-62fc-4477-9f6c-f4ea8199132e",
+        "target_node_id": "60d2e484-b890-4872-91f1-6b9930a09635",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "9e5c41ce-6f6d-4960-9381-a77c14a01e82"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "48e5b862-4530-45d6-9214-9567b33a6102",
+        "target_node_id": "f9d62a6c-62fc-4477-9f6c-f4ea8199132e",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "6718d439-2703-4d6e-9fe8-9bec50e8da26"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "4b7e95dc-f3b1-41ec-aedf-9dadae33e6f7",
+        "target_node_id": "48e5b862-4530-45d6-9214-9567b33a6102",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "ab5c39f1-b9d7-42cf-a81c-fc8d46290f36"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "e87ac6e0-f11a-403f-9d82-73d85b306bd7",
+        "target_node_id": "4b7e95dc-f3b1-41ec-aedf-9dadae33e6f7",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "90e9ffb8-fbb8-4b25-8f09-3039c3e9087c"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "a241fea8-5892-4f86-8185-ea717b6b8149",
+        "target_node_id": "e87ac6e0-f11a-403f-9d82-73d85b306bd7",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "a71bb24e-aa0f-42ec-8752-939fa4eeba5a"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "158497ca-fafd-4373-95b7-4512becababa",
+        "target_node_id": "a241fea8-5892-4f86-8185-ea717b6b8149",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "f9d5304c-9dfe-4a67-8c15-fd5725a74bb1"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "3ee1cd0b-8777-4d28-90ce-ecc6ac4ee162",
+        "target_node_id": "158497ca-fafd-4373-95b7-4512becababa",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "a10b2bca-86d5-4ef3-bfce-11434c07cf39"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "1ea4d21c-0d56-4bbc-8040-0dc67e698f4b",
+        "target_node_id": "3ee1cd0b-8777-4d28-90ce-ecc6ac4ee162",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "a321f4c7-2eb6-4c97-a271-7d36575f35e6"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "f6e76a38-16dd-4970-8be4-4dca457dfb27",
+        "target_node_id": "1ea4d21c-0d56-4bbc-8040-0dc67e698f4b",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "d975dc66-c2cd-4568-8c71-8917b4ce1bd5"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "6e057bb6-018d-4806-8c70-6aa88f74d1d8",
+        "target_node_id": "f6e76a38-16dd-4970-8be4-4dca457dfb27",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "26fed8b1-d05b-4932-9d58-76f38da63aae"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "bfefaa50-1245-4e5d-953a-e879f3e9573a",
+        "target_node_id": "6e057bb6-018d-4806-8c70-6aa88f74d1d8",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "9985ad36-ccce-4983-a658-0542b3079919"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "40b60eab-e36b-4029-b355-9684c33991f1",
+        "target_node_id": "bfefaa50-1245-4e5d-953a-e879f3e9573a",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "112f5e32-ec1a-4d0c-8d25-e1088e09aea7"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "93537c8c-163b-4de7-8e94-cde344f09d25",
+        "target_node_id": "40b60eab-e36b-4029-b355-9684c33991f1",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "300e8a4d-d276-4f13-9264-752af91dd192"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "b12ce286-3eba-4f71-86d3-6b0b30e17439",
+        "target_node_id": "93537c8c-163b-4de7-8e94-cde344f09d25",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "d8e1af43-2741-482f-9bb9-f33f7397d1f3"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "5bfe782b-5d33-4fa9-93b0-112f7bbdc646",
+        "target_node_id": "b12ce286-3eba-4f71-86d3-6b0b30e17439",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "46ebe88b-0cab-478e-8c57-5472280c5af8"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "118da055-4c2c-40a5-b709-dd48133c63db",
+        "target_node_id": "5bfe782b-5d33-4fa9-93b0-112f7bbdc646",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "af7b7670-4b10-49f2-a387-2fbb7ac75ac7"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "f273a05e-5ba1-4885-990d-3e22e67d9139",
+        "target_node_id": "118da055-4c2c-40a5-b709-dd48133c63db",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "b72a8d80-8be5-48b5-98f4-c25e0f19705e"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "16816da6-07db-4d65-9719-68b737474181",
+        "target_node_id": "f273a05e-5ba1-4885-990d-3e22e67d9139",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "430cd511-c273-489f-92fd-855574df50e9"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "b1a74ae4-58cd-45de-b0a6-e05e07408bac",
+        "target_node_id": "16816da6-07db-4d65-9719-68b737474181",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "81859d08-e049-4463-b4f8-de116b12c4ea"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "9399c902-2725-460d-88c6-5d1e576352b8",
+        "target_node_id": "b1a74ae4-58cd-45de-b0a6-e05e07408bac",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "8b64bff4-de67-4ca1-a566-0da78514e277"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "5223a695-7f18-45f1-a7a8-8fba3a3aeae7",
+        "target_node_id": "9399c902-2725-460d-88c6-5d1e576352b8",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "5905967c-b83f-4e90-976d-42fc3f581f02"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "ae864f0f-a439-4316-b0f2-a714037ae502",
+        "target_node_id": "5223a695-7f18-45f1-a7a8-8fba3a3aeae7",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "cecf6cc6-1916-4936-8c47-4cc3e3c06e67"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "a34f4ba4-2bea-43f5-91bf-06f8600f76cc",
+        "target_node_id": "ae864f0f-a439-4316-b0f2-a714037ae502",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "0a0a1669-4cea-4cef-b8c6-63042b493258"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "1c9e44db-333d-407c-baf0-4869dd85a925",
+        "target_node_id": "a34f4ba4-2bea-43f5-91bf-06f8600f76cc",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "eb7e447f-2218-4b13-bd70-83d157392499"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "b38858b1-654a-4b37-9875-f1c5283dc421",
+        "target_node_id": "1c9e44db-333d-407c-baf0-4869dd85a925",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "6a58313a-1651-4669-8bdc-9ac84e754032"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "12605c3f-1fd6-4dfe-ba7f-57892f5e8881",
+        "target_node_id": "b38858b1-654a-4b37-9875-f1c5283dc421",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "b8d88396-8c59-49bf-8a52-9d07897fe386"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "cbeb1fe9-993c-4b35-b9ae-af19b09f56e0",
+        "target_node_id": "12605c3f-1fd6-4dfe-ba7f-57892f5e8881",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "b9a7d914-ca28-42f2-989d-2b77137b68fd"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "b81c159e-4a3f-42d4-93e8-1a49bc6f22b4",
+        "target_node_id": "cbeb1fe9-993c-4b35-b9ae-af19b09f56e0",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "ee865b35-60fa-4661-b492-3efff8a43058"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "5abe59b6-08ab-4bdd-8b64-9fbfde156bb8",
+        "target_node_id": "b81c159e-4a3f-42d4-93e8-1a49bc6f22b4",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "20b9da47-9da1-4743-b659-e9295439a7d9"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "25ad31d7-1e39-4e11-9b7d-6a677ce58675",
+        "target_node_id": "5abe59b6-08ab-4bdd-8b64-9fbfde156bb8",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "33caaadc-6ac6-449a-891c-4da0ef8f52b8"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "3fe19f28-f386-48fd-a7fd-e51efd2df454",
+        "target_node_id": "25ad31d7-1e39-4e11-9b7d-6a677ce58675",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "2e4498db-f57e-463a-8876-7a87fb12782d"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "1f46f604-eeda-4c89-a4b2-550f5d960959",
+        "target_node_id": "3fe19f28-f386-48fd-a7fd-e51efd2df454",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "1651e6a9-c1a3-4f98-8b95-dcdd7ffec0e3"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "aeff051a-a02a-496b-92de-ecbc63d40346",
+        "target_node_id": "1f46f604-eeda-4c89-a4b2-550f5d960959",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "da7b33e0-76b7-4d46-a85a-3423bc4789f6"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "588b46cf-223c-4662-8d2d-4d53d6e34450",
+        "target_node_id": "aeff051a-a02a-496b-92de-ecbc63d40346",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "0dfc5a81-c302-4902-9b53-e1821bf75dce"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "1c16f682-4c28-48c6-99b9-0146c387bb83",
+        "target_node_id": "588b46cf-223c-4662-8d2d-4d53d6e34450",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "08c26eff-c07b-44de-9809-b0daf81157d7"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "60d1668f-dee1-43c4-8c78-4f3b32df2ba1",
+        "target_node_id": "1c16f682-4c28-48c6-99b9-0146c387bb83",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "ef055db5-ebde-4d76-9008-ea79db0f93df"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "a443e548-853e-4704-af61-f918fae0feac",
+        "target_node_id": "60d1668f-dee1-43c4-8c78-4f3b32df2ba1",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "a4e7bd49-40cc-48ec-856e-c4ab4c6c12e7"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "8366bd29-f109-4a8d-bbb7-22b48d04862f",
+        "target_node_id": "a443e548-853e-4704-af61-f918fae0feac",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "331b978b-042c-4eb9-bcbd-e537d259315c"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "2c49c407-4291-431c-89c6-572ef0d7b5c0",
+        "target_node_id": "8366bd29-f109-4a8d-bbb7-22b48d04862f",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "53e6f3fe-4f9e-401d-8e6d-f3c59b71ae59"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "b5c1978c-1920-4eaf-84f6-25f2fb481b96",
+        "target_node_id": "2c49c407-4291-431c-89c6-572ef0d7b5c0",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "c03b1721-2e49-4536-aac8-ac31862fb110"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "2be99e0c-268e-4649-8ad0-4a818b23f5dd",
+        "target_node_id": "b5c1978c-1920-4eaf-84f6-25f2fb481b96",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "4db0f94c-ff25-4ecb-b857-263dfd72a17e"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "f4af31cb-9f3f-4a25-9110-8e2b8d050f0d",
+        "target_node_id": "2be99e0c-268e-4649-8ad0-4a818b23f5dd",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "87e65fd3-53b2-4c7e-ad06-acca1ea8f26f"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "a5959871-4252-44d8-9820-cd44b7646d05",
+        "target_node_id": "f4af31cb-9f3f-4a25-9110-8e2b8d050f0d",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "3ab28cb8-8c78-4713-b19b-af44a0619e38"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "a5959871-4252-44d8-9820-cd44b7646d05",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "1ac016b4-2efb-4527-bfd6-42a4098d377a"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "587ff2bf-ab2e-41a2-b5b4-c0b959e5d46d",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "239f531c-9805-4035-bb2a-a05ca3f016c2"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "7b5f3a6b-512f-43d8-adae-1fe49653de98",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "959e9273-b04a-4f01-846f-0eec1aa727b9"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "39f355f4-f208-42a9-b5e4-a0dbeecc7f10",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "d385a0f2-84bc-4f75-b408-89f3de0adee8"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "99e8b28a-9f89-4241-b611-7be12181d4f2",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "bd165ba3-2067-4a18-850a-1ca2f829ebd5"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "4b9b00c6-5efc-4377-87ba-622a414f6bcb",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "414edbf3-d1c2-47de-a57c-14330544fef6"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "95f2ea40-573c-495d-8631-45e454226887",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "f981fdbc-4fc8-4628-973b-b6458a9cbcba"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "53ac95d2-e10f-4f95-b9ac-7babf988b089",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "718295fe-1fba-468e-a0ef-a8e59527ece5"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "415aab2c-f1d5-4df3-810d-2a01abf03c27",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "20a839b9-5182-4fe8-9e43-ae4e51c62fe5"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "6a0a50cf-bc7e-425f-bf50-cea0734afbd1",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "3aac2eec-de1b-417d-b1bb-b1cea2e3c015"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "ba6c58a7-93e5-485e-9885-38e11527a72d",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "5497aa5b-01c8-4869-9ba9-0df60f8cef7d"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "d4b4d34f-dfa2-4fec-8d7a-70328c7e11bb",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "eab21228-730c-4cc7-9801-82d96f08401f"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "73ce3068-13ae-43d8-8875-26052edab0ed",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "d3fff14f-186b-4a2a-b775-59385d77dd76"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "ffc9bc4c-0138-4420-b966-260f32357043",
+        "target_node_id": "c946a312-1cc0-483a-ac14-237ccc97b67a",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "99c2e4e4-37a1-4d35-91ec-52fdf972f936"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "4cd5dd21-848a-4b2f-b255-c9ed94b1fb46",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "1ca926f0-82e7-44b4-b30a-5630ba31b7ca"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "a4440356-bbdb-4387-9e87-bc59487b6dfe",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "c3225538-34cc-4f89-91e6-0d813fa27c95"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "ef2e7389-a0f8-45ec-b4f2-1c2abd72c5e1",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "77685494-51b8-4a22-a824-15cf0a8225b0"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "ab6e7f10-bb94-4f6f-9817-36049f3d914f",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "391dc160-42bb-4fc0-af1f-0d52cde5659b"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "db3a5145-eb64-4dad-8f0f-978c7933aa06",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "f3741963-81bb-4c51-9357-9420077d289e"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "b0f06f01-fcad-46a2-b811-5e077ec7d260",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "e90c41fe-2655-44bd-99cc-305d7413e5d7"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "d2eb2ded-c5c4-4db8-831e-25a106807ea4",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "678f282f-bb32-4f0b-9fba-289e29400f5b"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "4018e9fb-ceac-4319-b93b-737caf7f1fc3",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "5aa5779a-cb99-455e-8514-695c2972a89c"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "54c15259-ebe6-4c7c-843f-5422971ddc9c",
+        "target_node_id": "0aacdf50-6f94-40f6-9273-6fd3b05689c1",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "14b4f0b0-c6b5-4ce0-b82f-8d6fbca90de9"
+      }
+    ],
+    "evidence_refs": [
+      "75191dc1-38fe-4383-9f02-609512837ccc",
+      "b2b22bb9-655d-4faa-868f-94e62dc7654d",
+      "ff51ae6f-f680-4fd8-b748-50b1f7b33530",
+      "5acf4fd3-0a52-4fae-91c5-11954ab42901",
+      "4dc95aa6-224c-4a31-b18b-61620272e0a2",
+      "4de6c334-a9b5-4980-bcfd-4e364fbe46e7",
+      "ab980408-59ed-463f-a0de-5c72d3963852",
+      "36b4938a-a78e-47bb-820d-581b41ce58cd",
+      "69cc57f6-a16a-48e4-a832-15c9c7fc30cb",
+      "d5f72618-8cd2-4ee7-af89-307579f9e9fc",
+      "e1208740-bb22-4bee-9791-48c251ab0bd5",
+      "c5272f44-f82f-4978-94d1-141c441e3feb",
+      "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+    ],
+    "atom_refs": [
+      "3f9d7cc4-38c2-454f-b286-41fd866cc01f",
+      "00280833-7759-42f5-acaf-84aa7e13bfdc",
+      "24a3368f-da17-45b9-9c36-e5d1db1459d0",
+      "855f78ef-643a-4557-be0c-99bf94a649ab",
+      "f7cce3b6-7249-4837-a3a1-74a9ff2c9b70",
+      "48699983-2fe1-47c1-97b9-c87c7f2fb6e3",
+      "80ae2d40-0fc1-4e6f-859f-7c3bacd8dad4",
+      "f3384efb-5904-4a0a-b7f9-aa9983c0b9e6",
+      "5743cf37-24a2-48f6-b881-b6cb2fced4bb",
+      "18abea7a-0d6d-49f4-9cb4-09dbfc4eaca2",
+      "f24f7528-7ece-4484-a980-700356e6ed81",
+      "5cb4e7c9-1c77-4918-aa35-1556441dc715",
+      "4f18550e-890b-4f2c-9c26-2900a70dc7a1",
+      "bd23053b-d2ab-4501-9235-68b566a121d3",
+      "1853ce26-80bc-4342-8664-c90499c58975",
+      "07c0413b-0018-497d-af52-bf3eb32a9f04",
+      "fd49f8dc-badd-4ea6-be73-f8562ea7746c",
+      "1299c374-35e7-4720-83e5-288f8a604bb0",
+      "c93a7fe4-684d-4474-87f5-0474f3c1b6a1",
+      "00930e75-3bd8-46b7-a126-d3d2b78defb8",
+      "e3bcff49-5828-45f5-9d59-0fcbf4abe617",
+      "feeb2a31-cca0-4fc7-ac07-54bd738039fd",
+      "2b76df6c-1157-4281-80e2-41192cf3697d",
+      "c3974b1d-644c-4e44-9b3f-2d5831b18190",
+      "af8a17e9-eab7-4073-b2f1-f372a798b2e9",
+      "37adaf7d-42e5-4639-950b-dabb5a8ae12c",
+      "eaccd77e-c22b-4d31-8008-f31373cc9f30",
+      "714ef376-2502-4d06-9776-b211e1816516",
+      "f67a9d43-e41c-4356-94a6-d0f2d9d0b268",
+      "a2a1db0c-3b4a-4017-9c22-b4f8891458bf",
+      "2ce8410d-6fdb-41d2-97b6-dae80fe90f4a",
+      "c0f6b1ec-0271-4c8f-a949-63a589c49e34",
+      "f23833f3-381b-455e-9b0b-50bf7873fc69",
+      "92e72847-e076-499e-9230-2a5c1cbca250",
+      "b6c22208-cc82-4cb4-a758-cf73bd3093d8",
+      "9d01d2a5-9012-4e49-be4a-645f5948d569",
+      "bb331cab-6023-443b-862d-b58f0ec9e7f5",
+      "f4fc0710-7c94-4260-9d2e-c97dbbfb5335",
+      "61e2df33-f5b2-42cf-ad6a-e09b313cb2a0",
+      "f9137804-3cf1-443a-9d58-4e27d13a8874",
+      "7621e178-05b0-46b2-936c-13d0a2156c18",
+      "78b34adf-c685-4601-8a6a-0a4f3c573de2",
+      "2f72fb40-d7d0-4674-9e40-930511a64582",
+      "e7a841c7-786a-43ae-af86-7311c0d6abf3",
+      "6270d0bf-53e2-427c-a7a3-b8d1a3ead6f7",
+      "317c81e3-1b24-4f5e-b88e-4ff2c5da7fec",
+      "07ab1200-00be-466d-8ec4-f5c346357c0e",
+      "61936162-c774-433c-9bb3-30b775b14d3a",
+      "c4244f41-f801-4791-8f42-29b7e57a4431",
+      "a828cf06-8deb-4dfa-a7e2-c968fc5d1310",
+      "9dc5696a-c2b9-401c-b388-a158d762574f",
+      "5c137a98-dfe0-4d78-b83e-0a2a6f0474d8",
+      "8b0415bd-c86b-4b88-bccc-0793fb0fa082",
+      "6c313ca5-bb52-4f1d-8ded-869f04098780",
+      "c9f63f68-fa5d-4e7e-bf71-5844104b3611",
+      "cc7c1703-65bc-4274-812d-287c7ded5790",
+      "b6ab4225-e160-452c-b12b-3df53cf9e364",
+      "7002d915-7ec2-4e63-bcda-bfcaa508d8c2",
+      "ec4191dd-57be-4cd2-ade9-498ad1df37be",
+      "1ea89531-ce7e-427c-ab19-477763d920c3",
+      "28bfd200-d77a-44dd-b9a8-a2ddafb2b1f2",
+      "f5ab605f-16d0-4415-8dd2-cd9eec8f6046",
+      "026a2133-1627-461c-9c1e-1a4203f28618",
+      "16ee7d8b-c81d-4360-a671-c0fb7cd6c904",
+      "13c56054-6fab-4b10-8f44-24112fd50a09",
+      "86481de7-397a-4063-bd8c-ce50b6b58488",
+      "7a936f4d-4062-45d0-bb08-bb21542b02e2",
+      "d3e8ef08-c498-4554-88c0-c5e23d2b5299",
+      "3ec87443-c273-490a-9b27-80e2a4ece813",
+      "430a1209-1ff1-4dbd-b495-1ba32eafecbb",
+      "ea54229f-a6f0-4f0d-b01a-0fc7133abf55",
+      "85397a2f-ddea-4031-8147-782bbfcab8d2",
+      "31bf949d-3258-4379-b166-53da59a3d3f6",
+      "81b71e17-2d5e-42eb-b44a-4078ad1aa489",
+      "bd97aa4c-d5db-49e6-86b1-8560c5c0b7a5",
+      "460148e9-a81b-4525-9720-54af3ae9cbd8",
+      "7db1a5e0-83a1-41b2-be25-59d08f79aad5",
+      "4f0c0d60-edf9-4e67-8fa8-89ecc51aaad6",
+      "f7267104-810a-47de-ab76-91d4ab8400ee",
+      "aa4200cf-e937-4fd2-88bc-2dc4ddb66776",
+      "68be299c-7ac2-407a-955a-75d6bfe0bbe9",
+      "c5b0cbb5-9a94-440f-8b9d-f9e832b87e54",
+      "aa073394-761d-4164-ad2b-14c81fb681ee"
+    ],
+    "confidence": 0.95,
+    "version": "0.1.0",
+    "review_status": "draft",
+    "created_at": "2026-05-25T10:17:09Z",
+    "graph_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390"
+  },
+  "publications": [
+    {
+      "publication_type": "skill_markdown",
+      "content": {
+        "filename": "SKILL.md",
+        "text": "---\nname: \"latency and error report to guardrail skill\"\ndescription: \"Use when Use when converting tabular evidence into build_skill.. Confirm row count and dtype assumptions before interpreting the table.\"\n---\n\n# latency and error report to guardrail skill\n\n## Workflow\n1. Confirm row count and dtype assumptions before interpreting the table. (Why: Derived from semantic atom.)\n2. Normalize time zones, units, and duplicated keys before aggregation. (Why: Derived from semantic atom.)\n3. timestamp :: str (Why: Derived from semantic atom.)\n4. service :: str (Why: Derived from semantic atom.)\n5. latency_ms :: int64 (Why: Derived from semantic atom.)\n6. error_rate :: float64 (Why: Derived from semantic atom.)\n7. cost_usd :: float64 (Why: Derived from semantic atom.)\n8. Inspect the highest-missing columns before trusting downstream trends. (Why: Derived from semantic atom.)\n9. timestamp missing_pct=0.0 (Why: Derived from semantic atom.)\n10. service missing_pct=0.0 (Why: Derived from semantic atom.)\n11. latency_ms missing_pct=0.0 (Why: Derived from semantic atom.)\n12. error_rate missing_pct=0.0 (Why: Derived from semantic atom.)\n13. cost_usd missing_pct=0.0 (Why: Derived from semantic atom.)\n14. Compare per-entity counts before aggregating the whole table. (Why: Derived from semantic atom.)\n15. 2026-05-18T08:00:00 -> 1 rows (Why: Derived from semantic atom.)\n16. 2026-05-18T08:05:00 -> 1 rows (Why: Derived from semantic atom.)\n17. 2026-05-18T08:10:00 -> 1 rows (Why: Derived from semantic atom.)\n18. 2026-05-18T08:15:00 -> 1 rows (Why: Derived from semantic atom.)\n19. 2026-05-18T08:20:00 -> 1 rows (Why: Derived from semantic atom.)\n20. Review distribution shape before setting thresholds on latency_ms. (Why: Derived from semantic atom.)\n21. Review distribution shape before setting thresholds on error_rate. (Why: Derived from semantic atom.)\n22. Review distribution shape before setting thresholds on cost_usd. (Why: Derived from semantic atom.)\n23. Sort by timestamp before comparing neighboring measurements. (Why: Derived from semantic atom.)\n24. Investigate abrupt deltas before averaging the full observation window. (Why: Derived from semantic atom.)\n25. Sort latency_ms by timestamp before comparing local deltas. (Why: Derived from semantic atom.)\n26. Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend. (Why: Derived from semantic atom.)\n27. change_point=2026-05-18 08:20:00 delta=124.0000 (Why: Derived from semantic atom.)\n28. change_point=2026-05-18 08:25:00 delta=134.0000 (Why: Derived from semantic atom.)\n29. change_point=2026-05-18 08:30:00 delta=119.0000 (Why: Derived from semantic atom.)\n30. change_point=2026-05-18 08:40:00 delta=-158.0000 (Why: Derived from semantic atom.)\n31. change_point=2026-05-18 08:45:00 delta=-134.0000 (Why: Derived from semantic atom.)\n32. anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n33. anomaly_at=2026-05-18 08:20:00 (Why: Derived from semantic atom.)\n34. anomaly_at=2026-05-18 08:25:00 (Why: Derived from semantic atom.)\n35. anomaly_at=2026-05-18 08:30:00 (Why: Derived from semantic atom.)\n36. anomaly_at=2026-05-18 08:35:00 (Why: Derived from semantic atom.)\n37. anomaly_at=2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n38. Sort error_rate by timestamp before comparing local deltas. (Why: Derived from semantic atom.)\n39. Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend. (Why: Derived from semantic atom.)\n40. change_point=2026-05-18 08:20:00 delta=0.0050 (Why: Derived from semantic atom.)\n41. change_point=2026-05-18 08:25:00 delta=0.0070 (Why: Derived from semantic atom.)\n42. change_point=2026-05-18 08:30:00 delta=0.0050 (Why: Derived from semantic atom.)\n43. change_point=2026-05-18 08:35:00 delta=-0.0060 (Why: Derived from semantic atom.)\n44. change_point=2026-05-18 08:40:00 delta=-0.0070 (Why: Derived from semantic atom.)\n45. change_point=2026-05-18 08:45:00 delta=-0.0050 (Why: Derived from semantic atom.)\n46. anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n47. anomaly_at=2026-05-18 08:20:00 (Why: Derived from semantic atom.)\n48. anomaly_at=2026-05-18 08:25:00 (Why: Derived from semantic atom.)\n49. anomaly_at=2026-05-18 08:30:00 (Why: Derived from semantic atom.)\n50. anomaly_at=2026-05-18 08:35:00 (Why: Derived from semantic atom.)\n51. anomaly_at=2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n52. Sort cost_usd by timestamp before comparing local deltas. (Why: Derived from semantic atom.)\n53. Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend. (Why: Derived from semantic atom.)\n54. change_point=2026-05-18 08:20:00 delta=1.8000 (Why: Derived from semantic atom.)\n55. change_point=2026-05-18 08:45:00 delta=-1.6000 (Why: Derived from semantic atom.)\n56. anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n57. anomaly_at=2026-05-18 08:20:00 (Why: Derived from semantic atom.)\n58. anomaly_at=2026-05-18 08:25:00 (Why: Derived from semantic atom.)\n59. anomaly_at=2026-05-18 08:30:00 (Why: Derived from semantic atom.)\n60. anomaly_at=2026-05-18 08:35:00 (Why: Derived from semantic atom.)\n61. anomaly_at=2026-05-18 08:40:00 (Why: Derived from semantic atom.)\n\n## Decision Rules\n- If a column mixes numeric and string forms, clean it before trend analysis. -> Apply the matching action.\n- If missingness jumps after a date boundary, inspect upstream ingestion or schema drift. -> Apply the matching action.\n- If one entity dominates the sample, review entity bias before reading the global average. -> Apply the matching action.\n- If latency_ms shows a long tail, inspect outliers before computing a baseline. -> Apply the matching action.\n- If error_rate shows a long tail, inspect outliers before computing a baseline. -> Apply the matching action.\n- If cost_usd shows a long tail, inspect outliers before computing a baseline. -> Apply the matching action.\n- If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first. -> Apply the matching action.\n- If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first. -> Apply the matching action.\n- When rule conditions are met. -> When anomalies cluster, inspect the shared upstream dependency before per-row debugging.\n- If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first. -> Apply the matching action.\n- If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first. -> Apply the matching action.\n\n## Validation\n- Verify the business grain of one row before building any skill from this table.\n- Verify whether null means unavailable, zero, or not applicable in the source system.\n- Verify extreme rows against source records and unit assumptions.\n- Verify each anomaly against raw rows immediately before and after the flagged timestamp.\n- Verify each flagged point against neighboring rows and source records.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "description": "Use when Use when converting tabular evidence into build_skill.. Confirm row count and dtype assumptions before interpreting the table.",
+        "line_count": 96,
+        "line_limit": 220,
+        "references": {
+          "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `tabular`\n- evidence_ref_count: `13`\n\n## Evidence References\n- `75191dc1-38fe-4383-9f02-609512837ccc`\n- `b2b22bb9-655d-4faa-868f-94e62dc7654d`\n- `ff51ae6f-f680-4fd8-b748-50b1f7b33530`\n- `5acf4fd3-0a52-4fae-91c5-11954ab42901`\n- `4dc95aa6-224c-4a31-b18b-61620272e0a2`\n- `4de6c334-a9b5-4980-bcfd-4e364fbe46e7`\n- `ab980408-59ed-463f-a0de-5c72d3963852`\n- `36b4938a-a78e-47bb-820d-581b41ce58cd`\n- `69cc57f6-a16a-48e4-a832-15c9c7fc30cb`\n- `d5f72618-8cd2-4ee7-af89-307579f9e9fc`\n- `e1208740-bb22-4bee-9791-48c251ab0bd5`\n- `c5272f44-f82f-4978-94d1-141c441e3feb`\n- `7ac76580-97d6-4ca1-a169-272ebb1f0811`\n",
+          "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+        },
+        "graph_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390",
+        "skill_id": "1163495b-059b-4b72-af24-89394382042d"
+      },
+      "path": "SKILL.md",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390",
+        "skill_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390",
+        "version": "0.1.0",
+        "renderer": "portable_skill_markdown_v1",
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc",
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d",
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530",
+          "5acf4fd3-0a52-4fae-91c5-11954ab42901",
+          "4dc95aa6-224c-4a31-b18b-61620272e0a2",
+          "4de6c334-a9b5-4980-bcfd-4e364fbe46e7",
+          "ab980408-59ed-463f-a0de-5c72d3963852",
+          "36b4938a-a78e-47bb-820d-581b41ce58cd",
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb",
+          "d5f72618-8cd2-4ee7-af89-307579f9e9fc",
+          "e1208740-bb22-4bee-9791-48c251ab0bd5",
+          "c5272f44-f82f-4978-94d1-141c441e3feb",
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:09Z",
+      "publication_id": "362f4b3e-841d-42ba-8dea-e09b67f7ac67"
+    },
+    {
+      "publication_type": "skill_json",
+      "content": {
+        "filename": "skill.json",
+        "skill": {
+          "name": "latency and error report to guardrail skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. No",
+          "source_modality": "tabular",
+          "skill_type": "analysis",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert tabular evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Structured table or time-series dataset",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "If a column mixes numeric and string forms, clean it before trend analysis.",
+            "If one entity dominates the sample, review entity bias before reading the global average.",
+            "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+            "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+            "If cost_usd shows a long tail, inspect outliers before computing a baseline.",
+            "When anomalies cluster, inspect the shared upstream dependency before per-row debugging."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Confirm row count and dtype assumptions before interpreting the table.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Normalize time zones, units, and duplicated keys before aggregation.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "timestamp :: str",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 4,
+              "action": "service :: str",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 5,
+              "action": "latency_ms :: int64",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 6,
+              "action": "error_rate :: float64",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 7,
+              "action": "cost_usd :: float64",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 8,
+              "action": "Inspect the highest-missing columns before trusting downstream trends.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [
+            "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+            "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+            "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+            "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+            "If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first."
+          ],
+          "anti_patterns": [],
+          "verification": [
+            "Verify the business grain of one row before building any skill from this table.",
+            "Verify whether null means unavailable, zero, or not applicable in the source system.",
+            "Verify extreme rows against source records and unit assumptions.",
+            "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+            "Verify each flagged point against neighboring rows and source records."
+          ],
+          "evidence_refs": [
+            "75191dc1-38fe-4383-9f02-609512837ccc@table:schema:0001",
+            "b2b22bb9-655d-4faa-868f-94e62dc7654d@table:missingness:0001",
+            "ff51ae6f-f680-4fd8-b748-50b1f7b33530@table:entities:0001",
+            "5acf4fd3-0a52-4fae-91c5-11954ab42901@table:numeric:0001",
+            "4dc95aa6-224c-4a31-b18b-61620272e0a2@table:numeric:0002",
+            "4de6c334-a9b5-4980-bcfd-4e364fbe46e7@table:numeric:0003",
+            "ab980408-59ed-463f-a0de-5c72d3963852@timeseries:overview:0001",
+            "36b4938a-a78e-47bb-820d-581b41ce58cd@timeseries:metric:0001",
+            "69cc57f6-a16a-48e4-a832-15c9c7fc30cb@timeseries:event:0001",
+            "d5f72618-8cd2-4ee7-af89-307579f9e9fc@timeseries:metric:0002",
+            "e1208740-bb22-4bee-9791-48c251ab0bd5@timeseries:event:0002",
+            "c5272f44-f82f-4978-94d1-141c441e3feb@timeseries:metric:0003",
+            "7ac76580-97d6-4ca1-a169-272ebb1f0811@timeseries:event:0003"
+          ],
+          "confidence": 0.95,
+          "version": "0.1.0",
+          "summary": "Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean it before trend analysis. Verify the busine",
+          "tags": [
+            "controlled_trial",
+            "tabular",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:09Z",
+          "skill_id": "1163495b-059b-4b72-af24-89394382042d"
+        },
+        "graph_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390",
+        "skill_id": "1163495b-059b-4b72-af24-89394382042d"
+      },
+      "path": "skill.json",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390",
+        "skill_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390",
+        "version": "0.1.0",
+        "renderer": "skill_json_v1_compat",
+        "evidence_refs": [
+          "75191dc1-38fe-4383-9f02-609512837ccc",
+          "b2b22bb9-655d-4faa-868f-94e62dc7654d",
+          "ff51ae6f-f680-4fd8-b748-50b1f7b33530",
+          "5acf4fd3-0a52-4fae-91c5-11954ab42901",
+          "4dc95aa6-224c-4a31-b18b-61620272e0a2",
+          "4de6c334-a9b5-4980-bcfd-4e364fbe46e7",
+          "ab980408-59ed-463f-a0de-5c72d3963852",
+          "36b4938a-a78e-47bb-820d-581b41ce58cd",
+          "69cc57f6-a16a-48e4-a832-15c9c7fc30cb",
+          "d5f72618-8cd2-4ee7-af89-307579f9e9fc",
+          "e1208740-bb22-4bee-9791-48c251ab0bd5",
+          "c5272f44-f82f-4978-94d1-141c441e3feb",
+          "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:09Z",
+      "publication_id": "937f32f9-b266-4fd7-981f-e6607e591a6c"
+    }
+  ],
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 0.7473,
+    "overall_score": 0.9579,
+    "diagnostics": {
+      "step_count": 8.0,
+      "evidence_node_count": 13.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_task": {
+    "skill_id": "1163495b-059b-4b72-af24-89394382042d",
+    "decision": "auto_publish",
+    "reason_codes": [
+      "controlled_trial_requires_review",
+      "simulated_human_approval"
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.7473,
+      "overall_score": 0.9579
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "review_notes": "Simulated human approval in controlled-trial runner.",
+    "status": "published",
+    "created_at": "2026-05-25T10:17:09Z",
+    "review_task_id": "c5581006-0d73-4bcc-ba0c-71a22adac164"
+  },
+  "corpus": null,
+  "evidence_nodes": [
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "table",
+      "span_ref": "table:schema:0001",
+      "text_content": "Table schema summary\nRows: 10\nColumns: 5\n1. Confirm row count and dtype assumptions before interpreting the table.\n2. Normalize time zones, units, and duplicated keys before aggregation.\nIf a column mixes numeric and string forms, clean it before trend analysis.\nVerify the business grain of one row before building any skill from this table.\n- timestamp :: str\n- service :: str\n- latency_ms :: int64\n- error_rate :: float64\n- cost_usd :: float64",
+      "payload": {
+        "legacy_content": "Table schema summary\nRows: 10\nColumns: 5\n1. Confirm row count and dtype assumptions before interpreting the table.\n2. Normalize time zones, units, and duplicated keys before aggregation.\nIf a column mixes numeric and string forms, clean it before trend analysis.\nVerify the business grain of one row before building any skill from this table.\n- timestamp :: str\n- service :: str\n- latency_ms :: int64\n- error_rate :: float64\n- cost_usd :: float64"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "schema"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "75191dc1-38fe-4383-9f02-609512837ccc"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "table",
+      "span_ref": "table:missingness:0001",
+      "text_content": "Table missingness profile\n1. Inspect the highest-missing columns before trusting downstream trends.\nIf missingness jumps after a date boundary, inspect upstream ingestion or schema drift.\nVerify whether null means unavailable, zero, or not applicable in the source system.\n- timestamp missing_pct=0.0\n- service missing_pct=0.0\n- latency_ms missing_pct=0.0\n- error_rate missing_pct=0.0\n- cost_usd missing_pct=0.0",
+      "payload": {
+        "legacy_content": "Table missingness profile\n1. Inspect the highest-missing columns before trusting downstream trends.\nIf missingness jumps after a date boundary, inspect upstream ingestion or schema drift.\nVerify whether null means unavailable, zero, or not applicable in the source system.\n- timestamp missing_pct=0.0\n- service missing_pct=0.0\n- latency_ms missing_pct=0.0\n- error_rate missing_pct=0.0\n- cost_usd missing_pct=0.0"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.88,
+      "tags": [
+        "missingness"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "b2b22bb9-655d-4faa-868f-94e62dc7654d"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "table",
+      "span_ref": "table:entities:0001",
+      "text_content": "Entity/group summary\n1. Compare per-entity counts before aggregating the whole table.\nIf one entity dominates the sample, review entity bias before reading the global average.\nTop values for timestamp:\n- 2026-05-18T08:00:00 -> 1 rows\n- 2026-05-18T08:05:00 -> 1 rows\n- 2026-05-18T08:10:00 -> 1 rows\n- 2026-05-18T08:15:00 -> 1 rows\n- 2026-05-18T08:20:00 -> 1 rows",
+      "payload": {
+        "legacy_content": "Entity/group summary\n1. Compare per-entity counts before aggregating the whole table.\nIf one entity dominates the sample, review entity bias before reading the global average.\nTop values for timestamp:\n- 2026-05-18T08:00:00 -> 1 rows\n- 2026-05-18T08:05:00 -> 1 rows\n- 2026-05-18T08:10:00 -> 1 rows\n- 2026-05-18T08:15:00 -> 1 rows\n- 2026-05-18T08:20:00 -> 1 rows"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "entity"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "ff51ae6f-f680-4fd8-b748-50b1f7b33530"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "table:numeric:0001",
+      "text_content": "Numeric profile for latency_ms\ncount=10 mean=353.3000 std=177.0017 min=120.0000 max=641.0000\np10=125.4000 median=337.0000 p90=584.3000\n1. Review distribution shape before setting thresholds on latency_ms.\nIf latency_ms shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "payload": {
+        "legacy_content": "Numeric profile for latency_ms\ncount=10 mean=353.3000 std=177.0017 min=120.0000 max=641.0000\np10=125.4000 median=337.0000 p90=584.3000\n1. Review distribution shape before setting thresholds on latency_ms.\nIf latency_ms shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "latency_ms"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "5acf4fd3-0a52-4fae-91c5-11954ab42901"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "table:numeric:0002",
+      "text_content": "Numeric profile for error_rate\ncount=10 mean=0.0105 std=0.0073 min=0.0020 max=0.0240\np10=0.0020 median=0.0090 p90=0.0195\n1. Review distribution shape before setting thresholds on error_rate.\nIf error_rate shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "payload": {
+        "legacy_content": "Numeric profile for error_rate\ncount=10 mean=0.0105 std=0.0073 min=0.0020 max=0.0240\np10=0.0020 median=0.0090 p90=0.0195\n1. Review distribution shape before setting thresholds on error_rate.\nIf error_rate shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "error_rate"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "4dc95aa6-224c-4a31-b18b-61620272e0a2"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "table:numeric:0003",
+      "text_content": "Numeric profile for cost_usd\ncount=10 mean=16.9700 std=2.0020 min=14.1000 max=20.0000\np10=14.3700 median=16.8500 p90=19.3700\n1. Review distribution shape before setting thresholds on cost_usd.\nIf cost_usd shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions.",
+      "payload": {
+        "legacy_content": "Numeric profile for cost_usd\ncount=10 mean=16.9700 std=2.0020 min=14.1000 max=20.0000\np10=14.3700 median=16.8500 p90=19.3700\n1. Review distribution shape before setting thresholds on cost_usd.\nIf cost_usd shows a long tail, inspect outliers before computing a baseline.\nVerify extreme rows against source records and unit assumptions."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "numeric",
+        "cost_usd"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "4de6c334-a9b5-4980-bcfd-4e364fbe46e7"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "timeseries:overview:0001",
+      "text_content": "Time series overview\ntime_column=timestamp range=2026-05-18 08:00:00 -> 2026-05-18 08:45:00\n1. Sort by timestamp before comparing neighboring measurements.\n2. Investigate abrupt deltas before averaging the full observation window.\nIf anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.\nVerify each anomaly against raw rows immediately before and after the flagged timestamp.",
+      "payload": {
+        "legacy_content": "Time series overview\ntime_column=timestamp range=2026-05-18 08:00:00 -> 2026-05-18 08:45:00\n1. Sort by timestamp before comparing neighboring measurements.\n2. Investigate abrupt deltas before averaging the full observation window.\nIf anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.\nVerify each anomaly against raw rows immediately before and after the flagged timestamp."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "timeseries",
+        "timestamp"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "ab980408-59ed-463f-a0de-5c72d3963852"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "timeseries:metric:0001",
+      "text_content": "Time series diagnostic for latency_ms\ntrend=upward pct_change=138.3333%\nlargest_jump_timestamp=2026-05-18 08:40:00 largest_jump_value=158.0000\nbaseline_mean=174.5000 baseline_std=58.1270 baseline_range=120.0000..264.0000\nrecent_mean=481.2500 drift_label=upward_drift drift_score=5.2772\nchange_points=2026-05-18 08:20:00(delta=124.0000), 2026-05-18 08:25:00(delta=134.0000), 2026-05-18 08:30:00(delta=119.0000), 2026-05-18 08:40:00(delta=-158.0000), 2026-05-18 08:45:00(delta=-134.0000)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort latency_ms by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend.\nIf latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "payload": {
+        "legacy_content": "Time series diagnostic for latency_ms\ntrend=upward pct_change=138.3333%\nlargest_jump_timestamp=2026-05-18 08:40:00 largest_jump_value=158.0000\nbaseline_mean=174.5000 baseline_std=58.1270 baseline_range=120.0000..264.0000\nrecent_mean=481.2500 drift_label=upward_drift drift_score=5.2772\nchange_points=2026-05-18 08:20:00(delta=124.0000), 2026-05-18 08:25:00(delta=134.0000), 2026-05-18 08:30:00(delta=119.0000), 2026-05-18 08:40:00(delta=-158.0000), 2026-05-18 08:45:00(delta=-134.0000)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort latency_ms by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:40:00 before trusting a global trend.\nIf latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "latency_ms"
+      ],
+      "parents": [],
+      "children": [
+        "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+      ],
+      "derived_from": [],
+      "evidence_id": "36b4938a-a78e-47bb-820d-581b41ce58cd"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "event",
+      "span_ref": "timeseries:event:0001",
+      "text_content": "Detected anomaly windows for latency_ms\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=124.0000\n- change_point=2026-05-18 08:25:00 delta=134.0000\n- change_point=2026-05-18 08:30:00 delta=119.0000\n- change_point=2026-05-18 08:40:00 delta=-158.0000\n- change_point=2026-05-18 08:45:00 delta=-134.0000\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00",
+      "payload": {
+        "legacy_content": "Detected anomaly windows for latency_ms\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=124.0000\n- change_point=2026-05-18 08:25:00 delta=134.0000\n- change_point=2026-05-18 08:30:00 delta=119.0000\n- change_point=2026-05-18 08:40:00 delta=-158.0000\n- change_point=2026-05-18 08:45:00 delta=-134.0000\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "anomaly",
+        "latency_ms",
+        "timeseries:baseline",
+        "timeseries:change_point",
+        "timeseries:drift"
+      ],
+      "parents": [
+        "36b4938a-a78e-47bb-820d-581b41ce58cd"
+      ],
+      "children": [],
+      "derived_from": [
+        "36b4938a-a78e-47bb-820d-581b41ce58cd"
+      ],
+      "evidence_id": "69cc57f6-a16a-48e4-a832-15c9c7fc30cb"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "timeseries:metric:0002",
+      "text_content": "Time series diagnostic for error_rate\ntrend=upward pct_change=200.0000%\nlargest_jump_timestamp=2026-05-18 08:25:00 largest_jump_value=0.0070\nbaseline_mean=0.0037 baseline_std=0.0020 baseline_range=0.0020..0.0070\nrecent_mean=0.0147 drift_label=upward_drift drift_score=5.3755\nchange_points=2026-05-18 08:20:00(delta=0.0050), 2026-05-18 08:25:00(delta=0.0070), 2026-05-18 08:30:00(delta=0.0050), 2026-05-18 08:35:00(delta=-0.0060), 2026-05-18 08:40:00(delta=-0.0070), 2026-05-18 08:45:00(delta=-0.0050)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort error_rate by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend.\nIf error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "payload": {
+        "legacy_content": "Time series diagnostic for error_rate\ntrend=upward pct_change=200.0000%\nlargest_jump_timestamp=2026-05-18 08:25:00 largest_jump_value=0.0070\nbaseline_mean=0.0037 baseline_std=0.0020 baseline_range=0.0020..0.0070\nrecent_mean=0.0147 drift_label=upward_drift drift_score=5.3755\nchange_points=2026-05-18 08:20:00(delta=0.0050), 2026-05-18 08:25:00(delta=0.0070), 2026-05-18 08:30:00(delta=0.0050), 2026-05-18 08:35:00(delta=-0.0060), 2026-05-18 08:40:00(delta=-0.0070), 2026-05-18 08:45:00(delta=-0.0050)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort error_rate by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:25:00 before trusting a global trend.\nIf error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "error_rate"
+      ],
+      "parents": [],
+      "children": [
+        "e1208740-bb22-4bee-9791-48c251ab0bd5"
+      ],
+      "derived_from": [],
+      "evidence_id": "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "event",
+      "span_ref": "timeseries:event:0002",
+      "text_content": "Detected anomaly windows for error_rate\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=0.0050\n- change_point=2026-05-18 08:25:00 delta=0.0070\n- change_point=2026-05-18 08:30:00 delta=0.0050\n- change_point=2026-05-18 08:35:00 delta=-0.0060\n- change_point=2026-05-18 08:40:00 delta=-0.0070\n- change_point=2026-05-18 08:45:00 delta=-0.0050\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00",
+      "payload": {
+        "legacy_content": "Detected anomaly windows for error_rate\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=0.0050\n- change_point=2026-05-18 08:25:00 delta=0.0070\n- change_point=2026-05-18 08:30:00 delta=0.0050\n- change_point=2026-05-18 08:35:00 delta=-0.0060\n- change_point=2026-05-18 08:40:00 delta=-0.0070\n- change_point=2026-05-18 08:45:00 delta=-0.0050\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "anomaly",
+        "error_rate",
+        "timeseries:baseline",
+        "timeseries:change_point",
+        "timeseries:drift"
+      ],
+      "parents": [
+        "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+      ],
+      "children": [],
+      "derived_from": [
+        "d5f72618-8cd2-4ee7-af89-307579f9e9fc"
+      ],
+      "evidence_id": "e1208740-bb22-4bee-9791-48c251ab0bd5"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "metric",
+      "span_ref": "timeseries:metric:0003",
+      "text_content": "Time series diagnostic for cost_usd\ntrend=upward pct_change=13.4752%\nlargest_jump_timestamp=2026-05-18 08:20:00 largest_jump_value=1.8000\nbaseline_mean=14.9500 baseline_std=0.7762 baseline_range=14.1000..16.1000\nrecent_mean=18.1750 drift_label=upward_drift drift_score=4.1548\nchange_points=2026-05-18 08:20:00(delta=1.8000), 2026-05-18 08:45:00(delta=-1.6000)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort cost_usd by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend.\nIf cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records.",
+      "payload": {
+        "legacy_content": "Time series diagnostic for cost_usd\ntrend=upward pct_change=13.4752%\nlargest_jump_timestamp=2026-05-18 08:20:00 largest_jump_value=1.8000\nbaseline_mean=14.9500 baseline_std=0.7762 baseline_range=14.1000..16.1000\nrecent_mean=18.1750 drift_label=upward_drift drift_score=4.1548\nchange_points=2026-05-18 08:20:00(delta=1.8000), 2026-05-18 08:45:00(delta=-1.6000)\nanomaly_timestamps=2026-05-18 08:20:00, 2026-05-18 08:25:00, 2026-05-18 08:30:00, 2026-05-18 08:35:00, 2026-05-18 08:40:00\n1. Sort cost_usd by timestamp before comparing local deltas.\n2. Review the largest jump around 2026-05-18 08:20:00 before trusting a global trend.\nIf cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.\nVerify each flagged point against neighboring rows and source records."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "timeseries",
+        "cost_usd"
+      ],
+      "parents": [],
+      "children": [
+        "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+      ],
+      "derived_from": [],
+      "evidence_id": "c5272f44-f82f-4978-94d1-141c441e3feb"
+    },
+    {
+      "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+      "modality": "tabular",
+      "content_type": "event",
+      "span_ref": "timeseries:event:0003",
+      "text_content": "Detected anomaly windows for cost_usd\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=1.8000\n- change_point=2026-05-18 08:45:00 delta=-1.6000\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00",
+      "payload": {
+        "legacy_content": "Detected anomaly windows for cost_usd\nWhen anomalies cluster, inspect the shared upstream dependency before per-row debugging.\nchange_point_candidates:\n- change_point=2026-05-18 08:20:00 delta=1.8000\n- change_point=2026-05-18 08:45:00 delta=-1.6000\nanomaly_intervals:\n- anomaly_interval=2026-05-18 08:20:00 -> 2026-05-18 08:40:00\n- anomaly_at=2026-05-18 08:20:00\n- anomaly_at=2026-05-18 08:25:00\n- anomaly_at=2026-05-18 08:30:00\n- anomaly_at=2026-05-18 08:35:00\n- anomaly_at=2026-05-18 08:40:00"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "anomaly",
+        "cost_usd",
+        "timeseries:baseline",
+        "timeseries:change_point",
+        "timeseries:drift"
+      ],
+      "parents": [
+        "c5272f44-f82f-4978-94d1-141c441e3feb"
+      ],
+      "children": [],
+      "derived_from": [
+        "c5272f44-f82f-4978-94d1-141c441e3feb"
+      ],
+      "evidence_id": "7ac76580-97d6-4ca1-a169-272ebb1f0811"
+    }
+  ],
+  "request_payload": {
+    "file_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\tabular\\latency-error-report.csv",
+    "title": "latency and error report to guardrail skill",
+    "time_column": null,
+    "value_columns": [],
+    "entity_columns": [],
+    "max_series": 6,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "controlled_trial"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\bundle.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\evidence_nodes.json",
+    "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\publications",
+    "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\publications\\manifest.json",
+    "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\quality_score.json",
+    "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\review_task.json",
+    "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\review_feedback.json",
+    "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\reviewer_packet.json",
+    "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\review_policy.json",
+    "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\publications\\SKILL.md",
+    "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\publications\\skill.json",
+    "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\review_queue\\pending\\c5581006-0d73-4bcc-ba0c-71a22adac164.json"
+  },
+  "adapter_metadata": {
+    "time_column": "timestamp",
+    "entity_columns": [
+      "timestamp"
+    ],
+    "numeric_columns": [
+      "latency_ms",
+      "error_rate",
+      "cost_usd"
+    ],
+    "evidence_node_count": 13,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "quality_scores": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.7473,
+      "overall_score": 0.9579,
+      "diagnostics": {
+        "step_count": 8.0,
+        "evidence_node_count": 13.0,
+        "publication_count": 2.0
+      }
+    },
+    "review_policy": {
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.7473,
+        "overall_score": 0.9579
+      }
+    },
+    "review_task": {
+      "skill_id": "1163495b-059b-4b72-af24-89394382042d",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.7473,
+        "overall_score": 0.9579
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "review_notes": "",
+      "status": "review_pending",
+      "created_at": "2026-05-25T10:17:09Z",
+      "review_task_id": "c5581006-0d73-4bcc-ba0c-71a22adac164"
+    },
+    "review_feedback": {
+      "review_task_id": "c5581006-0d73-4bcc-ba0c-71a22adac164",
+      "skill_id": "1163495b-059b-4b72-af24-89394382042d",
+      "decision": "review_required",
+      "status": "review_pending",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "categories": [
+        "manual_review"
+      ],
+      "atom_actions": [],
+      "graph_actions": [],
+      "policy_actions": [
+        {
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.7473,
+        "overall_score": 0.9579
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      }
+    },
+    "reviewer_packet": {
+      "schema_version": "reviewer_packet.v1",
+      "created_at": "2026-05-25T10:17:09Z",
+      "skill_id": "1163495b-059b-4b72-af24-89394382042d",
+      "skill_name": "latency and error report to guardrail skill",
+      "review_task_id": "c5581006-0d73-4bcc-ba0c-71a22adac164",
+      "review_status": "review_pending",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "input_summary": {
+        "title": "latency and error report to guardrail skill",
+        "goal": "Distill controlled_trial material into a build_skill for self. Seed: Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. No",
+        "summary": "Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean it before trend analysis. Verify the busine",
+        "modalities": [
+          "tabular"
+        ],
+        "evidence_unit_count": 13,
+        "evidence_node_count": 13,
+        "asset_count": 1,
+        "asset_refs": []
+      },
+      "evidence_links": [
+        {
+          "evidence_id": "75191dc1-38fe-4383-9f02-609512837ccc",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "table:schema:0001",
+          "content_type": "table",
+          "modality": "tabular",
+          "confidence": 0.9,
+          "summary": "Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean...",
+          "tags": [
+            "schema"
+          ]
+        },
+        {
+          "evidence_id": "b2b22bb9-655d-4faa-868f-94e62dc7654d",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "table:missingness:0001",
+          "content_type": "table",
+          "modality": "tabular",
+          "confidence": 0.88,
+          "summary": "Table missingness profile 1. Inspect the highest-missing columns before trusting downstream trends. If missingness jumps after a date boundary, inspect upstream ingestion or schema drift. Verify whether null means unavailable, zero, or n...",
+          "tags": [
+            "missingness"
+          ]
+        },
+        {
+          "evidence_id": "ff51ae6f-f680-4fd8-b748-50b1f7b33530",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "table:entities:0001",
+          "content_type": "table",
+          "modality": "tabular",
+          "confidence": 0.82,
+          "summary": "Entity/group summary 1. Compare per-entity counts before aggregating the whole table. If one entity dominates the sample, review entity bias before reading the global average. Top values for timestamp: - 2026-05-18T08:00:00 -> 1 rows - 2...",
+          "tags": [
+            "entity"
+          ]
+        },
+        {
+          "evidence_id": "5acf4fd3-0a52-4fae-91c5-11954ab42901",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "table:numeric:0001",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.8,
+          "summary": "Numeric profile for latency_ms count=10 mean=353.3000 std=177.0017 min=120.0000 max=641.0000 p10=125.4000 median=337.0000 p90=584.3000 1. Review distribution shape before setting thresholds on latency_ms. If latency_ms shows a long tail,...",
+          "tags": [
+            "numeric",
+            "latency_ms"
+          ]
+        },
+        {
+          "evidence_id": "4dc95aa6-224c-4a31-b18b-61620272e0a2",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "table:numeric:0002",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.8,
+          "summary": "Numeric profile for error_rate count=10 mean=0.0105 std=0.0073 min=0.0020 max=0.0240 p10=0.0020 median=0.0090 p90=0.0195 1. Review distribution shape before setting thresholds on error_rate. If error_rate shows a long tail, inspect outli...",
+          "tags": [
+            "numeric",
+            "error_rate"
+          ]
+        },
+        {
+          "evidence_id": "4de6c334-a9b5-4980-bcfd-4e364fbe46e7",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "table:numeric:0003",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.8,
+          "summary": "Numeric profile for cost_usd count=10 mean=16.9700 std=2.0020 min=14.1000 max=20.0000 p10=14.3700 median=16.8500 p90=19.3700 1. Review distribution shape before setting thresholds on cost_usd. If cost_usd shows a long tail, inspect outli...",
+          "tags": [
+            "numeric",
+            "cost_usd"
+          ]
+        },
+        {
+          "evidence_id": "ab980408-59ed-463f-a0de-5c72d3963852",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:overview:0001",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.9,
+          "summary": "Time series overview time_column=timestamp range=2026-05-18 08:00:00 -> 2026-05-18 08:45:00 1. Sort by timestamp before comparing neighboring measurements. 2. Investigate abrupt deltas before averaging the full observation window. If ano...",
+          "tags": [
+            "timeseries",
+            "timestamp"
+          ]
+        },
+        {
+          "evidence_id": "36b4938a-a78e-47bb-820d-581b41ce58cd",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:metric:0001",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.86,
+          "summary": "Time series diagnostic for latency_ms trend=upward pct_change=138.3333% largest_jump_timestamp=2026-05-18 08:40:00 largest_jump_value=158.0000 baseline_mean=174.5000 baseline_std=58.1270 baseline_range=120.0000..264.0000 recent_mean=481....",
+          "tags": [
+            "timeseries",
+            "latency_ms"
+          ]
+        },
+        {
+          "evidence_id": "69cc57f6-a16a-48e4-a832-15c9c7fc30cb",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:event:0001",
+          "content_type": "event",
+          "modality": "tabular",
+          "confidence": 0.78,
+          "summary": "Detected anomaly windows for latency_ms When anomalies cluster, inspect the shared upstream dependency before per-row debugging. change_point_candidates: - change_point=2026-05-18 08:20:00 delta=124.0000 - change_point=2026-05-18 08:25:0...",
+          "tags": [
+            "anomaly",
+            "latency_ms",
+            "timeseries:baseline",
+            "timeseries:change_point",
+            "timeseries:drift"
+          ]
+        },
+        {
+          "evidence_id": "d5f72618-8cd2-4ee7-af89-307579f9e9fc",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:metric:0002",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.86,
+          "summary": "Time series diagnostic for error_rate trend=upward pct_change=200.0000% largest_jump_timestamp=2026-05-18 08:25:00 largest_jump_value=0.0070 baseline_mean=0.0037 baseline_std=0.0020 baseline_range=0.0020..0.0070 recent_mean=0.0147 drift_...",
+          "tags": [
+            "timeseries",
+            "error_rate"
+          ]
+        },
+        {
+          "evidence_id": "e1208740-bb22-4bee-9791-48c251ab0bd5",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:event:0002",
+          "content_type": "event",
+          "modality": "tabular",
+          "confidence": 0.78,
+          "summary": "Detected anomaly windows for error_rate When anomalies cluster, inspect the shared upstream dependency before per-row debugging. change_point_candidates: - change_point=2026-05-18 08:20:00 delta=0.0050 - change_point=2026-05-18 08:25:00...",
+          "tags": [
+            "anomaly",
+            "error_rate",
+            "timeseries:baseline",
+            "timeseries:change_point",
+            "timeseries:drift"
+          ]
+        },
+        {
+          "evidence_id": "c5272f44-f82f-4978-94d1-141c441e3feb",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:metric:0003",
+          "content_type": "metric",
+          "modality": "tabular",
+          "confidence": 0.86,
+          "summary": "Time series diagnostic for cost_usd trend=upward pct_change=13.4752% largest_jump_timestamp=2026-05-18 08:20:00 largest_jump_value=1.8000 baseline_mean=14.9500 baseline_std=0.7762 baseline_range=14.1000..16.1000 recent_mean=18.1750 drift...",
+          "tags": [
+            "timeseries",
+            "cost_usd"
+          ]
+        },
+        {
+          "evidence_id": "7ac76580-97d6-4ca1-a169-272ebb1f0811",
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "span_ref": "timeseries:event:0003",
+          "content_type": "event",
+          "modality": "tabular",
+          "confidence": 0.78,
+          "summary": "Detected anomaly windows for cost_usd When anomalies cluster, inspect the shared upstream dependency before per-row debugging. change_point_candidates: - change_point=2026-05-18 08:20:00 delta=1.8000 - change_point=2026-05-18 08:45:00 de...",
+          "tags": [
+            "anomaly",
+            "cost_usd",
+            "timeseries:baseline",
+            "timeseries:change_point",
+            "timeseries:drift"
+          ]
+        }
+      ],
+      "generated_skill": {
+        "skill": {
+          "name": "latency and error report to guardrail skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. No",
+          "source_modality": "tabular",
+          "skill_type": "analysis",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert tabular evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Structured table or time-series dataset",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "If a column mixes numeric and string forms, clean it before trend analysis.",
+            "If one entity dominates the sample, review entity bias before reading the global average.",
+            "If latency_ms shows a long tail, inspect outliers before computing a baseline.",
+            "If error_rate shows a long tail, inspect outliers before computing a baseline.",
+            "If cost_usd shows a long tail, inspect outliers before computing a baseline.",
+            "When anomalies cluster, inspect the shared upstream dependency before per-row debugging."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Confirm row count and dtype assumptions before interpreting the table.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Normalize time zones, units, and duplicated keys before aggregation.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "timestamp :: str",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 4,
+              "action": "service :: str",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 5,
+              "action": "latency_ms :: int64",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 6,
+              "action": "error_rate :: float64",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 7,
+              "action": "cost_usd :: float64",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 8,
+              "action": "Inspect the highest-missing columns before trusting downstream trends.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [
+            "If missingness jumps after a date boundary, inspect upstream ingestion or schema drift.",
+            "If anomalies cluster near a timestamp boundary, inspect deploys, ingest gaps, or backfills first.",
+            "If latency_ms deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+            "If error_rate deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first.",
+            "If cost_usd deviates more than the rolling baseline, inspect deploys, schema changes, or data loss first."
+          ],
+          "anti_patterns": [],
+          "verification": [
+            "Verify the business grain of one row before building any skill from this table.",
+            "Verify whether null means unavailable, zero, or not applicable in the source system.",
+            "Verify extreme rows against source records and unit assumptions.",
+            "Verify each anomaly against raw rows immediately before and after the flagged timestamp.",
+            "Verify each flagged point against neighboring rows and source records."
+          ],
+          "evidence_refs": [
+            "75191dc1-38fe-4383-9f02-609512837ccc@table:schema:0001",
+            "b2b22bb9-655d-4faa-868f-94e62dc7654d@table:missingness:0001",
+            "ff51ae6f-f680-4fd8-b748-50b1f7b33530@table:entities:0001",
+            "5acf4fd3-0a52-4fae-91c5-11954ab42901@table:numeric:0001",
+            "4dc95aa6-224c-4a31-b18b-61620272e0a2@table:numeric:0002",
+            "4de6c334-a9b5-4980-bcfd-4e364fbe46e7@table:numeric:0003",
+            "ab980408-59ed-463f-a0de-5c72d3963852@timeseries:overview:0001",
+            "36b4938a-a78e-47bb-820d-581b41ce58cd@timeseries:metric:0001",
+            "69cc57f6-a16a-48e4-a832-15c9c7fc30cb@timeseries:event:0001",
+            "d5f72618-8cd2-4ee7-af89-307579f9e9fc@timeseries:metric:0002",
+            "e1208740-bb22-4bee-9791-48c251ab0bd5@timeseries:event:0002",
+            "c5272f44-f82f-4978-94d1-141c441e3feb@timeseries:metric:0003",
+            "7ac76580-97d6-4ca1-a169-272ebb1f0811@timeseries:event:0003"
+          ],
+          "confidence": 0.95,
+          "version": "0.1.0",
+          "summary": "Table schema summary Rows: 10 Columns: 5 1. Confirm row count and dtype assumptions before interpreting the table. 2. Normalize time zones, units, and duplicated keys before aggregation. If a column mixes numeric and string forms, clean it before trend analysis. Verify the busine",
+          "tags": [
+            "controlled_trial",
+            "tabular",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:09Z",
+          "skill_id": "1163495b-059b-4b72-af24-89394382042d"
+        },
+        "skill_markdown_preview": "--- name: \"latency and error report to guardrail skill\" description: \"Use when Use when converting tabular evidence into build_skill.. Confirm row count and dtype assumptions before interpreting the table.\" --- # latency and error report to guardrail skill ## Workflow 1. Confirm row count and dtype assumptions before interpreting the table. (Why: Derived from semantic atom.) 2. Normalize time zones, units, and duplicated keys before aggregation. (Why: Derived from semantic atom.) 3. timestamp :: str (Why: Derived from semantic atom.) 4. service :: str (Why: Derived from semantic atom.) 5. latency_ms :: int64 (Why: Derived from semantic atom.) 6. error_rate :: float64 (Why: Derived from semantic atom.) 7. cost_usd :: float64 (Why: Derived from semantic atom.) 8. Inspect the highest-missing columns before trusting downstream trends. (Why: Derived from semantic atom.) 9. timestamp missing_pct=0.0 (Why: Derived from semantic atom.) 10. service missing_pct=0.0 (Why: Derived from semantic atom.) 11. latency_ms missing_pct=0.0 (Why: Derived from semantic atom.) 12. error_rate missing_pct=0.0 (Why: Derived from semantic atom.) 13. cost_usd missing_pct=0.0 (Why: Derived from semantic ato...",
+        "step_count": 8,
+        "decision_rule_count": 5,
+        "verification_count": 5,
+        "publication_types": [
+          "skill_markdown",
+          "skill_json"
+        ],
+        "graph_id": "62677a4a-29d6-406f-b4c7-868a2dfc7390"
+      },
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.7473,
+        "overall_score": 0.9579,
+        "diagnostics": {
+          "step_count": 8.0,
+          "evidence_node_count": 13.0,
+          "publication_count": 2.0
+        }
+      },
+      "review_policy": {
+        "decision": "review_required",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        },
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.7473,
+          "overall_score": 0.9579
+        }
+      },
+      "review_feedback": {
+        "review_task_id": "c5581006-0d73-4bcc-ba0c-71a22adac164",
+        "skill_id": "1163495b-059b-4b72-af24-89394382042d",
+        "decision": "review_required",
+        "status": "review_pending",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "categories": [
+          "manual_review"
+        ],
+        "atom_actions": [],
+        "graph_actions": [],
+        "policy_actions": [
+          {
+            "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+            "target": "policy",
+            "intent": "escalate_manual_review",
+            "reason_code": "MANUAL_REVIEW_FALLBACK",
+            "params": {
+              "priority": "medium"
+            }
+          }
+        ],
+        "revision_suggestions": [
+          "S_MANUAL_REVIEW_REQUIRED"
+        ],
+        "follow_up_checks": [
+          "CHECK_MANUAL_REVIEW_OUTCOME"
+        ],
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.7473,
+          "overall_score": 0.9579
+        },
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        }
+      },
+      "risk_flags": [
+        {
+          "code": "controlled_trial_requires_review",
+          "severity": "medium",
+          "source": "review_policy"
+        },
+        {
+          "code": "tabular_requires_metric_review",
+          "severity": "medium",
+          "source": "modality"
+        }
+      ],
+      "approval_checklist": [
+        {
+          "check_id": "factual_accuracy",
+          "label": "Confirm generated skill facts match evidence.",
+          "required": true
+        },
+        {
+          "check_id": "actionability",
+          "label": "Confirm steps are concrete and executable by the target agent.",
+          "required": true
+        },
+        {
+          "check_id": "dangerous_operations",
+          "label": "Confirm dangerous commands or production changes are clearly guarded.",
+          "required": true
+        },
+        {
+          "check_id": "description_trigger",
+          "label": "Confirm description would trigger only for the intended scenario.",
+          "required": true
+        },
+        {
+          "check_id": "metric_check",
+          "label": "Validate metric names, units, thresholds, and baseline windows.",
+          "required": true
+        }
+      ]
+    },
+    "provider_footprint": {
+      "corpus_id": "",
+      "asset_breakdown": [
+        {
+          "asset_id": "398cdc8d-0547-4661-8e99-a8297bd1e58e",
+          "role": "primary",
+          "modality": "tabular",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\tabular\\latency-error-report.csv",
+          "call_total": 0,
+          "provider_calls": []
+        }
+      ],
+      "summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      },
+      "runtime_provider_audits": [],
+      "runtime_summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      }
+    }
+  },
+  "simulated_review": {
+    "approved_at_utc": "2026-05-25T10:17:09Z",
+    "approved_by": "controlled-trial-runner",
+    "mode": "simulated"
+  }
+}

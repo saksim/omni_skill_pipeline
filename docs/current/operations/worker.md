@@ -123,7 +123,8 @@ data/jobs/
 - `action=list` (`queue_status`, `limit`)
 - `action=claim` (`review_task_id` optional, `consumer` optional)
 - `action=consume` (`consumer` optional; compatibility alias)
-- `action=close` (`review_task_id`, optional `status`, `closed_by`, `review_notes`)
+- `action=close` (`review_task_id`, optional `status`, `closed_by`, `review_notes`, `decision`, `reason_codes`, `reviewer_edits`)
+- `action=approve|reject|needs_rework` (`review_task_id`, optional `reviewer`, `reason_codes`, `review_notes`, `reviewer_edits`, `status`)
 
 ### Rebuild Publication
 

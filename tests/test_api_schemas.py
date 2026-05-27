@@ -13,10 +13,13 @@ if str(SRC_ROOT) not in sys.path:
 
 from omni_skill_pipeline.api_schemas import (
     AudioDistillRequestSchema,
+    ConsoleViewsRequestSchema,
     CorpusAssetRequestSchema,
     CorpusDistillRequestSchema,
     DistillGoalSchema,
     ImageDistillRequestSchema,
+    ReviewQueueCloseRequestSchema,
+    ReviewQueueDecisionRequestSchema,
     TabularDistillRequestSchema,
     TextDistillRequestSchema,
     VideoDistillRequestSchema,
@@ -72,6 +75,56 @@ class ApiSchemaTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             VideoDistillRequestSchema.model_validate({'video_path': 'demo.mp4', 'scene_threshold': 1.5})
 
+    def test_review_queue_decision_schema_normalizes_decision_and_reason_codes(self) -> None:
+        payload = ReviewQueueDecisionRequestSchema.model_validate(
+            {
+                'decision': 'needs-rework',
+                'reviewer': 'ops-reviewer',
+                'reason_codes': [' REVIEW_POLICY_MISMATCH ', ''],
+                'review_notes': 'clarify rollback precondition',
+                'reviewer_edits': {'skill_markdown_patch': '...'},
+            }
+        )
+        self.assertEqual(payload.decision, 'needs_rework')
+        self.assertEqual(payload.reviewer, 'ops-reviewer')
+        self.assertEqual(payload.reason_codes, ['REVIEW_POLICY_MISMATCH'])
+        self.assertEqual(payload.review_notes, 'clarify rollback precondition')
+        self.assertEqual(payload.reviewer_edits, {'skill_markdown_patch': '...'})
+
+        close_payload = ReviewQueueCloseRequestSchema.model_validate(
+            {
+                'status': 'published',
+                'closed_by': 'ops-lead',
+                'decision': 'approved',
+                'reason_codes': ['SAFE'],
+                'reviewer_edits': {'checklist_diff': 'none'},
+            }
+        )
+        self.assertEqual(close_payload.decision, 'approve')
+        self.assertEqual(close_payload.reason_codes, ['SAFE'])
+        self.assertEqual(close_payload.reviewer_edits, {'checklist_diff': 'none'})
+
+    def test_review_queue_decision_schema_rejects_invalid_decision(self) -> None:
+        with self.assertRaises(ValidationError):
+            ReviewQueueDecisionRequestSchema.model_validate({'decision': 'ship-it'})
+
+    def test_console_views_schema_normalizes_and_validates(self) -> None:
+        payload = ConsoleViewsRequestSchema.model_validate(
+            {
+                'organization_id': ' org-a ',
+                'project_id': ' proj-1 ',
+                'queue_status': 'CLOSED',
+                'limit': 25,
+            }
+        )
+        self.assertEqual(payload.organization_id, 'org-a')
+        self.assertEqual(payload.project_id, 'proj-1')
+        self.assertEqual(payload.queue_status, 'closed')
+        self.assertEqual(payload.limit, 25)
+
+        with self.assertRaises(ValidationError):
+            ConsoleViewsRequestSchema.model_validate({'queue_status': 'invalid'})
+
     @unittest.skipIf(FastAPI is None, 'fastapi is not installed')
     def test_openapi_schema_exposes_all_request_models(self) -> None:
         app = FastAPI(title='schema-probe')
@@ -100,11 +153,16 @@ class ApiSchemaTests(unittest.TestCase):
         def distill_corpus(payload: CorpusDistillRequestSchema) -> dict[str, bool]:
             return {'ok': True}
 
+        @app.post('/v1/console/views')
+        def console_views(payload: ConsoleViewsRequestSchema) -> dict[str, bool]:
+            return {'ok': True}
+
         openapi = app.openapi()
         schemas = set(openapi['components']['schemas'])
 
         for expected in (
             'AudioDistillRequestSchema',
+            'ConsoleViewsRequestSchema',
             'CorpusAssetRequestSchema',
             'CorpusDistillRequestSchema',
             'DistillGoalSchema',

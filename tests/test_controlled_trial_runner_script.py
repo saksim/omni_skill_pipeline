@@ -76,6 +76,16 @@ def _mixed_manifest_payload() -> dict[str, object]:
     }
 
 
+def _invalid_evidence_origin_manifest_payload() -> dict[str, object]:
+    payload = _text_manifest_payload()
+    samples = payload.get("samples", [])
+    assert isinstance(samples, list)
+    sample = samples[0]
+    assert isinstance(sample, dict)
+    sample["evidence_origin"] = "unknown"
+    return payload
+
+
 class ControlledTrialRunnerScriptTests(unittest.TestCase):
     def test_dry_run_writes_execution_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -173,6 +183,9 @@ class ControlledTrialRunnerScriptTests(unittest.TestCase):
             metrics_report = json.loads(metrics_report_path.read_text(encoding="utf-8"))
             self.assertEqual(metrics_report.get("overall_status"), "fail")
             self.assertTrue(metrics_report.get("ga_discussion_blocked"))
+            launch_gate_evidence = metrics_report.get("trial_metrics", {}).get("launch_gate_evidence", {})
+            self.assertEqual(launch_gate_evidence.get("real_evidence_missing_source_trace_count"), 0)
+            self.assertEqual(launch_gate_evidence.get("real_evidence_missing_review_trace_count"), 0)
             failed_ids = {
                 str(item.get("id", ""))
                 for item in metrics_report.get("success_criteria", {}).get("failed_conditions", [])
@@ -183,6 +196,35 @@ class ControlledTrialRunnerScriptTests(unittest.TestCase):
             summary_text = metrics_summary_path.read_text(encoding="utf-8")
             self.assertIn("Overall status: `fail`", summary_text)
             self.assertIn("loop_volume_and_modality_coverage", summary_text)
+
+    def test_invalid_evidence_origin_fails_with_actionable_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            manifest_path = tmp_path / "trial-manifest-invalid-origin.json"
+            output_dir = tmp_path / "out"
+            manifest_path.write_text(
+                json.dumps(_invalid_evidence_origin_manifest_payload(), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--manifest",
+                    str(manifest_path),
+                    "--output-dir",
+                    str(output_dir),
+                    "--use-fixture-stubs",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 2)
+            self.assertIn("Unsupported evidence_origin", completed.stderr)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1049 @@
+{
+  "asset": {
+    "modality": "image",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+    "metadata": {
+      "filename": "error-rate-trend.png",
+      "width": 640,
+      "height": 360,
+      "format": "PNG"
+    },
+    "asset_id": "52663fb8-7125-434a-b720-3be727095bfd"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "span_ref": "image:ocr:0001",
+      "content_type": "ocr",
+      "content": "Fixture OCR: error rate trend\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:ocr_full"
+      ],
+      "evidence_id": "726f45ba-1ef4-4ec2-a096-633d3ad2be35"
+    },
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "span_ref": "image:region:0001",
+      "content_type": "ocr",
+      "content": "Fixture OCR: error rate trend\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:status",
+        "region_size:2"
+      ],
+      "evidence_id": "db787d3d-3471-46e2-8601-b2e9f4f65ca0"
+    },
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "span_ref": "image:scene:0001",
+      "content_type": "scene",
+      "content": "Fixture scene summary for error-rate-trend.",
+      "speaker": null,
+      "confidence": 0.72,
+      "tags": [
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "evidence_id": "00909ded-25f4-4721-99b5-ea5226840e19"
+    },
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "span_ref": "image:layout:0001",
+      "content_type": "scene",
+      "content": "Fixture scene summary for error-rate-trend.",
+      "speaker": null,
+      "confidence": 0.74,
+      "tags": [
+        "block:layout",
+        "source:scene_summary",
+        "layout_role:status",
+        "layout_role:chart",
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "evidence_id": "36ba799d-3f0d-4074-9a31-605a5ac8364b"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "concept",
+      "summary": "Fixture OCR: error rate trend\nstatus: degraded",
+      "evidence_refs": [
+        "726f45ba-1ef4-4ec2-a096-633d3ad2be35"
+      ],
+      "confidence": 0.65,
+      "insight_id": "8a3c9417-cf4e-498e-8441-e304d98b7b0e"
+    }
+  ],
+  "skill": {
+    "name": "image-based service health inspection skill",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: error rate trend status: degraded",
+    "source_modality": "image",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert image evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Image source",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Fixture OCR: error rate trend status: degraded",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Fixture scene summary for error-rate-trend.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "726f45ba-1ef4-4ec2-a096-633d3ad2be35@image:ocr:0001",
+      "db787d3d-3471-46e2-8601-b2e9f4f65ca0@image:region:0001",
+      "00909ded-25f4-4721-99b5-ea5226840e19@image:scene:0001",
+      "36ba799d-3f0d-4074-9a31-605a5ac8364b@image:layout:0001"
+    ],
+    "confidence": 0.71,
+    "version": "0.1.0",
+    "summary": "Fixture OCR: error rate trend status: degraded",
+    "tags": [
+      "controlled_trial",
+      "image",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430"
+  },
+  "skill_markdown": "---\nname: \"image-based service health inspection skill\"\ndescription: \"Use when Use when converting image evidence into build_skill.. Fixture OCR: error rate trend status: degraded\"\n---\n\n# image-based service health inspection skill\n\n## Workflow\n1. Fixture OCR: error rate trend status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.)\n2. Fixture scene summary for error-rate-trend. (Why: Derived from evidence fallback because no procedure atoms were found.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+  "skill_graph": {
+    "name": "image-based service health inspection skill",
+    "goal": "Distill controlled_trial material into build_skill for self.",
+    "source_modalities": [
+      "image"
+    ],
+    "audience": "self",
+    "summary": "Fixture OCR: error rate trend\nstatus: degraded",
+    "tags": [
+      "controlled_trial",
+      "skill_graph"
+    ],
+    "domain": "controlled_trial",
+    "trigger": [
+      "Use when converting image evidence into build_skill."
+    ],
+    "inputs": [
+      "Image frames or screenshots"
+    ],
+    "preconditions": [
+      "Confirm source evidence is complete and correctly scoped to the goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Fixture OCR: error rate trend status: degraded",
+        "why": "Derived from evidence fallback because no procedure atoms were found.",
+        "atom_refs": [],
+        "evidence_refs": [
+          "726f45ba-1ef4-4ec2-a096-633d3ad2be35"
+        ],
+        "metadata": {
+          "fallback_source": "evidence",
+          "source_span_ref": "image:ocr:0001"
+        },
+        "node_type": "step",
+        "node_id": "425754ef-7f38-4300-8087-2f9ee8aee6d8"
+      },
+      {
+        "step": 2,
+        "action": "Fixture scene summary for error-rate-trend.",
+        "why": "Derived from evidence fallback because no procedure atoms were found.",
+        "atom_refs": [],
+        "evidence_refs": [
+          "00909ded-25f4-4721-99b5-ea5226840e19"
+        ],
+        "metadata": {
+          "fallback_source": "evidence",
+          "source_span_ref": "image:scene:0001"
+        },
+        "node_type": "step",
+        "node_id": "acde4f6f-6e94-4097-83a9-98c77005ef1b"
+      }
+    ],
+    "decisions": [],
+    "verifications": [],
+    "risks": [],
+    "examples": [],
+    "variables": [],
+    "edges": [
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "acde4f6f-6e94-4097-83a9-98c77005ef1b",
+        "target_node_id": "425754ef-7f38-4300-8087-2f9ee8aee6d8",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "558f7084-0f03-42dc-8d3b-fba35ccc7087"
+      }
+    ],
+    "evidence_refs": [
+      "726f45ba-1ef4-4ec2-a096-633d3ad2be35",
+      "db787d3d-3471-46e2-8601-b2e9f4f65ca0",
+      "00909ded-25f4-4721-99b5-ea5226840e19",
+      "36ba799d-3f0d-4074-9a31-605a5ac8364b"
+    ],
+    "atom_refs": [
+      "f3480337-915e-481b-84ca-77685b1fc45c"
+    ],
+    "confidence": 0.57,
+    "version": "0.1.0",
+    "review_status": "draft",
+    "created_at": "2026-05-25T10:17:08Z",
+    "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58"
+  },
+  "publications": [
+    {
+      "publication_type": "skill_markdown",
+      "content": {
+        "filename": "SKILL.md",
+        "text": "---\nname: \"image-based service health inspection skill\"\ndescription: \"Use when Use when converting image evidence into build_skill.. Fixture OCR: error rate trend status: degraded\"\n---\n\n# image-based service health inspection skill\n\n## Workflow\n1. Fixture OCR: error rate trend status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.)\n2. Fixture scene summary for error-rate-trend. (Why: Derived from evidence fallback because no procedure atoms were found.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "description": "Use when Use when converting image evidence into build_skill.. Fixture OCR: error rate trend status: degraded",
+        "line_count": 23,
+        "line_limit": 220,
+        "references": {
+          "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `image`\n- evidence_ref_count: `4`\n\n## Evidence References\n- `726f45ba-1ef4-4ec2-a096-633d3ad2be35`\n- `db787d3d-3471-46e2-8601-b2e9f4f65ca0`\n- `00909ded-25f4-4721-99b5-ea5226840e19`\n- `36ba799d-3f0d-4074-9a31-605a5ac8364b`\n\n## OCR Notes\n- Keep OCR details and uncertain fragments here for reviewer traceability.\n",
+          "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+        },
+        "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+        "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430"
+      },
+      "path": "SKILL.md",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+        "skill_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+        "version": "0.1.0",
+        "renderer": "portable_skill_markdown_v1",
+        "evidence_refs": [
+          "726f45ba-1ef4-4ec2-a096-633d3ad2be35",
+          "db787d3d-3471-46e2-8601-b2e9f4f65ca0",
+          "00909ded-25f4-4721-99b5-ea5226840e19",
+          "36ba799d-3f0d-4074-9a31-605a5ac8364b"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "c3a83993-f07f-4237-b10e-66ea2792ee63"
+    },
+    {
+      "publication_type": "skill_json",
+      "content": {
+        "filename": "skill.json",
+        "skill": {
+          "name": "image-based service health inspection skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: error rate trend status: degraded",
+          "source_modality": "image",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert image evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Image source",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Fixture OCR: error rate trend status: degraded",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Fixture scene summary for error-rate-trend.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "726f45ba-1ef4-4ec2-a096-633d3ad2be35@image:ocr:0001",
+            "db787d3d-3471-46e2-8601-b2e9f4f65ca0@image:region:0001",
+            "00909ded-25f4-4721-99b5-ea5226840e19@image:scene:0001",
+            "36ba799d-3f0d-4074-9a31-605a5ac8364b@image:layout:0001"
+          ],
+          "confidence": 0.71,
+          "version": "0.1.0",
+          "summary": "Fixture OCR: error rate trend status: degraded",
+          "tags": [
+            "controlled_trial",
+            "image",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430"
+        },
+        "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+        "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430"
+      },
+      "path": "skill.json",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+        "skill_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+        "version": "0.1.0",
+        "renderer": "skill_json_v1_compat",
+        "evidence_refs": [
+          "726f45ba-1ef4-4ec2-a096-633d3ad2be35",
+          "db787d3d-3471-46e2-8601-b2e9f4f65ca0",
+          "00909ded-25f4-4721-99b5-ea5226840e19",
+          "36ba799d-3f0d-4074-9a31-605a5ac8364b"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "7c3d26c9-0e3b-4955-a7d7-2c6c8de2b7e7"
+    }
+  ],
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 0.9017,
+    "overall_score": 0.9836,
+    "diagnostics": {
+      "step_count": 2.0,
+      "evidence_node_count": 4.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_task": {
+    "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+    "decision": "auto_publish",
+    "reason_codes": [
+      "controlled_trial_requires_review",
+      "simulated_human_approval"
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.9017,
+      "overall_score": 0.9836
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "review_notes": "Simulated human approval in controlled-trial runner.",
+    "status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "review_task_id": "f9235ab9-7745-4956-97c0-fa0beb0dbbc1"
+  },
+  "corpus": null,
+  "evidence_nodes": [
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "modality": "image",
+      "content_type": "ocr",
+      "span_ref": "image:ocr:0001",
+      "text_content": "Fixture OCR: error rate trend\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture OCR: error rate trend\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:ocr_full"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "726f45ba-1ef4-4ec2-a096-633d3ad2be35"
+    },
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "modality": "image",
+      "content_type": "ocr",
+      "span_ref": "image:region:0001",
+      "text_content": "Fixture OCR: error rate trend\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture OCR: error rate trend\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:status",
+        "region_size:2"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "db787d3d-3471-46e2-8601-b2e9f4f65ca0"
+    },
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "modality": "image",
+      "content_type": "scene",
+      "span_ref": "image:scene:0001",
+      "text_content": "Fixture scene summary for error-rate-trend.",
+      "payload": {
+        "legacy_content": "Fixture scene summary for error-rate-trend."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.72,
+      "tags": [
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "00909ded-25f4-4721-99b5-ea5226840e19"
+    },
+    {
+      "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+      "modality": "image",
+      "content_type": "scene",
+      "span_ref": "image:layout:0001",
+      "text_content": "Fixture scene summary for error-rate-trend.",
+      "payload": {
+        "legacy_content": "Fixture scene summary for error-rate-trend."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.74,
+      "tags": [
+        "block:layout",
+        "source:scene_summary",
+        "layout_role:status",
+        "layout_role:chart",
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "36ba799d-3f0d-4074-9a31-605a5ac8364b"
+    }
+  ],
+  "request_payload": {
+    "image_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+    "title": "image-based service health inspection skill",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "controlled_trial"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\bundle.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\evidence_nodes.json",
+    "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\publications",
+    "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\publications\\manifest.json",
+    "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\quality_score.json",
+    "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\review_task.json",
+    "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\review_feedback.json",
+    "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\reviewer_packet.json",
+    "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\review_policy.json",
+    "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\publications\\SKILL.md",
+    "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\publications\\skill.json",
+    "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\review_queue\\pending\\f9235ab9-7745-4956-97c0-fa0beb0dbbc1.json"
+  },
+  "adapter_metadata": {
+    "frame_count": 1,
+    "ocr_region_count": 1,
+    "ocr_layout_roles": [
+      "layout_role:status"
+    ],
+    "layout_evidence_count": 1,
+    "provider_calls": [
+      {
+        "channel": "image_ocr",
+        "provider": "fixture-ocr",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      },
+      {
+        "channel": "image_analysis",
+        "provider": "FixtureImageAnalyzer",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      }
+    ],
+    "evidence_node_count": 4,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "quality_scores": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.9017,
+      "overall_score": 0.9836,
+      "diagnostics": {
+        "step_count": 2.0,
+        "evidence_node_count": 4.0,
+        "publication_count": 2.0
+      }
+    },
+    "review_policy": {
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9017,
+        "overall_score": 0.9836
+      }
+    },
+    "review_task": {
+      "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9017,
+        "overall_score": 0.9836
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "review_notes": "",
+      "status": "review_pending",
+      "created_at": "2026-05-25T10:17:08Z",
+      "review_task_id": "f9235ab9-7745-4956-97c0-fa0beb0dbbc1"
+    },
+    "review_feedback": {
+      "review_task_id": "f9235ab9-7745-4956-97c0-fa0beb0dbbc1",
+      "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+      "decision": "review_required",
+      "status": "review_pending",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "categories": [
+        "manual_review"
+      ],
+      "atom_actions": [],
+      "graph_actions": [],
+      "policy_actions": [
+        {
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9017,
+        "overall_score": 0.9836
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      }
+    },
+    "reviewer_packet": {
+      "schema_version": "reviewer_packet.v1",
+      "created_at": "2026-05-25T10:17:08Z",
+      "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+      "skill_name": "image-based service health inspection skill",
+      "review_task_id": "f9235ab9-7745-4956-97c0-fa0beb0dbbc1",
+      "review_status": "review_pending",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "input_summary": {
+        "title": "image-based service health inspection skill",
+        "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: error rate trend status: degraded",
+        "summary": "Fixture OCR: error rate trend status: degraded",
+        "modalities": [
+          "image"
+        ],
+        "evidence_unit_count": 4,
+        "evidence_node_count": 4,
+        "asset_count": 1,
+        "asset_refs": []
+      },
+      "evidence_links": [
+        {
+          "evidence_id": "726f45ba-1ef4-4ec2-a096-633d3ad2be35",
+          "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+          "span_ref": "image:ocr:0001",
+          "content_type": "ocr",
+          "modality": "image",
+          "confidence": 0.78,
+          "summary": "Fixture OCR: error rate trend status: degraded",
+          "tags": [
+            "engine:fixture-ocr",
+            "block:ocr_full"
+          ]
+        },
+        {
+          "evidence_id": "db787d3d-3471-46e2-8601-b2e9f4f65ca0",
+          "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+          "span_ref": "image:region:0001",
+          "content_type": "ocr",
+          "modality": "image",
+          "confidence": 0.9,
+          "summary": "Fixture OCR: error rate trend status: degraded",
+          "tags": [
+            "engine:fixture-ocr",
+            "block:region",
+            "source:ocr_group",
+            "layout_role:status",
+            "region_size:2"
+          ]
+        },
+        {
+          "evidence_id": "00909ded-25f4-4721-99b5-ea5226840e19",
+          "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+          "span_ref": "image:scene:0001",
+          "content_type": "scene",
+          "modality": "image",
+          "confidence": 0.72,
+          "summary": "Fixture scene summary for error-rate-trend.",
+          "tags": [
+            "fixture",
+            "scene",
+            "png"
+          ]
+        },
+        {
+          "evidence_id": "36ba799d-3f0d-4074-9a31-605a5ac8364b",
+          "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+          "span_ref": "image:layout:0001",
+          "content_type": "scene",
+          "modality": "image",
+          "confidence": 0.74,
+          "summary": "Fixture scene summary for error-rate-trend.",
+          "tags": [
+            "block:layout",
+            "source:scene_summary",
+            "layout_role:status",
+            "layout_role:chart",
+            "fixture",
+            "scene",
+            "png"
+          ]
+        }
+      ],
+      "generated_skill": {
+        "skill": {
+          "name": "image-based service health inspection skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: error rate trend status: degraded",
+          "source_modality": "image",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert image evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Image source",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Fixture OCR: error rate trend status: degraded",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Fixture scene summary for error-rate-trend.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "726f45ba-1ef4-4ec2-a096-633d3ad2be35@image:ocr:0001",
+            "db787d3d-3471-46e2-8601-b2e9f4f65ca0@image:region:0001",
+            "00909ded-25f4-4721-99b5-ea5226840e19@image:scene:0001",
+            "36ba799d-3f0d-4074-9a31-605a5ac8364b@image:layout:0001"
+          ],
+          "confidence": 0.71,
+          "version": "0.1.0",
+          "summary": "Fixture OCR: error rate trend status: degraded",
+          "tags": [
+            "controlled_trial",
+            "image",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430"
+        },
+        "skill_markdown_preview": "--- name: \"image-based service health inspection skill\" description: \"Use when Use when converting image evidence into build_skill.. Fixture OCR: error rate trend status: degraded\" --- # image-based service health inspection skill ## Workflow 1. Fixture OCR: error rate trend status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.) 2. Fixture scene summary for error-rate-trend. (Why: Derived from evidence fallback because no procedure atoms were found.) ## Decision Rules - No explicit branch rule was extracted; execute workflow order first. ## Validation - Confirm each key conclusion can be traced back to evidence_refs. ## Failure Modes - Do not auto-publish trial output before human review approval. ## References - [Evidence](references/evidence.md) - [Examples](references/examples.md)",
+        "step_count": 2,
+        "decision_rule_count": 0,
+        "verification_count": 2,
+        "publication_types": [
+          "skill_markdown",
+          "skill_json"
+        ],
+        "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58"
+      },
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9017,
+        "overall_score": 0.9836,
+        "diagnostics": {
+          "step_count": 2.0,
+          "evidence_node_count": 4.0,
+          "publication_count": 2.0
+        }
+      },
+      "review_policy": {
+        "decision": "review_required",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        },
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9017,
+          "overall_score": 0.9836
+        }
+      },
+      "review_feedback": {
+        "review_task_id": "f9235ab9-7745-4956-97c0-fa0beb0dbbc1",
+        "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+        "decision": "review_required",
+        "status": "review_pending",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "categories": [
+          "manual_review"
+        ],
+        "atom_actions": [],
+        "graph_actions": [],
+        "policy_actions": [
+          {
+            "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+            "target": "policy",
+            "intent": "escalate_manual_review",
+            "reason_code": "MANUAL_REVIEW_FALLBACK",
+            "params": {
+              "priority": "medium"
+            }
+          }
+        ],
+        "revision_suggestions": [
+          "S_MANUAL_REVIEW_REQUIRED"
+        ],
+        "follow_up_checks": [
+          "CHECK_MANUAL_REVIEW_OUTCOME"
+        ],
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9017,
+          "overall_score": 0.9836
+        },
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        }
+      },
+      "risk_flags": [
+        {
+          "code": "controlled_trial_requires_review",
+          "severity": "medium",
+          "source": "review_policy"
+        },
+        {
+          "code": "image_requires_ocr_review",
+          "severity": "medium",
+          "source": "modality"
+        }
+      ],
+      "approval_checklist": [
+        {
+          "check_id": "factual_accuracy",
+          "label": "Confirm generated skill facts match evidence.",
+          "required": true
+        },
+        {
+          "check_id": "actionability",
+          "label": "Confirm steps are concrete and executable by the target agent.",
+          "required": true
+        },
+        {
+          "check_id": "dangerous_operations",
+          "label": "Confirm dangerous commands or production changes are clearly guarded.",
+          "required": true
+        },
+        {
+          "check_id": "description_trigger",
+          "label": "Confirm description would trigger only for the intended scenario.",
+          "required": true
+        },
+        {
+          "check_id": "ocr_visual_check",
+          "label": "Confirm OCR and visual interpretation.",
+          "required": true
+        }
+      ]
+    },
+    "provider_footprint": {
+      "corpus_id": "",
+      "asset_breakdown": [
+        {
+          "asset_id": "52663fb8-7125-434a-b720-3be727095bfd",
+          "role": "primary",
+          "modality": "image",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+          "call_total": 2,
+          "provider_calls": [
+            {
+              "channel": "image_analysis",
+              "provider": "FixtureImageAnalyzer",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            },
+            {
+              "channel": "image_ocr",
+              "provider": "fixture-ocr",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "total_calls": 2,
+        "total_successes": 2,
+        "total_failures": 0,
+        "providers": {
+          "FixtureImageAnalyzer": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "fixture-ocr": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          }
+        },
+        "channels": {
+          "image_analysis": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "image_ocr": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          }
+        }
+      },
+      "runtime_provider_audits": [],
+      "runtime_summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      }
+    }
+  },
+  "simulated_review": {
+    "approved_at_utc": "2026-05-25T10:17:08Z",
+    "approved_by": "controlled-trial-runner",
+    "mode": "simulated"
+  }
+}

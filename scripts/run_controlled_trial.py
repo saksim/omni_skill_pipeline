@@ -80,6 +80,7 @@ AUDIO_SUFFIXES = {".wav", ".mp3", ".m4a", ".flac", ".ogg"}
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
 TABULAR_SUFFIXES = {".csv", ".tsv", ".xls", ".xlsx"}
 TEXT_SUFFIXES = {".txt", ".md", ".markdown", ".rst", ".log", ".pdf", ".doc", ".docx", ".json", ".html", ".htm", ".srt"}
+SUPPORTED_EVIDENCE_ORIGINS = {"real", "fixture", "synthetic"}
 
 
 class FixtureOCRProvider(object):
@@ -474,6 +475,16 @@ def _normalize_target(raw: str) -> AgentSkillTarget:
         raise ValueError("Unsupported export target: %s (valid: %s)" % (text, valid)) from exc
 
 
+def _normalize_evidence_origin(raw: Any) -> str:
+    normalized = str(raw if raw is not None else "fixture").strip().lower() or "fixture"
+    if normalized not in SUPPORTED_EVIDENCE_ORIGINS:
+        raise ValueError(
+            "Unsupported evidence_origin: %s (valid: %s)"
+            % (normalized, ", ".join(sorted(SUPPORTED_EVIDENCE_ORIGINS)))
+        )
+    return normalized
+
+
 def _build_execution_plan(
     *,
     manifest_path: Path,
@@ -674,10 +685,47 @@ def _run_sample(
             critical_leak = True
 
     provider = _provider_summary(bundle)
+    evidence_origin = _normalize_evidence_origin(sample.get("evidence_origin", "fixture"))
+    launch_gate_eligible_raw = sample.get("launch_gate_eligible", None)
+    if launch_gate_eligible_raw is None:
+        launch_gate_eligible = evidence_origin == "real"
+    elif isinstance(launch_gate_eligible_raw, bool):
+        launch_gate_eligible = launch_gate_eligible_raw
+    elif isinstance(launch_gate_eligible_raw, str):
+        launch_gate_eligible = launch_gate_eligible_raw.strip().lower() in {"1", "true", "yes", "y", "on"}
+    else:
+        launch_gate_eligible = bool(launch_gate_eligible_raw)
+    launch_gate_ineligible_reason = str(sample.get("launch_gate_ineligible_reason", "")).strip()
+    if not launch_gate_eligible and not launch_gate_ineligible_reason:
+        if evidence_origin == "fixture":
+            launch_gate_ineligible_reason = "fixture_evidence_not_launch_gate_eligible"
+        elif evidence_origin == "synthetic":
+            launch_gate_ineligible_reason = "synthetic_evidence_not_launch_gate_eligible"
+        else:
+            launch_gate_ineligible_reason = "explicitly_marked_not_launch_gate_eligible"
+    source_system = str(sample.get("source_system", "")).strip()
+    source_reference = str(sample.get("source_reference", "")).strip()
+    collected_at_utc = str(sample.get("collected_at_utc", "")).strip()
+    if evidence_origin == "real":
+        if not source_system:
+            source_system = "controlled_trial_runner"
+        if not source_reference:
+            source_reference = "sample://%s" % sample_id
+        if not collected_at_utc:
+            collected_at_utc = _utc_now_iso()
+    review_task_payload = bundle.review_task
+    review_task_id = ""
+    if isinstance(review_task_payload, dict):
+        review_task_id = str(review_task_payload.get("review_task_id", "")).strip()
+    elif review_task_payload is not None:
+        review_task_id = str(getattr(review_task_payload, "review_task_id", "")).strip()
     loop_row = {
         "loop_id": sample_id,
         "status": "complete",
         "modality": modality,
+        "evidence_origin": evidence_origin,
+        "launch_gate_eligible": launch_gate_eligible,
+        "launch_gate_ineligible_reason": launch_gate_ineligible_reason,
         "review_outcome": "approved",
         "revisions_before_approval": 1,
         "reviewer_edit_distance_pct": float(simulated_reviewer_edit_distance_pct),
@@ -691,7 +739,14 @@ def _run_sample(
         "retry_count": 0,
         "artifact_count": len(artifacts),
         "estimated_cost_usd": 0.0,
+        "review_task_id": review_task_id,
+        "reviewed_by": "controlled-trial-runner",
+        "reviewed_at_utc": _utc_now_iso(),
     }
+    if evidence_origin == "real":
+        loop_row["source_system"] = source_system
+        loop_row["source_reference"] = source_reference
+        loop_row["collected_at_utc"] = collected_at_utc
     sample_result = {
         "sample_id": sample_id,
         "modality": modality,

@@ -1,0 +1,82 @@
+{
+  "generated_at_utc": "2026-05-25T14:11:15.267677+00:00",
+  "stage_count": 3,
+  "stages": [
+    {
+      "name": "beta_gate",
+      "description": "Run beta release gate pack (ci + container smoke + doc sync + quality/perf baselines).",
+      "command": [
+        "python",
+        "scripts/run_linux_validation_suite.py",
+        "--python",
+        "python",
+        "--stages",
+        "ci",
+        "container_smoke",
+        "doc_sync",
+        "quality_regression",
+        "perf_cost_baseline",
+        "--coverage-fail-under",
+        "50.0",
+        "--container-image-tag",
+        "omni-skill-pipeline:beta",
+        "--container-name",
+        "omni-skill-pipeline-smoke",
+        "--container-host",
+        "127.0.0.1",
+        "--container-port",
+        "18000",
+        "--container-timeout-seconds",
+        "30.0",
+        "--container-interval-seconds",
+        "1.0",
+        "--output",
+        "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-release-gate-beta-suite-plan.json"
+      ]
+    },
+    {
+      "name": "ga_gate",
+      "description": "Run GA release gate pack (postgres soak/ga + worker/provider/review/calibration hardening).",
+      "command": [
+        "python",
+        "scripts/run_linux_validation_suite.py",
+        "--python",
+        "python",
+        "--stages",
+        "postgres_soak",
+        "postgres_ga",
+        "worker_ga",
+        "review_queue_ga",
+        "provider_ga",
+        "calibration_ga",
+        "--require-postgres",
+        "--postgres-soak-iterations",
+        "120",
+        "--postgres-ga-iterations",
+        "120",
+        "--calibration-manifest",
+        "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e7-calibration-manifest.json",
+        "--calibration-report-output",
+        "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e7-calibration-report.json",
+        "--calibration-margin",
+        "0.03",
+        "--output",
+        "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-release-gate-ga-suite-plan.json"
+      ]
+    },
+    {
+      "name": "roadmap_gate",
+      "description": "Run roadmap extension gate pack (LC-R-34~37 validation surface).",
+      "command": [
+        "python",
+        "scripts/run_linux_validation_suite.py",
+        "--python",
+        "python",
+        "--stages",
+        "roadmap_extension",
+        "--output",
+        "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-release-gate-roadmap-suite-plan.json"
+      ]
+    }
+  ]
+}

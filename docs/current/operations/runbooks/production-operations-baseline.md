@@ -1,0 +1,181 @@
+# Production Operations Baseline
+
+## Verdict
+
+This runbook defines the GL-05 production operations baseline for single-team GA review preparation.
+It is not a GA declaration. It is an evidence-producing operations workflow bound to strict release and launch gates.
+
+## Scope
+
+- Target: single-team production-like operation with strict release evidence.
+- Applies to: deploy, validate, rollback, backup, restore, incident response, logs, alerts, and evidence collection.
+- Gate policy: Linux validation remains mandatory for launch claims; CI/container evidence is accepted when Linux host access is limited.
+
+## Preconditions
+
+- Runtime image is buildable and launchable (`omni-skill-pipeline:beta` or equivalent pinned tag).
+- Required secrets are managed outside image layers (`OPENAI_API_KEY`, optional `OMNI_API_KEY`).
+- Baseline docs are present:
+  - `docs/current/operations/runbooks/docker-zero-to-release.md`
+  - `docs/current/operations/runbooks/launch-beta.md`
+  - this document
+
+## Deploy Workflow
+
+1. Build and smoke-check container image:
+
+```bash
+python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:beta --port 18000
+```
+
+2. Start runtime service with explicit runtime env:
+
+```bash
+docker run --rm -d \
+  --name omni-skill-beta \
+  -p 8000:8000 \
+  --env-file .env.runtime \
+  -v omni_skill_drafts:/app/skills/drafts \
+  -v omni_skill_published:/app/skills/published \
+  -v omni_skill_tmp_media:/app/.tmp_omni_media \
+  omni-skill-pipeline:beta
+```
+
+3. Verify live readiness:
+
+```bash
+curl -fsS http://127.0.0.1:8000/healthz
+```
+
+## Validation Workflow
+
+Run strict validation evidence before any launch claim:
+
+```bash
+python scripts/run_release_gate_validation.py --python python3 --output docs/current/status/baselines/e13-release-gate-validation-plan.json
+python scripts/run_launch_readiness_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
+python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/run_ops_readiness_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
+```
+
+Decision rules:
+
+- If release gate or launch readiness is `HOLD`, stop launch expansion and remediate.
+- Do not use dry-run, relaxed flags, or skipped checks for launch claims.
+
+## Rollback Workflow
+
+Trigger rollback if any of the following happens:
+
+- `healthz` remains unavailable or degraded beyond allowed SLO.
+- Core distill endpoints return sustained 5xx.
+- Auth/rate-limit behavior drifts from contract.
+- Release/launch gate evidence degrades to `HOLD`.
+
+Rollback commands:
+
+```bash
+docker logs --tail 300 omni-skill-beta > rollback-omni-skill-beta.log
+docker rm -f omni-skill-beta
+docker run --rm -d --name omni-skill-beta -p 8000:8000 --env-file .env.runtime omni-skill-pipeline:stable
+curl -fsS http://127.0.0.1:8000/healthz
+```
+
+## Backup Workflow
+
+Back up mutable operation volumes before risky change windows:
+
+```bash
+mkdir -p backups
+docker run --rm -v omni_skill_drafts:/from -v "${PWD}/backups:/to" alpine sh -c "tar -czf /to/omni_skill_drafts_$(date -u +%Y%m%dT%H%M%SZ).tar.gz -C /from ."
+docker run --rm -v omni_skill_published:/from -v "${PWD}/backups:/to" alpine sh -c "tar -czf /to/omni_skill_published_$(date -u +%Y%m%dT%H%M%SZ).tar.gz -C /from ."
+docker run --rm -v omni_skill_tmp_media:/from -v "${PWD}/backups:/to" alpine sh -c "tar -czf /to/omni_skill_tmp_media_$(date -u +%Y%m%dT%H%M%SZ).tar.gz -C /from ."
+```
+
+Minimum backup record:
+
+- backup timestamp (UTC)
+- volume name
+- archive filename
+- operator
+
+## Restore Workflow
+
+Restore a specific backup archive into an empty target volume:
+
+```bash
+docker run --rm -v omni_skill_published:/to -v "${PWD}/backups:/from" alpine sh -c "rm -rf /to/* && tar -xzf /from/<archive>.tar.gz -C /to"
+```
+
+Post-restore checks:
+
+```bash
+docker run --rm -v omni_skill_published:/to alpine sh -c "ls -la /to | head"
+curl -fsS http://127.0.0.1:8000/healthz
+```
+
+## Incident Response Workflow
+
+1. Detect and classify incident severity (`sev-1` to `sev-3`).
+2. Stabilize service first (rollback or isolate noisy workflows).
+3. Capture evidence:
+   - `docker logs`
+   - relevant gate outputs under `docs/current/status/baselines/`
+   - impacted run/report ids
+4. Open remediation owner + due time.
+5. Re-run validation workflow after remediation.
+
+## Log Inspection Workflow
+
+Primary commands:
+
+```bash
+docker logs --tail 300 omni-skill-beta
+docker logs omni-skill-beta | grep -E '"event":"(api_request_completed|distill_start|distill_complete)"'
+docker logs omni-skill-beta | grep -E '"status_code":(4|5)[0-9]{2}'
+```
+
+Escalate if:
+
+- repeated 5xx without recovery
+- repeated provider unavailability
+- repeated review queue persistence errors
+
+## Alert Workflow
+
+Minimum operator alerts for GL-05:
+
+- availability alert: `healthz` probe failure
+- error-rate alert: rolling 5xx ratio above threshold
+- gate-drift alert: latest release/launch/ops readiness evidence switched to fail/HOLD
+
+Alert handling sequence:
+
+1. Acknowledge alert.
+2. Run incident response workflow.
+3. Record resolution with root cause and prevention action.
+
+## Evidence Collection Workflow
+
+Generate and archive the minimum GL-05 evidence set:
+
+```bash
+python scripts/run_release_gate_validation.py --python python3 --output docs/current/status/baselines/e13-release-gate-validation-plan.json
+python scripts/run_launch_readiness_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
+python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/run_ops_readiness_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
+```
+
+Required artifacts:
+
+- `docs/current/status/baselines/e13-release-gate-validation-plan.json`
+- `docs/current/status/baselines/broad-launch-readiness-report.json`
+- `docs/current/status/baselines/e13-doc-sync-check-report.json`
+- `docs/current/status/baselines/operations-readiness-report.json`
+- optional summary markdowns for human review
+
+## Linux / CI Fallback
+
+- Preferred: run on Linux host/container per `docker-zero-to-release.md`.
+- If local environment cannot run full Linux validation, use CI/container-generated evidence and attach command logs.
+- Never claim formal GA based only on fallback; fallback is acceptable for controlled Beta and GA review readiness evidence collection.

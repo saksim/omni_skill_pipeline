@@ -247,6 +247,38 @@ Common Release Scenarios include first deploy, code update, config update, offli
 
 Build test image, package artifacts, docker load image tar, run test gate, deploy runtime image, verify, then rollback if needed.
 """
+VALID_PRODUCTION_OPS_RUNBOOK = """# Production Operations Baseline
+
+## Deploy Workflow
+docker run --rm -d --name omni-skill-beta omni-skill-pipeline:beta
+
+## Validation Workflow
+python scripts/run_release_gate_validation.py --python python3
+python scripts/run_launch_readiness_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
+python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/run_ops_readiness_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
+
+## Rollback Workflow
+docker logs --tail 300 omni-skill-beta
+
+## Backup Workflow
+backup
+
+## Restore Workflow
+restore
+
+## Incident Response Workflow
+incident
+
+## Log Inspection Workflow
+docker logs omni-skill-beta
+
+## Alert Workflow
+alert
+
+## Evidence Collection Workflow
+evidence
+"""
 VALID_API_OPS_CONTRACT_DOC = """## Health / Readiness
 
 - `GET /healthz`
@@ -315,6 +347,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
             docker_zero_to_release_runbook_path = repo_root / 'docker-zero-to-release.md'
             output_path = repo_root / 'doc-sync-report.json'
 
@@ -360,6 +393,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path.write_text(VALID_RELEASE_STANDARD_DOC, encoding='utf-8')
             release_history_doc_path.write_text(VALID_RELEASE_HISTORY_DOC, encoding='utf-8')
             launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            production_ops_runbook_path.write_text(VALID_PRODUCTION_OPS_RUNBOOK, encoding='utf-8')
             docker_zero_to_release_runbook_path.write_text(
                 VALID_DOCKER_ZERO_TO_RELEASE_RUNBOOK,
                 encoding='utf-8',
@@ -399,6 +433,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(launch_beta_runbook_path),
                     '--docker-zero-to-release-runbook',
                     str(docker_zero_to_release_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
                     '--output',
                     str(output_path),
                 ],
@@ -434,6 +470,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
 
             (repo_root / 'docs').mkdir()
             (repo_root / 'docs' / 'index.md').write_text('# index\n', encoding='utf-8')
@@ -455,6 +492,10 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path.write_text(VALID_RELEASE_STANDARD_DOC, encoding='utf-8')
             release_history_doc_path.write_text(VALID_RELEASE_HISTORY_DOC, encoding='utf-8')
             launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            production_ops_runbook_path.write_text(
+                '# Production Operations Baseline\n\n## Deploy Workflow\n\nincomplete\n',
+                encoding='utf-8',
+            )
 
             completed = subprocess.run(
                 [
@@ -488,6 +529,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(release_history_doc_path),
                     '--launch-beta-runbook',
                     str(launch_beta_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
                     '--output',
                     '-',
                 ],
@@ -520,6 +563,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
 
             (repo_root / 'docs').mkdir()
             (repo_root / 'docs' / 'index.md').write_text('# index\n', encoding='utf-8')
@@ -544,6 +588,10 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                 encoding='utf-8',
             )
             launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            production_ops_runbook_path.write_text(
+                '# Production Operations Baseline\n\n## Deploy Workflow\n\nincomplete\n',
+                encoding='utf-8',
+            )
 
             completed = subprocess.run(
                 [
@@ -577,6 +625,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(release_history_doc_path),
                     '--launch-beta-runbook',
                     str(launch_beta_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
                     '--output',
                     '-',
                 ],
@@ -609,6 +659,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
 
             (repo_root / 'docs').mkdir()
             (repo_root / 'docs' / 'index.md').write_text('# index\n', encoding='utf-8')
@@ -633,6 +684,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                 encoding='utf-8',
             )
             launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            production_ops_runbook_path.write_text(VALID_PRODUCTION_OPS_RUNBOOK, encoding='utf-8')
 
             completed = subprocess.run(
                 [
@@ -666,6 +718,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(release_history_doc_path),
                     '--launch-beta-runbook',
                     str(launch_beta_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
                     '--output',
                     '-',
                 ],
@@ -698,6 +752,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
 
             (repo_root / 'docs').mkdir()
             (repo_root / 'docs' / 'index.md').write_text('# index\n', encoding='utf-8')
@@ -719,6 +774,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path.write_text(VALID_RELEASE_STANDARD_DOC, encoding='utf-8')
             release_history_doc_path.write_text(VALID_RELEASE_HISTORY_DOC, encoding='utf-8')
             launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            production_ops_runbook_path.write_text(VALID_PRODUCTION_OPS_RUNBOOK, encoding='utf-8')
 
             completed = subprocess.run(
                 [
@@ -752,6 +808,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(release_history_doc_path),
                     '--launch-beta-runbook',
                     str(launch_beta_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
                     '--output',
                     '-',
                 ],
@@ -784,6 +842,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
             release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
             launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
 
             (repo_root / 'docs').mkdir()
             (repo_root / 'docs' / 'index.md').write_text('# index\n', encoding='utf-8')
@@ -803,6 +862,97 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             release_history_doc_path.write_text(VALID_RELEASE_HISTORY_DOC, encoding='utf-8')
             launch_beta_runbook_path.write_text(
                 '# Launch Beta Runbook\n\n## Deploy\n\npython scripts/run_ci.py --coverage-fail-under 50\n',
+                encoding='utf-8',
+            )
+            production_ops_runbook_path.write_text(VALID_PRODUCTION_OPS_RUNBOOK, encoding='utf-8')
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--readme',
+                    str(readme_path),
+                    '--cli-source',
+                    str(cli_source_path),
+                    '--api-source',
+                    str(api_source_path),
+                    '--worker-source',
+                    str(worker_source_path),
+                    '--tp-source',
+                    str(tp_source_path),
+                    '--cli-doc',
+                    str(cli_doc_path),
+                    '--api-doc',
+                    str(api_doc_path),
+                    '--worker-doc',
+                    str(worker_doc_path),
+                    '--testing-doc',
+                    str(testing_doc_path),
+                    '--arch-migration-doc',
+                    str(arch_migration_doc_path),
+                    '--ops-migration-doc',
+                    str(ops_migration_doc_path),
+                    '--release-standard-doc',
+                    str(release_standard_doc_path),
+                    '--release-history-doc',
+                    str(release_history_doc_path),
+                    '--launch-beta-runbook',
+                    str(launch_beta_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
+                    '--output',
+                    '-',
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1)
+            self.assertIn('launch_beta_runbook_completeness', completed.stdout)
+            self.assertIn('missing_required_headings', completed.stdout)
+
+    def test_script_reports_incomplete_production_ops_runbook(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            repo_root = tmp_path / 'repo'
+            repo_root.mkdir(parents=True, exist_ok=True)
+
+            readme_path = repo_root / 'README.md'
+            cli_source_path = repo_root / 'cli.py'
+            api_source_path = repo_root / 'api_app.py'
+            worker_source_path = repo_root / 'worker.py'
+            tp_source_path = repo_root / 'run_tp_tests.py'
+            cli_doc_path = repo_root / 'cli.md'
+            api_doc_path = repo_root / 'api.md'
+            worker_doc_path = repo_root / 'worker.md'
+            testing_doc_path = repo_root / 'testing.md'
+            arch_migration_doc_path = repo_root / 'v1-to-v2-migration-guide.md'
+            ops_migration_doc_path = repo_root / 'v1-to-v2-migration-runbook.md'
+            release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
+            release_history_doc_path = repo_root / '2026-04-26-v2-release-switch-standard.md'
+            launch_beta_runbook_path = repo_root / 'launch-beta.md'
+            production_ops_runbook_path = repo_root / 'production-operations-baseline.md'
+
+            (repo_root / 'docs').mkdir()
+            (repo_root / 'docs' / 'index.md').write_text('# index\n', encoding='utf-8')
+
+            readme_path.write_text('# README\n- [docs](docs/index.md)\n', encoding='utf-8')
+            cli_source_path.write_text("subparsers.add_parser('distill-text')\n", encoding='utf-8')
+            api_source_path.write_text("@app.post('/v1/distill/text')\n", encoding='utf-8')
+            worker_source_path.write_text("if kind == 'text':\n    pass\n", encoding='utf-8')
+            tp_source_path.write_text('"TP-E11-03": [],\n"TP-E13-01": [],\n', encoding='utf-8')
+            cli_doc_path.write_text('### distill-text\n', encoding='utf-8')
+            api_doc_path.write_text(VALID_API_OPS_CONTRACT_DOC, encoding='utf-8')
+            worker_doc_path.write_text('- `text`\n', encoding='utf-8')
+            testing_doc_path.write_text('TP-E11-03\nTP-E13-01\n', encoding='utf-8')
+            arch_migration_doc_path.write_text(VALID_ARCH_MIGRATION_DOC, encoding='utf-8')
+            ops_migration_doc_path.write_text(VALID_OPS_MIGRATION_DOC, encoding='utf-8')
+            release_standard_doc_path.write_text(VALID_RELEASE_STANDARD_DOC, encoding='utf-8')
+            release_history_doc_path.write_text(VALID_RELEASE_HISTORY_DOC, encoding='utf-8')
+            launch_beta_runbook_path.write_text(VALID_LAUNCH_BETA_RUNBOOK, encoding='utf-8')
+            production_ops_runbook_path.write_text(
+                '# Production Operations Baseline\n\n## Deploy Workflow\n\nincomplete\n',
                 encoding='utf-8',
             )
 
@@ -838,6 +988,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(release_history_doc_path),
                     '--launch-beta-runbook',
                     str(launch_beta_runbook_path),
+                    '--production-ops-runbook',
+                    str(production_ops_runbook_path),
                     '--output',
                     '-',
                 ],
@@ -847,7 +999,7 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                 text=True,
             )
             self.assertEqual(completed.returncode, 1)
-            self.assertIn('launch_beta_runbook_completeness', completed.stdout)
+            self.assertIn('production_ops_runbook_completeness', completed.stdout)
             self.assertIn('missing_required_headings', completed.stdout)
 
 

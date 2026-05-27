@@ -18,6 +18,7 @@ from omni_skill_pipeline.models import (
 )
 from omni_skill_pipeline.utils import slugify
 from omni_skill_pipeline.validation import evaluate_trial_security
+from omni_skill_pipeline.governance import GovernanceLedger
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +38,7 @@ class AgentSkillExporter(object):
 
     def __init__(self, *, output_root: Path) -> None:
         self.output_root = Path(output_root).resolve()
+        self._governance_root = self.output_root / '.governance'
 
     def export_from_bundle(
         self,
@@ -85,6 +87,13 @@ class AgentSkillExporter(object):
             package.validate()
             package_path = target_dir / 'agent_skill_package.json'
             package_path.write_text(package.to_json() + '\n', encoding='utf-8')
+            self._record_export_governance(
+                payload=payload,
+                target=target_item,
+                package=package,
+                bundle_path=Path(bundle_path).resolve(),
+                package_path=package_path,
+            )
             results.append(
                 ExportResult(
                     target=target_item,
@@ -354,4 +363,78 @@ class AgentSkillExporter(object):
         reviewer_packet = adapter_metadata.get('reviewer_packet')
         if isinstance(reviewer_packet, dict):
             return reviewer_packet
+        return {}
+
+    def _record_export_governance(
+        self,
+        *,
+        payload: dict[str, Any],
+        target: AgentSkillTarget,
+        package: AgentSkillPackage,
+        bundle_path: Path,
+        package_path: Path,
+    ) -> None:
+        governance_ledger = GovernanceLedger(self._governance_root)
+        scope = self._resolve_tenant_scope(payload)
+        review_task_payload = self._resolve_review_task_payload(payload)
+        review_task_id = str(review_task_payload.get('review_task_id', '')).strip()
+        skill_id = str(package.source_bundle.skill_id or '').strip()
+        governance_ledger.record_audit_event(
+            {
+                **scope,
+                'event_type': 'skill_exported',
+                'status': 'success',
+                'skill_id': skill_id,
+                'review_task_id': review_task_id,
+                'metadata': {
+                    'target': target.value,
+                    'package_id': package.package_id,
+                    'bundle_path': str(bundle_path),
+                    'package_path': str(package_path),
+                },
+            }
+        )
+        governance_ledger.record_cost_entry(
+            {
+                **scope,
+                'run_id': review_task_id or skill_id or package.package_id,
+                'skill_id': skill_id,
+                'bundle_id': str(package.source_bundle.bundle_id or '').strip(),
+                'event_kind': 'accepted_package' if package.review_status.value == 'published' else 'skill_export',
+                'provider': 'exporter',
+                'operation': 'export.%s' % target.value,
+                'call_count': 1,
+                'failure_count': 0,
+                'estimated_cost_usd': 0.0,
+                'currency': 'USD',
+                'metadata': {
+                    'package_id': package.package_id,
+                    'package_path': str(package_path),
+                },
+            }
+        )
+
+    def _resolve_tenant_scope(self, payload: dict[str, Any]) -> dict[str, str]:
+        adapter_metadata = payload.get('adapter_metadata')
+        if not isinstance(adapter_metadata, dict):
+            return {}
+        tenant_scope = adapter_metadata.get('tenant_scope')
+        if not isinstance(tenant_scope, dict):
+            return {}
+        organization_id = str(tenant_scope.get('organization_id', '')).strip()
+        project_id = str(tenant_scope.get('project_id', '')).strip()
+        output: dict[str, str] = {}
+        if organization_id:
+            output['organization_id'] = organization_id
+        if project_id:
+            output['project_id'] = project_id
+        return output
+
+    def _resolve_review_task_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        adapter_metadata = payload.get('adapter_metadata')
+        if not isinstance(adapter_metadata, dict):
+            return {}
+        review_task_payload = adapter_metadata.get('review_task')
+        if isinstance(review_task_payload, dict):
+            return dict(review_task_payload)
         return {}

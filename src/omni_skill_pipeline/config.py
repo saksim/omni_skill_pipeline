@@ -41,6 +41,13 @@ class Settings:
     controlled_trial_review_mode: bool
     controlled_trial_review_reason_code: str
     portable_skill_markdown_line_limit: int
+    artifact_repository_mode: str
+    postgres_repository_dsn: Optional[str]
+    dual_write_continue_on_secondary_error: bool
+    dual_write_secondary_prefix: str
+    tenant_access_json: str
+    tenant_access_file: str
+    governance_ledger_dir: Path
 
 
 def get_repo_root() -> Path:
@@ -72,6 +79,13 @@ def _env_flag(name: str, default: bool) -> bool:
 
 def load_settings(repo_root: Path = None) -> Settings:
     root = Path(repo_root) if repo_root else get_repo_root()
+    governance_ledger_raw = str(os.getenv('OMNI_GOVERNANCE_LEDGER_DIR', '')).strip()
+    if governance_ledger_raw:
+        governance_ledger_dir = Path(governance_ledger_raw)
+        if not governance_ledger_dir.is_absolute():
+            governance_ledger_dir = root / governance_ledger_dir
+    else:
+        governance_ledger_dir = root / 'skills' / 'drafts' / 'governance'
     return Settings(
         repo_root=root,
         draft_dir=root / 'skills' / 'drafts',
@@ -116,4 +130,21 @@ def load_settings(repo_root: Path = None) -> Settings:
             int(os.getenv('OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT', '220')),
             21,
         ),
+        artifact_repository_mode=(
+            str(os.getenv('OMNI_ARTIFACT_REPOSITORY_MODE', 'file')).strip() or 'file'
+        ),
+        postgres_repository_dsn=(
+            str(os.getenv('OMNI_POSTGRES_REPOSITORY_DSN', '')).strip() or None
+        ),
+        dual_write_continue_on_secondary_error=_env_flag(
+            'OMNI_DUAL_WRITE_CONTINUE_ON_SECONDARY_ERROR',
+            True,
+        ),
+        dual_write_secondary_prefix=(
+            str(os.getenv('OMNI_DUAL_WRITE_SECONDARY_PREFIX', 'secondary_')).strip()
+            or 'secondary_'
+        ),
+        tenant_access_json=str(os.getenv('OMNI_TENANT_ACCESS_JSON', '')).strip(),
+        tenant_access_file=str(os.getenv('OMNI_TENANT_ACCESS_FILE', '')).strip(),
+        governance_ledger_dir=governance_ledger_dir.resolve(),
     )

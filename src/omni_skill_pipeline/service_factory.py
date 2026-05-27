@@ -22,11 +22,13 @@ from omni_skill_pipeline.providers.fallback import (
 )
 from omni_skill_pipeline.providers.media import FFmpegMediaProcessor
 from omni_skill_pipeline.providers.openai_provider import OpenAIAudioTranscriber, OpenAILLMSkillComposer, OpenAIVisionAnalyzer
+from omni_skill_pipeline.persistence import DualWriteArtifactRepository, PostgresRepository
 from omni_skill_pipeline.publication import PortableSkillRenderer
 from omni_skill_pipeline.providers.tesseract import TesseractOCRProvider
 from omni_skill_pipeline.quality.review_policy import ReviewPolicy
 from omni_skill_pipeline.repository import FileArtifactRepository
 from omni_skill_pipeline.service import DistillationService
+from omni_skill_pipeline.governance import GovernanceLedger
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +79,8 @@ def _build_image_capabilities(settings: Settings):
 
 def build_service(repo_root: Optional[str] = None) -> DistillationService:
     settings = load_settings(Path(repo_root) if repo_root else None)
-    repository = FileArtifactRepository(settings.draft_dir)
+    repository = _build_artifact_repository(settings)
+    governance_ledger = GovernanceLedger(settings.governance_ledger_dir)
     audio_adapter = _build_audio_adapter(settings)
     ocr_provider, analyzer = _build_image_capabilities(settings)
     insight_extractor = HeuristicInsightExtractor()
@@ -99,6 +102,7 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
     )
     service = DistillationService(
         repository=repository,
+        governance_ledger=governance_ledger,
         text_adapter=TextAdapter(),
         audio_adapter=audio_adapter,
         image_adapter=ImageAdapter(ocr_provider=ocr_provider, analyzer=analyzer),
@@ -127,6 +131,42 @@ def build_service(repo_root: Optional[str] = None) -> DistillationService:
         },
     )
     return service
+
+
+def _build_artifact_repository(settings: Settings):
+    mode = str(getattr(settings, 'artifact_repository_mode', 'file')).strip().lower()
+    if mode in {'postgres', 'dual_write'}:
+        postgres_dsn = str(getattr(settings, 'postgres_repository_dsn', '') or '').strip()
+        if not postgres_dsn:
+            raise ValueError(
+                'OMNI_POSTGRES_REPOSITORY_DSN is required when OMNI_ARTIFACT_REPOSITORY_MODE=%s.'
+                % mode
+            )
+    file_repository = FileArtifactRepository(settings.draft_dir)
+
+    if mode in {'', 'file'}:
+        return file_repository
+    if mode in {'postgres', 'dual_write'}:
+        postgres_dsn = str(getattr(settings, 'postgres_repository_dsn', '') or '').strip()
+        postgres_repository = PostgresRepository(postgres_dsn)
+        if mode == 'postgres':
+            return postgres_repository
+        return DualWriteArtifactRepository(
+            primary=postgres_repository,
+            secondary=file_repository,
+            continue_on_secondary_error=bool(
+                getattr(settings, 'dual_write_continue_on_secondary_error', True)
+            ),
+            secondary_prefix=(
+                str(getattr(settings, 'dual_write_secondary_prefix', 'secondary_')).strip()
+                or 'secondary_'
+            ),
+        )
+
+    raise ValueError(
+        'Unsupported OMNI_ARTIFACT_REPOSITORY_MODE: %s (expected file|postgres|dual_write).'
+        % mode
+    )
 
 
 def _build_publication_orchestrator(*, insight_extractor, portable_skill_line_limit: int):

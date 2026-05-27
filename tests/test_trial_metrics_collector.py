@@ -16,6 +16,9 @@ def _build_loop(
     loop_id: str,
     modality: str,
     *,
+    evidence_origin: str = "real",
+    launch_gate_eligible: bool = True,
+    launch_gate_ineligible_reason: str = "",
     review_outcome: str = "approved",
     revisions_before_approval: int = 1,
     reviewer_edit_distance_pct: float = 20.0,
@@ -24,10 +27,13 @@ def _build_loop(
     provider_call_count: int = 4,
     estimated_cost_usd: float = 0.4,
 ) -> dict[str, object]:
-    return {
+    loop = {
         "loop_id": loop_id,
         "status": "complete",
         "modality": modality,
+        "evidence_origin": evidence_origin,
+        "launch_gate_eligible": launch_gate_eligible,
+        "launch_gate_ineligible_reason": launch_gate_ineligible_reason,
         "review_outcome": review_outcome,
         "revisions_before_approval": revisions_before_approval,
         "reviewer_edit_distance_pct": reviewer_edit_distance_pct,
@@ -42,6 +48,14 @@ def _build_loop(
         "artifact_count": 8,
         "estimated_cost_usd": estimated_cost_usd,
     }
+    if evidence_origin == "real":
+        loop["source_system"] = "pilot-ops"
+        loop["source_reference"] = "ticket://%s" % loop_id
+        loop["collected_at_utc"] = "2026-05-26T00:00:00Z"
+        loop["review_task_id"] = "review-%s" % loop_id
+        loop["reviewed_by"] = "reviewer-a"
+        loop["reviewed_at_utc"] = "2026-05-26T00:05:00Z"
+    return loop
 
 
 def _passing_payload() -> dict[str, object]:
@@ -81,11 +95,18 @@ class TrialMetricsCollectorTests(unittest.TestCase):
         self.assertEqual(report.get("trial_metrics", {}).get("loop_count"), 10)
         self.assertEqual(report.get("trial_metrics", {}).get("complete_loop_count"), 10)
         self.assertGreaterEqual(len(report.get("trial_metrics", {}).get("complete_modalities", [])), 4)
+        launch_gate_evidence = report.get("trial_metrics", {}).get("launch_gate_evidence", {})
+        self.assertEqual(launch_gate_evidence.get("complete_loop_count"), 10)
+        self.assertEqual(launch_gate_evidence.get("unlabeled_loop_count"), 0)
+        self.assertEqual(launch_gate_evidence.get("real_evidence_missing_source_trace_count"), 0)
+        self.assertEqual(launch_gate_evidence.get("real_evidence_missing_review_trace_count"), 0)
+        self.assertEqual(launch_gate_evidence.get("evidence_origin_counts", {}).get("real"), 10)
         conditions = report.get("success_criteria", {}).get("conditions", [])
-        self.assertEqual(len(conditions), 10)
+        self.assertEqual(len(conditions), 14)
         self.assertIn("review_outcome_counts", report.get("trial_metrics", {}))
         markdown = render_trial_metrics_markdown_summary(report)
         self.assertIn("Overall status: `pass`", markdown)
+        self.assertIn("Real evidence missing review trace count: `0`", markdown)
         self.assertIn("All trial success criteria passed.", markdown)
 
     def test_collect_flags_ga_blockers_on_critical_failure(self) -> None:
@@ -105,6 +126,68 @@ class TrialMetricsCollectorTests(unittest.TestCase):
         markdown = render_trial_metrics_markdown_summary(report)
         self.assertIn("GA discussion blocked: `yes`", markdown)
         self.assertIn("release_run_go", markdown)
+
+    def test_collect_flags_launch_gate_coverage_when_fixture_or_synthetic_only(self) -> None:
+        payload = _passing_payload()
+        for loop in payload["loops"]:
+            loop["evidence_origin"] = "fixture"
+            loop["launch_gate_eligible"] = False
+            loop["launch_gate_ineligible_reason"] = "fixture_evidence_not_launch_gate_eligible"
+        collector = TrialMetricsCollector()
+        report = collector.collect(payload)
+        self.assertEqual(report.get("overall_status"), "fail")
+        self.assertTrue(report.get("ga_discussion_blocked"))
+        failed_ids = {
+            str(item.get("id", ""))
+            for item in report.get("success_criteria", {}).get("failed_conditions", [])
+        }
+        self.assertIn("launch_gate_eligible_loop_volume_and_modality_coverage", failed_ids)
+        launch_gate_evidence = report.get("trial_metrics", {}).get("launch_gate_evidence", {})
+        self.assertEqual(launch_gate_evidence.get("complete_loop_count"), 0)
+        self.assertEqual(launch_gate_evidence.get("ineligible_loop_count"), 10)
+        self.assertEqual(launch_gate_evidence.get("evidence_origin_counts", {}).get("fixture"), 10)
+
+    def test_collect_rejects_non_real_loop_marked_launch_gate_eligible(self) -> None:
+        payload = _passing_payload()
+        payload["loops"][0]["evidence_origin"] = "synthetic"
+        payload["loops"][0]["launch_gate_eligible"] = True
+        collector = TrialMetricsCollector()
+        with self.assertRaises(ValueError):
+            collector.collect(payload)
+
+    def test_collect_flags_real_evidence_missing_source_trace(self) -> None:
+        payload = _passing_payload()
+        payload["loops"][0].pop("source_system", None)
+        payload["loops"][0].pop("source_reference", None)
+        payload["loops"][0].pop("collected_at_utc", None)
+        collector = TrialMetricsCollector()
+        report = collector.collect(payload)
+        self.assertEqual(report.get("overall_status"), "fail")
+        self.assertTrue(report.get("ga_discussion_blocked"))
+        launch_gate_evidence = report.get("trial_metrics", {}).get("launch_gate_evidence", {})
+        self.assertEqual(launch_gate_evidence.get("real_evidence_missing_source_trace_count"), 1)
+        failed_ids = {
+            str(item.get("id", ""))
+            for item in report.get("success_criteria", {}).get("failed_conditions", [])
+        }
+        self.assertIn("real_evidence_source_trace_complete", failed_ids)
+
+    def test_collect_flags_real_evidence_missing_review_trace(self) -> None:
+        payload = _passing_payload()
+        payload["loops"][0].pop("review_task_id", None)
+        payload["loops"][0].pop("reviewed_by", None)
+        payload["loops"][0].pop("reviewed_at_utc", None)
+        collector = TrialMetricsCollector()
+        report = collector.collect(payload)
+        self.assertEqual(report.get("overall_status"), "fail")
+        self.assertTrue(report.get("ga_discussion_blocked"))
+        launch_gate_evidence = report.get("trial_metrics", {}).get("launch_gate_evidence", {})
+        self.assertEqual(launch_gate_evidence.get("real_evidence_missing_review_trace_count"), 1)
+        failed_ids = {
+            str(item.get("id", ""))
+            for item in report.get("success_criteria", {}).get("failed_conditions", [])
+        }
+        self.assertIn("real_evidence_review_trace_complete", failed_ids)
 
     def test_collect_rejects_empty_loops(self) -> None:
         collector = TrialMetricsCollector()

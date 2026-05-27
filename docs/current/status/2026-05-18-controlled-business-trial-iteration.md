@@ -243,6 +243,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - 2026-05-22 iterative re-check (run 7): re-validated `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still keep controlled business trial as the active execution route, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
   - 2026-05-23 iterative re-check (run 8): re-validated `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still route contributors to controlled business trial as active execution, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
   - 2026-05-23 iterative re-check (run 9): re-confirmed `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still route contributors to controlled business trial as the active execution path, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` as historical baseline only.
+  - 2026-05-25 iterative re-check (run 10): re-verified `README.md`, `docs/INDEX.md`, and `CURRENT_STATUS.md` still keep controlled business trial as the active execution entry, keep the 2026-05-17 strategy assessment as direction, and keep `launch-readiness-master-plan.md` strictly as historical baseline (2026-04-24).
 
 ### CBT-02 Trial Sample Manifest
 
@@ -313,6 +314,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - `DistillationService` now generates reviewer packets for single-asset and corpus distillation paths.
   - `FileArtifactRepository` persists `reviewer_packet.json` and records `reviewer_packet_path` on review queue items.
   - Added focused tests in `tests/test_reviewer_packet.py` for single-asset and mixed-corpus reviewer packet artifacts.
+  - 2026-05-25 iterative re-check (run 1): re-verified reviewer-packet wiring in `src/omni_skill_pipeline/review/packet.py`, `src/omni_skill_pipeline/service.py`, and `src/omni_skill_pipeline/repository.py`; re-ran `python -m unittest tests.test_reviewer_packet` (2 tests, pass) and confirmed single-asset plus mixed-corpus reviewer packet artifacts still persist correctly without regression.
 
 ### CBT-05 Trial Metrics Collector
 
@@ -339,6 +341,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `tests/test_trial_metrics_collector.py`
     - `tests/test_trial_metrics_collector_script.py`
   - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-05 metrics tests (`tests.test_trial_metrics_collector`, `tests.test_trial_metrics_collector_script`) and confirmed trial metrics JSON/Markdown outputs plus GA-blocker condition reporting remain passing; doc sync also remains green.
+  - 2026-05-25 iterative re-check (run 2): re-verified CBT-05 collector/runner paths in `src/omni_skill_pipeline/quality/trial_metrics.py` and `scripts/run_trial_metrics_collector.py`, re-ran focused tests (`tests.test_trial_metrics_collector`, `tests.test_trial_metrics_collector_script`), and re-ran `python scripts/run_doc_sync_check.py --output -`; all remained passing with GA-blocker condition reporting intact.
 
 ### CBT-06 Agent Skill Package Model
 

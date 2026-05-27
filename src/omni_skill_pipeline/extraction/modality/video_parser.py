@@ -304,7 +304,7 @@ class VideoStructureParser(object):
         if start is None and end is None:
             return anchors[min(index - 1, len(anchors) - 1)], "sequential"
 
-        midpoint = start if end is None else (start + end) / 2.0
+        midpoint = start if end is None else ((start + end) / 2.0 if start is not None else None)
         if midpoint is None:
             midpoint = end
         if midpoint is None:

@@ -1,0 +1,68 @@
+{
+  "schema_version": "real_trial_launch_evidence_pack.v1",
+  "generated_at_utc": "2026-05-27T04:17:15Z",
+  "stage": "controlled_external_beta",
+  "launch_decision": "HOLD",
+  "ready_for_controlled_beta": false,
+  "ready_for_ga_review": false,
+  "ready_for_platform_beta": false,
+  "evidence_paths": {
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
+    "collection_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-summary.md",
+    "real_trial_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
+    "trial_metrics_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+    "trial_metrics_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-summary.md",
+    "launch_readiness_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\broad-launch-readiness-report.json",
+    "launch_readiness_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\broad-launch-readiness-summary.md"
+  },
+  "input_sources": {
+    "run_report_paths": [
+      "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json"
+    ],
+    "loop_manifest_paths": [],
+    "input_report_count": 1,
+    "input_loop_manifest_count": 0
+  },
+  "evidence_classification": {
+    "evidence_origin_counts": {
+      "fixture": 10
+    },
+    "launch_gate_ineligible_reason_counts": {
+      "fixture_evidence_not_launch_gate_eligible": 10
+    },
+    "total_complete_loop_count": 10,
+    "total_complete_modalities": [
+      "audio",
+      "image",
+      "mixed_corpus",
+      "tabular",
+      "text",
+      "video"
+    ],
+    "launch_gate_eligible_complete_loop_count": 0,
+    "launch_gate_eligible_complete_modalities": [],
+    "real_evidence_missing_source_trace_count": 0,
+    "real_evidence_missing_review_trace_count": 0,
+    "collection_program_status": "COLLECTION_INCOMPLETE",
+    "collection_blockers": [
+      "real_loop_volume_below_threshold",
+      "real_loop_modality_coverage_below_threshold"
+    ]
+  },
+  "safety_summary": {
+    "unreviewed_published_count": 0,
+    "critical_secret_or_pii_leak_count": 0,
+    "high_severity_incident_count": 0
+  },
+  "gate_summary": {
+    "failed_checks": [
+      "trial_loop_volume_and_modality_coverage"
+    ],
+    "blocking_check_count": 1
+  },
+  "policy_notes": [
+    "This pack summarizes controlled external Beta evidence only.",
+    "Fixture or synthetic loops are not launch-gate-eligible real evidence.",
+    "No GA claim is allowed unless launch_readiness decision and gate checks support it."
+  ]
+}
