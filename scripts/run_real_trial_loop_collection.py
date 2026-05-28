@@ -44,6 +44,15 @@ DEFAULT_MANIFEST_PATH = (
     / "real-trial-loop-collection"
     / "real-trial-loop-metrics-manifest.json"
 )
+DEFAULT_BACKFILL_PLAN_PATH = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-backfill-plan.json"
+)
 
 SUPPORTED_EVIDENCE_ORIGINS = {"real", "fixture", "synthetic"}
 DEFAULT_TARGET_LAUNCH_MODALITIES = ("text", "audio", "image", "video")
@@ -121,6 +130,11 @@ def _parse_args() -> argparse.Namespace:
         "--manifest-output",
         default=str(DEFAULT_MANIFEST_PATH),
         help='Optional trial-metrics manifest output path. Use "-" to skip writing file.',
+    )
+    parser.add_argument(
+        "--backfill-plan-output",
+        default=str(DEFAULT_BACKFILL_PLAN_PATH),
+        help='Optional real-loop backfill plan output path. Use "-" to skip writing file.',
     )
     parser.add_argument(
         "--minimum-complete-loops",
@@ -522,6 +536,43 @@ def _build_collection_report(
     covered_target_launch_modalities = [item for item in target_launch_modalities if item in launch_gate_modalities]
     missing_target_launch_modalities = [item for item in target_launch_modalities if item not in launch_gate_modalities]
     recommended_next_modalities = missing_target_launch_modalities[:missing_modalities_to_threshold]
+    target_launch_modality_loop_counts = {
+        modality: int(launch_gate_eligible_complete_loop_count_by_modality.get(modality, 0) or 0)
+        for modality in target_launch_modalities
+    }
+    recommended_backfill_slots: list[dict[str, Any]] = []
+    slot_index = 1
+    for modality in missing_target_launch_modalities[:missing_modalities_to_threshold]:
+        recommended_backfill_slots.append(
+            {
+                "slot_index": slot_index,
+                "required_modality": modality,
+                "reason": "missing_target_launch_modality",
+            }
+        )
+        slot_index += 1
+
+    remaining_volume_gap = max(0, missing_complete_loops_to_threshold - len(recommended_backfill_slots))
+    if remaining_volume_gap > 0:
+        if covered_target_launch_modalities:
+            candidate_modalities = sorted(
+                covered_target_launch_modalities,
+                key=lambda item: (target_launch_modality_loop_counts.get(item, 0), item),
+            )
+        else:
+            candidate_modalities = list(target_launch_modalities)
+        if not candidate_modalities:
+            candidate_modalities = list(DEFAULT_TARGET_LAUNCH_MODALITIES)
+        for offset in range(remaining_volume_gap):
+            modality = candidate_modalities[offset % len(candidate_modalities)]
+            recommended_backfill_slots.append(
+                {
+                    "slot_index": slot_index,
+                    "required_modality": modality,
+                    "reason": "loop_volume_gap_after_modality_coverage",
+                }
+            )
+            slot_index += 1
 
     blockers: list[str] = []
     if missing_trace_count > 0:
@@ -565,9 +616,12 @@ def _build_collection_report(
             "launch_gate_eligible_modalities": launch_gate_eligible_modalities,
             "launch_gate_eligible_modality_count": launch_gate_eligible_modality_count,
             "launch_gate_eligible_complete_loop_count_by_modality": launch_gate_eligible_complete_loop_count_by_modality,
+            "target_launch_modality_loop_counts": target_launch_modality_loop_counts,
             "missing_complete_loops_to_threshold": missing_complete_loops_to_threshold,
             "missing_modalities_to_threshold": missing_modalities_to_threshold,
             "recommended_next_modalities": recommended_next_modalities,
+            "recommended_backfill_slot_count": len(recommended_backfill_slots),
+            "recommended_backfill_slots": recommended_backfill_slots,
             "real_evidence_loop_count": len(real_loops),
             "real_evidence_missing_source_trace_count": missing_trace_count,
             "real_evidence_missing_review_trace_count": missing_review_trace_count,
@@ -589,6 +643,46 @@ def _build_collection_report(
         ],
     }
     return report
+
+
+def _build_backfill_plan(
+    *,
+    report: dict[str, Any],
+    target_launch_modalities: list[str],
+    minimum_complete_loops: int,
+    minimum_modalities: int,
+) -> dict[str, Any]:
+    alignment = report.get("launch_gate_alignment", {})
+    if not isinstance(alignment, dict):
+        alignment = {}
+    return {
+        "schema_version": "real_trial_loop_backfill_plan.v1",
+        "generated_at_utc": _utc_now_iso(),
+        "plan_status": "ACTION_REQUIRED"
+        if str(alignment.get("program_status", "COLLECTION_INCOMPLETE")) != "READY_FOR_CONTROLLED_BETA_EVIDENCE"
+        else "ALREADY_THRESHOLD_READY",
+        "thresholds": {
+            "minimum_complete_loops": int(minimum_complete_loops),
+            "minimum_modalities": int(minimum_modalities),
+            "target_launch_modalities": target_launch_modalities,
+        },
+        "current_coverage": {
+            "launch_gate_eligible_complete_loop_count": int(
+                alignment.get("launch_gate_eligible_complete_loop_count", 0) or 0
+            ),
+            "launch_gate_eligible_modality_count": int(alignment.get("launch_gate_eligible_modality_count", 0) or 0),
+            "launch_gate_eligible_modalities": alignment.get("launch_gate_eligible_modalities", []),
+            "target_launch_modality_loop_counts": alignment.get("target_launch_modality_loop_counts", {}),
+        },
+        "remaining_gap": {
+            "missing_complete_loops_to_threshold": int(alignment.get("missing_complete_loops_to_threshold", 0) or 0),
+            "missing_modalities_to_threshold": int(alignment.get("missing_modalities_to_threshold", 0) or 0),
+            "missing_target_launch_modalities": alignment.get("missing_target_launch_modalities", []),
+        },
+        "recommended_backfill_slot_count": int(alignment.get("recommended_backfill_slot_count", 0) or 0),
+        "recommended_backfill_slots": alignment.get("recommended_backfill_slots", []),
+        "blockers": alignment.get("blockers", []),
+    }
 
 
 def _build_trial_metrics_manifest(
@@ -650,10 +744,12 @@ def _render_summary(report: dict[str, Any]) -> str:
         % ", ".join(str(item) for item in alignment.get("recommended_next_modalities", []) if str(item).strip()),
         "- Launch-gate-eligible complete loop count by modality: `%s`"
         % str(alignment.get("launch_gate_eligible_complete_loop_count_by_modality", {})),
+        "- Target launch modality loop counts: `%s`" % str(alignment.get("target_launch_modality_loop_counts", {})),
         "- Real loops missing source trace: `%s`"
         % str(alignment.get("real_evidence_missing_source_trace_count", 0)),
         "- Real loops missing review trace: `%s`"
         % str(alignment.get("real_evidence_missing_review_trace_count", 0)),
+        "- Recommended backfill slots: `%s`" % str(alignment.get("recommended_backfill_slot_count", 0)),
         "- Ingested loop manifests: `%s/%s`"
         % (
             str(report.get("ingested_loop_manifest_count", 0)),
@@ -695,9 +791,12 @@ def main() -> int:
     output_path = None if str(args.output).strip() == "-" else Path(args.output).resolve()
     summary_path = None if str(args.summary_output).strip() == "-" else Path(args.summary_output).resolve()
     manifest_path = None if str(args.manifest_output).strip() == "-" else Path(args.manifest_output).resolve()
+    backfill_plan_path = None if str(args.backfill_plan_output).strip() == "-" else Path(args.backfill_plan_output).resolve()
 
     try:
         target_launch_modalities = _parse_target_launch_modalities(str(args.target_launch_modalities))
+        minimum_complete_loops = max(1, int(args.minimum_complete_loops))
+        minimum_modalities = max(1, int(args.minimum_modalities))
         missing_paths = [path for path in run_report_paths if not path.is_file()]
         missing_paths.extend(path for path in loop_manifest_paths if not path.is_file())
         if missing_paths:
@@ -719,9 +818,15 @@ def main() -> int:
             duplicate_loop_ids=duplicate_loop_ids,
             skipped_non_loop_manifest_paths=skipped_non_loop_manifest_paths,
             duplicate_resolution_records=duplicate_resolution_records,
-            minimum_complete_loops=max(1, int(args.minimum_complete_loops)),
-            minimum_modalities=max(1, int(args.minimum_modalities)),
+            minimum_complete_loops=minimum_complete_loops,
+            minimum_modalities=minimum_modalities,
             target_launch_modalities=target_launch_modalities,
+        )
+        backfill_plan = _build_backfill_plan(
+            report=report,
+            target_launch_modalities=target_launch_modalities,
+            minimum_complete_loops=minimum_complete_loops,
+            minimum_modalities=minimum_modalities,
         )
         summary = _render_summary(report)
         manifest = _build_trial_metrics_manifest(
@@ -742,6 +847,9 @@ def main() -> int:
     if manifest_path is not None:
         _write_text(manifest_path, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
         print("Real trial loop metrics manifest written: %s" % manifest_path)
+    if backfill_plan_path is not None:
+        _write_text(backfill_plan_path, json.dumps(backfill_plan, ensure_ascii=False, indent=2) + "\n")
+        print("Real trial loop backfill plan written: %s" % backfill_plan_path)
 
     alignment = report.get("launch_gate_alignment", {})
     blockers = alignment.get("blockers", [])

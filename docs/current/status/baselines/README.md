@@ -1,4 +1,4 @@
-﻿# E0 Baseline Pack
+# E0 Baseline Pack
 
 ## Verdict
 
@@ -33,6 +33,15 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-summary.md`
 - Linux example:
   - `python scripts/run_real_trial_loop_collection.py --run-report docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json --output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
 - Batch real-loop manifest example (GL-17):
@@ -49,6 +58,9 @@ This directory preserves comparable baseline evidence packs for controlled-trial
     - `launch_gate_alignment.missing_target_launch_modalities`
     - `launch_gate_alignment.recommended_next_modalities`
     - `launch_gate_alignment.launch_gate_eligible_complete_loop_count_by_modality`
+    - `launch_gate_alignment.target_launch_modality_loop_counts`
+    - `launch_gate_alignment.recommended_backfill_slot_count`
+    - `launch_gate_alignment.recommended_backfill_slots`
   - strict mode example:
     - `python scripts/run_real_trial_loop_collection.py --loop-manifest-dir docs/current/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --strict-loop-manifest-contract --output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
 
@@ -60,6 +72,14 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-summary.md`
   - `docs/current/status/baselines/controlled-trial/trial-metrics-report.json`
   - `docs/current/status/baselines/controlled-trial/trial-metrics-summary.md`
   - `docs/current/status/baselines/broad-launch-readiness-report.json`
@@ -77,6 +97,54 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - machine-readable launch decision summary for controlled external Beta review handoff
   - explicit classification of total loops/modalities vs launch-gate-eligible real loops/modalities
   - real evidence source/reviewer trace missing counts and current launch blocker list
+  - GL-22 backfill execution progress fields:
+    - `backfill_execution_status`
+    - `backfill_execution_fulfilled_slot_count`
+    - `backfill_execution_remaining_slot_count`
+    - `backfill_execution_gained_target_launch_modality_loop_counts`
+  - GL-23 intake action bridge fields:
+    - `backfill_intake_status`
+    - `backfill_intake_total_action_count`
+    - `backfill_intake_pending_action_count`
+    - `backfill_intake_closed_action_count`
+    - `backfill_intake_owner`
+  - GL-24 handoff bridge fields:
+    - `backfill_handoff_status`
+    - `backfill_handoff_total_queue_item_count`
+    - `backfill_handoff_open_queue_item_count`
+    - `backfill_handoff_submission_linked_pending_ack_count`
+    - `backfill_handoff_closure_acknowledged_count`
+    - `backfill_handoff_owner`
+  - GL-25 acknowledgement linkage fields:
+    - `evidence_paths.real_trial_backfill_handoff_acknowledgements_report`
+    - `backfill_handoff_acknowledgement_input_count`
+    - `backfill_handoff_acknowledgement_valid_count`
+    - `backfill_handoff_acknowledgement_invalid_count`
+    - `backfill_handoff_acknowledgement_invalid_records`
+  - GL-26 acknowledgement SLA tracking fields:
+    - `backfill_handoff_acknowledgement_sla_status`
+    - `backfill_handoff_acknowledgement_sla_hours`
+    - `backfill_handoff_acknowledgement_overdue_hours`
+    - `backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc`
+    - `backfill_handoff_acknowledgement_within_sla_count`
+    - `backfill_handoff_acknowledgement_sla_breached_count`
+    - `backfill_handoff_acknowledgement_overdue_count`
+    - `backfill_handoff_acknowledgement_tracking_incomplete_count`
+    - `backfill_handoff_acknowledgement_sla_breached_queue_items`
+    - `backfill_handoff_acknowledgement_overdue_queue_items`
+    - `backfill_handoff_acknowledgement_tracking_incomplete_queue_items`
+  - GL-27 escalation export fields:
+    - `evidence_paths.real_trial_backfill_handoff_escalations_report`
+    - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
+    - `backfill_handoff_escalation_status`
+    - `backfill_handoff_escalation_owner`
+    - `backfill_handoff_escalation_total_item_count`
+    - `backfill_handoff_escalation_sla_breached_item_count`
+    - `backfill_handoff_escalation_overdue_item_count`
+    - `backfill_handoff_escalation_tracking_incomplete_item_count`
+    - `backfill_handoff_escalation_sla_breached_items`
+    - `backfill_handoff_escalation_overdue_items`
+    - `backfill_handoff_escalation_tracking_incomplete_items`
 
 ## GL-14 Real Trial Reviewer Trace Contract
 
@@ -91,4 +159,5 @@ This directory preserves comparable baseline evidence packs for controlled-trial
 ## Notes
 
 - GL-12 outputs classify evidence; they do not bypass launch readiness gate.
-- Final launch decision must still be evaluated by `scripts/run_launch_readiness_gate.py`.
+- Final launch decision must still be evaluated by `scripts/run_launch_readiness_gate.py`.
+

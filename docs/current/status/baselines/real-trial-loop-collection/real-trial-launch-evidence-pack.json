@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_launch_evidence_pack.v1",
-  "generated_at_utc": "2026-05-27T04:17:15Z",
+  "generated_at_utc": "2026-05-27T16:23:55Z",
   "stage": "controlled_external_beta",
   "launch_decision": "HOLD",
   "ready_for_controlled_beta": false,
@@ -10,6 +10,16 @@
     "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
     "collection_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-summary.md",
     "real_trial_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
+    "real_trial_backfill_plan": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-backfill-plan.json",
+    "real_trial_backfill_execution_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-execution-report.json",
+    "real_trial_backfill_execution_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-execution-summary.md",
+    "real_trial_backfill_intake_actions_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json",
+    "real_trial_backfill_intake_actions_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-summary.md",
+    "real_trial_backfill_handoff_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-report.json",
+    "real_trial_backfill_handoff_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-summary.md",
+    "real_trial_backfill_handoff_acknowledgements_report": "",
+    "real_trial_backfill_handoff_escalations_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-escalations-report.json",
+    "real_trial_backfill_handoff_escalations_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-escalations-summary.md",
     "trial_metrics_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
     "trial_metrics_summary": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-summary.md",
     "launch_readiness_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\broad-launch-readiness-report.json",
@@ -21,7 +31,14 @@
     ],
     "loop_manifest_paths": [],
     "input_report_count": 1,
-    "input_loop_manifest_count": 0
+    "input_loop_manifest_count": 0,
+    "ingested_loop_manifest_count": 0,
+    "skipped_non_loop_manifest_count": 0,
+    "skipped_non_loop_manifest_paths": [],
+    "input_loop_manifest_dir_count": 0,
+    "loop_manifest_dirs": [],
+    "duplicate_resolution_count": 0,
+    "duplicate_resolution_records": []
   },
   "evidence_classification": {
     "evidence_origin_counts": {
@@ -41,13 +58,138 @@
     ],
     "launch_gate_eligible_complete_loop_count": 0,
     "launch_gate_eligible_complete_modalities": [],
+    "target_launch_modalities": [
+      "text",
+      "audio",
+      "image",
+      "video"
+    ],
+    "covered_target_launch_modalities": [],
+    "missing_target_launch_modalities": [
+      "text",
+      "audio",
+      "image",
+      "video"
+    ],
+    "recommended_next_modalities": [
+      "text",
+      "audio",
+      "image",
+      "video"
+    ],
+    "launch_gate_eligible_complete_loop_count_by_modality": {},
+    "target_launch_modality_loop_counts": {
+      "text": 0,
+      "audio": 0,
+      "image": 0,
+      "video": 0
+    },
     "real_evidence_missing_source_trace_count": 0,
     "real_evidence_missing_review_trace_count": 0,
     "collection_program_status": "COLLECTION_INCOMPLETE",
     "collection_blockers": [
       "real_loop_volume_below_threshold",
       "real_loop_modality_coverage_below_threshold"
-    ]
+    ],
+    "missing_complete_loops_to_threshold": 10,
+    "missing_modalities_to_threshold": 4,
+    "recommended_backfill_slot_count": 10,
+    "recommended_backfill_slots": [
+      {
+        "slot_index": 1,
+        "required_modality": "text",
+        "reason": "missing_target_launch_modality"
+      },
+      {
+        "slot_index": 2,
+        "required_modality": "audio",
+        "reason": "missing_target_launch_modality"
+      },
+      {
+        "slot_index": 3,
+        "required_modality": "image",
+        "reason": "missing_target_launch_modality"
+      },
+      {
+        "slot_index": 4,
+        "required_modality": "video",
+        "reason": "missing_target_launch_modality"
+      },
+      {
+        "slot_index": 5,
+        "required_modality": "text",
+        "reason": "loop_volume_gap_after_modality_coverage"
+      },
+      {
+        "slot_index": 6,
+        "required_modality": "audio",
+        "reason": "loop_volume_gap_after_modality_coverage"
+      },
+      {
+        "slot_index": 7,
+        "required_modality": "image",
+        "reason": "loop_volume_gap_after_modality_coverage"
+      },
+      {
+        "slot_index": 8,
+        "required_modality": "video",
+        "reason": "loop_volume_gap_after_modality_coverage"
+      },
+      {
+        "slot_index": 9,
+        "required_modality": "text",
+        "reason": "loop_volume_gap_after_modality_coverage"
+      },
+      {
+        "slot_index": 10,
+        "required_modality": "audio",
+        "reason": "loop_volume_gap_after_modality_coverage"
+      }
+    ],
+    "backfill_execution_status": "BACKFILL_IN_PROGRESS",
+    "backfill_execution_fulfilled_slot_count": 0,
+    "backfill_execution_remaining_slot_count": 10,
+    "backfill_execution_gained_target_launch_modality_loop_counts": {
+      "audio": 0,
+      "image": 0,
+      "text": 0,
+      "video": 0
+    },
+    "backfill_intake_status": "ACTIONS_PENDING",
+    "backfill_intake_total_action_count": 10,
+    "backfill_intake_pending_action_count": 10,
+    "backfill_intake_closed_action_count": 0,
+    "backfill_intake_owner": "controlled-beta-ops",
+    "backfill_handoff_status": "HANDOFF_ACTIONS_PENDING",
+    "backfill_handoff_total_queue_item_count": 10,
+    "backfill_handoff_open_queue_item_count": 10,
+    "backfill_handoff_submission_linked_pending_ack_count": 0,
+    "backfill_handoff_closure_acknowledged_count": 0,
+    "backfill_handoff_owner": "controlled-beta-ops",
+    "backfill_handoff_acknowledgement_input_count": 0,
+    "backfill_handoff_acknowledgement_valid_count": 0,
+    "backfill_handoff_acknowledgement_invalid_count": 0,
+    "backfill_handoff_acknowledgement_invalid_records": [],
+    "backfill_handoff_acknowledgement_sla_status": "ACK_SLA_NOT_REQUIRED",
+    "backfill_handoff_acknowledgement_sla_hours": 24.0,
+    "backfill_handoff_acknowledgement_overdue_hours": 72.0,
+    "backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc": "2026-05-27T16:23:55Z",
+    "backfill_handoff_acknowledgement_within_sla_count": 0,
+    "backfill_handoff_acknowledgement_sla_breached_count": 0,
+    "backfill_handoff_acknowledgement_overdue_count": 0,
+    "backfill_handoff_acknowledgement_tracking_incomplete_count": 0,
+    "backfill_handoff_acknowledgement_sla_breached_queue_items": [],
+    "backfill_handoff_acknowledgement_overdue_queue_items": [],
+    "backfill_handoff_acknowledgement_tracking_incomplete_queue_items": [],
+    "backfill_handoff_escalation_status": "ESCALATION_NOT_REQUIRED",
+    "backfill_handoff_escalation_owner": "controlled-beta-ops",
+    "backfill_handoff_escalation_total_item_count": 0,
+    "backfill_handoff_escalation_sla_breached_item_count": 0,
+    "backfill_handoff_escalation_overdue_item_count": 0,
+    "backfill_handoff_escalation_tracking_incomplete_item_count": 0,
+    "backfill_handoff_escalation_sla_breached_items": [],
+    "backfill_handoff_escalation_overdue_items": [],
+    "backfill_handoff_escalation_tracking_incomplete_items": []
   },
   "safety_summary": {
     "unreviewed_published_count": 0,

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import subprocess
@@ -154,6 +154,22 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(launch_summary),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -201,6 +217,50 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get("launch_gate_eligible_complete_loop_count_by_modality"),
                 {"text": 1},
             )
+            self.assertEqual(classification.get("target_launch_modality_loop_counts"), {"text": 1, "audio": 0, "image": 0, "video": 0})
+            self.assertEqual(classification.get("recommended_backfill_slot_count"), 0)
+            self.assertEqual(classification.get("recommended_backfill_slots"), [])
+            self.assertEqual(classification.get("backfill_execution_status"), "NO_ACTION_REQUIRED")
+            self.assertEqual(classification.get("backfill_execution_fulfilled_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_remaining_slot_count"), 0)
+            self.assertEqual(
+                classification.get("backfill_execution_gained_target_launch_modality_loop_counts"),
+                {"audio": 0, "image": 0, "text": 0, "video": 0},
+            )
+            self.assertEqual(classification.get("backfill_intake_status"), "NO_ACTION_REQUIRED")
+            self.assertEqual(classification.get("backfill_intake_total_action_count"), 0)
+            self.assertEqual(classification.get("backfill_intake_pending_action_count"), 0)
+            self.assertEqual(classification.get("backfill_intake_closed_action_count"), 0)
+            self.assertEqual(classification.get("backfill_intake_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_handoff_status"), "HANDOFF_NOT_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_total_queue_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_open_queue_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_submission_linked_pending_ack_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_closure_acknowledged_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_input_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_valid_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_records"), [])
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_status"), "ACK_SLA_NOT_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_hours"), 24.0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_hours"), 72.0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_within_sla_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_tracking_incomplete_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_queue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_queue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_tracking_incomplete_queue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_escalation_status"), "ESCALATION_NOT_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_escalation_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_handoff_escalation_total_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_escalation_sla_breached_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_escalation_overdue_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_escalation_tracking_incomplete_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_escalation_sla_breached_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_escalation_overdue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_escalation_tracking_incomplete_items"), [])
             self.assertEqual(evidence_pack_payload.get("stage"), "controlled_external_beta")
             self.assertEqual(evidence_pack_payload.get("gate_summary", {}).get("failed_checks"), [])
 
@@ -257,6 +317,22 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -288,6 +364,46 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertFalse(evidence_pack_payload.get("ready_for_controlled_beta"))
             failed_checks = evidence_pack_payload.get("gate_summary", {}).get("failed_checks", [])
             self.assertIn("trial_loop_volume_and_modality_coverage", failed_checks)
+            classification = evidence_pack_payload.get("evidence_classification", {})
+            self.assertEqual(classification.get("recommended_backfill_slot_count"), 10)
+            slots = classification.get("recommended_backfill_slots", [])
+            self.assertEqual(len(slots), 10)
+            self.assertEqual(slots[0].get("required_modality"), "text")
+            self.assertEqual(slots[0].get("reason"), "missing_target_launch_modality")
+            self.assertEqual(classification.get("backfill_execution_status"), "BACKFILL_IN_PROGRESS")
+            self.assertEqual(classification.get("backfill_execution_fulfilled_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_remaining_slot_count"), 10)
+            self.assertEqual(
+                classification.get("backfill_execution_gained_target_launch_modality_loop_counts"),
+                {"audio": 0, "image": 0, "text": 0, "video": 0},
+            )
+            self.assertEqual(classification.get("backfill_intake_status"), "ACTIONS_PENDING")
+            self.assertEqual(classification.get("backfill_intake_total_action_count"), 10)
+            self.assertEqual(classification.get("backfill_intake_pending_action_count"), 10)
+            self.assertEqual(classification.get("backfill_intake_closed_action_count"), 0)
+            self.assertEqual(classification.get("backfill_intake_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_handoff_status"), "HANDOFF_ACTIONS_PENDING")
+            self.assertEqual(classification.get("backfill_handoff_total_queue_item_count"), 10)
+            self.assertEqual(classification.get("backfill_handoff_open_queue_item_count"), 10)
+            self.assertEqual(classification.get("backfill_handoff_submission_linked_pending_ack_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_closure_acknowledged_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_input_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_valid_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_records"), [])
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_status"), "ACK_SLA_NOT_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_hours"), 24.0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_hours"), 72.0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_within_sla_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_tracking_incomplete_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_queue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_queue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_escalation_status"), "ESCALATION_NOT_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_escalation_total_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_tracking_incomplete_queue_items"), [])
 
     def test_pipeline_accepts_loop_manifest_input(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -361,6 +477,22 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -478,6 +610,22 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -582,6 +730,22 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -741,6 +905,22 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -772,6 +952,304 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertEqual(len(records), 1)
             self.assertEqual(records[0].get("resolution_reason"), "newer_reviewed_at_utc")
 
+    def test_pipeline_evidence_pack_reports_submission_linked_pending_ack(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            loop_manifest = root / "real-loop-manifest.json"
+            release_report = root / "release-switch.json"
+            current_status = root / "CURRENT_STATUS.md"
+            agent_smoke = root / "agent-smoke.json"
+            doc_sync = root / "doc-sync.json"
+            ops_readiness = root / "ops-readiness.json"
+            launch_report = root / "launch-readiness-report.json"
+            evidence_pack = root / "real-trial-launch-evidence-pack.json"
+            acknowledgements_report = root / "handoff-acknowledgements.json"
+
+            _write_json(
+                loop_manifest,
+                {
+                    "manifest_id": "gl25-ack-pending",
+                    "loops": [
+                        _loop_row(
+                            loop_id="real-text-001",
+                            modality="text",
+                            evidence_origin="real",
+                            launch_gate_eligible=True,
+                        )
+                    ],
+                },
+            )
+            _write_json(
+                acknowledgements_report,
+                {
+                    "schema_version": "real_trial_backfill_handoff_acknowledgements.v1",
+                    "generated_at_utc": "2026-05-27T00:15:00Z",
+                    "acknowledgements": [
+                        {
+                            "queue_item_id": "gl24-queue-gl23-slot-001-text",
+                            "action_id": "gl23-slot-001-text",
+                            "submitted_loop_id": "real-text-999",
+                            "submitted_modality": "text",
+                            "acknowledged_by": "ops-reviewer-1",
+                            "acknowledged_at_utc": "2026-05-27T00:16:00Z",
+                            "notes": "mismatch on purpose",
+                        }
+                    ],
+                },
+            )
+            _write_json(release_report, _release_report("GO"))
+            current_status.write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(agent_smoke, _agent_smoke_report())
+            _write_json(doc_sync, _doc_sync_report())
+            _write_json(ops_readiness, _ops_readiness_report())
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest",
+                    str(loop_manifest),
+                    "--collection-report-output",
+                    str(root / "collection-report.json"),
+                    "--collection-summary-output",
+                    str(root / "collection-summary.md"),
+                    "--real-trial-manifest-output",
+                    str(root / "real-manifest.json"),
+                    "--trial-metrics-report-output",
+                    str(root / "trial-metrics-report.json"),
+                    "--trial-metrics-summary-output",
+                    str(root / "trial-metrics-summary.md"),
+                    "--launch-readiness-output",
+                    str(launch_report),
+                    "--launch-readiness-summary-output",
+                    str(root / "launch-readiness-summary.md"),
+                    "--evidence-pack-output",
+                    str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
+                    "--backfill-handoff-acknowledgements-report",
+                    str(acknowledgements_report),
+                    "--backfill-handoff-now-utc",
+                    "2026-05-31T12:00:00Z",
+                    "--release-switch-report",
+                    str(release_report),
+                    "--current-status-doc",
+                    str(current_status),
+                    "--agent-smoke-report",
+                    str(agent_smoke),
+                    "--doc-sync-report",
+                    str(doc_sync),
+                    "--operations-readiness-report",
+                    str(ops_readiness),
+                    "--no-run-doc-sync",
+                    "--minimum-complete-loops",
+                    "2",
+                    "--minimum-modalities",
+                    "1",
+                    "--max-evidence-age-hours",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr + completed.stdout)
+            evidence_pack_payload = json.loads(evidence_pack.read_text(encoding="utf-8"))
+            classification = evidence_pack_payload.get("evidence_classification", {})
+            self.assertEqual(classification.get("backfill_handoff_status"), "HANDOFF_OPERATOR_ACK_PENDING")
+            self.assertEqual(classification.get("backfill_handoff_total_queue_item_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_open_queue_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_submission_linked_pending_ack_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_closure_acknowledged_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_input_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_valid_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_records"), [])
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_status"), "ACK_SLA_OVERDUE_ESCALATION")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_hours"), 24.0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_hours"), 72.0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_within_sla_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_tracking_incomplete_count"), 0)
+            overdue_items = classification.get("backfill_handoff_acknowledgement_overdue_queue_items", [])
+            self.assertEqual(len(overdue_items), 1)
+            self.assertEqual(overdue_items[0].get("queue_item_id"), "gl24-queue-gl23-slot-001-text")
+            self.assertEqual(overdue_items[0].get("escalation_action"), "escalate_immediately")
+            self.assertEqual(classification.get("backfill_handoff_escalation_status"), "ESCALATION_OVERDUE_ACTION_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_escalation_total_item_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_escalation_sla_breached_item_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_escalation_overdue_item_count"), 1)
+            escalation_overdue_items = classification.get("backfill_handoff_escalation_overdue_items", [])
+            self.assertEqual(len(escalation_overdue_items), 1)
+            self.assertEqual(escalation_overdue_items[0].get("queue_item_id"), "gl24-queue-gl23-slot-001-text")
+            self.assertEqual(escalation_overdue_items[0].get("escalation_severity"), "overdue")
+
+    def test_pipeline_evidence_pack_reports_submission_linked_pending_ack_sla_breached(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            loop_manifest = root / "real-loop-manifest.json"
+            release_report = root / "release-switch.json"
+            current_status = root / "CURRENT_STATUS.md"
+            agent_smoke = root / "agent-smoke.json"
+            doc_sync = root / "doc-sync.json"
+            ops_readiness = root / "ops-readiness.json"
+            launch_report = root / "launch-readiness-report.json"
+            evidence_pack = root / "real-trial-launch-evidence-pack.json"
+            acknowledgements_report = root / "handoff-acknowledgements.json"
+
+            _write_json(
+                loop_manifest,
+                {
+                    "manifest_id": "gl26-ack-sla-breached",
+                    "loops": [
+                        _loop_row(
+                            loop_id="real-text-001",
+                            modality="text",
+                            evidence_origin="real",
+                            launch_gate_eligible=True,
+                        )
+                    ],
+                },
+            )
+            _write_json(
+                acknowledgements_report,
+                {
+                    "schema_version": "real_trial_backfill_handoff_acknowledgements.v1",
+                    "generated_at_utc": "2026-05-27T00:15:00Z",
+                    "acknowledgements": [
+                        {
+                            "queue_item_id": "gl24-queue-gl23-slot-001-text",
+                            "action_id": "gl23-slot-001-text",
+                            "submitted_loop_id": "real-text-999",
+                            "submitted_modality": "text",
+                            "acknowledged_by": "ops-reviewer-1",
+                            "acknowledged_at_utc": "2026-05-27T00:16:00Z",
+                            "notes": "mismatch on purpose",
+                        }
+                    ],
+                },
+            )
+            _write_json(release_report, _release_report("GO"))
+            current_status.write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(agent_smoke, _agent_smoke_report())
+            _write_json(doc_sync, _doc_sync_report())
+            _write_json(ops_readiness, _ops_readiness_report())
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest",
+                    str(loop_manifest),
+                    "--collection-report-output",
+                    str(root / "collection-report.json"),
+                    "--collection-summary-output",
+                    str(root / "collection-summary.md"),
+                    "--real-trial-manifest-output",
+                    str(root / "real-manifest.json"),
+                    "--trial-metrics-report-output",
+                    str(root / "trial-metrics-report.json"),
+                    "--trial-metrics-summary-output",
+                    str(root / "trial-metrics-summary.md"),
+                    "--launch-readiness-output",
+                    str(launch_report),
+                    "--launch-readiness-summary-output",
+                    str(root / "launch-readiness-summary.md"),
+                    "--evidence-pack-output",
+                    str(evidence_pack),
+                    "--backfill-execution-output",
+                    str(root / "real-trial-backfill-execution-report.json"),
+                    "--backfill-execution-summary-output",
+                    str(root / "real-trial-backfill-execution-summary.md"),
+                    "--backfill-intake-actions-output",
+                    str(root / "real-trial-backfill-intake-actions-report.json"),
+                    "--backfill-intake-actions-summary-output",
+                    str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-handoff-output",
+                    str(root / "real-trial-backfill-handoff-report.json"),
+                    "--backfill-handoff-summary-output",
+                    str(root / "real-trial-backfill-handoff-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
+                    "--backfill-handoff-escalations-output",
+                    str(root / "real-trial-backfill-handoff-escalations-report.json"),
+                    "--backfill-handoff-escalations-summary-output",
+                    str(root / "real-trial-backfill-handoff-escalations-summary.md"),
+                    "--backfill-handoff-acknowledgements-report",
+                    str(acknowledgements_report),
+                    "--backfill-handoff-now-utc",
+                    "2026-05-28T12:30:00Z",
+                    "--release-switch-report",
+                    str(release_report),
+                    "--current-status-doc",
+                    str(current_status),
+                    "--agent-smoke-report",
+                    str(agent_smoke),
+                    "--doc-sync-report",
+                    str(doc_sync),
+                    "--operations-readiness-report",
+                    str(ops_readiness),
+                    "--no-run-doc-sync",
+                    "--minimum-complete-loops",
+                    "2",
+                    "--minimum-modalities",
+                    "1",
+                    "--max-evidence-age-hours",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr + completed.stdout)
+            evidence_pack_payload = json.loads(evidence_pack.read_text(encoding="utf-8"))
+            classification = evidence_pack_payload.get("evidence_classification", {})
+            self.assertEqual(classification.get("backfill_handoff_status"), "HANDOFF_OPERATOR_ACK_PENDING")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_status"), "ACK_SLA_BREACH_PENDING_ACTION")
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_within_sla_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_count"), 0)
+            breached_items = classification.get("backfill_handoff_acknowledgement_sla_breached_queue_items", [])
+            self.assertEqual(len(breached_items), 1)
+            self.assertEqual(
+                breached_items[0].get("escalation_action"),
+                "notify_owner_and_track_until_acknowledged",
+            )
+            self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_queue_items"), [])
+            self.assertEqual(classification.get("backfill_handoff_escalation_status"), "ESCALATION_BREACH_ACTION_REQUIRED")
+            self.assertEqual(classification.get("backfill_handoff_escalation_total_item_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_escalation_sla_breached_item_count"), 1)
+            self.assertEqual(classification.get("backfill_handoff_escalation_overdue_item_count"), 0)
+            escalation_breached_items = classification.get("backfill_handoff_escalation_sla_breached_items", [])
+            self.assertEqual(len(escalation_breached_items), 1)
+            self.assertEqual(
+                escalation_breached_items[0].get("escalation_action"),
+                "notify_owner_and_track_until_acknowledged",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+

@@ -977,6 +977,419 @@ Strengthening path:
     - `python scripts/run_doc_sync_check.py --output -`
     - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
 
+### GL-21 Real Loop Backfill Plan Contract
+
+- Status: Complete
+- Goal: convert the remaining controlled external Beta threshold blocker into an executable machine-readable intake plan so operators can collect the next batch of launch-gate-eligible real loops without ad-hoc manual planning.
+- Files:
+  - `scripts/run_real_trial_loop_collection.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_loop_collection_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-12 collector with `--backfill-plan-output` and emit `real_trial_loop_backfill_plan.v1`.
+  - Add explicit backfill planning diagnostics under launch-gate alignment:
+    - `target_launch_modality_loop_counts`
+    - `recommended_backfill_slot_count`
+    - `recommended_backfill_slots`
+  - Slot planning must stay policy-safe:
+    - fill missing target modalities first (`reason=missing_target_launch_modality`)
+    - fill remaining loop-volume gap next (`reason=loop_volume_gap_after_modality_coverage`)
+  - Extend GL-13 bridge/GL-16 evidence pack to include backfill-plan path and the same slot diagnostics for reviewer/operator handoff.
+  - Keep launch policy strictness unchanged: no fixture-to-real promotion, no dry-run/relaxed bypass, no GA inflation.
+- Acceptance:
+  - GL-12 writes backfill plan on both `COLLECTION_INCOMPLETE` and `READY_FOR_CONTROLLED_BETA_EVIDENCE` paths.
+  - GL-16 evidence pack surfaces backfill slot diagnostics without changing launch decision policy ownership.
+  - Current baseline still reports `HOLD` until real launch-gate-eligible loops/modalities truly meet threshold.
+- Evidence:
+  - 2026-05-27: updated `scripts/run_real_trial_loop_collection.py`:
+    - added `--backfill-plan-output` (default `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json`)
+    - launch-gate alignment now emits:
+      - `target_launch_modality_loop_counts`
+      - `recommended_backfill_slot_count`
+      - `recommended_backfill_slots`
+    - summary now reports `Recommended backfill slots`.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - forwards `--backfill-plan-output` to GL-12 collection
+    - GL-16 evidence pack now includes:
+      - `evidence_paths.real_trial_backfill_plan`
+      - `evidence_classification.target_launch_modality_loop_counts`
+      - `evidence_classification.recommended_backfill_slot_count`
+      - `evidence_classification.recommended_backfill_slots`
+  - 2026-05-27: updated focused tests:
+    - `tests/test_real_trial_loop_collection_script.py`:
+      - `test_backfill_plan_output_contract`
+      - existing fixture/ready cases now assert backfill-slot diagnostics
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - READY/HOLD paths now assert backfill-slot evidence fields
+  - 2026-05-27: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-27: baseline pipeline regenerated:
+    - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json` (`recommended_backfill_slot_count=10`)
+    - `docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json` now includes GL-21 backfill diagnostics
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_loop_collection_script tests.test_real_trial_launch_evidence_script` (18 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-22 Real Backfill Execution Tracking Bridge
+
+- Status: Complete
+- Goal: operationalize GL-21 backfill slots into machine-readable execution progress evidence so controlled external Beta operators can track slot completion deterministically without ad-hoc spreadsheets.
+- Files:
+  - `scripts/run_real_trial_backfill_execution.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_execution_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Add GL-22 execution tracker script:
+    - input: GL-21 backfill plan + current GL-12 collection report
+    - output: `real_trial_backfill_execution.v1` report + markdown summary
+    - deterministic slot status assignment (`fulfilled` / `pending`) using modality-count deltas from baseline plan coverage to current collection coverage.
+  - Integrate GL-22 into GL-13 bridge sequence before trial-metrics and launch-gate stages.
+  - Extend GL-16 evidence pack contract with backfill execution progress fields:
+    - `backfill_execution_status`
+    - `backfill_execution_fulfilled_slot_count`
+    - `backfill_execution_remaining_slot_count`
+    - `backfill_execution_gained_target_launch_modality_loop_counts`
+  - Keep launch policy strictness unchanged: GL-22 adds progress visibility only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-13 bridge publishes GL-22 execution report on both HOLD and READY paths.
+  - Evidence pack includes machine-readable backfill execution progress fields.
+  - Current baseline still reports `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-27: added `scripts/run_real_trial_backfill_execution.py`:
+    - emits `real_trial_backfill_execution.v1` with slot fulfillment counts, per-slot execution records, modality delta accounting, and launch-gap snapshot.
+    - supports `--fail-on-incomplete` for CI/policy usage.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - runs GL-22 tracker after GL-12 collection.
+    - writes default artifacts:
+      - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json`
+      - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
+    - GL-16 evidence pack now includes GL-22 execution progress fields and evidence paths.
+  - 2026-05-27: added/updated focused tests:
+    - `tests/test_real_trial_backfill_execution_script.py` (new)
+    - `tests/test_real_trial_launch_evidence_script.py` (GL-22 bridge + evidence-pack assertions)
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_execution_script tests.test_real_trial_loop_collection_script tests.test_real_trial_launch_evidence_script` (21 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-23 Backfill Intake Actions Bridge
+
+- Status: Complete
+- Goal: convert GL-21/GL-22 machine-readable slot progress into operator-facing intake actions so each pending slot has a concrete closure-evidence contract.
+- Files:
+  - `scripts/run_real_trial_backfill_intake_actions.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_intake_actions_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Add GL-23 intake-action generator:
+    - input: GL-21 backfill plan + GL-22 backfill execution report
+    - output: `real_trial_backfill_intake_actions.v1` report + markdown summary
+    - emit deterministic `pending` / `closed` operator action rows mapped from slot execution status.
+  - Define slot-level closure evidence contract in each action:
+    - required loop manifest fields (`loop_id`, `modality`, `evidence_origin`, `launch_gate_eligible`, source/review trace fields)
+    - required values (`evidence_origin=real`, `launch_gate_eligible=true`, `status=complete`, modality match).
+  - Integrate GL-23 into GL-13 bridge sequence after GL-22 and before trial-metrics/gate stages.
+  - Extend GL-16 evidence pack contract with GL-23 intake fields:
+    - `backfill_intake_status`
+    - `backfill_intake_total_action_count`
+    - `backfill_intake_pending_action_count`
+    - `backfill_intake_closed_action_count`
+    - `backfill_intake_owner`
+  - Keep launch policy strictness unchanged: GL-23 adds operator intake orchestration only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-13 bridge writes GL-23 intake-action artifacts on both HOLD and READY paths.
+  - Evidence pack includes machine-readable GL-23 intake action status/count fields.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-27: added `scripts/run_real_trial_backfill_intake_actions.py`:
+    - emits `real_trial_backfill_intake_actions.v1` with slot-mapped action rows, closure-evidence requirements, pending-action list, and launch-gap snapshot.
+    - supports `--owner` and `--fail-on-pending` for operator routing and CI/policy runs.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - runs GL-23 stage after GL-22 stage.
+    - writes default artifacts:
+      - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
+      - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+    - GL-16 evidence pack now includes GL-23 intake status/count/owner fields and evidence paths.
+  - 2026-05-27: added/updated focused tests:
+    - `tests/test_real_trial_backfill_intake_actions_script.py` (new)
+    - `tests/test_real_trial_launch_evidence_script.py` (GL-23 bridge args + evidence-pack assertions)
+  - 2026-05-27: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_intake_actions_script tests.test_real_trial_backfill_execution_script tests.test_real_trial_loop_collection_script tests.test_real_trial_launch_evidence_script` (24 tests)
+    - `python scripts/run_real_trial_launch_evidence.py --run-report docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json --collection-report-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --backfill-plan-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json --backfill-execution-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json --backfill-execution-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md --backfill-intake-actions-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json --backfill-intake-actions-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md --trial-metrics-report-output docs/current/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/current/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/current/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/current/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0 --print-json` (pipeline decision remains `HOLD`; GL-23 intake status `ACTIONS_PENDING` under baseline fixture evidence)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-24 Backfill Handoff Queue & Closure Acknowledgement
+
+- Status: Complete
+- Goal: bind GL-23 pending intake actions to concrete assignee queue items and closure acknowledgements sourced from actual GL-12 launch-gate-eligible real-loop submissions.
+- Files:
+  - `scripts/run_real_trial_backfill_handoff.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_handoff_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Add GL-24 handoff generator:
+    - input: GL-23 intake-actions report + GL-12 collection report
+    - output: `real_trial_backfill_handoff.v1` report + markdown summary
+    - emit deterministic queue-item records mapped from intake slots with assignee and queue status.
+  - Add slot-level closure acknowledgement bridge:
+    - queue status `open` when no eligible real submission is matched
+    - queue status `closure_acknowledged` when matched real-loop submission trace is linked (`loop_id`, `review_task_id`, reviewer/source traces).
+  - Integrate GL-24 into GL-13 bridge sequence after GL-23 and before trial-metrics/launch-gate stages.
+  - Extend GL-16 evidence pack contract with GL-24 handoff fields:
+    - `backfill_handoff_status`
+    - `backfill_handoff_total_queue_item_count`
+    - `backfill_handoff_open_queue_item_count`
+    - `backfill_handoff_closure_acknowledged_count`
+    - `backfill_handoff_owner`
+  - Keep launch policy strictness unchanged: GL-24 adds execution-handoff visibility only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-13 bridge writes GL-24 handoff artifacts on both HOLD and READY paths.
+  - Evidence pack includes machine-readable GL-24 handoff status/count fields.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-27: added `scripts/run_real_trial_backfill_handoff.py`:
+    - emits `real_trial_backfill_handoff.v1` with queue items, open-item list, and closure-acknowledgement traces.
+    - supports `--owner` and `--fail-on-open` for operator routing and CI/policy runs.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - runs GL-24 stage after GL-23 stage.
+    - writes default artifacts:
+      - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
+      - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
+    - GL-16 evidence pack now includes GL-24 handoff status/count/owner fields and evidence paths.
+  - 2026-05-27: added/updated focused tests:
+    - `tests/test_real_trial_backfill_handoff_script.py` (new)
+    - `tests/test_real_trial_launch_evidence_script.py` (GL-24 bridge args + evidence-pack assertions)
+  - 2026-05-27: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_handoff_script tests.test_real_trial_backfill_intake_actions_script tests.test_real_trial_backfill_execution_script tests.test_real_trial_loop_collection_script tests.test_real_trial_launch_evidence_script` (27 tests)
+    - `python scripts/run_real_trial_launch_evidence.py --run-report docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json --collection-report-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --backfill-plan-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json --backfill-execution-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json --backfill-execution-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md --backfill-intake-actions-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json --backfill-intake-actions-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md --backfill-handoff-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json --backfill-handoff-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md --trial-metrics-report-output docs/current/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/current/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/current/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/current/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0 --print-json` (pipeline decision remains `HOLD`; GL-24 handoff status `HANDOFF_ACTIONS_PENDING` under baseline fixture evidence)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+
+### GL-25 Handoff Acknowledgement Linkage Contract
+
+- Status: Complete
+- Goal: require explicit operator acknowledgement with submitted loop-id linkage before GL-24 queue items can transition from submission-linked to closure-acknowledged status.
+- Files:
+  - `scripts/run_real_trial_backfill_handoff.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_handoff_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-24 handoff generator with optional operator acknowledgement input (`--acknowledgements-report`) and validation.
+  - Introduce deterministic transition states:
+    - `open`: no launch-gate-eligible submission linked
+    - `submission_linked_pending_ack`: linked submission exists but operator acknowledgement missing or mismatched loop-id
+    - `closure_acknowledged`: linked submission plus matching operator acknowledgement (`submitted_loop_id == linked loop_id`)
+  - Emit acknowledgement diagnostics for auditability:
+    - `acknowledgement_snapshot.input_acknowledgement_count`
+    - `acknowledgement_snapshot.valid_acknowledgement_count`
+    - `acknowledgement_snapshot.invalid_acknowledgement_count`
+    - `acknowledgement_snapshot.invalid_acknowledgement_records`
+  - Extend GL-13 bridge and GL-16 evidence pack with GL-25 fields:
+    - `evidence_paths.real_trial_backfill_handoff_acknowledgements_report`
+    - `backfill_handoff_submission_linked_pending_ack_count`
+    - `backfill_handoff_acknowledgement_input_count`
+    - `backfill_handoff_acknowledgement_valid_count`
+    - `backfill_handoff_acknowledgement_invalid_count`
+    - `backfill_handoff_acknowledgement_invalid_records`
+  - Keep launch policy strictness unchanged: GL-25 adds closure-linkage governance only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-24 reports `HANDOFF_OPERATOR_ACK_PENDING` when submissions are linked but operator acknowledgements are missing/mismatched.
+  - GL-24 reports `HANDOFF_CLOSURE_ACKNOWLEDGED` only when submission linkage and acknowledgement loop-id match.
+  - GL-16 evidence pack surfaces GL-25 acknowledgement diagnostics without relaxing launch gate conditions.
+- Evidence:
+  - 2026-05-27: updated `scripts/run_real_trial_backfill_handoff.py`:
+    - added `--acknowledgements-report` input contract.
+    - added new queue status `submission_linked_pending_ack` and program status `HANDOFF_OPERATOR_ACK_PENDING`.
+    - closure acknowledgement now requires both linked submission trace and matching operator acknowledgement loop-id.
+    - added `acknowledgement_snapshot` diagnostic block and `submission_linked_pending_ack_count`.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - added `--backfill-handoff-acknowledgements-report` pass-through into GL-24 stage.
+    - GL-16 evidence pack now includes GL-25 acknowledgement path/count diagnostics.
+  - 2026-05-27: updated focused tests:
+    - `tests/test_real_trial_backfill_handoff_script.py`:
+      - `test_handoff_submission_linked_requires_operator_acknowledgement`
+      - `test_handoff_acknowledges_closure_when_submission_and_ack_match`
+      - adjusted existing closure test for GL-25 linked-submission acknowledgement payload.
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - `test_pipeline_evidence_pack_reports_submission_linked_pending_ack`
+      - updated existing GL-24 evidence-pack assertions to include GL-25 acknowledgement diagnostics.
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_handoff_script tests.test_real_trial_launch_evidence_script` (13 tests)
+    - `python scripts/run_real_trial_launch_evidence.py --run-report docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json --collection-report-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --backfill-plan-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json --backfill-execution-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json --backfill-execution-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md --backfill-intake-actions-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json --backfill-intake-actions-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md --backfill-handoff-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json --backfill-handoff-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md --trial-metrics-report-output docs/current/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/current/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/current/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/current/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0 --print-json` (pipeline decision remains `HOLD`; GL-25 path available, baseline status remains `HANDOFF_ACTIONS_PENDING` under fixture evidence)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-26 Handoff Acknowledgement SLA Tracking
+
+- Status: Complete
+- Goal: turn GL-25 submission-linked pending-ack diagnostics into explicit SLA aging and overdue escalation signals without changing launch-gate ownership.
+- Files:
+  - `scripts/run_real_trial_backfill_handoff.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_handoff_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-24 handoff generator with GL-26 SLA controls:
+    - `--pending-ack-sla-hours`
+    - `--pending-ack-overdue-hours`
+    - `--now-utc`
+    - optional policy flag `--fail-on-ack-overdue`
+  - For each `submission_linked_pending_ack` queue item, emit deterministic SLA diagnostics:
+    - `pending_ack_sla_state` (`within_sla` / `sla_breached` / `overdue` / `missing_reference_timestamp`)
+    - `pending_ack_age_hours`
+    - `pending_ack_sla_deadline_utc`
+    - `pending_ack_overdue_deadline_utc`
+    - `escalation_action`
+  - Add report-level SLA snapshot:
+    - `acknowledgement_sla_snapshot.acknowledgement_sla_status`
+    - `pending_ack_within_sla_count`
+    - `pending_ack_sla_breached_count`
+    - `pending_ack_overdue_count`
+    - `pending_ack_missing_reference_timestamp_count`
+    - queue item lists for breached/overdue/tracking-incomplete cohorts
+  - Extend GL-13 bridge + GL-16 evidence pack with GL-26 SLA fields:
+    - `backfill_handoff_acknowledgement_sla_status`
+    - `backfill_handoff_acknowledgement_sla_hours`
+    - `backfill_handoff_acknowledgement_overdue_hours`
+    - `backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc`
+    - `backfill_handoff_acknowledgement_within_sla_count`
+    - `backfill_handoff_acknowledgement_sla_breached_count`
+    - `backfill_handoff_acknowledgement_overdue_count`
+    - `backfill_handoff_acknowledgement_tracking_incomplete_count`
+    - `backfill_handoff_acknowledgement_sla_breached_queue_items`
+    - `backfill_handoff_acknowledgement_overdue_queue_items`
+    - `backfill_handoff_acknowledgement_tracking_incomplete_queue_items`
+  - Keep launch policy strictness unchanged: GL-26 adds execution-aging observability only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-24 report exposes deterministic pending-ack SLA states and escalation actions.
+  - GL-13 bridge propagates GL-26 SLA diagnostics into GL-16 evidence pack.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-27: updated `scripts/run_real_trial_backfill_handoff.py`:
+    - added GL-26 args `--pending-ack-sla-hours`, `--pending-ack-overdue-hours`, `--now-utc`, `--fail-on-ack-overdue`.
+    - added `acknowledgement_sla_snapshot` with SLA status/counts and escalated item cohorts.
+    - added per-item pending-ack SLA diagnostics and escalation actions.
+  - 2026-05-27: updated `scripts/run_real_trial_launch_evidence.py`:
+    - added GL-26 handoff arg pass-through.
+    - GL-16 evidence pack now includes GL-26 acknowledgement SLA status/count/queue-item fields.
+  - 2026-05-27: added/updated focused tests:
+    - `tests/test_real_trial_backfill_handoff_script.py`:
+      - `test_handoff_ack_sla_overdue_and_fail_on_ack_overdue`
+      - `test_handoff_ack_sla_breached_without_overdue`
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - `test_pipeline_evidence_pack_reports_submission_linked_pending_ack_sla_breached`
+      - updated GL-24/GL-25 evidence-pack assertions to include GL-26 fields.
+  - 2026-05-27: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-27: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_handoff_script tests.test_real_trial_launch_evidence_script` (15 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-27 Handoff Acknowledgement Escalation Exports
+
+- Status: Complete
+- Goal: turn GL-26 breached/overdue pending-ack cohorts into explicit operator-facing escalation export artifacts without changing launch-gate ownership.
+- Files:
+  - `scripts/run_real_trial_backfill_handoff_escalations.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_handoff_escalations_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Add GL-27 escalation export script:
+    - input: GL-24/GL-26 handoff report
+    - outputs:
+      - `real_trial_backfill_handoff_escalations.v1` JSON report
+      - markdown escalation summary
+    - export cohorts:
+      - `sla_breached_items`
+      - `overdue_items`
+      - `tracking_incomplete_items`
+  - Add deterministic escalation status contract:
+    - `ESCALATION_NOT_REQUIRED`
+    - `ESCALATION_BREACH_ACTION_REQUIRED`
+    - `ESCALATION_OVERDUE_ACTION_REQUIRED`
+    - `ESCALATION_TRACKING_INCOMPLETE`
+  - Integrate GL-27 into GL-13 bridge sequence after GL-24 handoff generation and before trial-metrics / launch-gate stages.
+  - Extend GL-16 evidence pack contract with GL-27 escalation fields:
+    - `evidence_paths.real_trial_backfill_handoff_escalations_report`
+    - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
+    - `backfill_handoff_escalation_status`
+    - `backfill_handoff_escalation_owner`
+    - `backfill_handoff_escalation_total_item_count`
+    - `backfill_handoff_escalation_sla_breached_item_count`
+    - `backfill_handoff_escalation_overdue_item_count`
+    - `backfill_handoff_escalation_tracking_incomplete_item_count`
+    - `backfill_handoff_escalation_sla_breached_items`
+    - `backfill_handoff_escalation_overdue_items`
+    - `backfill_handoff_escalation_tracking_incomplete_items`
+  - Keep launch policy strictness unchanged: GL-27 adds operator escalation handoff visibility only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-13 bridge writes GL-27 escalation report + summary on both HOLD and READY paths.
+  - GL-16 evidence pack includes GL-27 escalation status/count/export fields.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-28: added `scripts/run_real_trial_backfill_handoff_escalations.py`:
+    - emits `real_trial_backfill_handoff_escalations.v1` with deterministic status resolution and operator escalation exports.
+    - supports policy flags `--fail-on-overdue` / `--fail-on-breached`.
+  - 2026-05-28: updated `scripts/run_real_trial_launch_evidence.py`:
+    - added GL-27 stage invocation (`real-trial-backfill-handoff-escalations`) with output/owner arguments.
+    - GL-16 evidence pack now includes GL-27 escalation evidence paths and classification fields.
+  - 2026-05-28: added/updated focused tests:
+    - `tests/test_real_trial_backfill_handoff_escalations_script.py`:
+      - `test_reports_overdue_escalation_and_fail_on_overdue`
+      - `test_reports_breached_escalation_and_fail_on_breached`
+      - `test_reports_not_required_when_no_escalations`
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - updated GL-25/GL-26 evidence-pack tests to assert GL-27 escalation fields
+      - `test_pipeline_evidence_pack_reports_submission_linked_pending_ack`
+      - `test_pipeline_evidence_pack_reports_submission_linked_pending_ack_sla_breached`
+  - 2026-05-28: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-28: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_handoff_escalations_script tests.test_real_trial_launch_evidence_script` (12 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
 ## Execution Rules For GL Work
 
 - Execute `GL-*` in numeric order unless a later card is explicitly marked as independent.
@@ -989,9 +1402,9 @@ Strengthening path:
 
 ## Recommended Next Step
 
-Proceed with `GL-21` (or next newly-defined GL card) to continue collecting launch-gate-eligible real external Beta loops and close the remaining readiness threshold gap (`>=10` complete real loops, `>=4` modalities).
+Proceed with `GL-28` (or next newly-defined GL card) to close the real launch-gate-eligible loop/modality gap by executing GL-21/GL-22 backfill slots with real external Beta evidence submissions.
 
 Reason:
 
-- `GL-01` through `GL-20` are complete; threshold-gap diagnostics are now modality-specific and operationally actionable.
-- The remaining blocker is still real launch-gate-eligible loop/modality volume in baseline evidence, not contract/tooling coverage.
+- `GL-01` through `GL-27` are complete; baseline evidence now includes machine-readable backfill slots, slot-level execution progress, intake actions, assignee handoff, acknowledgement linkage, SLA diagnostics, and operator escalation exports.
+- The remaining blocker is still real launch-gate-eligible loop/modality volume in baseline evidence, not release-gate/doc-sync/security contract coverage.

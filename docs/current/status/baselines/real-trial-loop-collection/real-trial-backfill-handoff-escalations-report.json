@@ -1,0 +1,23 @@
+{
+  "schema_version": "real_trial_backfill_handoff_escalations.v1",
+  "generated_at_utc": "2026-05-27T16:23:55Z",
+  "input_paths": {
+    "handoff_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-report.json"
+  },
+  "owner": "controlled-beta-ops",
+  "handoff_status": "HANDOFF_ACTIONS_PENDING",
+  "acknowledgement_sla_status": "ACK_SLA_NOT_REQUIRED",
+  "escalation_status": "ESCALATION_NOT_REQUIRED",
+  "escalation_counts": {
+    "total_escalation_item_count": 0,
+    "sla_breached_item_count": 0,
+    "overdue_item_count": 0,
+    "tracking_incomplete_item_count": 0,
+    "pending_ack_queue_item_count": 0
+  },
+  "escalation_exports": {
+    "sla_breached_items": [],
+    "overdue_items": [],
+    "tracking_incomplete_items": []
+  }
+}

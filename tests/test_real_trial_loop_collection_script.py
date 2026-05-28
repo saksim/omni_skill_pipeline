@@ -127,9 +127,26 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             self.assertEqual(alignment.get("missing_target_launch_modalities"), ["text", "audio", "image", "video"])
             self.assertEqual(alignment.get("recommended_next_modalities"), ["text", "audio", "image", "video"])
             self.assertEqual(alignment.get("launch_gate_eligible_complete_loop_count_by_modality"), {})
+            self.assertEqual(alignment.get("target_launch_modality_loop_counts"), {"text": 0, "audio": 0, "image": 0, "video": 0})
+            self.assertEqual(alignment.get("recommended_backfill_slot_count"), 10)
+            recommended_backfill_slots = alignment.get("recommended_backfill_slots", [])
+            self.assertEqual(len(recommended_backfill_slots), 10)
+            self.assertEqual(
+                [item.get("required_modality") for item in recommended_backfill_slots[:4]],
+                ["text", "audio", "image", "video"],
+            )
+            self.assertEqual(
+                [item.get("reason") for item in recommended_backfill_slots[:4]],
+                ["missing_target_launch_modality"] * 4,
+            )
+            self.assertEqual(
+                [item.get("reason") for item in recommended_backfill_slots[4:]],
+                ["loop_volume_gap_after_modality_coverage"] * 6,
+            )
 
             summary_text = summary_path.read_text(encoding="utf-8")
             self.assertIn("Program status: `COLLECTION_INCOMPLETE`", summary_text)
+            self.assertIn("Recommended backfill slots: `10`", summary_text)
 
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             loops = manifest.get("loops", [])
@@ -203,6 +220,8 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             )
             self.assertEqual(alignment.get("missing_target_launch_modalities"), ["video"])
             self.assertEqual(alignment.get("recommended_next_modalities"), [])
+            self.assertEqual(alignment.get("recommended_backfill_slot_count"), 0)
+            self.assertEqual(alignment.get("recommended_backfill_slots"), [])
 
     def test_real_loop_missing_trace_triggers_blocker_and_fail_on_blocker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -665,6 +684,62 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             selected_loop_rows = report.get("collected_real_launch_gate_eligible_loops", [])
             self.assertEqual(len(selected_loop_rows), 1)
             self.assertEqual(selected_loop_rows[0].get("source_reference"), "ticket://new")
+
+    def test_backfill_plan_output_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            run_report_path = tmp_path / "run-report.json"
+            report_path = tmp_path / "collection-report.json"
+            backfill_plan_path = tmp_path / "backfill-plan.json"
+
+            run_report_path.write_text(
+                json.dumps(
+                    _run_report_payload(
+                        [
+                            _loop_metrics(
+                                loop_id="fixture-001",
+                                modality="text",
+                                evidence_origin="fixture",
+                                launch_gate_eligible=False,
+                            )
+                        ]
+                    ),
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--run-report",
+                    str(run_report_path),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--manifest-output",
+                    "-",
+                    "--backfill-plan-output",
+                    str(backfill_plan_path),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertTrue(backfill_plan_path.is_file())
+            backfill_plan = json.loads(backfill_plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(backfill_plan.get("schema_version"), "real_trial_loop_backfill_plan.v1")
+            self.assertEqual(backfill_plan.get("plan_status"), "ACTION_REQUIRED")
+            self.assertEqual(backfill_plan.get("recommended_backfill_slot_count"), 10)
+            slots = backfill_plan.get("recommended_backfill_slots", [])
+            self.assertEqual(len(slots), 10)
+            self.assertEqual(slots[0].get("required_modality"), "text")
+            self.assertEqual(slots[0].get("reason"), "missing_target_launch_modality")
 
 
 if __name__ == "__main__":

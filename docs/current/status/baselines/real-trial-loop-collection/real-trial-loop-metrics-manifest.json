@@ -1,7 +1,7 @@
 {
   "manifest_id": "gl12-real-trial-loop-collection",
   "manifest_version": "1.0",
-  "generated_at_utc": "2026-05-27T04:17:15Z",
+  "generated_at_utc": "2026-05-27T16:23:54Z",
   "release_gate": {
     "latest_release_decision": "GO",
     "evidence_ref": "docs/current/status/baselines/e13-release-switch-decision-report.json"

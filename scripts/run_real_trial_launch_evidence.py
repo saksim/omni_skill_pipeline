@@ -11,6 +11,12 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REAL_LOOP_COLLECTION_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_loop_collection.py"
+REAL_LOOP_BACKFILL_EXECUTION_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_backfill_execution.py"
+REAL_LOOP_BACKFILL_INTAKE_ACTIONS_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_backfill_intake_actions.py"
+REAL_LOOP_BACKFILL_HANDOFF_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_backfill_handoff.py"
+REAL_LOOP_BACKFILL_HANDOFF_ESCALATIONS_SCRIPT = (
+    REPO_ROOT / "scripts" / "run_real_trial_backfill_handoff_escalations.py"
+)
 TRIAL_METRICS_COLLECTOR_SCRIPT = REPO_ROOT / "scripts" / "run_trial_metrics_collector.py"
 LAUNCH_READINESS_GATE_SCRIPT = REPO_ROOT / "scripts" / "run_launch_readiness_gate.py"
 
@@ -49,6 +55,87 @@ DEFAULT_REAL_TRIAL_MANIFEST = (
     / "baselines"
     / "real-trial-loop-collection"
     / "real-trial-loop-metrics-manifest.json"
+)
+DEFAULT_BACKFILL_PLAN_OUTPUT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-backfill-plan.json"
+)
+DEFAULT_BACKFILL_EXECUTION_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-execution-report.json"
+)
+DEFAULT_BACKFILL_EXECUTION_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-execution-summary.md"
+)
+DEFAULT_BACKFILL_INTAKE_ACTIONS_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-intake-actions-report.json"
+)
+DEFAULT_BACKFILL_INTAKE_ACTIONS_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-intake-actions-summary.md"
+)
+DEFAULT_BACKFILL_HANDOFF_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-handoff-report.json"
+)
+DEFAULT_BACKFILL_HANDOFF_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-handoff-summary.md"
+)
+DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-handoff-escalations-report.json"
+)
+DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-handoff-escalations-summary.md"
 )
 DEFAULT_TRIAL_METRICS_REPORT = (
     REPO_ROOT
@@ -181,6 +268,52 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--collection-report-output", default=str(DEFAULT_COLLECTION_REPORT))
     parser.add_argument("--collection-summary-output", default=str(DEFAULT_COLLECTION_SUMMARY))
     parser.add_argument("--real-trial-manifest-output", default=str(DEFAULT_REAL_TRIAL_MANIFEST))
+    parser.add_argument("--backfill-plan-output", default=str(DEFAULT_BACKFILL_PLAN_OUTPUT))
+    parser.add_argument("--backfill-execution-output", default=str(DEFAULT_BACKFILL_EXECUTION_REPORT))
+    parser.add_argument("--backfill-execution-summary-output", default=str(DEFAULT_BACKFILL_EXECUTION_SUMMARY))
+    parser.add_argument("--backfill-intake-actions-output", default=str(DEFAULT_BACKFILL_INTAKE_ACTIONS_REPORT))
+    parser.add_argument("--backfill-intake-actions-summary-output", default=str(DEFAULT_BACKFILL_INTAKE_ACTIONS_SUMMARY))
+    parser.add_argument("--backfill-intake-owner", default="controlled-beta-ops")
+    parser.add_argument("--backfill-handoff-output", default=str(DEFAULT_BACKFILL_HANDOFF_REPORT))
+    parser.add_argument("--backfill-handoff-summary-output", default=str(DEFAULT_BACKFILL_HANDOFF_SUMMARY))
+    parser.add_argument("--backfill-handoff-owner", default="controlled-beta-ops")
+    parser.add_argument(
+        "--backfill-handoff-escalations-output",
+        default=str(DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_REPORT),
+    )
+    parser.add_argument(
+        "--backfill-handoff-escalations-summary-output",
+        default=str(DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_SUMMARY),
+    )
+    parser.add_argument("--backfill-handoff-escalations-owner", default="controlled-beta-ops")
+    parser.add_argument(
+        "--backfill-handoff-pending-ack-sla-hours",
+        type=float,
+        default=24.0,
+        help="SLA threshold (hours) for GL-26 pending-ack aging diagnostics.",
+    )
+    parser.add_argument(
+        "--backfill-handoff-pending-ack-overdue-hours",
+        type=float,
+        default=72.0,
+        help="Overdue escalation threshold (hours) for GL-26 pending-ack aging diagnostics.",
+    )
+    parser.add_argument(
+        "--backfill-handoff-now-utc",
+        default="",
+        help=(
+            "Optional UTC timestamp passed to GL-24/GL-26 handoff stage for deterministic "
+            "ack aging evaluation."
+        ),
+    )
+    parser.add_argument(
+        "--backfill-handoff-acknowledgements-report",
+        default="",
+        help=(
+            "Optional operator acknowledgement report for GL-25 linkage closure. "
+            "When provided, GL-24 handoff closure requires submission + acknowledgement match."
+        ),
+    )
     parser.add_argument("--trial-metrics-report-output", default=str(DEFAULT_TRIAL_METRICS_REPORT))
     parser.add_argument("--trial-metrics-summary-output", default=str(DEFAULT_TRIAL_METRICS_SUMMARY))
     parser.add_argument("--launch-readiness-output", default=str(DEFAULT_LAUNCH_READINESS_REPORT))
@@ -280,6 +413,8 @@ def _build_collection_command(args: argparse.Namespace, run_reports: list[Path],
             str(args.collection_summary_output),
             "--manifest-output",
             str(manifest_output),
+            "--backfill-plan-output",
+            str(args.backfill_plan_output),
             "--minimum-complete-loops",
             str(max(1, int(args.minimum_complete_loops))),
             "--minimum-modalities",
@@ -309,6 +444,81 @@ def _build_trial_metrics_command(args: argparse.Namespace, manifest_path: Path, 
         str(max(1, int(args.minimum_complete_loops))),
         "--minimum-modalities",
         str(max(1, int(args.minimum_modalities))),
+    ]
+
+
+def _build_backfill_execution_command(args: argparse.Namespace) -> list[str]:
+    return [
+        sys.executable,
+        str(REAL_LOOP_BACKFILL_EXECUTION_SCRIPT),
+        "--backfill-plan",
+        str(Path(args.backfill_plan_output).resolve()),
+        "--collection-report",
+        str(_resolve_required_output_path(args.collection_report_output, name="collection-report-output")),
+        "--output",
+        str(Path(args.backfill_execution_output).resolve()),
+        "--summary-output",
+        str(Path(args.backfill_execution_summary_output).resolve()),
+    ]
+
+
+def _build_backfill_intake_actions_command(args: argparse.Namespace) -> list[str]:
+    return [
+        sys.executable,
+        str(REAL_LOOP_BACKFILL_INTAKE_ACTIONS_SCRIPT),
+        "--backfill-plan",
+        str(Path(args.backfill_plan_output).resolve()),
+        "--backfill-execution-report",
+        str(Path(args.backfill_execution_output).resolve()),
+        "--output",
+        str(Path(args.backfill_intake_actions_output).resolve()),
+        "--summary-output",
+        str(Path(args.backfill_intake_actions_summary_output).resolve()),
+        "--owner",
+        str(args.backfill_intake_owner).strip() or "controlled-beta-ops",
+    ]
+
+
+def _build_backfill_handoff_command(args: argparse.Namespace) -> list[str]:
+    command = [
+        sys.executable,
+        str(REAL_LOOP_BACKFILL_HANDOFF_SCRIPT),
+        "--intake-actions-report",
+        str(Path(args.backfill_intake_actions_output).resolve()),
+        "--collection-report",
+        str(_resolve_required_output_path(args.collection_report_output, name="collection-report-output")),
+        "--output",
+        str(Path(args.backfill_handoff_output).resolve()),
+        "--summary-output",
+        str(Path(args.backfill_handoff_summary_output).resolve()),
+        "--owner",
+        str(args.backfill_handoff_owner).strip() or "controlled-beta-ops",
+        "--pending-ack-sla-hours",
+        str(float(args.backfill_handoff_pending_ack_sla_hours)),
+        "--pending-ack-overdue-hours",
+        str(float(args.backfill_handoff_pending_ack_overdue_hours)),
+    ]
+    now_utc = str(args.backfill_handoff_now_utc).strip()
+    if now_utc:
+        command.extend(["--now-utc", now_utc])
+    ack_report = str(args.backfill_handoff_acknowledgements_report).strip()
+    if ack_report:
+        command.extend(["--acknowledgements-report", str(Path(ack_report).resolve())])
+    return command
+
+
+def _build_backfill_handoff_escalations_command(args: argparse.Namespace) -> list[str]:
+    return [
+        sys.executable,
+        str(REAL_LOOP_BACKFILL_HANDOFF_ESCALATIONS_SCRIPT),
+        "--handoff-report",
+        str(Path(args.backfill_handoff_output).resolve()),
+        "--output",
+        str(Path(args.backfill_handoff_escalations_output).resolve()),
+        "--summary-output",
+        str(Path(args.backfill_handoff_escalations_summary_output).resolve()),
+        "--owner",
+        str(args.backfill_handoff_escalations_owner).strip() or "controlled-beta-ops",
     ]
 
 
@@ -364,6 +574,10 @@ def _build_evidence_pack(
     collection_report: dict[str, Any],
     trial_metrics_report: dict[str, Any],
     launch_readiness_report: dict[str, Any],
+    backfill_execution_report: dict[str, Any],
+    backfill_intake_actions_report: dict[str, Any],
+    backfill_handoff_report: dict[str, Any],
+    backfill_handoff_escalations_report: dict[str, Any],
     run_report_paths: list[Path],
     loop_manifest_paths: list[Path],
 ) -> dict[str, Any]:
@@ -379,6 +593,30 @@ def _build_evidence_pack(
     collection_alignment = collection_report.get("launch_gate_alignment", {})
     if not isinstance(collection_alignment, dict):
         collection_alignment = {}
+    backfill_slot_counts = backfill_execution_report.get("slot_counts", {})
+    if not isinstance(backfill_slot_counts, dict):
+        backfill_slot_counts = {}
+    backfill_coverage_delta = backfill_execution_report.get("coverage_delta", {})
+    if not isinstance(backfill_coverage_delta, dict):
+        backfill_coverage_delta = {}
+    backfill_intake_action_counts = backfill_intake_actions_report.get("action_counts", {})
+    if not isinstance(backfill_intake_action_counts, dict):
+        backfill_intake_action_counts = {}
+    backfill_handoff_counts = backfill_handoff_report.get("queue_item_counts", {})
+    if not isinstance(backfill_handoff_counts, dict):
+        backfill_handoff_counts = {}
+    backfill_handoff_ack_snapshot = backfill_handoff_report.get("acknowledgement_snapshot", {})
+    if not isinstance(backfill_handoff_ack_snapshot, dict):
+        backfill_handoff_ack_snapshot = {}
+    backfill_handoff_ack_sla_snapshot = backfill_handoff_report.get("acknowledgement_sla_snapshot", {})
+    if not isinstance(backfill_handoff_ack_sla_snapshot, dict):
+        backfill_handoff_ack_sla_snapshot = {}
+    backfill_handoff_escalation_counts = backfill_handoff_escalations_report.get("escalation_counts", {})
+    if not isinstance(backfill_handoff_escalation_counts, dict):
+        backfill_handoff_escalation_counts = {}
+    backfill_handoff_escalation_exports = backfill_handoff_escalations_report.get("escalation_exports", {})
+    if not isinstance(backfill_handoff_escalation_exports, dict):
+        backfill_handoff_escalation_exports = {}
     failed_checks = launch_readiness_report.get("failed_checks", [])
     if not isinstance(failed_checks, list):
         failed_checks = []
@@ -396,6 +634,24 @@ def _build_evidence_pack(
             "collection_report": str(_resolve_required_output_path(args.collection_report_output, name="collection-report-output")),
             "collection_summary": str(Path(args.collection_summary_output).resolve()),
             "real_trial_manifest": str(_resolve_required_output_path(args.real_trial_manifest_output, name="real-trial-manifest-output")),
+            "real_trial_backfill_plan": str(Path(args.backfill_plan_output).resolve()),
+            "real_trial_backfill_execution_report": str(Path(args.backfill_execution_output).resolve()),
+            "real_trial_backfill_execution_summary": str(Path(args.backfill_execution_summary_output).resolve()),
+            "real_trial_backfill_intake_actions_report": str(Path(args.backfill_intake_actions_output).resolve()),
+            "real_trial_backfill_intake_actions_summary": str(Path(args.backfill_intake_actions_summary_output).resolve()),
+            "real_trial_backfill_handoff_report": str(Path(args.backfill_handoff_output).resolve()),
+            "real_trial_backfill_handoff_summary": str(Path(args.backfill_handoff_summary_output).resolve()),
+            "real_trial_backfill_handoff_acknowledgements_report": str(
+                Path(args.backfill_handoff_acknowledgements_report).resolve()
+            )
+            if str(args.backfill_handoff_acknowledgements_report).strip()
+            else "",
+            "real_trial_backfill_handoff_escalations_report": str(
+                Path(args.backfill_handoff_escalations_output).resolve()
+            ),
+            "real_trial_backfill_handoff_escalations_summary": str(
+                Path(args.backfill_handoff_escalations_summary_output).resolve()
+            ),
             "trial_metrics_report": str(_resolve_required_output_path(args.trial_metrics_report_output, name="trial-metrics-report-output")),
             "trial_metrics_summary": str(Path(args.trial_metrics_summary_output).resolve()),
             "launch_readiness_report": str(_resolve_required_output_path(args.launch_readiness_output, name="launch-readiness-output")),
@@ -430,6 +686,7 @@ def _build_evidence_pack(
             "launch_gate_eligible_complete_loop_count_by_modality": collection_alignment.get(
                 "launch_gate_eligible_complete_loop_count_by_modality", {}
             ),
+            "target_launch_modality_loop_counts": collection_alignment.get("target_launch_modality_loop_counts", {}),
             "real_evidence_missing_source_trace_count": int(
                 launch_gate_evidence.get("real_evidence_missing_source_trace_count", 0) or 0
             ),
@@ -443,6 +700,114 @@ def _build_evidence_pack(
             ),
             "missing_modalities_to_threshold": int(
                 collection_alignment.get("missing_modalities_to_threshold", 0) or 0
+            ),
+            "recommended_backfill_slot_count": int(collection_alignment.get("recommended_backfill_slot_count", 0) or 0),
+            "recommended_backfill_slots": collection_alignment.get("recommended_backfill_slots", []),
+            "backfill_execution_status": str(backfill_execution_report.get("execution_status", "unknown")),
+            "backfill_execution_fulfilled_slot_count": int(backfill_slot_counts.get("fulfilled_slot_count", 0) or 0),
+            "backfill_execution_remaining_slot_count": int(backfill_slot_counts.get("remaining_slot_count", 0) or 0),
+            "backfill_execution_gained_target_launch_modality_loop_counts": backfill_coverage_delta.get(
+                "gained_target_launch_modality_loop_counts",
+                {},
+            ),
+            "backfill_intake_status": str(backfill_intake_actions_report.get("intake_status", "unknown")),
+            "backfill_intake_total_action_count": int(backfill_intake_action_counts.get("total_actions", 0) or 0),
+            "backfill_intake_pending_action_count": int(backfill_intake_action_counts.get("pending_action_count", 0) or 0),
+            "backfill_intake_closed_action_count": int(backfill_intake_action_counts.get("closed_action_count", 0) or 0),
+            "backfill_intake_owner": str(args.backfill_intake_owner).strip() or "controlled-beta-ops",
+            "backfill_handoff_status": str(backfill_handoff_report.get("handoff_status", "unknown")),
+            "backfill_handoff_total_queue_item_count": int(
+                backfill_handoff_counts.get("total_queue_item_count", 0) or 0
+            ),
+            "backfill_handoff_open_queue_item_count": int(
+                backfill_handoff_counts.get("open_queue_item_count", 0) or 0
+            ),
+            "backfill_handoff_submission_linked_pending_ack_count": int(
+                backfill_handoff_counts.get("submission_linked_pending_ack_count", 0) or 0
+            ),
+            "backfill_handoff_closure_acknowledged_count": int(
+                backfill_handoff_counts.get("closure_acknowledged_count", 0) or 0
+            ),
+            "backfill_handoff_owner": str(args.backfill_handoff_owner).strip() or "controlled-beta-ops",
+            "backfill_handoff_acknowledgement_input_count": int(
+                backfill_handoff_ack_snapshot.get("input_acknowledgement_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_valid_count": int(
+                backfill_handoff_ack_snapshot.get("valid_acknowledgement_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_invalid_count": int(
+                backfill_handoff_ack_snapshot.get("invalid_acknowledgement_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_invalid_records": backfill_handoff_ack_snapshot.get(
+                "invalid_acknowledgement_records",
+                [],
+            ),
+            "backfill_handoff_acknowledgement_sla_status": str(
+                backfill_handoff_ack_sla_snapshot.get("acknowledgement_sla_status", "unknown")
+            ),
+            "backfill_handoff_acknowledgement_sla_hours": float(
+                backfill_handoff_ack_sla_snapshot.get("pending_ack_sla_hours", 0.0) or 0.0
+            ),
+            "backfill_handoff_acknowledgement_overdue_hours": float(
+                backfill_handoff_ack_sla_snapshot.get("pending_ack_overdue_hours", 0.0) or 0.0
+            ),
+            "backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc": str(
+                backfill_handoff_ack_sla_snapshot.get("evaluation_timestamp_utc", "")
+            ),
+            "backfill_handoff_acknowledgement_within_sla_count": int(
+                backfill_handoff_ack_sla_snapshot.get("pending_ack_within_sla_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_sla_breached_count": int(
+                backfill_handoff_ack_sla_snapshot.get("pending_ack_sla_breached_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_overdue_count": int(
+                backfill_handoff_ack_sla_snapshot.get("pending_ack_overdue_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_tracking_incomplete_count": int(
+                backfill_handoff_ack_sla_snapshot.get("pending_ack_missing_reference_timestamp_count", 0) or 0
+            ),
+            "backfill_handoff_acknowledgement_sla_breached_queue_items": backfill_handoff_ack_sla_snapshot.get(
+                "pending_ack_sla_breached_queue_items",
+                [],
+            ),
+            "backfill_handoff_acknowledgement_overdue_queue_items": backfill_handoff_ack_sla_snapshot.get(
+                "pending_ack_overdue_queue_items",
+                [],
+            ),
+            "backfill_handoff_acknowledgement_tracking_incomplete_queue_items": backfill_handoff_ack_sla_snapshot.get(
+                "pending_ack_tracking_incomplete_queue_items",
+                [],
+            ),
+            "backfill_handoff_escalation_status": str(
+                backfill_handoff_escalations_report.get("escalation_status", "unknown")
+            ),
+            "backfill_handoff_escalation_owner": str(
+                backfill_handoff_escalations_report.get("owner", "")
+            )
+            or (str(args.backfill_handoff_escalations_owner).strip() or "controlled-beta-ops"),
+            "backfill_handoff_escalation_total_item_count": int(
+                backfill_handoff_escalation_counts.get("total_escalation_item_count", 0) or 0
+            ),
+            "backfill_handoff_escalation_sla_breached_item_count": int(
+                backfill_handoff_escalation_counts.get("sla_breached_item_count", 0) or 0
+            ),
+            "backfill_handoff_escalation_overdue_item_count": int(
+                backfill_handoff_escalation_counts.get("overdue_item_count", 0) or 0
+            ),
+            "backfill_handoff_escalation_tracking_incomplete_item_count": int(
+                backfill_handoff_escalation_counts.get("tracking_incomplete_item_count", 0) or 0
+            ),
+            "backfill_handoff_escalation_sla_breached_items": backfill_handoff_escalation_exports.get(
+                "sla_breached_items",
+                [],
+            ),
+            "backfill_handoff_escalation_overdue_items": backfill_handoff_escalation_exports.get(
+                "overdue_items",
+                [],
+            ),
+            "backfill_handoff_escalation_tracking_incomplete_items": backfill_handoff_escalation_exports.get(
+                "tracking_incomplete_items",
+                [],
             ),
         },
         "safety_summary": {
@@ -523,6 +888,30 @@ def main() -> int:
     if trial_metrics_result.returncode != 0:
         return trial_metrics_result.returncode
 
+    backfill_execution_command = _build_backfill_execution_command(args)
+    backfill_execution_result = _run_command(backfill_execution_command)
+    _print_command_output("real-trial-backfill-execution", backfill_execution_result)
+    if backfill_execution_result.returncode != 0:
+        return backfill_execution_result.returncode
+
+    backfill_intake_actions_command = _build_backfill_intake_actions_command(args)
+    backfill_intake_actions_result = _run_command(backfill_intake_actions_command)
+    _print_command_output("real-trial-backfill-intake-actions", backfill_intake_actions_result)
+    if backfill_intake_actions_result.returncode != 0:
+        return backfill_intake_actions_result.returncode
+
+    backfill_handoff_command = _build_backfill_handoff_command(args)
+    backfill_handoff_result = _run_command(backfill_handoff_command)
+    _print_command_output("real-trial-backfill-handoff", backfill_handoff_result)
+    if backfill_handoff_result.returncode != 0:
+        return backfill_handoff_result.returncode
+
+    backfill_handoff_escalations_command = _build_backfill_handoff_escalations_command(args)
+    backfill_handoff_escalations_result = _run_command(backfill_handoff_escalations_command)
+    _print_command_output("real-trial-backfill-handoff-escalations", backfill_handoff_escalations_result)
+    if backfill_handoff_escalations_result.returncode != 0:
+        return backfill_handoff_escalations_result.returncode
+
     launch_gate_command = _build_launch_gate_command(
         args,
         trial_metrics_report=trial_metrics_output,
@@ -538,6 +927,10 @@ def main() -> int:
         collection_report = _read_json(_resolve_required_output_path(args.collection_report_output, name="collection-report-output"))
         trial_metrics_report = _read_json(trial_metrics_output)
         launch_readiness_report = _read_json(launch_readiness_output)
+        backfill_execution_report = _read_json(Path(args.backfill_execution_output).resolve())
+        backfill_intake_actions_report = _read_json(Path(args.backfill_intake_actions_output).resolve())
+        backfill_handoff_report = _read_json(Path(args.backfill_handoff_output).resolve())
+        backfill_handoff_escalations_report = _read_json(Path(args.backfill_handoff_escalations_output).resolve())
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         print("Real-trial launch evidence pipeline failed while reading reports: %s" % exc, file=sys.stderr)
         return 2
@@ -548,6 +941,10 @@ def main() -> int:
             collection_report=collection_report,
             trial_metrics_report=trial_metrics_report,
             launch_readiness_report=launch_readiness_report,
+            backfill_execution_report=backfill_execution_report,
+            backfill_intake_actions_report=backfill_intake_actions_report,
+            backfill_handoff_report=backfill_handoff_report,
+            backfill_handoff_escalations_report=backfill_handoff_escalations_report,
             run_report_paths=run_report_paths,
             loop_manifest_paths=loop_manifest_paths,
         )
