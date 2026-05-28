@@ -187,17 +187,47 @@ def _submission_sort_key(item: dict[str, Any]) -> tuple[str, str, str]:
     return (reviewed, collected, loop_id)
 
 
-def _build_submission_pool(collection_report: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+def _normalize_backfill_slot_index(raw: Any) -> int | None:
+    try:
+        value = int(raw or 0)
+    except (TypeError, ValueError):
+        return None
+    if value <= 0:
+        return None
+    return value
+
+
+def _normalize_backfill_action_id(raw: Any) -> str:
+    return str(raw or "").strip()
+
+
+def _submission_identity(item: dict[str, Any]) -> str:
+    return "|".join(
+        [
+            str(item.get("loop_id", "")).strip(),
+            str(item.get("source_reference", "")).strip(),
+            str(item.get("reviewed_at_utc", "")).strip(),
+            str(item.get("collected_at_utc", "")).strip(),
+        ]
+    )
+
+
+def _build_submission_indexes(collection_report: dict[str, Any]) -> dict[str, Any]:
     rows = collection_report.get("collected_real_launch_gate_eligible_loops", [])
     if not isinstance(rows, list):
         rows = []
-    buckets: dict[str, list[dict[str, Any]]] = {}
+    by_modality: dict[str, list[dict[str, Any]]] = {}
+    by_slot_index: dict[int, list[dict[str, Any]]] = {}
+    by_action_id: dict[str, list[dict[str, Any]]] = {}
+    all_rows: list[dict[str, Any]] = []
     for raw in rows:
         if not isinstance(raw, dict):
             continue
         modality = str(raw.get("modality", "")).strip().lower()
         if not modality:
             continue
+        backfill_slot_index = _normalize_backfill_slot_index(raw.get("backfill_slot_index"))
+        backfill_action_id = _normalize_backfill_action_id(raw.get("backfill_action_id"))
         normalized = {
             "loop_id": str(raw.get("loop_id", "")),
             "modality": modality,
@@ -208,11 +238,95 @@ def _build_submission_pool(collection_report: dict[str, Any]) -> dict[str, list[
             "reviewed_by": str(raw.get("reviewed_by", "")),
             "reviewed_at_utc": str(raw.get("reviewed_at_utc", "")),
             "source_report_path": str(raw.get("source_report_path", "")),
+            "backfill_slot_index": backfill_slot_index,
+            "backfill_action_id": backfill_action_id,
         }
-        buckets.setdefault(modality, []).append(normalized)
-    for modality in list(buckets.keys()):
-        buckets[modality] = sorted(buckets[modality], key=_submission_sort_key)
-    return buckets
+        all_rows.append(normalized)
+        by_modality.setdefault(modality, []).append(normalized)
+        if backfill_slot_index is not None:
+            by_slot_index.setdefault(backfill_slot_index, []).append(normalized)
+        if backfill_action_id:
+            by_action_id.setdefault(backfill_action_id, []).append(normalized)
+    for modality in list(by_modality.keys()):
+        by_modality[modality] = sorted(by_modality[modality], key=_submission_sort_key)
+    for slot_index in list(by_slot_index.keys()):
+        by_slot_index[slot_index] = sorted(by_slot_index[slot_index], key=_submission_sort_key)
+    for action_id in list(by_action_id.keys()):
+        by_action_id[action_id] = sorted(by_action_id[action_id], key=_submission_sort_key)
+    all_rows = sorted(all_rows, key=_submission_sort_key)
+    return {
+        "by_modality": by_modality,
+        "by_slot_index": by_slot_index,
+        "by_action_id": by_action_id,
+        "all_rows": all_rows,
+    }
+
+
+def _pick_first_unconsumed(
+    candidates: list[dict[str, Any]],
+    *,
+    consumed_submission_keys: set[str],
+) -> dict[str, Any] | None:
+    for candidate in candidates:
+        candidate_key = _submission_identity(candidate)
+        if candidate_key in consumed_submission_keys:
+            continue
+        consumed_submission_keys.add(candidate_key)
+        return candidate
+    return None
+
+
+def _pick_submission_for_action(
+    *,
+    slot_index: int,
+    action_id: str,
+    required_modality: str,
+    submission_by_action_id: dict[str, list[dict[str, Any]]],
+    submission_by_slot_index: dict[int, list[dict[str, Any]]],
+    submission_by_modality: dict[str, list[dict[str, Any]]],
+    consumed_submission_keys: set[str],
+) -> tuple[dict[str, Any] | None, str]:
+    action_candidates = submission_by_action_id.get(action_id, [])
+    slot_candidates = submission_by_slot_index.get(slot_index, [])
+    modality_candidates = submission_by_modality.get(required_modality, [])
+
+    action_slot_intersection: list[dict[str, Any]] = []
+    if action_candidates and slot_candidates:
+        slot_keys = {_submission_identity(item) for item in slot_candidates}
+        for candidate in action_candidates:
+            candidate_key = _submission_identity(candidate)
+            if candidate_key in slot_keys:
+                action_slot_intersection.append(candidate)
+
+    matched = _pick_first_unconsumed(
+        action_slot_intersection,
+        consumed_submission_keys=consumed_submission_keys,
+    )
+    if matched is not None:
+        return matched, "action_id_and_slot_index"
+
+    matched = _pick_first_unconsumed(
+        action_candidates,
+        consumed_submission_keys=consumed_submission_keys,
+    )
+    if matched is not None:
+        return matched, "action_id_only"
+
+    matched = _pick_first_unconsumed(
+        slot_candidates,
+        consumed_submission_keys=consumed_submission_keys,
+    )
+    if matched is not None:
+        return matched, "slot_index_only"
+
+    matched = _pick_first_unconsumed(
+        modality_candidates,
+        consumed_submission_keys=consumed_submission_keys,
+    )
+    if matched is not None:
+        return matched, "modality_fallback"
+
+    return None, "none"
 
 
 def _build_acknowledgement_index(
@@ -329,7 +443,20 @@ def _build_handoff_report(
     intake_actions = intake_actions_report.get("actions", [])
     if not isinstance(intake_actions, list):
         intake_actions = []
-    submission_pool = _build_submission_pool(collection_report)
+    submission_indexes = _build_submission_indexes(collection_report)
+    submission_by_modality = submission_indexes.get("by_modality", {})
+    if not isinstance(submission_by_modality, dict):
+        submission_by_modality = {}
+    submission_by_slot_index = submission_indexes.get("by_slot_index", {})
+    if not isinstance(submission_by_slot_index, dict):
+        submission_by_slot_index = {}
+    submission_by_action_id = submission_indexes.get("by_action_id", {})
+    if not isinstance(submission_by_action_id, dict):
+        submission_by_action_id = {}
+    all_submissions = submission_indexes.get("all_rows", [])
+    if not isinstance(all_submissions, list):
+        all_submissions = []
+    consumed_submission_keys: set[str] = set()
     acknowledgement_index, acknowledgement_counts, invalid_acknowledgement_records = _build_acknowledgement_index(
         acknowledgements_report
     )
@@ -359,8 +486,15 @@ def _build_handoff_report(
         intake_action_status = str(raw_action.get("action_status", "pending")).strip().lower() or "pending"
         queue_item_id = "gl24-queue-%s" % action_id
 
-        submissions_for_modality = submission_pool.get(required_modality, [])
-        matched_submission = submissions_for_modality.pop(0) if submissions_for_modality else None
+        matched_submission, submission_linkage_strategy = _pick_submission_for_action(
+            slot_index=slot_index,
+            action_id=action_id,
+            required_modality=required_modality,
+            submission_by_action_id=submission_by_action_id,
+            submission_by_slot_index=submission_by_slot_index,
+            submission_by_modality=submission_by_modality,
+            consumed_submission_keys=consumed_submission_keys,
+        )
         if matched_submission is not None:
             linked_submission = {
                 "loop_id": matched_submission.get("loop_id"),
@@ -370,6 +504,9 @@ def _build_handoff_report(
                 "source_reference": matched_submission.get("source_reference"),
                 "source_system": matched_submission.get("source_system"),
                 "collected_at_utc": matched_submission.get("collected_at_utc"),
+                "backfill_slot_index": matched_submission.get("backfill_slot_index"),
+                "backfill_action_id": matched_submission.get("backfill_action_id"),
+                "submission_linkage_strategy": submission_linkage_strategy,
             }
             acknowledgement = acknowledgement_index.get(queue_item_id)
             if acknowledgement is None:
@@ -480,6 +617,7 @@ def _build_handoff_report(
             "operator_task": str(raw_action.get("operator_task", "")).strip(),
             "closure_evidence_requirements": raw_action.get("closure_evidence_requirements", {}),
             "closure_acknowledgement": closure_acknowledgement,
+            "submission_linkage_strategy": submission_linkage_strategy,
         }
         queue_items.append(item)
         if queue_status == "open":
@@ -548,10 +686,36 @@ def _build_handoff_report(
     launch_gap_snapshot = intake_actions_report.get("launch_gap_snapshot", {})
     if not isinstance(launch_gap_snapshot, dict):
         launch_gap_snapshot = {}
-    submission_count_by_modality = {
-        modality: len(rows)
-        for modality, rows in _build_submission_pool(collection_report).items()
+    submission_count_by_modality = {modality: len(rows) for modality, rows in submission_by_modality.items()}
+    submission_linkage_strategy_counts = {
+        "action_id_and_slot_index": 0,
+        "action_id_only": 0,
+        "slot_index_only": 0,
+        "modality_fallback": 0,
+        "none": 0,
     }
+    for item in queue_items:
+        if not isinstance(item, dict):
+            continue
+        strategy = str(item.get("submission_linkage_strategy", "none")).strip() or "none"
+        submission_linkage_strategy_counts[strategy] = submission_linkage_strategy_counts.get(strategy, 0) + 1
+    unlinked_submissions: list[dict[str, Any]] = []
+    for submission in all_submissions:
+        if not isinstance(submission, dict):
+            continue
+        submission_key = _submission_identity(submission)
+        if submission_key in consumed_submission_keys:
+            continue
+        unlinked_submissions.append(
+            {
+                "loop_id": str(submission.get("loop_id", "")),
+                "modality": str(submission.get("modality", "")),
+                "backfill_slot_index": submission.get("backfill_slot_index"),
+                "backfill_action_id": str(submission.get("backfill_action_id", "")),
+                "source_reference": str(submission.get("source_reference", "")),
+                "reviewed_at_utc": str(submission.get("reviewed_at_utc", "")),
+            }
+        )
 
     return {
         "schema_version": "real_trial_backfill_handoff.v1",
@@ -604,6 +768,11 @@ def _build_handoff_report(
             "launch_gate_eligible_real_submission_count": sum(submission_count_by_modality.values()),
             "launch_gate_eligible_real_submission_count_by_modality": submission_count_by_modality,
         },
+        "submission_linkage_snapshot": {
+            "linkage_strategy_counts": submission_linkage_strategy_counts,
+            "unlinked_submission_count": len(unlinked_submissions),
+            "unlinked_submissions": unlinked_submissions,
+        },
         "queue_items": queue_items,
         "open_queue_items": open_queue_items,
         "pending_ack_queue_items": pending_ack_queue_items,
@@ -623,6 +792,12 @@ def _render_summary(report: dict[str, Any]) -> str:
     acknowledgement_sla_snapshot = report.get("acknowledgement_sla_snapshot", {})
     if not isinstance(acknowledgement_sla_snapshot, dict):
         acknowledgement_sla_snapshot = {}
+    submission_linkage_snapshot = report.get("submission_linkage_snapshot", {})
+    if not isinstance(submission_linkage_snapshot, dict):
+        submission_linkage_snapshot = {}
+    linkage_strategy_counts = submission_linkage_snapshot.get("linkage_strategy_counts", {})
+    if not isinstance(linkage_strategy_counts, dict):
+        linkage_strategy_counts = {}
     lines = [
         "# Real Trial Backfill Handoff Summary",
         "",
@@ -642,6 +817,8 @@ def _render_summary(report: dict[str, Any]) -> str:
         % str(acknowledgement_sla_snapshot.get("pending_ack_overdue_count", 0)),
         "- Ack tracking incomplete: `%s`"
         % str(acknowledgement_sla_snapshot.get("pending_ack_missing_reference_timestamp_count", 0)),
+        "- Submission linkage strategy counts: `%s`" % str(linkage_strategy_counts),
+        "- Unlinked submissions: `%s`" % str(submission_linkage_snapshot.get("unlinked_submission_count", 0)),
         "- Launch-gap missing loops: `%s`"
         % str(launch_gap_snapshot.get("missing_complete_loops_to_threshold", 0)),
         "- Launch-gap missing modalities: `%s`"

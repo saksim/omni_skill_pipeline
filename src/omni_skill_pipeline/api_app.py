@@ -341,6 +341,19 @@ def _build_readiness_checks(app: Any, settings: Any) -> list[dict[str, Any]]:
     return checks
 
 
+def _resolve_governance_ledger_dir(settings: Any) -> Path:
+    configured = getattr(settings, 'governance_ledger_dir', None)
+    if configured:
+        return Path(configured).resolve()
+    draft_dir = getattr(settings, 'draft_dir', None)
+    if draft_dir:
+        return (Path(draft_dir).resolve() / 'governance').resolve()
+    repo_root = getattr(settings, 'repo_root', None)
+    if repo_root:
+        return (Path(repo_root).resolve() / 'skills' / 'drafts' / 'governance').resolve()
+    return (Path.cwd() / 'skills' / 'drafts' / 'governance').resolve()
+
+
 def create_app():
     if FastAPI is None:
         raise RuntimeError('FastAPI is not installed. Install with `pip install .[api]`.')
@@ -358,7 +371,7 @@ def create_app():
         if isinstance(service_repository, ReviewQueueRepository)
         else None
     )
-    governance_ledger = GovernanceLedger(settings.governance_ledger_dir)
+    governance_ledger = GovernanceLedger(_resolve_governance_ledger_dir(settings))
     limiter = (
         InMemoryRateLimiter(
             max_requests=max(rate_limit_requests, 1),

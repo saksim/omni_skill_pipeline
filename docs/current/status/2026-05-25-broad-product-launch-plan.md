@@ -1390,6 +1390,241 @@ Strengthening path:
     - `python scripts/run_doc_sync_check.py --output -`
     - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
 
+### GL-28 Real Backfill Submission Linkage Contract
+
+- Status: Complete
+- Goal: add explicit, machine-readable linkage between real external Beta submissions and GL-21/GL-23 backfill slots so slot fulfillment can be audited by submission evidence, without weakening launch-gate ownership.
+- Files:
+  - `scripts/run_real_trial_loop_collection.py`
+  - `scripts/run_real_trial_backfill_execution.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_loop_collection_script.py`
+  - `tests/test_real_trial_backfill_execution_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-12 loop-row contract with optional linkage fields:
+    - `backfill_slot_index` (`int > 0`)
+    - `backfill_action_id` (for example `gl23-slot-001-text`)
+  - Add GL-12 alignment diagnostics:
+    - `real_evidence_backfill_slot_linked_count`
+    - `real_evidence_backfill_action_linked_count`
+    - `real_evidence_backfill_linkage_complete_count`
+    - `real_evidence_backfill_linkage_missing_count`
+  - Extend GL-22 execution report with slot-level submission linkage classification:
+    - `slot_execution_records[].expected_action_id`
+    - `slot_execution_records[].submission_linked`
+    - `slot_execution_records[].submission_linkage_resolution`
+    - `submission_linkage_counts`
+    - `submission_linkage_records`
+    - `unmatched_submission_linkages`
+  - Extend GL-16 evidence pack contract with GL-28 linkage fields:
+    - `backfill_execution_submission_linked_slot_count`
+    - `backfill_execution_submission_slot_linked_count`
+    - `backfill_execution_submission_action_linked_count`
+    - `backfill_execution_unmatched_submission_linkage_count`
+    - `backfill_execution_submission_linkage_records`
+    - `backfill_execution_unmatched_submission_linkages`
+  - Keep launch policy strictness unchanged: linkage telemetry is evidentiary only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-12/GL-22 reports expose deterministic slot/action linkage diagnostics for real eligible submissions.
+  - GL-16 evidence pack includes GL-28 linkage count and record fields.
+  - Baseline launch decision remains `HOLD` until real launch-gate-eligible loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-28: updated `scripts/run_real_trial_loop_collection.py`:
+    - added optional `backfill_slot_index` / `backfill_action_id` ingestion on loop rows.
+    - added GL-28 alignment/linkage counts and summary lines.
+  - 2026-05-28: updated `scripts/run_real_trial_backfill_execution.py`:
+    - added slot/action expected linkage mapping and submission linkage diagnostics.
+    - added unmatched submission-linkage detection for out-of-plan slot/action references.
+  - 2026-05-28: updated `scripts/run_real_trial_launch_evidence.py`:
+    - GL-16 evidence pack now includes GL-28 submission-linkage counts and record fields.
+  - 2026-05-28: added/updated focused tests:
+    - `tests/test_real_trial_loop_collection_script.py`:
+      - `test_real_loop_backfill_linkage_fields_are_collected`
+    - `tests/test_real_trial_backfill_execution_script.py`:
+      - `test_submission_linkage_maps_to_slots_and_reports_unmatched_linkages`
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - updated GL-16 evidence-pack assertions for GL-28 linkage fields on both READY and HOLD paths
+  - 2026-05-28: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-28: focused verification passed:
+    - `python -m unittest tests.test_real_trial_loop_collection_script tests.test_real_trial_backfill_execution_script tests.test_real_trial_launch_evidence_script`
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-29 Linkage-Aware Handoff Assignment Bridge
+
+- Status: Complete
+- Goal: ensure GL-24 handoff binds real external Beta submissions to GL-23 actions using GL-28 explicit linkage metadata first (`backfill_action_id` / `backfill_slot_index`) before modality fallback, so closure and pending-ack states are auditable per slot/action.
+- Files:
+  - `scripts/run_real_trial_backfill_handoff.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_handoff_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Add linkage-aware submission assignment in GL-24 handoff:
+    - Build submission indexes by modality, slot-index, and action-id from GL-12 collected real loops.
+    - Resolve action submission in deterministic priority:
+      - `action_id_and_slot_index`
+      - `action_id_only`
+      - `slot_index_only`
+      - `modality_fallback`
+      - `none`
+  - Emit GL-29 diagnostics:
+    - `queue_items[].submission_linkage_strategy`
+    - `submission_linkage_snapshot.linkage_strategy_counts`
+    - `submission_linkage_snapshot.unlinked_submission_count`
+    - `submission_linkage_snapshot.unlinked_submissions`
+  - Extend GL-16 evidence pack classification:
+    - `backfill_handoff_submission_linkage_strategy_counts`
+    - `backfill_handoff_submission_unlinked_count`
+    - `backfill_handoff_submission_unlinked_records`
+  - Keep launch policy strictness unchanged: assignment strategy improves traceability only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-24 prefers explicit GL-28 linkage metadata over pure modality matching.
+  - GL-16 evidence pack includes GL-29 strategy/unlinked diagnostics.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-28: updated `scripts/run_real_trial_backfill_handoff.py`:
+    - added submission index model (`by_action_id` / `by_slot_index` / `by_modality`) and consumed-submission dedupe.
+    - added deterministic linkage strategy selection and queue-level strategy annotation.
+    - added `submission_linkage_snapshot` report block with strategy counts and unlinked submission records.
+  - 2026-05-28: updated `scripts/run_real_trial_launch_evidence.py`:
+    - GL-16 evidence pack now publishes GL-29 linkage strategy/unlinked diagnostics.
+  - 2026-05-28: added/updated focused tests:
+    - `tests/test_real_trial_backfill_handoff_script.py`:
+      - `test_handoff_prefers_action_and_slot_linkage_over_modality_pool`
+      - `test_handoff_reports_slot_only_linkage_when_action_id_missing`
+      - updated existing assertions to verify strategy labels in acknowledged links.
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - updated GL-16 classification assertions to include GL-29 linkage strategy/unlinked diagnostics on READY/HOLD and pending-ack paths.
+  - 2026-05-28: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-28: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_handoff_script tests.test_real_trial_launch_evidence_script` (18 tests)
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-30 Submission-Backed Backfill Execution Evidence
+
+- Status: Complete
+- Goal: add machine-readable GL-22 execution diagnostics that distinguish modality-delta slot progress from explicit real-submission-linked slot progress, so controlled external Beta execution closure can be tracked without weakening launch-gate policy.
+- Files:
+  - `scripts/run_real_trial_backfill_execution.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_execution_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Extend GL-22 execution report with submission-backed progress view:
+    - `submission_backed_execution_status`
+    - `submission_backed_slot_counts.submission_backed_fulfilled_slot_count`
+    - `submission_backed_slot_counts.submission_backed_remaining_slot_count`
+    - `submission_backed_slot_counts.fulfilled_without_submission_linkage_count`
+    - `submission_backed_slot_counts.submission_linked_without_modality_delta_count`
+  - Keep existing `execution_status` unchanged so modality-delta backfill accounting remains stable.
+  - Extend GL-16 evidence pack classification with GL-30 fields:
+    - `backfill_execution_submission_backed_status`
+    - `backfill_execution_submission_backed_fulfilled_slot_count`
+    - `backfill_execution_submission_backed_remaining_slot_count`
+    - `backfill_execution_fulfilled_without_submission_linkage_count`
+    - `backfill_execution_submission_linked_without_modality_delta_count`
+  - Keep launch policy strictness unchanged: GL-30 adds execution evidence diagnostics only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-22 report exposes both modality-delta and submission-backed slot progress states.
+  - GL-16 evidence pack exposes GL-30 submission-backed execution fields on READY/HOLD paths.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-28: updated `scripts/run_real_trial_backfill_execution.py`:
+    - added `submission_backed_execution_status` and `submission_backed_slot_counts`.
+    - added derived counters for linked/unlinked fulfillment diagnostics.
+  - 2026-05-28: updated `scripts/run_real_trial_launch_evidence.py`:
+    - GL-16 evidence pack now includes GL-30 submission-backed execution fields.
+  - 2026-05-28: added/updated focused tests:
+    - `tests/test_real_trial_backfill_execution_script.py`:
+      - updated existing GL-22 assertions for new submission-backed fields
+      - `test_submission_backed_status_complete_with_linked_pending_and_fulfilled_slots`
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - updated READY/HOLD evidence-pack assertions to include GL-30 fields
+  - 2026-05-28: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-28: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_execution_script tests.test_real_trial_launch_evidence_script`
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-31 Pending Backfill Submission Template Bridge
+
+- Status: Complete
+- Goal: convert GL-23 pending backfill actions into operator-ready real-loop manifest template artifacts so real controlled external Beta submissions can be prepared in a deterministic, linkage-preserving format without weakening launch-gate ownership.
+- Files:
+  - `scripts/run_real_trial_backfill_submission_templates.py`
+  - `scripts/run_real_trial_launch_evidence.py`
+  - `tests/test_real_trial_backfill_submission_templates_script.py`
+  - `tests/test_real_trial_launch_evidence_script.py`
+  - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+  - `docs/current/status/baselines/README.md`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+- Work:
+  - Add GL-31 template exporter:
+    - input: GL-23 intake actions report
+    - outputs:
+      - `real_trial_backfill_submission_templates.v1` JSON report
+      - markdown summary
+      - `real_trial_backfill_submission_manifest.template.json`
+  - For each pending action, generate manifest loop templates with:
+    - required real launch-gate evidence fields (`source_system`, `source_reference`, reviewer trace, etc.)
+    - GL-28 linkage fields (`backfill_slot_index`, `backfill_action_id`)
+    - explicit placeholder values (`TEMPLATE_REQUIRED_*`) that must be replaced before ingestion
+  - Integrate GL-31 into GL-13 bridge sequence after GL-23 and before GL-24.
+  - Extend GL-16 evidence-pack contract with GL-31 fields:
+    - `evidence_paths.real_trial_backfill_submission_templates_report`
+    - `evidence_paths.real_trial_backfill_submission_templates_summary`
+    - `evidence_paths.real_trial_backfill_submission_manifest_template`
+    - `backfill_submission_template_status`
+    - `backfill_submission_template_total_action_count`
+    - `backfill_submission_template_pending_action_count`
+    - `backfill_submission_template_generated_count`
+    - `backfill_submission_template_missing_count`
+    - `backfill_submission_template_owner`
+    - `backfill_submission_template_missing_actions`
+  - Keep launch policy strictness unchanged: GL-31 adds submission-prep operational tooling only; launch decision remains owned by `run_launch_readiness_gate.py`.
+- Acceptance:
+  - GL-13 bridge writes GL-31 submission-template report, summary, and manifest template on both HOLD and READY paths.
+  - GL-16 evidence pack includes GL-31 submission-template status/count/path fields.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-05-28: added `scripts/run_real_trial_backfill_submission_templates.py`:
+    - emits deterministic pending-action template exports with contract validation and missing-template diagnostics.
+    - emits manifest template loops preserving GL-28 linkage fields.
+  - 2026-05-28: updated `scripts/run_real_trial_launch_evidence.py`:
+    - added GL-31 stage invocation (`real-trial-backfill-submission-templates`) and output arguments.
+    - GL-16 evidence pack now includes GL-31 evidence-path and status/count/missing-action fields.
+  - 2026-05-28: added/updated focused tests:
+    - `tests/test_real_trial_backfill_submission_templates_script.py`:
+      - `test_generates_templates_for_pending_actions`
+      - `test_reports_missing_template_when_pending_action_contract_incomplete`
+    - `tests/test_real_trial_launch_evidence_script.py`:
+      - updated READY/HOLD and pending-ack evidence-pack assertions to include GL-31 fields.
+  - 2026-05-28: updated docs:
+    - `docs/current/operations/runbooks/real-trial-loop-collection.md`
+    - `docs/current/status/baselines/README.md`
+  - 2026-05-28: focused verification passed:
+    - `python -m unittest tests.test_real_trial_backfill_submission_templates_script tests.test_real_trial_launch_evidence_script`
+    - `python scripts/run_doc_sync_check.py --output -`
+    - `python scripts/run_launch_readiness_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
 ## Execution Rules For GL Work
 
 - Execute `GL-*` in numeric order unless a later card is explicitly marked as independent.
@@ -1402,9 +1637,9 @@ Strengthening path:
 
 ## Recommended Next Step
 
-Proceed with `GL-28` (or next newly-defined GL card) to close the real launch-gate-eligible loop/modality gap by executing GL-21/GL-22 backfill slots with real external Beta evidence submissions.
+Proceed with `GL-32` (or next newly-defined GL card) to consume GL-31 manifest templates with real external Beta submissions and drive both `backfill_execution_remaining_slot_count` and `backfill_execution_submission_backed_remaining_slot_count` toward zero while preserving strict launch-gate evidence quality.
 
 Reason:
 
-- `GL-01` through `GL-27` are complete; baseline evidence now includes machine-readable backfill slots, slot-level execution progress, intake actions, assignee handoff, acknowledgement linkage, SLA diagnostics, and operator escalation exports.
+- `GL-01` through `GL-31` are complete; baseline evidence now includes machine-readable backfill slots, slot-level execution progress, submission-backed execution diagnostics, intake actions, submission manifest templates for pending slots, linkage-aware handoff assignment, acknowledgement linkage, SLA diagnostics, escalation exports, and explicit submission-to-slot linkage diagnostics.
 - The remaining blocker is still real launch-gate-eligible loop/modality volume in baseline evidence, not release-gate/doc-sync/security contract coverage.

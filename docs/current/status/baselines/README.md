@@ -29,6 +29,9 @@ This directory preserves comparable baseline evidence packs for controlled-trial
 - Operations runbook: `docs/current/operations/runbooks/real-trial-loop-collection.md`
 - Template manifest:
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.template.json`
+- Batch input directory:
+  - `docs/current/status/baselines/real-trial-loop-collection/manifests/`
+  - This directory is an operator drop zone for real-loop `.json` manifests. Release artifacts do not populate it.
 - Generated outputs:
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md`
@@ -38,6 +41,9 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-manifest.template.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json`
@@ -45,6 +51,7 @@ This directory preserves comparable baseline evidence packs for controlled-trial
 - Linux example:
   - `python scripts/run_real_trial_loop_collection.py --run-report docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json --output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
 - Batch real-loop manifest example (GL-17):
+  - Place at least one real-loop JSON manifest in `docs/current/status/baselines/real-trial-loop-collection/manifests/` before running this mode.
   - `python scripts/run_real_trial_loop_collection.py --loop-manifest-dir docs/current/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
 - GL-18 manifest-contract behavior:
   - default batch intake skips non-loop-manifest JSON files and reports:
@@ -76,6 +83,9 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-report.json`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-summary.md`
+  - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-manifest.template.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
   - `docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json`
@@ -87,6 +97,7 @@ This directory preserves comparable baseline evidence packs for controlled-trial
 - Linux example:
   - `python scripts/run_real_trial_launch_evidence.py --run-report docs/current/status/baselines/controlled-trial/controlled-trial-run-report.json --collection-report-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --trial-metrics-report-output docs/current/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/current/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/current/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/current/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0`
 - Batch manifest directory mode (GL-17):
+  - Place at least one real-loop JSON manifest in `docs/current/status/baselines/real-trial-loop-collection/manifests/` before running this mode. An empty directory fails fast and does not fall back to fixture evidence.
   - `python scripts/run_real_trial_launch_evidence.py --loop-manifest-dir docs/current/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --collection-report-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --trial-metrics-report-output docs/current/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/current/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/current/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/current/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0`
 
 ## GL-16 Controlled External Beta Evidence Pack
@@ -102,12 +113,36 @@ This directory preserves comparable baseline evidence packs for controlled-trial
     - `backfill_execution_fulfilled_slot_count`
     - `backfill_execution_remaining_slot_count`
     - `backfill_execution_gained_target_launch_modality_loop_counts`
+  - GL-30 submission-backed execution fields:
+    - `backfill_execution_submission_backed_status`
+    - `backfill_execution_submission_backed_fulfilled_slot_count`
+    - `backfill_execution_submission_backed_remaining_slot_count`
+    - `backfill_execution_fulfilled_without_submission_linkage_count`
+    - `backfill_execution_submission_linked_without_modality_delta_count`
+  - GL-28 real submission linkage fields:
+    - `backfill_execution_submission_linked_slot_count`
+    - `backfill_execution_submission_slot_linked_count`
+    - `backfill_execution_submission_action_linked_count`
+    - `backfill_execution_unmatched_submission_linkage_count`
+    - `backfill_execution_submission_linkage_records`
+    - `backfill_execution_unmatched_submission_linkages`
   - GL-23 intake action bridge fields:
     - `backfill_intake_status`
     - `backfill_intake_total_action_count`
     - `backfill_intake_pending_action_count`
     - `backfill_intake_closed_action_count`
     - `backfill_intake_owner`
+  - GL-31 submission template bridge fields:
+    - `evidence_paths.real_trial_backfill_submission_templates_report`
+    - `evidence_paths.real_trial_backfill_submission_templates_summary`
+    - `evidence_paths.real_trial_backfill_submission_manifest_template`
+    - `backfill_submission_template_status`
+    - `backfill_submission_template_total_action_count`
+    - `backfill_submission_template_pending_action_count`
+    - `backfill_submission_template_generated_count`
+    - `backfill_submission_template_missing_count`
+    - `backfill_submission_template_owner`
+    - `backfill_submission_template_missing_actions`
   - GL-24 handoff bridge fields:
     - `backfill_handoff_status`
     - `backfill_handoff_total_queue_item_count`
@@ -115,6 +150,10 @@ This directory preserves comparable baseline evidence packs for controlled-trial
     - `backfill_handoff_submission_linked_pending_ack_count`
     - `backfill_handoff_closure_acknowledged_count`
     - `backfill_handoff_owner`
+  - GL-29 linkage-aware handoff assignment fields:
+    - `backfill_handoff_submission_linkage_strategy_counts`
+    - `backfill_handoff_submission_unlinked_count`
+    - `backfill_handoff_submission_unlinked_records`
   - GL-25 acknowledgement linkage fields:
     - `evidence_paths.real_trial_backfill_handoff_acknowledgements_report`
     - `backfill_handoff_acknowledgement_input_count`

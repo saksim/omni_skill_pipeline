@@ -367,7 +367,7 @@ class DistillationService(object):
                 skill_graph=skill_graph,
                 publications=publications,
                 quality_scores=quality_scores,
-                review_task=review_task_with_tenant,
+                review_task=review_task,
                 corpus=loaded_corpus.corpus,
                 evidence_nodes=loaded_corpus.evidence_nodes,
                 request_payload=redact_sensitive_data(request.to_dict()),
@@ -517,7 +517,7 @@ class DistillationService(object):
             skill_graph=skill_graph,
             publications=publications,
             quality_scores=quality_scores,
-            review_task=review_task_with_tenant,
+            review_task=review_task,
             evidence_nodes=evidence_nodes,
             request_payload=redact_sensitive_data(request.to_dict()),
             adapter_metadata=redact_sensitive_data({
@@ -855,8 +855,10 @@ class DistillationService(object):
         return {}
 
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
-        if bundle.review_task is None:
-            return {}
+        adapter_metadata = bundle.adapter_metadata if isinstance(bundle.adapter_metadata, dict) else {}
+        adapter_payload = adapter_metadata.get('review_task')
+        if isinstance(adapter_payload, dict):
+            return dict(adapter_payload)
         if isinstance(bundle.review_task, dict):
             return dict(bundle.review_task)
         if hasattr(bundle.review_task, 'to_dict'):

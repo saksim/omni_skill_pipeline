@@ -13,6 +13,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 REAL_LOOP_COLLECTION_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_loop_collection.py"
 REAL_LOOP_BACKFILL_EXECUTION_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_backfill_execution.py"
 REAL_LOOP_BACKFILL_INTAKE_ACTIONS_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_backfill_intake_actions.py"
+REAL_LOOP_BACKFILL_SUBMISSION_TEMPLATES_SCRIPT = (
+    REPO_ROOT / "scripts" / "run_real_trial_backfill_submission_templates.py"
+)
 REAL_LOOP_BACKFILL_HANDOFF_SCRIPT = REPO_ROOT / "scripts" / "run_real_trial_backfill_handoff.py"
 REAL_LOOP_BACKFILL_HANDOFF_ESCALATIONS_SCRIPT = (
     REPO_ROOT / "scripts" / "run_real_trial_backfill_handoff_escalations.py"
@@ -100,6 +103,33 @@ DEFAULT_BACKFILL_INTAKE_ACTIONS_SUMMARY = (
     / "baselines"
     / "real-trial-loop-collection"
     / "real-trial-backfill-intake-actions-summary.md"
+)
+DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-templates-report.json"
+)
+DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-templates-summary.md"
+)
+DEFAULT_BACKFILL_SUBMISSION_MANIFEST_TEMPLATE = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-manifest.template.json"
 )
 DEFAULT_BACKFILL_HANDOFF_REPORT = (
     REPO_ROOT
@@ -274,6 +304,16 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--backfill-intake-actions-output", default=str(DEFAULT_BACKFILL_INTAKE_ACTIONS_REPORT))
     parser.add_argument("--backfill-intake-actions-summary-output", default=str(DEFAULT_BACKFILL_INTAKE_ACTIONS_SUMMARY))
     parser.add_argument("--backfill-intake-owner", default="controlled-beta-ops")
+    parser.add_argument("--backfill-submission-templates-output", default=str(DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_REPORT))
+    parser.add_argument(
+        "--backfill-submission-templates-summary-output",
+        default=str(DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_SUMMARY),
+    )
+    parser.add_argument(
+        "--backfill-submission-manifest-template-output",
+        default=str(DEFAULT_BACKFILL_SUBMISSION_MANIFEST_TEMPLATE),
+    )
+    parser.add_argument("--backfill-submission-owner", default="controlled-beta-ops")
     parser.add_argument("--backfill-handoff-output", default=str(DEFAULT_BACKFILL_HANDOFF_REPORT))
     parser.add_argument("--backfill-handoff-summary-output", default=str(DEFAULT_BACKFILL_HANDOFF_SUMMARY))
     parser.add_argument("--backfill-handoff-owner", default="controlled-beta-ops")
@@ -383,6 +423,48 @@ def _print_command_output(prefix: str, result: subprocess.CompletedProcess[str])
         print("%s stderr:\n%s" % (prefix, result.stderr.rstrip()), file=sys.stderr)
 
 
+def _resolve_loop_manifest_paths(
+    *,
+    explicit_paths: list[str],
+    manifest_dirs: list[str],
+    pattern: str,
+    recursive: bool,
+) -> tuple[list[Path], list[Path]]:
+    resolved_explicit_paths = [Path(item).resolve() for item in explicit_paths if str(item).strip()]
+    resolved_manifest_dirs = [Path(item).resolve() for item in manifest_dirs if str(item).strip()]
+
+    discovered_from_dirs: list[Path] = []
+    normalized_pattern = str(pattern or "").strip() or "*.json"
+    for directory in resolved_manifest_dirs:
+        if not directory.is_dir():
+            raise ValueError("Loop manifest directory does not exist or is not a directory: %s" % directory)
+        iterator = directory.rglob(normalized_pattern) if recursive else directory.glob(normalized_pattern)
+        discovered_from_dirs.extend(path.resolve() for path in iterator if path.is_file())
+
+    deduped_paths: dict[str, Path] = {}
+    for path in resolved_explicit_paths:
+        deduped_paths[str(path)] = path
+    for path in sorted(discovered_from_dirs, key=lambda value: str(value)):
+        deduped_paths[str(path)] = path
+    return list(deduped_paths.values()), resolved_manifest_dirs
+
+
+def _format_no_loop_manifest_matches_message(
+    *,
+    manifest_dirs: list[Path],
+    pattern: str,
+    recursive: bool,
+) -> str:
+    directory_text = ", ".join(str(path) for path in manifest_dirs) if manifest_dirs else "none"
+    normalized_pattern = str(pattern or "").strip() or "*.json"
+    return (
+        "no loop manifest JSON files matched explicit loop evidence input(s): "
+        "directories=%s pattern=%s recursive=%s. "
+        "Add at least one JSON manifest with top-level 'loops', or pass --run-report for run-report input."
+        % (directory_text, normalized_pattern, str(bool(recursive)).lower())
+    )
+
+
 def _build_collection_command(args: argparse.Namespace, run_reports: list[Path], manifest_output: Path) -> list[str]:
     command = [
         sys.executable,
@@ -476,6 +558,23 @@ def _build_backfill_intake_actions_command(args: argparse.Namespace) -> list[str
         str(Path(args.backfill_intake_actions_summary_output).resolve()),
         "--owner",
         str(args.backfill_intake_owner).strip() or "controlled-beta-ops",
+    ]
+
+
+def _build_backfill_submission_templates_command(args: argparse.Namespace) -> list[str]:
+    return [
+        sys.executable,
+        str(REAL_LOOP_BACKFILL_SUBMISSION_TEMPLATES_SCRIPT),
+        "--intake-actions-report",
+        str(Path(args.backfill_intake_actions_output).resolve()),
+        "--output",
+        str(Path(args.backfill_submission_templates_output).resolve()),
+        "--summary-output",
+        str(Path(args.backfill_submission_templates_summary_output).resolve()),
+        "--manifest-template-output",
+        str(Path(args.backfill_submission_manifest_template_output).resolve()),
+        "--owner",
+        str(args.backfill_submission_owner).strip() or "controlled-beta-ops",
     ]
 
 
@@ -576,6 +675,7 @@ def _build_evidence_pack(
     launch_readiness_report: dict[str, Any],
     backfill_execution_report: dict[str, Any],
     backfill_intake_actions_report: dict[str, Any],
+    backfill_submission_templates_report: dict[str, Any],
     backfill_handoff_report: dict[str, Any],
     backfill_handoff_escalations_report: dict[str, Any],
     run_report_paths: list[Path],
@@ -596,15 +696,30 @@ def _build_evidence_pack(
     backfill_slot_counts = backfill_execution_report.get("slot_counts", {})
     if not isinstance(backfill_slot_counts, dict):
         backfill_slot_counts = {}
+    backfill_submission_backed_slot_counts = backfill_execution_report.get("submission_backed_slot_counts", {})
+    if not isinstance(backfill_submission_backed_slot_counts, dict):
+        backfill_submission_backed_slot_counts = {}
+    backfill_submission_linkage_counts = backfill_execution_report.get("submission_linkage_counts", {})
+    if not isinstance(backfill_submission_linkage_counts, dict):
+        backfill_submission_linkage_counts = {}
     backfill_coverage_delta = backfill_execution_report.get("coverage_delta", {})
     if not isinstance(backfill_coverage_delta, dict):
         backfill_coverage_delta = {}
     backfill_intake_action_counts = backfill_intake_actions_report.get("action_counts", {})
     if not isinstance(backfill_intake_action_counts, dict):
         backfill_intake_action_counts = {}
+    backfill_submission_template_counts = backfill_submission_templates_report.get("template_counts", {})
+    if not isinstance(backfill_submission_template_counts, dict):
+        backfill_submission_template_counts = {}
+    backfill_submission_action_counts = backfill_submission_templates_report.get("action_counts", {})
+    if not isinstance(backfill_submission_action_counts, dict):
+        backfill_submission_action_counts = {}
     backfill_handoff_counts = backfill_handoff_report.get("queue_item_counts", {})
     if not isinstance(backfill_handoff_counts, dict):
         backfill_handoff_counts = {}
+    backfill_handoff_submission_linkage_snapshot = backfill_handoff_report.get("submission_linkage_snapshot", {})
+    if not isinstance(backfill_handoff_submission_linkage_snapshot, dict):
+        backfill_handoff_submission_linkage_snapshot = {}
     backfill_handoff_ack_snapshot = backfill_handoff_report.get("acknowledgement_snapshot", {})
     if not isinstance(backfill_handoff_ack_snapshot, dict):
         backfill_handoff_ack_snapshot = {}
@@ -639,6 +754,15 @@ def _build_evidence_pack(
             "real_trial_backfill_execution_summary": str(Path(args.backfill_execution_summary_output).resolve()),
             "real_trial_backfill_intake_actions_report": str(Path(args.backfill_intake_actions_output).resolve()),
             "real_trial_backfill_intake_actions_summary": str(Path(args.backfill_intake_actions_summary_output).resolve()),
+            "real_trial_backfill_submission_templates_report": str(
+                Path(args.backfill_submission_templates_output).resolve()
+            ),
+            "real_trial_backfill_submission_templates_summary": str(
+                Path(args.backfill_submission_templates_summary_output).resolve()
+            ),
+            "real_trial_backfill_submission_manifest_template": str(
+                Path(args.backfill_submission_manifest_template_output).resolve()
+            ),
             "real_trial_backfill_handoff_report": str(Path(args.backfill_handoff_output).resolve()),
             "real_trial_backfill_handoff_summary": str(Path(args.backfill_handoff_summary_output).resolve()),
             "real_trial_backfill_handoff_acknowledgements_report": str(
@@ -706,15 +830,71 @@ def _build_evidence_pack(
             "backfill_execution_status": str(backfill_execution_report.get("execution_status", "unknown")),
             "backfill_execution_fulfilled_slot_count": int(backfill_slot_counts.get("fulfilled_slot_count", 0) or 0),
             "backfill_execution_remaining_slot_count": int(backfill_slot_counts.get("remaining_slot_count", 0) or 0),
+            "backfill_execution_submission_backed_status": str(
+                backfill_execution_report.get("submission_backed_execution_status", "unknown")
+            ),
+            "backfill_execution_submission_backed_fulfilled_slot_count": int(
+                backfill_submission_backed_slot_counts.get("submission_backed_fulfilled_slot_count", 0) or 0
+            ),
+            "backfill_execution_submission_backed_remaining_slot_count": int(
+                backfill_submission_backed_slot_counts.get("submission_backed_remaining_slot_count", 0) or 0
+            ),
+            "backfill_execution_fulfilled_without_submission_linkage_count": int(
+                backfill_submission_backed_slot_counts.get("fulfilled_without_submission_linkage_count", 0) or 0
+            ),
+            "backfill_execution_submission_linked_without_modality_delta_count": int(
+                backfill_submission_backed_slot_counts.get("submission_linked_without_modality_delta_count", 0) or 0
+            ),
             "backfill_execution_gained_target_launch_modality_loop_counts": backfill_coverage_delta.get(
                 "gained_target_launch_modality_loop_counts",
                 {},
+            ),
+            "backfill_execution_submission_linked_slot_count": int(
+                backfill_submission_linkage_counts.get("submission_linked_slot_count", 0) or 0
+            ),
+            "backfill_execution_submission_slot_linked_count": int(
+                backfill_submission_linkage_counts.get("slot_linked_count", 0) or 0
+            ),
+            "backfill_execution_submission_action_linked_count": int(
+                backfill_submission_linkage_counts.get("action_linked_count", 0) or 0
+            ),
+            "backfill_execution_unmatched_submission_linkage_count": int(
+                backfill_submission_linkage_counts.get("unmatched_submission_linkage_count", 0) or 0
+            ),
+            "backfill_execution_submission_linkage_records": backfill_execution_report.get(
+                "submission_linkage_records",
+                [],
+            ),
+            "backfill_execution_unmatched_submission_linkages": backfill_execution_report.get(
+                "unmatched_submission_linkages",
+                [],
             ),
             "backfill_intake_status": str(backfill_intake_actions_report.get("intake_status", "unknown")),
             "backfill_intake_total_action_count": int(backfill_intake_action_counts.get("total_actions", 0) or 0),
             "backfill_intake_pending_action_count": int(backfill_intake_action_counts.get("pending_action_count", 0) or 0),
             "backfill_intake_closed_action_count": int(backfill_intake_action_counts.get("closed_action_count", 0) or 0),
             "backfill_intake_owner": str(args.backfill_intake_owner).strip() or "controlled-beta-ops",
+            "backfill_submission_template_status": str(
+                backfill_submission_templates_report.get("template_status", "unknown")
+            ),
+            "backfill_submission_template_total_action_count": int(
+                backfill_submission_action_counts.get("total_action_count", 0) or 0
+            ),
+            "backfill_submission_template_pending_action_count": int(
+                backfill_submission_action_counts.get("pending_action_count", 0) or 0
+            ),
+            "backfill_submission_template_generated_count": int(
+                backfill_submission_template_counts.get("generated_template_count", 0) or 0
+            ),
+            "backfill_submission_template_missing_count": int(
+                backfill_submission_template_counts.get("missing_template_action_count", 0) or 0
+            ),
+            "backfill_submission_template_owner": str(args.backfill_submission_owner).strip()
+            or "controlled-beta-ops",
+            "backfill_submission_template_missing_actions": backfill_submission_templates_report.get(
+                "missing_template_actions",
+                [],
+            ),
             "backfill_handoff_status": str(backfill_handoff_report.get("handoff_status", "unknown")),
             "backfill_handoff_total_queue_item_count": int(
                 backfill_handoff_counts.get("total_queue_item_count", 0) or 0
@@ -729,6 +909,17 @@ def _build_evidence_pack(
                 backfill_handoff_counts.get("closure_acknowledged_count", 0) or 0
             ),
             "backfill_handoff_owner": str(args.backfill_handoff_owner).strip() or "controlled-beta-ops",
+            "backfill_handoff_submission_linkage_strategy_counts": backfill_handoff_submission_linkage_snapshot.get(
+                "linkage_strategy_counts",
+                {},
+            ),
+            "backfill_handoff_submission_unlinked_count": int(
+                backfill_handoff_submission_linkage_snapshot.get("unlinked_submission_count", 0) or 0
+            ),
+            "backfill_handoff_submission_unlinked_records": backfill_handoff_submission_linkage_snapshot.get(
+                "unlinked_submissions",
+                [],
+            ),
             "backfill_handoff_acknowledgement_input_count": int(
                 backfill_handoff_ack_snapshot.get("input_acknowledgement_count", 0) or 0
             ),
@@ -833,13 +1024,31 @@ def main() -> int:
     loop_manifest_values = [str(value).strip() for value in args.loop_manifest if str(value).strip()]
     loop_manifest_dir_values = [str(value).strip() for value in args.loop_manifest_dir if str(value).strip()]
     run_report_paths = [Path(value).resolve() for value in run_report_values]
-    loop_manifest_paths = [Path(value).resolve() for value in loop_manifest_values]
-    loop_manifest_dirs = [Path(value).resolve() for value in loop_manifest_dir_values]
+    try:
+        loop_manifest_paths, loop_manifest_dirs = _resolve_loop_manifest_paths(
+            explicit_paths=loop_manifest_values,
+            manifest_dirs=loop_manifest_dir_values,
+            pattern=str(args.loop_manifest_pattern),
+            recursive=bool(args.loop_manifest_recursive),
+        )
+    except ValueError as exc:
+        print("Real-trial launch evidence pipeline failed: %s" % exc, file=sys.stderr)
+        return 2
+    if (loop_manifest_values or loop_manifest_dir_values) and not loop_manifest_paths:
+        print(
+            "Real-trial launch evidence pipeline failed: %s"
+            % _format_no_loop_manifest_matches_message(
+                manifest_dirs=loop_manifest_dirs,
+                pattern=str(args.loop_manifest_pattern),
+                recursive=bool(args.loop_manifest_recursive),
+            ),
+            file=sys.stderr,
+        )
+        return 2
     if not run_report_paths and not loop_manifest_paths and not loop_manifest_dirs:
         run_report_paths = [DEFAULT_RUN_REPORT]
     missing_inputs = [path for path in run_report_paths if not path.is_file()]
     missing_inputs.extend(path for path in loop_manifest_paths if not path.is_file())
-    missing_inputs.extend(path for path in loop_manifest_dirs if not path.is_dir())
     if missing_inputs:
         print(
             "Real-trial launch evidence pipeline failed: missing loop evidence input(s): %s"
@@ -900,6 +1109,12 @@ def main() -> int:
     if backfill_intake_actions_result.returncode != 0:
         return backfill_intake_actions_result.returncode
 
+    backfill_submission_templates_command = _build_backfill_submission_templates_command(args)
+    backfill_submission_templates_result = _run_command(backfill_submission_templates_command)
+    _print_command_output("real-trial-backfill-submission-templates", backfill_submission_templates_result)
+    if backfill_submission_templates_result.returncode != 0:
+        return backfill_submission_templates_result.returncode
+
     backfill_handoff_command = _build_backfill_handoff_command(args)
     backfill_handoff_result = _run_command(backfill_handoff_command)
     _print_command_output("real-trial-backfill-handoff", backfill_handoff_result)
@@ -929,6 +1144,7 @@ def main() -> int:
         launch_readiness_report = _read_json(launch_readiness_output)
         backfill_execution_report = _read_json(Path(args.backfill_execution_output).resolve())
         backfill_intake_actions_report = _read_json(Path(args.backfill_intake_actions_output).resolve())
+        backfill_submission_templates_report = _read_json(Path(args.backfill_submission_templates_output).resolve())
         backfill_handoff_report = _read_json(Path(args.backfill_handoff_output).resolve())
         backfill_handoff_escalations_report = _read_json(Path(args.backfill_handoff_escalations_output).resolve())
     except (OSError, json.JSONDecodeError, ValueError) as exc:
@@ -943,6 +1159,7 @@ def main() -> int:
             launch_readiness_report=launch_readiness_report,
             backfill_execution_report=backfill_execution_report,
             backfill_intake_actions_report=backfill_intake_actions_report,
+            backfill_submission_templates_report=backfill_submission_templates_report,
             backfill_handoff_report=backfill_handoff_report,
             backfill_handoff_escalations_report=backfill_handoff_escalations_report,
             run_report_paths=run_report_paths,

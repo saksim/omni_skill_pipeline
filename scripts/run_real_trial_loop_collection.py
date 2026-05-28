@@ -296,6 +296,26 @@ def _normalize_loop_row(loop_metrics: dict[str, Any], *, sample_id: str, source_
         else:
             launch_gate_ineligible_reason = "explicitly_marked_not_launch_gate_eligible"
 
+    backfill_slot_index: int | None
+    raw_backfill_slot_index = loop_metrics.get("backfill_slot_index")
+    if raw_backfill_slot_index in (None, ""):
+        backfill_slot_index = None
+    else:
+        try:
+            parsed_backfill_slot_index = int(raw_backfill_slot_index)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "Loop %s has invalid backfill_slot_index %r in %s"
+                % (loop_id, raw_backfill_slot_index, source_report_path)
+            ) from exc
+        if parsed_backfill_slot_index <= 0:
+            raise ValueError(
+                "Loop %s has non-positive backfill_slot_index %r in %s"
+                % (loop_id, raw_backfill_slot_index, source_report_path)
+            )
+        backfill_slot_index = parsed_backfill_slot_index
+    backfill_action_id = str(loop_metrics.get("backfill_action_id", "")).strip()
+
     row = {
         "loop_id": loop_id,
         "status": status,
@@ -319,6 +339,8 @@ def _normalize_loop_row(loop_metrics: dict[str, Any], *, sample_id: str, source_
         "review_task_id": str(loop_metrics.get("review_task_id", "")).strip(),
         "reviewed_by": str(loop_metrics.get("reviewed_by", "")).strip(),
         "reviewed_at_utc": str(loop_metrics.get("reviewed_at_utc", "")).strip(),
+        "backfill_slot_index": backfill_slot_index,
+        "backfill_action_id": backfill_action_id,
         "source_report_path": str(source_report_path),
     }
 
@@ -467,6 +489,22 @@ def _resolve_loop_manifest_paths(
     return list(deduped_paths.values()), resolved_manifest_dirs
 
 
+def _format_no_loop_manifest_matches_message(
+    *,
+    manifest_dirs: list[Path],
+    pattern: str,
+    recursive: bool,
+) -> str:
+    directory_text = ", ".join(str(path) for path in manifest_dirs) if manifest_dirs else "none"
+    normalized_pattern = str(pattern or "").strip() or "*.json"
+    return (
+        "no loop manifest JSON files matched explicit loop evidence input(s): "
+        "directories=%s pattern=%s recursive=%s. "
+        "Add at least one JSON manifest with top-level 'loops', or pass --run-report for run-report input."
+        % (directory_text, normalized_pattern, str(bool(recursive)).lower())
+    )
+
+
 def _build_collection_report(
     *,
     loops: list[dict[str, Any]],
@@ -489,6 +527,10 @@ def _build_collection_report(
     real_eligible_complete_loops: list[dict[str, Any]] = []
     launch_gate_modalities: set[str] = set()
     launch_gate_eligible_complete_loop_count_by_modality: dict[str, int] = {}
+    real_evidence_backfill_slot_linked_count = 0
+    real_evidence_backfill_action_linked_count = 0
+    real_evidence_backfill_linkage_complete_count = 0
+    real_evidence_backfill_linkage_missing_count = 0
 
     for loop in loops:
         evidence_origin = str(loop.get("evidence_origin", "unspecified"))
@@ -527,6 +569,16 @@ def _build_collection_report(
                 launch_gate_eligible_complete_loop_count_by_modality[modality] = (
                     launch_gate_eligible_complete_loop_count_by_modality.get(modality, 0) + 1
                 )
+            has_backfill_slot_linkage = int(loop.get("backfill_slot_index") or 0) > 0
+            has_backfill_action_linkage = bool(str(loop.get("backfill_action_id", "")).strip())
+            if has_backfill_slot_linkage:
+                real_evidence_backfill_slot_linked_count += 1
+            if has_backfill_action_linkage:
+                real_evidence_backfill_action_linked_count += 1
+            if has_backfill_slot_linkage and has_backfill_action_linkage:
+                real_evidence_backfill_linkage_complete_count += 1
+            if not has_backfill_slot_linkage and not has_backfill_action_linkage:
+                real_evidence_backfill_linkage_missing_count += 1
 
     launch_gate_eligible_complete_loop_count = len(real_eligible_complete_loops)
     launch_gate_eligible_modalities = sorted(item for item in launch_gate_modalities if item)
@@ -617,6 +669,10 @@ def _build_collection_report(
             "launch_gate_eligible_modality_count": launch_gate_eligible_modality_count,
             "launch_gate_eligible_complete_loop_count_by_modality": launch_gate_eligible_complete_loop_count_by_modality,
             "target_launch_modality_loop_counts": target_launch_modality_loop_counts,
+            "real_evidence_backfill_slot_linked_count": real_evidence_backfill_slot_linked_count,
+            "real_evidence_backfill_action_linked_count": real_evidence_backfill_action_linked_count,
+            "real_evidence_backfill_linkage_complete_count": real_evidence_backfill_linkage_complete_count,
+            "real_evidence_backfill_linkage_missing_count": real_evidence_backfill_linkage_missing_count,
             "missing_complete_loops_to_threshold": missing_complete_loops_to_threshold,
             "missing_modalities_to_threshold": missing_modalities_to_threshold,
             "recommended_next_modalities": recommended_next_modalities,
@@ -637,6 +693,8 @@ def _build_collection_report(
                 "review_task_id": str(loop.get("review_task_id", "")),
                 "reviewed_by": str(loop.get("reviewed_by", "")),
                 "reviewed_at_utc": str(loop.get("reviewed_at_utc", "")),
+                "backfill_slot_index": int(loop.get("backfill_slot_index") or 0) or None,
+                "backfill_action_id": str(loop.get("backfill_action_id", "")),
                 "source_report_path": str(loop.get("source_report_path", "")),
             }
             for loop in real_eligible_complete_loops
@@ -745,6 +803,14 @@ def _render_summary(report: dict[str, Any]) -> str:
         "- Launch-gate-eligible complete loop count by modality: `%s`"
         % str(alignment.get("launch_gate_eligible_complete_loop_count_by_modality", {})),
         "- Target launch modality loop counts: `%s`" % str(alignment.get("target_launch_modality_loop_counts", {})),
+        "- Real eligible loops with backfill slot linkage: `%s`"
+        % str(alignment.get("real_evidence_backfill_slot_linked_count", 0)),
+        "- Real eligible loops with backfill action linkage: `%s`"
+        % str(alignment.get("real_evidence_backfill_action_linked_count", 0)),
+        "- Real eligible loops with complete slot+action linkage: `%s`"
+        % str(alignment.get("real_evidence_backfill_linkage_complete_count", 0)),
+        "- Real eligible loops missing slot+action linkage: `%s`"
+        % str(alignment.get("real_evidence_backfill_linkage_missing_count", 0)),
         "- Real loops missing source trace: `%s`"
         % str(alignment.get("real_evidence_missing_source_trace_count", 0)),
         "- Real loops missing review trace: `%s`"
@@ -784,6 +850,17 @@ def main() -> int:
         )
     except ValueError as exc:
         print("Real trial loop collection failed: %s" % exc, file=sys.stderr)
+        return 2
+    if (loop_manifest_values or loop_manifest_dir_values) and not loop_manifest_paths:
+        print(
+            "Real trial loop collection failed: %s"
+            % _format_no_loop_manifest_matches_message(
+                manifest_dirs=loop_manifest_dirs,
+                pattern=str(args.loop_manifest_pattern),
+                recursive=bool(args.loop_manifest_recursive),
+            ),
+            file=sys.stderr,
+        )
         return 2
     if not run_report_paths and not loop_manifest_paths:
         run_report_paths = [DEFAULT_RUN_REPORT_PATH]

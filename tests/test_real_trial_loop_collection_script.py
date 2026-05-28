@@ -20,6 +20,8 @@ def _loop_metrics(
     evidence_origin: str,
     launch_gate_eligible: bool,
     include_trace: bool = True,
+    backfill_slot_index: int | None = None,
+    backfill_action_id: str = "",
 ) -> dict[str, Any]:
     row: dict[str, Any] = {
         "loop_id": loop_id,
@@ -50,6 +52,10 @@ def _loop_metrics(
         row["review_task_id"] = "review-%s" % loop_id
         row["reviewed_by"] = "reviewer-a"
         row["reviewed_at_utc"] = "2026-05-26T00:05:00Z"
+    if backfill_slot_index is not None:
+        row["backfill_slot_index"] = int(backfill_slot_index)
+    if backfill_action_id:
+        row["backfill_action_id"] = str(backfill_action_id)
     return row
 
 
@@ -515,6 +521,36 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
                 {"audio": 1, "image": 1, "text": 1, "video": 1},
             )
 
+    def test_empty_loop_manifest_dir_fails_without_default_fixture_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            manifests_dir = tmp_path / "manifests"
+            manifests_dir.mkdir(parents=True, exist_ok=True)
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest-dir",
+                    str(manifests_dir),
+                    "--loop-manifest-pattern",
+                    "*.json",
+                    "--output",
+                    "-",
+                    "--summary-output",
+                    "-",
+                    "--manifest-output",
+                    "-",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 2)
+            self.assertIn("no loop manifest JSON files matched", completed.stderr)
+            self.assertIn(str(manifests_dir.resolve()), completed.stderr)
+
     def test_loop_manifest_dir_skips_non_manifest_json_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
@@ -740,6 +776,75 @@ class RealTrialLoopCollectionScriptTests(unittest.TestCase):
             self.assertEqual(len(slots), 10)
             self.assertEqual(slots[0].get("required_modality"), "text")
             self.assertEqual(slots[0].get("reason"), "missing_target_launch_modality")
+
+    def test_real_loop_backfill_linkage_fields_are_collected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            run_report_path = tmp_path / "run-report.json"
+            report_path = tmp_path / "collection-report.json"
+            summary_path = tmp_path / "collection-summary.md"
+
+            run_report_path.write_text(
+                json.dumps(
+                    _run_report_payload(
+                        [
+                            _loop_metrics(
+                                loop_id="real-text-001",
+                                modality="text",
+                                evidence_origin="real",
+                                launch_gate_eligible=True,
+                                backfill_slot_index=1,
+                                backfill_action_id="gl23-slot-001-text",
+                            ),
+                            _loop_metrics(
+                                loop_id="real-audio-001",
+                                modality="audio",
+                                evidence_origin="real",
+                                launch_gate_eligible=True,
+                            ),
+                        ]
+                    ),
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--run-report",
+                    str(run_report_path),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    str(summary_path),
+                    "--manifest-output",
+                    "-",
+                    "--minimum-complete-loops",
+                    "2",
+                    "--minimum-modalities",
+                    "2",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            alignment = report.get("launch_gate_alignment", {})
+            self.assertEqual(alignment.get("real_evidence_backfill_slot_linked_count"), 1)
+            self.assertEqual(alignment.get("real_evidence_backfill_action_linked_count"), 1)
+            self.assertEqual(alignment.get("real_evidence_backfill_linkage_complete_count"), 1)
+            self.assertEqual(alignment.get("real_evidence_backfill_linkage_missing_count"), 1)
+            collected = report.get("collected_real_launch_gate_eligible_loops", [])
+            self.assertEqual(len(collected), 2)
+            self.assertEqual(collected[0].get("backfill_slot_index"), 1)
+            self.assertEqual(collected[0].get("backfill_action_id"), "gl23-slot-001-text")
+            summary_text = summary_path.read_text(encoding="utf-8")
+            self.assertIn("Real eligible loops with complete slot+action linkage: `1`", summary_text)
 
 
 if __name__ == "__main__":

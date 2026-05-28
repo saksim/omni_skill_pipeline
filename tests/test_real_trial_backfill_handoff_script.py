@@ -97,8 +97,15 @@ def _acknowledgements_report(*, rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _loop(loop_id: str, modality: str, reviewed_at: str) -> dict[str, Any]:
-    return {
+def _loop(
+    loop_id: str,
+    modality: str,
+    reviewed_at: str,
+    *,
+    backfill_slot_index: int | None = None,
+    backfill_action_id: str = "",
+) -> dict[str, Any]:
+    row = {
         "loop_id": loop_id,
         "modality": modality,
         "source_system": "pilot-ops",
@@ -109,6 +116,11 @@ def _loop(loop_id: str, modality: str, reviewed_at: str) -> dict[str, Any]:
         "reviewed_at_utc": reviewed_at,
         "source_report_path": "memory://collection",
     }
+    if backfill_slot_index is not None:
+        row["backfill_slot_index"] = int(backfill_slot_index)
+    if backfill_action_id:
+        row["backfill_action_id"] = str(backfill_action_id)
+    return row
 
 
 class RealTrialBackfillHandoffScriptTests(unittest.TestCase):
@@ -230,6 +242,7 @@ class RealTrialBackfillHandoffScriptTests(unittest.TestCase):
             ack = queue_items[0].get("closure_acknowledgement", {})
             self.assertEqual(ack.get("status"), "acknowledged")
             self.assertEqual(ack.get("linked_submission", {}).get("loop_id"), "real-text-001")
+            self.assertEqual(ack.get("linked_submission", {}).get("submission_linkage_strategy"), "modality_fallback")
 
     def test_handoff_submission_linked_requires_operator_acknowledgement(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -356,6 +369,124 @@ class RealTrialBackfillHandoffScriptTests(unittest.TestCase):
             self.assertEqual(ack.get("status"), "acknowledged")
             self.assertEqual(ack.get("linked_submission", {}).get("loop_id"), "real-text-001")
             self.assertEqual(ack.get("operator_acknowledgement", {}).get("submitted_loop_id"), "real-text-001")
+            self.assertEqual(ack.get("linked_submission", {}).get("submission_linkage_strategy"), "modality_fallback")
+
+    def test_handoff_prefers_action_and_slot_linkage_over_modality_pool(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            intake_report = root / "intake-actions.json"
+            collection_report = root / "collection-report.json"
+            handoff_report = root / "handoff-report.json"
+
+            _write_json(
+                intake_report,
+                _intake_actions_report(actions=[_action(1, "text", status="pending")]),
+            )
+            _write_json(
+                collection_report,
+                _collection_report(
+                    loops=[
+                        _loop(
+                            "real-text-generic",
+                            "text",
+                            "2026-05-27T00:01:00Z",
+                        ),
+                        _loop(
+                            "real-text-linked",
+                            "text",
+                            "2026-05-27T00:02:00Z",
+                            backfill_slot_index=1,
+                            backfill_action_id="gl23-slot-001-text",
+                        ),
+                    ]
+                ),
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--intake-actions-report",
+                    str(intake_report),
+                    "--collection-report",
+                    str(collection_report),
+                    "--output",
+                    str(handoff_report),
+                    "--summary-output",
+                    "-",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr + completed.stdout)
+
+            payload = json.loads(handoff_report.read_text(encoding="utf-8"))
+            queue_items = payload.get("queue_items", [])
+            self.assertEqual(len(queue_items), 1)
+            queue_item = queue_items[0]
+            self.assertEqual(queue_item.get("submission_linkage_strategy"), "action_id_and_slot_index")
+            linked_submission = queue_item.get("closure_acknowledgement", {}).get("linked_submission", {})
+            self.assertEqual(linked_submission.get("loop_id"), "real-text-linked")
+            self.assertEqual(linked_submission.get("submission_linkage_strategy"), "action_id_and_slot_index")
+
+            linkage_snapshot = payload.get("submission_linkage_snapshot", {})
+            self.assertEqual(linkage_snapshot.get("linkage_strategy_counts", {}).get("action_id_and_slot_index"), 1)
+            self.assertEqual(linkage_snapshot.get("unlinked_submission_count"), 1)
+            unlinked = linkage_snapshot.get("unlinked_submissions", [])
+            self.assertEqual(len(unlinked), 1)
+            self.assertEqual(unlinked[0].get("loop_id"), "real-text-generic")
+
+    def test_handoff_reports_slot_only_linkage_when_action_id_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            intake_report = root / "intake-actions.json"
+            collection_report = root / "collection-report.json"
+            handoff_report = root / "handoff-report.json"
+
+            _write_json(
+                intake_report,
+                _intake_actions_report(actions=[_action(2, "audio", status="pending")]),
+            )
+            _write_json(
+                collection_report,
+                _collection_report(
+                    loops=[
+                        _loop(
+                            "real-audio-slot-only",
+                            "audio",
+                            "2026-05-27T00:03:00Z",
+                            backfill_slot_index=2,
+                        ),
+                    ]
+                ),
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--intake-actions-report",
+                    str(intake_report),
+                    "--collection-report",
+                    str(collection_report),
+                    "--output",
+                    str(handoff_report),
+                    "--summary-output",
+                    "-",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr + completed.stdout)
+            payload = json.loads(handoff_report.read_text(encoding="utf-8"))
+            queue_items = payload.get("queue_items", [])
+            self.assertEqual(queue_items[0].get("submission_linkage_strategy"), "slot_index_only")
+            linked_submission = queue_items[0].get("closure_acknowledgement", {}).get("linked_submission", {})
+            self.assertEqual(linked_submission.get("loop_id"), "real-audio-slot-only")
 
     def test_fail_on_open_returns_nonzero(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

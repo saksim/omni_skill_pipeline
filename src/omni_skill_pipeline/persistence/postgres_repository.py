@@ -407,11 +407,11 @@ class PostgresRepository(ArtifactRepository):
         )
 
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
-        if isinstance(bundle.review_task, ReviewTask):
-            return bundle.review_task.to_dict()
         payload = bundle.adapter_metadata.get('review_task')
         if isinstance(payload, dict):
             return dict(payload)
+        if isinstance(bundle.review_task, ReviewTask):
+            return bundle.review_task.to_dict()
         return {}
 
     def _resolve_lineage_links(self, bundle: DistillBundle) -> list[dict[str, Any]]:

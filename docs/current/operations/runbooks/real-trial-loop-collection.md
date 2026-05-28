@@ -26,6 +26,8 @@ It does not authorize GA claims. Output statuses are evidence tracking states on
 
   - one or more explicit real-loop manifests (`--loop-manifest`)
 
+  - one or more real-loop manifest directories (`--loop-manifest-dir`)
+
 - Output artifacts:
 
   - `real-trial-loop-collection-report.json`
@@ -113,6 +115,10 @@ python scripts/run_real_trial_loop_collection.py \
 
 
 When real loops are collected outside the controlled-trial fixture runner, ingest them in batch from one or more manifest directories.
+
+Before running this mode, place at least one real-loop `.json` manifest in
+`docs/current/status/baselines/real-trial-loop-collection/manifests/`. Release artifacts do not generate
+operator-collected Beta evidence in this directory.
 
 
 
@@ -208,6 +214,14 @@ The collection report now includes:
 
 - `launch_gate_alignment.target_launch_modality_loop_counts`
 
+- `launch_gate_alignment.real_evidence_backfill_slot_linked_count`
+
+- `launch_gate_alignment.real_evidence_backfill_action_linked_count`
+
+- `launch_gate_alignment.real_evidence_backfill_linkage_complete_count`
+
+- `launch_gate_alignment.real_evidence_backfill_linkage_missing_count`
+
 - `launch_gate_alignment.recommended_backfill_slot_count`
 
 - `launch_gate_alignment.recommended_backfill_slots`
@@ -239,8 +253,30 @@ GL-22 backfill execution tracking:
   - `real_trial_backfill_execution.v1` JSON report
 
   - markdown summary with slot fulfillment progress and current launch-gap snapshot
+  - GL-30 submission-backed execution diagnostics:
+    - `submission_backed_execution_status`
+    - `submission_backed_slot_counts.submission_backed_fulfilled_slot_count`
+    - `submission_backed_slot_counts.submission_backed_remaining_slot_count`
+    - `submission_backed_slot_counts.fulfilled_without_submission_linkage_count`
+    - `submission_backed_slot_counts.submission_linked_without_modality_delta_count`
+  - explicit GL-28 submission linkage diagnostics:
+    - `slot_execution_records[].expected_action_id`
+    - `slot_execution_records[].submission_linked`
+    - `slot_execution_records[].submission_linkage_resolution`
+    - `submission_linkage_counts` (`slot_linked_count`, `action_linked_count`, `submission_linked_slot_count`, `unmatched_submission_linkage_count`)
+    - `submission_linkage_records`
+    - `unmatched_submission_linkages`
 
 - This step does not alter launch policy. Final launch readiness is still decided by `run_launch_readiness_gate.py`.
+- GL-30 interpretation rule:
+  - `execution_status` reports plan-slot progress from modality coverage delta.
+  - `submission_backed_execution_status` reports plan-slot progress from explicit real submission linkage.
+  - launch readiness ownership is unchanged; these are execution-evidence diagnostics only.
+- GL-28 submission linkage contract for real external Beta evidence:
+  - real loop rows may optionally include:
+    - `backfill_slot_index` (`int > 0`)
+    - `backfill_action_id` (for example `gl23-slot-001-text`)
+  - these fields are evidence-linkage metadata only; they do not bypass launch-gate checks.
 
 - Example:
 
@@ -312,6 +348,18 @@ GL-24 handoff bridge:
   - `open`: no matching launch-gate-eligible real submission acknowledged yet
   - `submission_linked_pending_ack`: matched real submission linked, but operator acknowledgement is missing or submitted loop-id does not match linked loop-id
   - `closure_acknowledged`: matched real submission plus matching operator acknowledgement loop-id
+- GL-29 linkage-aware submission assignment policy:
+  - handoff first attempts explicit GL-28 linkage match by `action_id` and `backfill_slot_index`.
+  - fallback order when exact linkage is unavailable:
+    - `action_id_only`
+    - `slot_index_only`
+    - `modality_fallback`
+    - `none` (no submission linked, queue item remains open)
+  - handoff report exposes:
+    - `queue_items[].submission_linkage_strategy`
+    - `submission_linkage_snapshot.linkage_strategy_counts`
+    - `submission_linkage_snapshot.unlinked_submission_count`
+    - `submission_linkage_snapshot.unlinked_submissions`
 - Optional operator acknowledgement contract (GL-25):
   - pass `--acknowledgements-report <json>` with `acknowledgements[]` rows including:
     - `queue_item_id` or `action_id`
@@ -468,13 +516,14 @@ For controlled external Beta operations, use the GL-13 bridge script to run:
 
 3. GL-23 intake actions generation
 
-4. GL-24 handoff queue + closure acknowledgement generation
-5. GL-25 acknowledgement linkage verification (optional acknowledgement input)
-6. GL-26 acknowledgement SLA aging/escalation diagnostics
-7. GL-27 handoff escalation export generation
-8. trial metrics report generation
-9. launch-readiness gate evaluation
-10. GL-16 evidence pack publication
+4. GL-31 submission manifest template generation
+5. GL-24 handoff queue + closure acknowledgement generation
+6. GL-25 acknowledgement linkage verification (optional acknowledgement input)
+7. GL-26 acknowledgement SLA aging/escalation diagnostics
+8. GL-27 handoff escalation export generation
+9. trial metrics report generation
+10. launch-readiness gate evaluation
+11. GL-16 evidence pack publication
 
 
 ```bash
@@ -511,6 +560,10 @@ python scripts/run_real_trial_launch_evidence.py \
 
 Batch manifest mode:
 
+Before running this mode, place at least one real-loop `.json` manifest in
+`docs/current/status/baselines/real-trial-loop-collection/manifests/`. An empty directory fails fast and will not fall
+back to the fixture controlled-trial report.
+
 
 
 ```bash
@@ -533,11 +586,13 @@ python scripts/run_real_trial_launch_evidence.py \
 
   --launch-readiness-output docs/current/status/baselines/broad-launch-readiness-report.json \
 
-    --backfill-handoff-escalations-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json \\
+  --launch-readiness-summary-output docs/current/status/baselines/broad-launch-readiness-summary.md \
 
-  --backfill-handoff-escalations-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-summary.md \\
+  --backfill-handoff-escalations-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json \
 
- docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json \
+  --backfill-handoff-escalations-summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-summary.md \
+
+  --evidence-pack-output docs/current/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json \
 
   --max-evidence-age-hours 0
 
@@ -605,6 +660,18 @@ GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable revie
 
 - launch-gate blocker summary
 
+- GL-31 submission template exports:
+  - `evidence_paths.real_trial_backfill_submission_templates_report`
+  - `evidence_paths.real_trial_backfill_submission_templates_summary`
+  - `evidence_paths.real_trial_backfill_submission_manifest_template`
+  - `backfill_submission_template_status`
+  - `backfill_submission_template_total_action_count`
+  - `backfill_submission_template_pending_action_count`
+  - `backfill_submission_template_generated_count`
+  - `backfill_submission_template_missing_count`
+  - `backfill_submission_template_owner`
+  - `backfill_submission_template_missing_actions`
+
 - GL-27 escalation exports:
   - `evidence_paths.real_trial_backfill_handoff_escalations_report`
   - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
@@ -621,6 +688,29 @@ GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable revie
 
 
 This evidence pack does not override launch readiness policy and does not permit GA claims.
+
+## GL-31 Submission Templates
+
+- `scripts/run_real_trial_backfill_submission_templates.py` converts GL-23 pending actions to operator-ready real-loop manifest templates.
+- Outputs:
+  - `real_trial_backfill_submission_templates.v1` JSON report
+  - markdown summary
+  - `real_trial_backfill_submission_manifest.template.json` containing template loop rows with:
+    - required launch-gate-eligible real evidence fields
+    - GL-28 linkage fields (`backfill_slot_index`, `backfill_action_id`)
+    - `TEMPLATE_REQUIRED_*` placeholders that must be replaced before GL-12/GL-13 ingestion
+- This stage does not claim readiness; it only operationalizes pending slot submission preparation.
+
+Example:
+
+```bash
+python scripts/run_real_trial_backfill_submission_templates.py \
+  --intake-actions-report docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json \
+  --output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-report.json \
+  --summary-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-summary.md \
+  --manifest-template-output docs/current/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-manifest.template.json \
+  --owner controlled-beta-ops
+```
 
 
 

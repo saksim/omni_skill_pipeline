@@ -162,6 +162,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -223,21 +229,53 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertEqual(classification.get("backfill_execution_status"), "NO_ACTION_REQUIRED")
             self.assertEqual(classification.get("backfill_execution_fulfilled_slot_count"), 0)
             self.assertEqual(classification.get("backfill_execution_remaining_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_backed_status"), "NO_ACTION_REQUIRED")
+            self.assertEqual(classification.get("backfill_execution_submission_backed_fulfilled_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_backed_remaining_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_fulfilled_without_submission_linkage_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_linked_without_modality_delta_count"), 0)
             self.assertEqual(
                 classification.get("backfill_execution_gained_target_launch_modality_loop_counts"),
                 {"audio": 0, "image": 0, "text": 0, "video": 0},
             )
+            self.assertEqual(classification.get("backfill_execution_submission_linked_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_slot_linked_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_action_linked_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_unmatched_submission_linkage_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_linkage_records"), [])
+            self.assertEqual(classification.get("backfill_execution_unmatched_submission_linkages"), [])
             self.assertEqual(classification.get("backfill_intake_status"), "NO_ACTION_REQUIRED")
             self.assertEqual(classification.get("backfill_intake_total_action_count"), 0)
             self.assertEqual(classification.get("backfill_intake_pending_action_count"), 0)
             self.assertEqual(classification.get("backfill_intake_closed_action_count"), 0)
             self.assertEqual(classification.get("backfill_intake_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_submission_template_status"), "NO_PENDING_ACTIONS")
+            self.assertEqual(classification.get("backfill_submission_template_total_action_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_pending_action_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_generated_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_missing_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_submission_template_missing_actions"), [])
             self.assertEqual(classification.get("backfill_handoff_status"), "HANDOFF_NOT_REQUIRED")
             self.assertEqual(classification.get("backfill_handoff_total_queue_item_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_open_queue_item_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_submission_linked_pending_ack_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_closure_acknowledged_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_owner"), "controlled-beta-ops")
+            self.assertEqual(
+                classification.get("backfill_handoff_submission_linkage_strategy_counts"),
+                {
+                    "action_id_and_slot_index": 0,
+                    "action_id_only": 0,
+                    "slot_index_only": 0,
+                    "modality_fallback": 0,
+                    "none": 0,
+                },
+            )
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_count"), 1)
+            unlinked_records = classification.get("backfill_handoff_submission_unlinked_records", [])
+            self.assertEqual(len(unlinked_records), 1)
+            self.assertEqual(unlinked_records[0].get("loop_id"), "real-text-001")
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_input_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_valid_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_count"), 0)
@@ -325,6 +363,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -373,21 +417,51 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertEqual(classification.get("backfill_execution_status"), "BACKFILL_IN_PROGRESS")
             self.assertEqual(classification.get("backfill_execution_fulfilled_slot_count"), 0)
             self.assertEqual(classification.get("backfill_execution_remaining_slot_count"), 10)
+            self.assertEqual(classification.get("backfill_execution_submission_backed_status"), "SUBMISSION_BACKED_IN_PROGRESS")
+            self.assertEqual(classification.get("backfill_execution_submission_backed_fulfilled_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_backed_remaining_slot_count"), 10)
+            self.assertEqual(classification.get("backfill_execution_fulfilled_without_submission_linkage_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_linked_without_modality_delta_count"), 0)
             self.assertEqual(
                 classification.get("backfill_execution_gained_target_launch_modality_loop_counts"),
                 {"audio": 0, "image": 0, "text": 0, "video": 0},
             )
+            self.assertEqual(classification.get("backfill_execution_submission_linked_slot_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_slot_linked_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_action_linked_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_unmatched_submission_linkage_count"), 0)
+            self.assertEqual(classification.get("backfill_execution_submission_linkage_records"), [])
+            self.assertEqual(classification.get("backfill_execution_unmatched_submission_linkages"), [])
             self.assertEqual(classification.get("backfill_intake_status"), "ACTIONS_PENDING")
             self.assertEqual(classification.get("backfill_intake_total_action_count"), 10)
             self.assertEqual(classification.get("backfill_intake_pending_action_count"), 10)
             self.assertEqual(classification.get("backfill_intake_closed_action_count"), 0)
             self.assertEqual(classification.get("backfill_intake_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_submission_template_status"), "TEMPLATES_READY")
+            self.assertEqual(classification.get("backfill_submission_template_total_action_count"), 10)
+            self.assertEqual(classification.get("backfill_submission_template_pending_action_count"), 10)
+            self.assertEqual(classification.get("backfill_submission_template_generated_count"), 10)
+            self.assertEqual(classification.get("backfill_submission_template_missing_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_owner"), "controlled-beta-ops")
+            self.assertEqual(classification.get("backfill_submission_template_missing_actions"), [])
             self.assertEqual(classification.get("backfill_handoff_status"), "HANDOFF_ACTIONS_PENDING")
             self.assertEqual(classification.get("backfill_handoff_total_queue_item_count"), 10)
             self.assertEqual(classification.get("backfill_handoff_open_queue_item_count"), 10)
             self.assertEqual(classification.get("backfill_handoff_submission_linked_pending_ack_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_closure_acknowledged_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_owner"), "controlled-beta-ops")
+            self.assertEqual(
+                classification.get("backfill_handoff_submission_linkage_strategy_counts"),
+                {
+                    "action_id_and_slot_index": 0,
+                    "action_id_only": 0,
+                    "slot_index_only": 0,
+                    "modality_fallback": 0,
+                    "none": 10,
+                },
+            )
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_records"), [])
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_input_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_valid_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_count"), 0)
@@ -485,6 +559,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -618,6 +698,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -665,6 +751,50 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get("launch_gate_eligible_complete_loop_count_by_modality"),
                 {"audio": 1, "image": 1, "text": 1, "video": 1},
             )
+
+    def test_pipeline_empty_loop_manifest_dir_fails_without_default_fixture_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifests_dir = root / "real-loop-manifests"
+            manifests_dir.mkdir(parents=True, exist_ok=True)
+            evidence_pack = root / "real-trial-launch-evidence-pack.json"
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest-dir",
+                    str(manifests_dir),
+                    "--loop-manifest-pattern",
+                    "*.json",
+                    "--collection-report-output",
+                    str(root / "collection-report.json"),
+                    "--collection-summary-output",
+                    str(root / "collection-summary.md"),
+                    "--real-trial-manifest-output",
+                    str(root / "real-manifest.json"),
+                    "--trial-metrics-report-output",
+                    str(root / "trial-metrics-report.json"),
+                    "--trial-metrics-summary-output",
+                    str(root / "trial-metrics-summary.md"),
+                    "--launch-readiness-output",
+                    str(root / "launch-readiness-report.json"),
+                    "--launch-readiness-summary-output",
+                    str(root / "launch-readiness-summary.md"),
+                    "--evidence-pack-output",
+                    str(evidence_pack),
+                    "--max-evidence-age-hours",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 2)
+            self.assertIn("no loop manifest JSON files matched", completed.stderr)
+            self.assertIn(str(manifests_dir.resolve()), completed.stderr)
+            self.assertFalse(evidence_pack.exists())
 
     def test_pipeline_manifest_dir_skips_non_manifest_json_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -738,6 +868,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -913,6 +1049,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -1033,6 +1175,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -1076,6 +1224,24 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertEqual(classification.get("backfill_handoff_open_queue_item_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_submission_linked_pending_ack_count"), 1)
             self.assertEqual(classification.get("backfill_handoff_closure_acknowledged_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_status"), "TEMPLATES_READY")
+            self.assertEqual(classification.get("backfill_submission_template_total_action_count"), 1)
+            self.assertEqual(classification.get("backfill_submission_template_pending_action_count"), 1)
+            self.assertEqual(classification.get("backfill_submission_template_generated_count"), 1)
+            self.assertEqual(classification.get("backfill_submission_template_missing_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_missing_actions"), [])
+            self.assertEqual(
+                classification.get("backfill_handoff_submission_linkage_strategy_counts"),
+                {
+                    "action_id_and_slot_index": 0,
+                    "action_id_only": 0,
+                    "slot_index_only": 0,
+                    "modality_fallback": 1,
+                    "none": 0,
+                },
+            )
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_records"), [])
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_input_count"), 1)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_valid_count"), 1)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_invalid_count"), 0)
@@ -1181,6 +1347,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-intake-actions-report.json"),
                     "--backfill-intake-actions-summary-output",
                     str(root / "real-trial-backfill-intake-actions-summary.md"),
+                    "--backfill-submission-templates-output",
+                    str(root / "real-trial-backfill-submission-templates-report.json"),
+                    "--backfill-submission-templates-summary-output",
+                    str(root / "real-trial-backfill-submission-templates-summary.md"),
+                    "--backfill-submission-manifest-template-output",
+                    str(root / "real-trial-backfill-submission-manifest.template.json"),
                     "--backfill-handoff-output",
                     str(root / "real-trial-backfill-handoff-report.json"),
                     "--backfill-handoff-summary-output",
@@ -1228,6 +1400,24 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_within_sla_count"), 0)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_sla_breached_count"), 1)
             self.assertEqual(classification.get("backfill_handoff_acknowledgement_overdue_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_status"), "TEMPLATES_READY")
+            self.assertEqual(classification.get("backfill_submission_template_total_action_count"), 1)
+            self.assertEqual(classification.get("backfill_submission_template_pending_action_count"), 1)
+            self.assertEqual(classification.get("backfill_submission_template_generated_count"), 1)
+            self.assertEqual(classification.get("backfill_submission_template_missing_count"), 0)
+            self.assertEqual(classification.get("backfill_submission_template_missing_actions"), [])
+            self.assertEqual(
+                classification.get("backfill_handoff_submission_linkage_strategy_counts"),
+                {
+                    "action_id_and_slot_index": 0,
+                    "action_id_only": 0,
+                    "slot_index_only": 0,
+                    "modality_fallback": 1,
+                    "none": 0,
+                },
+            )
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_count"), 0)
+            self.assertEqual(classification.get("backfill_handoff_submission_unlinked_records"), [])
             breached_items = classification.get("backfill_handoff_acknowledgement_sla_breached_queue_items", [])
             self.assertEqual(len(breached_items), 1)
             self.assertEqual(
@@ -1249,7 +1439,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
+
+
 
 
 
