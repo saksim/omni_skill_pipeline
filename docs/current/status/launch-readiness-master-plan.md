@@ -313,7 +313,7 @@
 - 目标：新增 API happy-path integration tests
 - 文件：`tests/test_api_app.py`
 - 完成标准：覆盖 text/audio/image/tabular/video endpoint
-- 验证：加入 `scripts/run_ci.py` 回归
+- 验证：加入 `scripts/ci.py` 回归
 
 ### LC-L1-12
 
@@ -361,7 +361,7 @@
 
 - 关联功能点：F41
 - 目标：新增 coverage report 与 fail-under gate
-- 文件：`scripts/run_ci.py`, `.github/workflows/ci.yml`, `pyproject.toml` 或 coverage config
+- 文件：`scripts/ci.py`, `.github/workflows/ci.yml`, `pyproject.toml` 或 coverage config
 - 完成标准：CI 可输出 coverage，并设置最低阈值
 - 验证：CI dry-run / local run
 

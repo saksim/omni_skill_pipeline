@@ -1,7 +1,7 @@
 {
   "manifest_id": "gl12-real-trial-loop-collection",
   "manifest_version": "1.0",
-  "generated_at_utc": "2026-05-27T16:23:54Z",
+  "generated_at_utc": "2026-05-31T06:54:56Z",
   "release_gate": {
     "latest_release_decision": "GO",
     "evidence_ref": "docs/current/status/baselines/e13-release-switch-decision-report.json"
@@ -33,7 +33,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-text-002",
@@ -57,7 +59,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-audio-001",
@@ -81,7 +85,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-audio-002",
@@ -105,7 +111,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-image-001",
@@ -129,7 +137,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-image-002",
@@ -153,7 +163,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-video-001",
@@ -177,7 +189,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-video-002",
@@ -201,7 +215,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-tabular-001",
@@ -225,7 +241,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     },
     {
       "loop_id": "gl02-mixed-001",
@@ -249,7 +267,9 @@
       "estimated_cost_usd": 0.0,
       "review_task_id": "",
       "reviewed_by": "",
-      "reviewed_at_utc": ""
+      "reviewed_at_utc": "",
+      "backfill_slot_index": null,
+      "backfill_action_id": ""
     }
   ]
 }

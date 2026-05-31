@@ -33,10 +33,10 @@ class ProductionOpsRunbookTests(unittest.TestCase):
     def test_runbook_references_gate_and_evidence_scripts(self) -> None:
         content = RUNBOOK_PATH.read_text(encoding="utf-8")
         required_commands = [
-            "python scripts/run_release_gate_validation.py",
-            "python scripts/run_launch_readiness_gate.py",
-            "python scripts/run_doc_sync_check.py --output",
-            "python scripts/run_ops_readiness_evidence.py",
+            "python scripts/release_gate.py",
+            "python scripts/launch_gate.py",
+            "python scripts/doc_sync.py --output",
+            "python scripts/ops_evidence.py",
         ]
         for command in required_commands:
             self.assertIn(command, content, "Missing command: %s" % command)

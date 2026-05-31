@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_launch_readiness_gate.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "launch_gate.py"
 
 
 def _write_json(path: Path, payload: dict[str, object]) -> None:
@@ -97,6 +97,12 @@ def _trial_metrics_report(*, loops: int, modalities: int) -> dict[str, object]:
                     "status": "pass",
                     "actual": {"missing_review_trace_count": 0},
                     "expected": {"missing_review_trace_count": 0},
+                },
+                {
+                    "id": "real_evidence_template_placeholders_replaced",
+                    "status": "pass",
+                    "actual": {"placeholder_loop_count": 0, "placeholder_field_count": 0},
+                    "expected": {"placeholder_loop_count": 0, "placeholder_field_count": 0},
                 },
                 {"id": "no_unreviewed_publication", "status": "pass", "actual": 0, "expected": 0},
                 {"id": "no_critical_secret_or_pii_leak", "status": "pass", "actual": 0, "expected": 0},
@@ -374,6 +380,30 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "HOLD")
             self.assertIn("trial_real_evidence_review_trace_complete", report.get("failed_checks", []))
+
+    def test_unreplaced_real_evidence_template_placeholders_keep_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            trial_metrics = _trial_metrics_report(loops=10, modalities=4)
+            trial_metrics["trial_metrics"]["launch_gate_evidence"]["real_evidence_template_placeholder_loop_count"] = 2
+            trial_metrics["trial_metrics"]["launch_gate_evidence"]["real_evidence_template_placeholder_field_count"] = 12
+            for condition in trial_metrics["success_criteria"]["conditions"]:
+                if condition.get("id") == "real_evidence_template_placeholders_replaced":
+                    condition["status"] = "fail"
+                    condition["actual"] = {"placeholder_loop_count": 2, "placeholder_field_count": 12}
+            _write_json(root / "trial-metrics.json", trial_metrics)
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root)
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("trial_real_evidence_template_placeholders_replaced", report.get("failed_checks", []))
 
     def test_missing_operations_readiness_evidence_keeps_hold(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

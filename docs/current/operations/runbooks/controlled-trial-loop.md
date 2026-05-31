@@ -17,10 +17,10 @@
 
 ## Scope
 
-- Runner script: `scripts/run_controlled_trial.py`
+- Runner script: `scripts/controlled_trial.py`
 - 默认输出目录：`docs/current/status/baselines/controlled-trial/`
 - 依赖链路：
-  - `scripts/validate_trial_manifest.py`
+  - `scripts/validate_manifest.py`
   - `src/omni_skill_pipeline/service.py`
   - `src/omni_skill_pipeline/review/packet.py`
   - `src/omni_skill_pipeline/exporters/agent_skill_exporter.py`
@@ -39,7 +39,7 @@
 先生成执行计划，不跑 distillation：
 
 ```bash
-python scripts/run_controlled_trial.py \
+python scripts/controlled_trial.py \
   --manifest docs/current/status/baselines/trial-manifests/trial-sample-mixed-corpus.example.json \
   --output-dir docs/current/status/baselines/controlled-trial \
   --dry-run
@@ -54,7 +54,7 @@ python scripts/run_controlled_trial.py \
 无外部 provider 条件下，使用 fixture stubs 执行一轮混合样本：
 
 ```bash
-python scripts/run_controlled_trial.py \
+python scripts/controlled_trial.py \
   --manifest docs/current/status/baselines/trial-manifests/trial-sample-mixed-corpus.example.json \
   --output-dir docs/current/status/baselines/controlled-trial \
   --use-fixture-stubs \
@@ -77,7 +77,7 @@ python scripts/run_controlled_trial.py \
 使用当前环境实际 provider 执行（不启用 fixture stubs）：
 
 ```bash
-python scripts/run_controlled_trial.py \
+python scripts/controlled_trial.py \
   --manifest docs/current/status/baselines/trial-manifests/trial-sample-text.example.json \
   --output-dir docs/current/status/baselines/controlled-trial \
   --target codex

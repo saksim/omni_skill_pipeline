@@ -26,7 +26,7 @@
 - [Broad Product Launch Plan](current/status/2026-05-25-broad-product-launch-plan.md)
 - [E0 Baseline Pack](current/status/baselines/README.md)
 
-Launch gate runner: `python scripts/run_launch_readiness_gate.py --output - --summary-output -`
+Launch gate runner: `python scripts/launch_gate.py --output - --summary-output -`
 
 ### Operations
 
@@ -35,6 +35,7 @@ Launch gate runner: `python scripts/run_launch_readiness_gate.py --output - --su
 - [CLI](current/operations/cli.md)
 - [Environment](current/operations/env.md)
 - [Testing](current/operations/testing.md)
+- [Script Name Map](current/operations/script-name-map.md)
 
 ## Assessments
 

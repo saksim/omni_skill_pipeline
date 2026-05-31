@@ -8,6 +8,8 @@
 - Launch-gate eligible modalities: `none`
 - Real evidence missing source trace count: `0`
 - Real evidence missing review trace count: `0`
+- Real evidence placeholder loop count: `0`
+- Real evidence placeholder field count: `0`
 - Evidence origins: `{'fixture': 10}`
 - Reviewer approval rate (<=1 revision): `1.0`
 - Median reviewer edit distance (%): `20.0`

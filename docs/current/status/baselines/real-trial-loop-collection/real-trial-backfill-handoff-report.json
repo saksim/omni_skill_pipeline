@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_backfill_handoff.v1",
-  "generated_at_utc": "2026-05-27T16:23:55Z",
+  "generated_at_utc": "2026-05-31T06:54:57Z",
   "input_paths": {
     "intake_actions_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json",
     "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
@@ -21,7 +21,7 @@
     "invalid_acknowledgement_records": []
   },
   "acknowledgement_sla_snapshot": {
-    "evaluation_timestamp_utc": "2026-05-27T16:23:55Z",
+    "evaluation_timestamp_utc": "2026-05-31T06:54:57Z",
     "pending_ack_sla_hours": 24.0,
     "pending_ack_overdue_hours": 72.0,
     "acknowledgement_sla_status": "ACK_SLA_NOT_REQUIRED",
@@ -45,6 +45,17 @@
   "submission_snapshot": {
     "launch_gate_eligible_real_submission_count": 0,
     "launch_gate_eligible_real_submission_count_by_modality": {}
+  },
+  "submission_linkage_snapshot": {
+    "linkage_strategy_counts": {
+      "action_id_and_slot_index": 0,
+      "action_id_only": 0,
+      "slot_index_only": 0,
+      "modality_fallback": 0,
+      "none": 10
+    },
+    "unlinked_submission_count": 0,
+    "unlinked_submissions": []
   },
   "queue_items": [
     {
@@ -84,7 +95,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "text"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-002-audio",
@@ -123,7 +135,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "audio"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-003-image",
@@ -162,7 +175,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "image"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-004-video",
@@ -201,7 +215,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "video"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-005-text",
@@ -240,7 +255,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "text"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-006-audio",
@@ -279,7 +295,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "audio"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-007-image",
@@ -318,7 +335,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "image"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-008-video",
@@ -357,7 +375,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "video"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-009-text",
@@ -396,7 +415,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "text"
-      }
+      },
+      "submission_linkage_strategy": "none"
     },
     {
       "queue_item_id": "gl24-queue-gl23-slot-010-audio",
@@ -435,7 +455,8 @@
         "status": "pending_submission",
         "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
         "required_modality": "audio"
-      }
+      },
+      "submission_linkage_strategy": "none"
     }
   ],
   "open_queue_items": [

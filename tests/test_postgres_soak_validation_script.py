@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_postgres_soak_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'pg_soak.py'
 
 
 class PostgresSoakValidationScriptTests(unittest.TestCase):
@@ -44,9 +44,9 @@ class PostgresSoakValidationScriptTests(unittest.TestCase):
                 'Selected stages: tp_postgres, review_queue, dual_write_benchmark',
                 completed.stdout,
             )
-            self.assertIn('scripts/run_tp_tests.py TP-E8-02 TP-E8-03 TP-E9-03', completed.stdout)
+            self.assertIn('scripts/tp_tests.py TP-E8-02 TP-E8-03 TP-E9-03', completed.stdout)
             self.assertIn('tests.test_review_queue_repository', completed.stdout)
-            self.assertIn('scripts/benchmark_dual_write.py', completed.stdout)
+            self.assertIn('scripts/bench_dual_write.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
             self.assertEqual(report.get('stage_count'), 3)
@@ -81,13 +81,13 @@ class PostgresSoakValidationScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn('Selected stages: review_queue, dual_write_benchmark', completed.stdout)
-        self.assertNotIn('scripts/run_tp_tests.py TP-E8-02 TP-E8-03 TP-E9-03', completed.stdout)
-        self.assertIn('scripts/benchmark_dual_write.py', completed.stdout)
+        self.assertNotIn('scripts/tp_tests.py TP-E8-02 TP-E8-03 TP-E9-03', completed.stdout)
+        self.assertIn('scripts/bench_dual_write.py', completed.stdout)
 
         benchmark_lines = [
             line
             for line in completed.stdout.splitlines()
-            if 'scripts/benchmark_dual_write.py' in line
+            if 'scripts/bench_dual_write.py' in line
         ]
         self.assertTrue(benchmark_lines)
         for line in benchmark_lines:

@@ -43,7 +43,7 @@ Goal 到 publication type 的映射：
 执行入口：
 
 ```bash
-python scripts/run_tp_tests.py TP-E6-03 --python python
+python scripts/tp_tests.py TP-E6-03 --python python
 ```
 
 ## Next Cut

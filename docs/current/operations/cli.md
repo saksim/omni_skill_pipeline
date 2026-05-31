@@ -1,4 +1,4 @@
-﻿# CLI
+# CLI
 
 ## Entry
 
@@ -125,10 +125,10 @@ Exit code contract:
 - `0`: package passed usability/safety validation.
 - `2`: package failed with explicit `failure_codes` and issue lines.
 
-### run_trial_security_gate.py
+### trial_security.py
 
 ```bash
-python scripts/run_trial_security_gate.py \
+python scripts/trial_security.py \
   --bundle skills/drafts/sample-skill-12345678/bundle.json \
   --output docs/current/status/baselines/controlled-trial/trial-security-gate-report.json
 ```

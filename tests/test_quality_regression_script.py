@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_quality_regression.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'quality_regression.py'
 
 
 def _manifest_payload() -> dict[str, object]:

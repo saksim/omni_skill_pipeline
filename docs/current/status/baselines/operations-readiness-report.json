@@ -66,7 +66,7 @@
           "ga_gate",
           "roadmap_gate"
         ],
-        "command_contains": "scripts/run_linux_validation_suite.py"
+        "command_contains": "scripts/linux_validate.py"
       },
       "details": "Operations readiness must bind to existing release-gate stage packs."
     },
@@ -123,10 +123,10 @@
           "## Evidence Collection Workflow"
         ],
         "required_markers": [
-          "python scripts/run_release_gate_validation.py",
-          "python scripts/run_launch_readiness_gate.py",
-          "python scripts/run_ops_readiness_evidence.py",
-          "python scripts/run_doc_sync_check.py --output",
+          "python scripts/release_gate.py",
+          "python scripts/launch_gate.py",
+          "python scripts/ops_evidence.py",
+          "python scripts/doc_sync.py --output",
           "docker logs",
           "docker run --rm -d"
         ]

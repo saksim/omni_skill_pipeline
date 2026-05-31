@@ -11,6 +11,8 @@
 - Ack SLA breached: `0`
 - Ack overdue escalation: `0`
 - Ack tracking incomplete: `0`
+- Submission linkage strategy counts: `{'action_id_and_slot_index': 0, 'action_id_only': 0, 'slot_index_only': 0, 'modality_fallback': 0, 'none': 10}`
+- Unlinked submissions: `0`
 - Launch-gap missing loops: `10`
 - Launch-gap missing modalities: `4`
 

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_ci.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "ci.py"
 
 
 class CiScriptTests(unittest.TestCase):
@@ -61,7 +61,7 @@ class CiScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 6)
         self.assertIn("ci-probe:-m unittest", completed.stdout)
-        self.assertIn("ci-probe:scripts/run_tp_tests.py --all --python", completed.stdout)
+        self.assertIn("ci-probe:scripts/tp_tests.py --all --python", completed.stdout)
         self.assertIn("CI failures summary:", completed.stderr)
         self.assertIn("- ", completed.stderr)
 
@@ -118,7 +118,7 @@ class CiScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 6)
         self.assertIn("ci-probe:-m unittest", completed.stdout)
-        self.assertNotIn("ci-probe:scripts/run_tp_tests.py --all --python", completed.stdout)
+        self.assertNotIn("ci-probe:scripts/tp_tests.py --all --python", completed.stdout)
 
 
 if __name__ == "__main__":

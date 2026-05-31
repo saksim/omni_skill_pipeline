@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_roadmap_extension_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'roadmap_ext.py'
 
 
 class RoadmapExtensionValidationScriptTests(unittest.TestCase):

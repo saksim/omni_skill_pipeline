@@ -53,4 +53,4 @@ All three endpoints reuse existing API key and rate-limit middleware.
 - `tests/test_review_queue_repository.py`
 - `tests/test_review_queue_integration.py`
 - `tests/test_api_review_queue.py`
-- `scripts/run_tp_tests.py` -> `TP-E9-03`
+- `scripts/tp_tests.py` -> `TP-E9-03`

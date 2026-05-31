@@ -16,7 +16,7 @@ Calibrate review policy thresholds using labeled samples where `quality_scores` 
 ## Tuning Script
 
 ```bash
-python scripts/tune_review_policy.py \
+python scripts/tune_review.py \
   --manifest docs/current/status/baselines/e7-calibration-manifest.json \
   --output docs/current/status/baselines/e7-calibration-report.json \
   --print-json

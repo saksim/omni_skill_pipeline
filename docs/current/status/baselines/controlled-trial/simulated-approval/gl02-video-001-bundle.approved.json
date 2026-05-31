@@ -1244,7 +1244,7 @@
       "error": "[WinError 5] 拒绝访问。: 'D:\\\\Download\\\\gaming\\\\new_program\\\\data_helper\\\\3_omni_skill_pipeline\\\\.tmp_omni_media\\\\omni_video_e2e490ea9f6a4503b2f0f61495bda54b\\\\fixture_audio.srt'",
       "strategy": "prune_tmp_media",
       "recovery_log": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.tmp_omni_media\\.cleanup_recovery.log",
-      "recovery_command": "python scripts/prune_tmp_media.py --retention-hours 24"
+      "recovery_command": "python scripts/prune_tmp.py --retention-hours 24"
     },
     "provider_calls": [
       {

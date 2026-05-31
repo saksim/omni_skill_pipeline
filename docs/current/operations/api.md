@@ -11,24 +11,26 @@
 python -m uvicorn apps.api.main:app --reload
 ```
 
-鍚姩鍚庡彲璁块棶锛?
+After startup:
+
 - OpenAPI UI: `http://127.0.0.1:8000/docs`
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
 ## Container Baseline
 
-鏋勫缓鏈€灏?API 闀滃儚锛?
+Build the minimal local API image:
+
 ```bash
 docker build -t omni-skill-pipeline:local .
 ```
 
-杩愯闀滃儚锛堟槧灏勫埌鏈満 `18000`锛夛細
+Run the image and map it to local port `18000`:
 
 ```bash
 docker run --rm -p 18000:8000 omni-skill-pipeline:local
 ```
 
-鍚姩鍚庡叆鍙ｏ細
+Container entry points:
 
 - OpenAPI UI: `http://127.0.0.1:18000/docs`
 - Health: `http://127.0.0.1:18000/healthz`
@@ -54,34 +56,55 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 
 ## Health / Readiness
 
-- `GET /healthz` 杩斿洖 readiness 缁撴灉锛屼笉璧扮粺涓€ `error` 鍖呰銆?- Ready response: `200` with `{"status":"ready","checks":[...]}`銆?- Degraded response: `503` with `{"status":"degraded","checks":[...]}`銆?- `checks[]` 瀛楁缁撴瀯锛?  - `name`: `template_path | draft_dir | app_assembly`
+- `GET /healthz` returns readiness directly and does not use the unified `error` envelope.
+- Ready response: `200` with `{"status":"ready","checks":[...]}`.
+- Degraded response: `503` with `{"status":"degraded","checks":[...]}`.
+- `checks[]` fields:
+  - `name`: `template_path | draft_dir | app_assembly`
   - `ok`: `true | false`
-  - `detail`: 鍙璇婃柇淇℃伅
-  - `missing_routes`: 浠?`app_assembly` 澶辫触鏃惰繑鍥?- 褰撳墠妫€鏌ラ」锛?  - template path readability锛坄docs/current/contracts/SKILL.template.md`锛?  - draft directory availability锛坄skills/drafts/`锛?  - FastAPI required route assembly锛堟牳蹇冭矾鐢辨槸鍚﹀叏閮ㄨ閰嶏級
+  - `detail`: readable diagnostic message
+  - `missing_routes`: returned only when `app_assembly` fails
+- Current checks:
+  - template path readability (`docs/current/contracts/SKILL.template.md`)
+  - draft directory availability (`skills/drafts/`)
+  - FastAPI required route assembly
 
 ## Authentication
 
-- 榛樿涓嶉壌鏉冦€?- 褰撶幆澧冨彉閲?`OMNI_API_KEY` 璁剧疆涓洪潪绌烘椂锛屾墍鏈?`POST /v1/distill/*` 涓?`POST /v1/governance/*` 绔偣鍚敤 API key 鏍￠獙銆?- `GET /healthz` 涓?`GET /v1/templates/skill` 涓嶅彈 `OMNI_API_KEY` 淇濇姢銆?- 鍙敤璇锋眰澶达細
+- Authentication is disabled by default.
+- When `OMNI_API_KEY` is set to a non-empty value, all `POST /v1/distill/*` and `POST /v1/governance/*` endpoints require API key validation.
+- `GET /healthz` and `GET /v1/templates/skill` are not protected by `OMNI_API_KEY`.
+- Accepted request headers:
   - `X-API-Key: <OMNI_API_KEY>`
   - `Authorization: Bearer <OMNI_API_KEY>`
-- 閴存潈澶辫触琛屼负锛?  - 缂哄皯 key: `401`, `error.message = "Missing API key."`
-  - key 涓嶅尮閰? `403`, `error.message = "Invalid API key."`
+- Authentication failures:
+  - Missing key: `401`, `error.message = "Missing API key."`
+  - Invalid key: `403`, `error.message = "Invalid API key."`
 
 ### Tenant Authz (GL-08)
 
-- If tenant access config is enabled (OMNI_TENANT_ACCESS_JSON or OMNI_TENANT_ACCESS_FILE), distill and eview queue routes require tenant-scoped API keys.
-- Role/action permissions are enforced (distill.execute, eview.read, eview.write).
+- If tenant access config is enabled (`OMNI_TENANT_ACCESS_JSON` or `OMNI_TENANT_ACCESS_FILE`), distill and review queue routes require tenant-scoped API keys.
+- Role/action permissions are enforced (`distill.execute`, `review.read`, `review.write`).
 - Cross-tenant scope requests are rejected.
 - Revoked tenant API keys are rejected.
-- Tenant quotas can return 429 with Retry-After.
+- Tenant quotas can return `429` with `Retry-After`.
+
 ## Rate Limiting
 
-- 闄愭祦浣滅敤鍩燂細鎵€鏈?`POST /v1/distill/*` 绔偣銆?- 鏍囪瘑浼樺厛绾э細浼樺厛浣跨敤 `X-API-Key`/`Authorization` 涓殑 key锛涙棤 key 鏃跺洖閫€鍒板鎴风 IP銆?- 鍙傛暟鏉ユ簮锛?  - `OMNI_RATE_LIMIT_REQUESTS`锛氱獥鍙ｅ唴鏈€澶氳姹傛暟锛坄0` 涓哄叧闂級銆?  - `OMNI_RATE_LIMIT_WINDOW_SECONDS`锛氱獥鍙ｉ暱搴︼紙绉掞級銆?- 瓒呴檺鍝嶅簲锛歚429`锛屽苟鎼哄甫 `Retry-After` header銆?- 瓒呴檺閿欒浣擄細`error.type = "http"`锛宍error.code = "http_error"`锛宍error.message = "Rate limit exceeded."`銆?
+- Rate limiting applies to all `POST /v1/distill/*` endpoints.
+- Identity priority: use the key from `X-API-Key`/`Authorization` first; when absent, fall back to client IP.
+- Parameters:
+  - `OMNI_RATE_LIMIT_REQUESTS`: maximum requests per window (`0` disables rate limiting).
+  - `OMNI_RATE_LIMIT_WINDOW_SECONDS`: window length in seconds.
+- Exceeded limit response: `429` with `Retry-After` header.
+- Error body: `error.type = "http"`, `error.code = "http_error"`, `error.message = "Rate limit exceeded."`
+
 ## Error Contract
 
-### Unified error envelope
+### Unified Error Envelope
 
-闄?`/healthz` 澶栵紝API 寮傚父閮借繑鍥炵粺涓€ JSON锛?
+Except for `/healthz`, API exceptions return a unified JSON envelope:
+
 ```json
 {
   "error": {
@@ -93,23 +116,26 @@ docker run --rm -p 18000:8000 omni-skill-pipeline:local
 }
 ```
 
-### Status / code matrix
+### Status / Code Matrix
 
-| HTTP | `error.type` | `error.code` | 瑙﹀彂鏉′欢 |
+| HTTP | `error.type` | `error.code` | Trigger |
 | --- | --- | --- | --- |
-| 400 | `validation` | `bad_request` | 涓氬姟灞?`ValueError` |
-| 401 | `http` | `http_error` | 缂哄け API key |
-| 403 | `http` | `http_error` | API key 涓嶅尮閰?|
-| 422 | `validation` | `validation_error` | Pydantic 璇锋眰鏍￠獙澶辫触 |
-| 429 | `http` | `http_error` | 瓒呭嚭闄愭祦绐楀彛 |
-| 502 | `provider` | `provider_execution_error` | provider 鎵ц澶辫触 |
-| 502 | `provider` | `media_processing_error` | 濯掍綋澶勭悊澶辫触 |
-| 503 | `provider` | `provider_unavailable` | provider 涓嶅彲鐢?|
-| 500 | `runtime` | `runtime_error` | 鏈崟鑾疯繍琛屾椂閿欒 |
+| 400 | `validation` | `bad_request` | `ValueError` or malformed request |
+| 401 | `http` | `http_error` | Missing API key |
+| 403 | `http` | `http_error` | Invalid API key or rejected tenant scope |
+| 422 | `validation` | `validation_error` | Pydantic validation error |
+| 429 | `http` | `http_error` | Rate limit exceeded |
+| 502 | `provider` | `provider_execution_error` | Provider execution failed |
+| 502 | `provider` | `media_processing_error` | Media processing failed |
+| 503 | `provider` | `provider_unavailable` | Provider unavailable |
+| 500 | `runtime` | `runtime_error` | Unhandled runtime error |
 
-### Details field contract
+### Details Field Contract
 
-- `422`锛歚details` 涓烘暟缁勶紙Pydantic errors锛夈€?- `429`锛歚details = "Rate limit exceeded."`锛屽苟杩斿洖 `Retry-After` header銆?- 鍏朵粬閿欒锛歚details` 涓哄瓧绗︿覆鎴?`null`锛屽彇鍐充簬寮傚父鏉ユ簮銆?
+- `422`: `details` is an array of Pydantic errors.
+- `429`: `details = "Rate limit exceeded."` and response includes `Retry-After`.
+- Other errors: `details` is a string or `null`, depending on the exception source.
+
 ## Provider Timeout
 
 - OpenAI provider requests use explicit timeout from `OMNI_OPENAI_TIMEOUT_SECONDS`.
@@ -233,37 +259,42 @@ Canonical sample file: `examples/beta/corpus_payload.example.json`.
 
 ## Official GL-03 Flow
 
-For controlled external Beta operation, follow:
-
-- `docs/current/operations/runbooks/controlled-external-beta-onboarding.md`
+For controlled external Beta operation, follow `docs/current/operations/runbooks/controlled-external-beta-onboarding.md`.
 
 The runbook defines the official sequence:
 
 1. manifest validation
 2. distill (CLI/API)
 3. review queue operation
-4. export + usability validation
+4. export and usability validation
 5. trial security gate
 6. trial metrics collection
 7. launch readiness decision check
 
 ## V2 Distill Response Summary (TP-E10-02)
 
-鎵€鏈?`POST /v1/distill/*` 绔偣浠嶈繑鍥炲巻鍙?`bundle` 瀛楁锛堝 `skill_markdown`銆乣skill_graph`銆乣publications`锛夛紝鍚屾椂鏂板浠ヤ笅椤跺眰鎽樿瀛楁锛?
+All `POST /v1/distill/*` endpoints still return the legacy `bundle` field (`skill_markdown`, `skill_graph`, `publications`, and related artifacts). They also expose these top-level summary fields:
+
 - `graph_metadata`
   - `graph_id`
   - `name`
   - `version`
   - `review_status`
-  - `node_counts`锛坄steps/decisions/verifications/risks/examples/variables/edges`锛?- `available_publications`
-  - 鍒楀嚭鍙敤鍙戝竷瑙嗗浘锛坄publication_type`銆乣path`銆乣publication_id`锛?- `review_status`
-  - 浼樺厛鍙?`review_task.status`锛岀己澶辨椂鍥為€€ `skill.review_status`
+  - `node_counts` (`steps`, `decisions`, `verifications`, `risks`, `examples`, `variables`, `edges`)
+- `available_publications`
+  - lists available publication views (`publication_type`, `path`, `publication_id`)
+- `review_status`
+  - prefers `review_task.status`; falls back to `skill.review_status` when the review task is absent
 - `lifecycle_decision`
-  - 閫忎紶 `adapter_metadata.lifecycle_decision`锛堣嫢瀛樺湪锛?
-鍏煎鎬ц姹傦細鏃ф帴鍙ｆ秷璐规柟浠嶅彲鐩存帴璇诲彇 `skill_markdown`锛屾棤闇€鏀归€犮€?
+  - passes through `adapter_metadata.lifecycle_decision` when present
+
+Compatibility requirement: legacy consumers can continue reading `skill_markdown` without changing their integration.
+
 ## Current Caveats
 
-- distill API 宸插紑鏀?corpus 涓?V2 鎽樿瀛楁锛泈orker 宸叉敮鎸?`review_queue` / `rebuild_publication` / `revise_skill` 涓夌被浠诲姟銆?- 宸插惎鐢?structured logging锛屽寘鍚?request_id / trace_id 鍏宠仈瀛楁
+- distill API now exposes corpus and V2 summary fields.
+- worker supports `review_queue`, `rebuild_publication`, and `revise_skill` task types.
+- structured logging is enabled and includes `request_id` / `trace_id` correlation fields.
 
 ## Request / Trace Context
 
@@ -282,7 +313,6 @@ The runbook defines the official sequence:
 - API request completion event: `api_request_completed`.
 - Service distillation events: `distill_start` / `distill_complete`.
 
-
 ## Review Queue Operations (LC-R-37)
 
 - `GET /v1/review/queue`
@@ -290,7 +320,7 @@ The runbook defines the official sequence:
   - Response: `{"items": [...]}`.
 - `POST /v1/review/queue/claim`
   - Body: `{"review_task_id"?: "...", "consumer"?: "review-consumer"}`.
-  - Behavior: claim specific pending task if `review_task_id` provided; otherwise claim oldest pending item.
+  - Behavior: claim specific pending task if `review_task_id` is provided; otherwise claim oldest pending item.
   - `404` when no pending review task can be claimed.
 - `POST /v1/review/queue/{review_task_id}/close`
   - Body: `{"status"?: "published", "closed_by"?: "review-operator", "review_notes"?: "...", "decision"?: "approve|reject|needs_rework", "reason_codes"?: ["..."], "reviewer_edits"?: {...}}`.
@@ -305,13 +335,7 @@ The runbook defines the official sequence:
 ## Governance Operations (GL-09)
 
 - `POST /v1/governance/report`
-  - Body:
-    - `organization_id` (optional)
-    - `project_id` (optional)
-    - `include_cost` (optional, default `true`)
-    - `include_audit` (optional, default `true`)
-    - `include_deletions` (optional, default `true`)
-    - `include_retention` (optional, default `true`)
+  - Body: `organization_id` (optional), `project_id` (optional), `include_cost`, `include_audit`, `include_deletions`, `include_retention`.
   - Behavior: returns tenant/project scoped governance report from ledger records (`cost_entries`, `audit_events`, `deletion_records`, `retention_policies`).
 - `POST /v1/governance/retention-policy`
   - Body: `organization_id`, `project_id` (optional), `policy_name`, `retention_days`, `enabled` (optional).
@@ -320,8 +344,7 @@ The runbook defines the official sequence:
   - Body: `artifact_type`, `artifact_id`, `reason`, `requested_by`, `organization_id` (optional), `project_id` (optional).
   - Behavior: records deletion event and corresponding governance audit trail.
 
-These endpoints follow the same API key and rate-limit middleware used by `/v1/distill/*`.
-If repository does not implement `ReviewQueueRepository`, API returns `503`.
+These endpoints follow the same API key and rate-limit middleware used by `/v1/distill/*`. If repository does not implement `ReviewQueueRepository`, API returns `503`.
 
 ## Platform Console View (GL-10)
 
@@ -332,15 +355,7 @@ If repository does not implement `ReviewQueueRepository`, API returns `503`.
     - `queue_status`: `pending|consumed|closed|all` (default `pending`)
     - `limit`: `1..500` (default `50`)
   - Behavior:
-    - Returns a single aggregated operator/reviewer surface with six view groups:
-      - `trial_runs`
-      - `review_queue`
-      - `skill_registry`
-      - `metrics`
-      - `security_failures`
-      - `cost`
+    - Returns a single aggregated operator/reviewer surface with six view groups: `trial_runs`, `review_queue`, `skill_registry`, `metrics`, `security_failures`, and `cost`.
     - Uses current baseline evidence files under `docs/current/status/baselines/` plus review queue/runtime and governance ledger.
     - Keeps tenant scope filtering aligned with GL-08 authz constraints.
-  - Primary use:
-    - one-call snapshot for operators to monitor trial state and launch blockers without manually reading raw artifact directories.
-
+  - Primary use: one-call snapshot for operators to monitor trial state and launch blockers without manually reading raw artifact directories.

@@ -15,7 +15,7 @@ class ContainerSmokeScriptTests(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "scripts/run_container_smoke.py",
+                "scripts/container_smoke.py",
                 "--dry-run",
                 "--image-tag",
                 "omni:test",
@@ -38,7 +38,7 @@ class ContainerSmokeScriptTests(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "scripts/run_container_smoke.py",
+                "scripts/container_smoke.py",
                 "--skip-build",
                 "--skip-run",
             ],
@@ -56,7 +56,7 @@ class ContainerSmokeScriptTests(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "scripts/run_container_smoke.py",
+                "scripts/container_smoke.py",
                 "--image-tag",
                 "omni:test",
                 "--container-name",

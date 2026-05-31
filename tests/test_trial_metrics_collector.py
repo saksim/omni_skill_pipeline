@@ -100,13 +100,16 @@ class TrialMetricsCollectorTests(unittest.TestCase):
         self.assertEqual(launch_gate_evidence.get("unlabeled_loop_count"), 0)
         self.assertEqual(launch_gate_evidence.get("real_evidence_missing_source_trace_count"), 0)
         self.assertEqual(launch_gate_evidence.get("real_evidence_missing_review_trace_count"), 0)
+        self.assertEqual(launch_gate_evidence.get("real_evidence_template_placeholder_loop_count"), 0)
+        self.assertEqual(launch_gate_evidence.get("real_evidence_template_placeholder_field_count"), 0)
         self.assertEqual(launch_gate_evidence.get("evidence_origin_counts", {}).get("real"), 10)
         conditions = report.get("success_criteria", {}).get("conditions", [])
-        self.assertEqual(len(conditions), 14)
+        self.assertEqual(len(conditions), 15)
         self.assertIn("review_outcome_counts", report.get("trial_metrics", {}))
         markdown = render_trial_metrics_markdown_summary(report)
         self.assertIn("Overall status: `pass`", markdown)
         self.assertIn("Real evidence missing review trace count: `0`", markdown)
+        self.assertIn("Real evidence placeholder loop count: `0`", markdown)
         self.assertIn("All trial success criteria passed.", markdown)
 
     def test_collect_flags_ga_blockers_on_critical_failure(self) -> None:
@@ -200,6 +203,35 @@ class TrialMetricsCollectorTests(unittest.TestCase):
                     "loops": [],
                 }
             )
+
+    def test_collect_flags_real_evidence_template_placeholders(self) -> None:
+        payload = _passing_payload()
+        payload["loops"][0]["source_system"] = "TEMPLATE_REQUIRED_REPLACE_WITH_REAL_SOURCE_SYSTEM"
+        payload["loops"][0]["source_reference"] = "TEMPLATE_REQUIRED_REPLACE_WITH_REAL_SOURCE_REFERENCE"
+        payload["loops"][0]["collected_at_utc"] = "TEMPLATE_REQUIRED_REPLACE_WITH_UTC_TIMESTAMP"
+        payload["loops"][0]["review_task_id"] = "TEMPLATE_REQUIRED_REPLACE_WITH_REVIEW_TASK_ID"
+        payload["loops"][0]["reviewed_by"] = "TEMPLATE_REQUIRED_REPLACE_WITH_REVIEWER"
+        payload["loops"][0]["reviewed_at_utc"] = "TEMPLATE_REQUIRED_REPLACE_WITH_UTC_TIMESTAMP"
+        collector = TrialMetricsCollector()
+        report = collector.collect(payload)
+        self.assertEqual(report.get("overall_status"), "fail")
+        self.assertTrue(report.get("ga_discussion_blocked"))
+        launch_gate_evidence = report.get("trial_metrics", {}).get("launch_gate_evidence", {})
+        self.assertEqual(launch_gate_evidence.get("real_evidence_template_placeholder_loop_count"), 1)
+        self.assertEqual(launch_gate_evidence.get("real_evidence_template_placeholder_field_count"), 6)
+        self.assertEqual(launch_gate_evidence.get("complete_loop_count"), 9)
+        self.assertEqual(
+            launch_gate_evidence.get("ineligible_reason_counts", {}).get("template_placeholders_not_replaced"),
+            1,
+        )
+        records = launch_gate_evidence.get("real_evidence_template_placeholder_records", [])
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0].get("loop_id"), "text-1")
+        failed_ids = {
+            str(item.get("id", ""))
+            for item in report.get("success_criteria", {}).get("failed_conditions", [])
+        }
+        self.assertIn("real_evidence_template_placeholders_replaced", failed_ids)
 
 
 if __name__ == "__main__":

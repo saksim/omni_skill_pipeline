@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_skill_usability_validator.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'skill_usability.py'
 
 
 class SkillUsabilityValidatorScriptTests(unittest.TestCase):

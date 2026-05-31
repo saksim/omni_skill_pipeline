@@ -12,7 +12,7 @@ SRC_ROOT = REPO_ROOT / 'src'
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'prune_tmp_media.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'prune_tmp.py'
 SPEC = importlib.util.spec_from_file_location('prune_tmp_media', SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:  # pragma: no cover - guard for import loader failures
     raise RuntimeError('Failed to load prune_tmp_media script module.')

@@ -9,9 +9,9 @@
 - 目标环境：Linux 统一验测与受控外部 Beta。
 - 服务入口：`apps/api/main.py`（容器内 `uvicorn apps.api.main:app`）。
 - 当前基线：
-  - 覆盖率门禁：`scripts/run_ci.py`
-  - 容器烟测：`scripts/run_container_smoke.py`
-  - 临时目录清理：`scripts/prune_tmp_media.py`
+  - 覆盖率门禁：`scripts/ci.py`
+  - 容器烟测：`scripts/container_smoke.py`
+  - 临时目录清理：`scripts/prune_tmp.py`
 
 ## Preflight Checklist
 
@@ -29,13 +29,13 @@
 ### 1. Linux 统一测试门禁
 
 ```bash
-python scripts/run_ci.py --coverage-fail-under 50 --coverage-xml coverage.xml
+python scripts/ci.py --coverage-fail-under 50 --coverage-xml coverage.xml
 ```
 
 ### 2. 容器构建与健康烟测
 
 ```bash
-python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:beta --port 18000
+python scripts/container_smoke.py --image-tag omni-skill-pipeline:beta --port 18000
 ```
 
 ### 3. 正式拉起 Beta 实例
@@ -97,8 +97,8 @@ docker logs omni-skill-beta | grep -E '"status_code":(4|5)[0-9]{2}'
 发布后/值班巡检周期执行：
 
 ```bash
-python scripts/prune_tmp_media.py --dry-run
-python scripts/prune_tmp_media.py --retention-hours 24
+python scripts/prune_tmp.py --dry-run
+python scripts/prune_tmp.py --retention-hours 24
 ```
 
 建议：

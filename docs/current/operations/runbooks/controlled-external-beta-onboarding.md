@@ -40,7 +40,7 @@ Reference docs:
 Use one of the existing trial manifests or your own manifest using the CBT-02 contract.
 
 ```bash
-python scripts/validate_trial_manifest.py \
+python scripts/validate_manifest.py \
   --manifest docs/current/status/baselines/trial-manifests/trial-sample-mixed-corpus.example.json \
   --output -
 ```
@@ -158,7 +158,7 @@ Expected exit code:
 `export-skill` already enforces this gate, but for audit evidence run it explicitly.
 
 ```bash
-python scripts/run_trial_security_gate.py \
+python scripts/trial_security.py \
   --bundle skills/drafts/<skill-id>/bundle.json \
   --output docs/current/status/baselines/controlled-trial/trial-security-gate-report.json
 ```
@@ -171,7 +171,7 @@ Expected exit code:
 ## Step 8: Collect Trial Metrics
 
 ```bash
-python scripts/run_trial_metrics_collector.py \
+python scripts/trial_metrics.py \
   --manifest docs/current/status/baselines/controlled-trial/trial-metrics-manifest.json \
   --output docs/current/status/baselines/controlled-trial/trial-metrics-report.json \
   --summary-output docs/current/status/baselines/controlled-trial/trial-metrics-summary.md \
@@ -184,7 +184,7 @@ Until real provider billing integration is added, this is an operator-declared p
 ## Step 9: Check Launch Readiness Decision
 
 ```bash
-python scripts/run_launch_readiness_gate.py \
+python scripts/launch_gate.py \
   --output - \
   --summary-output - \
   --max-evidence-age-hours 0 \

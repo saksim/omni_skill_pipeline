@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_doc_sync_check.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "doc_sync.py"
 
 
 class DocSyncProductionOpsRunbookCheckTests(unittest.TestCase):
@@ -29,7 +29,7 @@ class DocSyncProductionOpsRunbookCheckTests(unittest.TestCase):
         self.assertEqual(check.get("name"), "production_ops_runbook_completeness")
         self.assertIn("## Backup Workflow", check["details"]["missing_required_headings"])
         self.assertIn(
-            "python scripts/run_ops_readiness_evidence.py",
+            "python scripts/ops_evidence.py",
             check["details"]["missing_required_markers"],
         )
 
@@ -42,10 +42,10 @@ class DocSyncProductionOpsRunbookCheckTests(unittest.TestCase):
 docker run --rm -d
 
 ## Validation Workflow
-python scripts/run_release_gate_validation.py
-python scripts/run_launch_readiness_gate.py
-python scripts/run_doc_sync_check.py --output
-python scripts/run_ops_readiness_evidence.py
+python scripts/release_gate.py
+python scripts/launch_gate.py
+python scripts/doc_sync.py --output
+python scripts/ops_evidence.py
 
 ## Rollback Workflow
 rollback

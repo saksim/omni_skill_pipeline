@@ -12,11 +12,17 @@
 - Recommended next modalities: `text, audio, image, video`
 - Launch-gate-eligible complete loop count by modality: `{}`
 - Target launch modality loop counts: `{'text': 0, 'audio': 0, 'image': 0, 'video': 0}`
+- Real eligible loops with backfill slot linkage: `0`
+- Real eligible loops with backfill action linkage: `0`
+- Real eligible loops with complete slot+action linkage: `0`
+- Real eligible loops missing slot+action linkage: `0`
 - Real loops missing source trace: `0`
 - Real loops missing review trace: `0`
+- Real loops with template placeholders not replaced: `0`
+- Real template placeholder field count: `0`
 - Recommended backfill slots: `10`
-- Ingested loop manifests: `0/0`
-- Duplicate loop ids resolved: `0`
+- Ingested loop manifests: `2/2`
+- Duplicate loop ids resolved: `10`
 - Skipped non-loop-manifest JSON files: `0`
 
 ## Blockers

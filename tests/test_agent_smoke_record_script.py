@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_agent_smoke_record.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "agent_smoke.py"
 
 
 class AgentSmokeRecordScriptTests(unittest.TestCase):

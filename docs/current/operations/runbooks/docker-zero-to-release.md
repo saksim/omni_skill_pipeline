@@ -5,7 +5,7 @@
 上线前优先执行归总脚本，而不是手工复制本手册中的分散命令：
 
 ```bash
-bash scripts/run_linux_release_test.sh
+bash scripts/linux_release.sh
 ```
 
 可选输入：
@@ -22,7 +22,7 @@ For the default local PostgreSQL release gate, use:
 export OMNI_TEST_POSTGRES_DSN='postgresql://omni:omni_pass@127.0.0.1:5432/omni_test'
 ```
 
-With that default DSN, `scripts/run_linux_release_test.sh` creates or reuses the
+With that default DSN, `scripts/linux_release.sh` creates or reuses the
 `omni-release-postgres` container and waits for `pg_isready`. With a custom DSN,
 the database must already be reachable from `docker run --network host`; otherwise
 the `postgres_preflight` stage fails before the release switch.
@@ -197,7 +197,7 @@ cd /opt/omni-skill-pipeline
 docker run --rm \
   -v "$PWD/docs/current/status/baselines:/app/docs/current/status/baselines" \
   omni-skill-pipeline:test \
-  python scripts/run_ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50 --coverage-xml docs/current/status/baselines/coverage.xml
+  python scripts/ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50 --coverage-xml docs/current/status/baselines/coverage.xml
 ```
 
 判定：
@@ -211,14 +211,14 @@ docker run --rm \
 
 ```bash
 docker run --rm omni-skill-pipeline:test \
-  python scripts/run_ci.py --python python3 --keep-going --no-coverage --isolate-test-files --test-pattern 'test_api_*.py' --skip-tp-suite
+  python scripts/ci.py --python python3 --keep-going --no-coverage --isolate-test-files --test-pattern 'test_api_*.py' --skip-tp-suite
 ```
 
 若首次结果出现 `FAILED (failures=..., errors=...)`，下一步先跑无 coverage 的隔离定位，输出会按单个 test file 汇总失败：
 
 ```bash
 docker run --rm omni-skill-pipeline:test \
-  python scripts/run_ci.py --python python3 --keep-going --no-coverage --isolate-test-files --skip-tp-suite
+  python scripts/ci.py --python python3 --keep-going --no-coverage --isolate-test-files --skip-tp-suite
 ```
 
 ### 2. 容器烟测
@@ -248,7 +248,7 @@ docker run --rm --network host \
   -v "$PWD/docs/current/status/baselines:/app/docs/current/status/baselines" \
   -e OMNI_TEST_POSTGRES_DSN="$OMNI_TEST_POSTGRES_DSN" \
   omni-skill-pipeline:test \
-  python scripts/run_linux_validation_suite.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
+  python scripts/linux_validate.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
 ```
 
 如果只想先定位某几个模块，使用 `--stages` 缩小范围：
@@ -258,7 +258,7 @@ docker run --rm --network host \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$PWD/docs/current/status/baselines:/app/docs/current/status/baselines" \
   omni-skill-pipeline:test \
-  python scripts/run_linux_validation_suite.py --python python3 --keep-going --stages ci doc_sync quality_regression container_smoke
+  python scripts/linux_validate.py --python python3 --keep-going --stages ci doc_sync quality_regression container_smoke
 ```
 
 模块规例：
@@ -285,7 +285,7 @@ docker run --rm --network host \
   -v "$PWD/docs/current/status/baselines:/app/docs/current/status/baselines" \
   -e OMNI_TEST_POSTGRES_DSN="$OMNI_TEST_POSTGRES_DSN" \
   omni-skill-pipeline:test \
-  python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
+  python scripts/release_switch.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
 ```
 
 判定：
@@ -301,7 +301,7 @@ docker run --name omni-release-gate --network host \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e OMNI_TEST_POSTGRES_DSN="$OMNI_TEST_POSTGRES_DSN" \
   omni-skill-pipeline:test \
-  python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
+  python scripts/release_switch.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta
 docker cp omni-release-gate:/app/docs/current/status/baselines ./baselines-from-container
 docker rm -f omni-release-gate
 ```
@@ -321,9 +321,9 @@ docker run --rm --network host \
 
 - 测试镜像可构建，`python --version` 为 Python 3.11.x。
 - 运行镜像 `docker build -t omni-skill-pipeline:beta .` 成功。
-- `scripts/run_ci.py --python python3 --keep-going --isolate-test-files` 无阻断失败。
-- `scripts/run_linux_validation_suite.py --python python3 --keep-going` 输出可归因的模块结果。
-- `scripts/run_release_switch_validation.py --python python3 --keep-going` 给出 `GO`，或发布负责人明确接受 `HOLD` 风险但不得称为正式通过。
+- `scripts/ci.py --python python3 --keep-going --isolate-test-files` 无阻断失败。
+- `scripts/linux_validate.py --python python3 --keep-going` 输出可归因的模块结果。
+- `scripts/release_switch.py --python python3 --keep-going` 给出 `GO`，或发布负责人明确接受 `HOLD` 风险但不得称为正式通过。
 - `curl -fsS http://127.0.0.1:18000/healthz` 通过容器烟测。
 
 ## Code Update Rebuild
@@ -369,8 +369,8 @@ docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta 
 ### 4. 重跑门禁并切换
 
 ```bash
-docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50
-docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag "omni-skill-pipeline:${RELEASE_ID}"
+docker run --rm omni-skill-pipeline:test python scripts/ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50
+docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/release_switch.py --python python3 --keep-going --container-image-tag "omni-skill-pipeline:${RELEASE_ID}"
 
 PREVIOUS_IMAGE="$(docker inspect --format '{{.Config.Image}}' omni-skill-beta 2>/dev/null || true)"
 printf '%s\n' "$PREVIOUS_IMAGE" > release.previous
@@ -481,8 +481,8 @@ docker exec omni-skill-beta sh -lc 'du -sh /app/.tmp_omni_media /app/skills/draf
 清理动作仍在容器内执行：
 
 ```bash
-docker run --rm --volumes-from omni-skill-beta omni-skill-pipeline:test python scripts/prune_tmp_media.py --dry-run
-docker run --rm --volumes-from omni-skill-beta omni-skill-pipeline:test python scripts/prune_tmp_media.py --retention-hours 24
+docker run --rm --volumes-from omni-skill-beta omni-skill-pipeline:test python scripts/prune_tmp.py --dry-run
+docker run --rm --volumes-from omni-skill-beta omni-skill-pipeline:test python scripts/prune_tmp.py --retention-hours 24
 ```
 
 ## Rollback
@@ -546,10 +546,10 @@ curl -fsS http://127.0.0.1:8000/healthz
 5. 设置 `RELEASE_ID`，构建运行镜像：`docker build -t "omni-skill-pipeline:${RELEASE_ID}" -t omni-skill-pipeline:beta .`。
 6. 打交付包：`tar -czf` 源码包、`docker save` 镜像包、`sha256sum` 生成摘要。
 7. 内网机器导入：`sha256sum -c SHA256SUMS`、`docker load -i ...image.tar`、`tar -xzf ...source...tar.gz`。
-8. 执行最小 CI：`docker run --rm omni-skill-pipeline:test python scripts/run_ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50`。
+8. 执行最小 CI：`docker run --rm omni-skill-pipeline:test python scripts/ci.py --python python3 --keep-going --isolate-test-files --coverage-fail-under 50`。
 9. 执行容器烟测：`docker run --rm -d --name omni-skill-pipeline-smoke -p 18000:8000 omni-skill-pipeline:beta` 后 `curl -fsS http://127.0.0.1:18000/healthz`。
-10. 执行分模块 Linux 验证：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_linux_validation_suite.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
-11. 执行 Release Switch 总闸：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/run_release_switch_validation.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
+10. 执行分模块 Linux 验证：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/linux_validate.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
+11. 执行 Release Switch 总闸：`docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/release_switch.py --python python3 --keep-going --container-image-tag omni-skill-pipeline:beta`。
 12. 结果为 `GO` 后写 `.env.runtime`，启动 `omni-skill-beta`。
 13. 执行 `/healthz`、template、鉴权、核心 distill happy path 验收。
 14. 代码更新时执行 `Code Update Rebuild`，配置更新时只重建容器。

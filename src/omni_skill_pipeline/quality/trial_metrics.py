@@ -6,6 +6,7 @@ from statistics import median
 from typing import Any
 
 SUPPORTED_EVIDENCE_ORIGINS = {"real", "fixture", "synthetic"}
+TEMPLATE_PLACEHOLDER_TOKEN = "TEMPLATE_REQUIRED_"
 
 
 def _to_float(value: Any) -> float:
@@ -52,6 +53,13 @@ def _to_bool(value: Any, *, default: bool = False) -> bool:
         if normalized in {"0", "false", "no", "n", "off"}:
             return False
     return bool(default)
+
+
+def _contains_template_placeholder(value: Any) -> bool:
+    text = str(value or "").strip().upper()
+    if not text:
+        return False
+    return TEMPLATE_PLACEHOLDER_TOKEN in text
 
 
 def _round(value: float) -> float:
@@ -127,6 +135,9 @@ class TrialMetricsCollector(object):
         high_severity_incident_count = 0
         real_evidence_missing_source_trace_count = 0
         real_evidence_missing_review_trace_count = 0
+        real_evidence_template_placeholder_loop_count = 0
+        real_evidence_template_placeholder_field_count = 0
+        real_evidence_template_placeholder_records: list[dict[str, Any]] = []
 
         review_outcome_counts: dict[str, int] = {}
         review_evaluable_count = 0
@@ -178,6 +189,28 @@ class TrialMetricsCollector(object):
                 reviewed_at_utc = item.get("reviewed_at_utc")
                 if not review_task_id or not reviewed_by or not _is_utc_timestamp(reviewed_at_utc):
                     real_evidence_missing_review_trace_count += 1
+                placeholder_fields = [
+                    field_name
+                    for field_name in (
+                        "source_system",
+                        "source_reference",
+                        "collected_at_utc",
+                        "review_task_id",
+                        "reviewed_by",
+                        "reviewed_at_utc",
+                    )
+                    if _contains_template_placeholder(item.get(field_name))
+                ]
+                if placeholder_fields:
+                    real_evidence_template_placeholder_loop_count += 1
+                    real_evidence_template_placeholder_field_count += len(placeholder_fields)
+                    real_evidence_template_placeholder_records.append(
+                        {
+                            "loop_id": loop_id,
+                            "modality": modality,
+                            "placeholder_fields": placeholder_fields,
+                        }
+                    )
 
             tenant_scope = item.get("tenant_scope")
             if tenant_scope is not None:
@@ -198,20 +231,42 @@ class TrialMetricsCollector(object):
             )
             if launch_gate_eligible and evidence_origin != "real":
                 raise ValueError("Loop %s cannot be launch_gate_eligible unless evidence_origin is real." % loop_id)
+
+            demoted_by_placeholder = False
+            if launch_gate_eligible and evidence_origin == "real":
+                placeholder_fields = [
+                    field_name
+                    for field_name in (
+                        "source_system",
+                        "source_reference",
+                        "collected_at_utc",
+                        "review_task_id",
+                        "reviewed_by",
+                        "reviewed_at_utc",
+                    )
+                    if _contains_template_placeholder(item.get(field_name))
+                ]
+                if placeholder_fields:
+                    launch_gate_eligible = False
+                    demoted_by_placeholder = True
+
             if launch_gate_eligible:
                 launch_gate_eligible_loop_count += 1
             else:
                 launch_gate_ineligible_loop_count += 1
-                ineligible_reason = str(item.get("launch_gate_ineligible_reason", "")).strip()
-                if not ineligible_reason:
-                    if evidence_origin == "fixture":
-                        ineligible_reason = "fixture_evidence_not_launch_gate_eligible"
-                    elif evidence_origin == "synthetic":
-                        ineligible_reason = "synthetic_evidence_not_launch_gate_eligible"
-                    elif evidence_origin == "unspecified":
-                        ineligible_reason = "missing_evidence_origin_label"
-                    else:
-                        ineligible_reason = "explicitly_marked_not_launch_gate_eligible"
+                if demoted_by_placeholder:
+                    ineligible_reason = "template_placeholders_not_replaced"
+                else:
+                    ineligible_reason = str(item.get("launch_gate_ineligible_reason", "")).strip()
+                    if not ineligible_reason:
+                        if evidence_origin == "fixture":
+                            ineligible_reason = "fixture_evidence_not_launch_gate_eligible"
+                        elif evidence_origin == "synthetic":
+                            ineligible_reason = "synthetic_evidence_not_launch_gate_eligible"
+                        elif evidence_origin == "unspecified":
+                            ineligible_reason = "missing_evidence_origin_label"
+                        else:
+                            ineligible_reason = "explicitly_marked_not_launch_gate_eligible"
                 launch_gate_ineligible_reason_counts[ineligible_reason] = (
                     launch_gate_ineligible_reason_counts.get(ineligible_reason, 0) + 1
                 )
@@ -285,6 +340,8 @@ class TrialMetricsCollector(object):
             launch_gate_unlabeled_loop_count=launch_gate_unlabeled_loop_count,
             real_evidence_missing_source_trace_count=real_evidence_missing_source_trace_count,
             real_evidence_missing_review_trace_count=real_evidence_missing_review_trace_count,
+            real_evidence_template_placeholder_loop_count=real_evidence_template_placeholder_loop_count,
+            real_evidence_template_placeholder_field_count=real_evidence_template_placeholder_field_count,
             unreviewed_published_count=unreviewed_published_count,
             critical_secret_pii_leak_count=critical_secret_pii_leak_count,
             high_severity_incident_count=high_severity_incident_count,
@@ -313,6 +370,9 @@ class TrialMetricsCollector(object):
                     "unlabeled_loop_count": launch_gate_unlabeled_loop_count,
                     "real_evidence_missing_source_trace_count": real_evidence_missing_source_trace_count,
                     "real_evidence_missing_review_trace_count": real_evidence_missing_review_trace_count,
+                    "real_evidence_template_placeholder_loop_count": real_evidence_template_placeholder_loop_count,
+                    "real_evidence_template_placeholder_field_count": real_evidence_template_placeholder_field_count,
+                    "real_evidence_template_placeholder_records": real_evidence_template_placeholder_records,
                     "evidence_origin_counts": evidence_origin_counts,
                     "ineligible_reason_counts": launch_gate_ineligible_reason_counts,
                 },
@@ -375,6 +435,8 @@ class TrialMetricsCollector(object):
         launch_gate_unlabeled_loop_count: int,
         real_evidence_missing_source_trace_count: int,
         real_evidence_missing_review_trace_count: int,
+        real_evidence_template_placeholder_loop_count: int,
+        real_evidence_template_placeholder_field_count: int,
         unreviewed_published_count: int,
         critical_secret_pii_leak_count: int,
         high_severity_incident_count: int,
@@ -458,6 +520,23 @@ class TrialMetricsCollector(object):
                 "status": "pass" if real_evidence_missing_review_trace_count == 0 else "fail",
                 "actual": {"missing_review_trace_count": real_evidence_missing_review_trace_count},
                 "expected": {"missing_review_trace_count": 0},
+            },
+            {
+                "id": "real_evidence_template_placeholders_replaced",
+                "description": (
+                    "Every real-evidence loop must replace GL-31 TEMPLATE_REQUIRED_* placeholder values "
+                    "before launch-gate eligibility."
+                ),
+                "critical_ga_gate": True,
+                "status": "pass" if real_evidence_template_placeholder_loop_count == 0 else "fail",
+                "actual": {
+                    "placeholder_loop_count": real_evidence_template_placeholder_loop_count,
+                    "placeholder_field_count": real_evidence_template_placeholder_field_count,
+                },
+                "expected": {
+                    "placeholder_loop_count": 0,
+                    "placeholder_field_count": 0,
+                },
             },
             {
                 "id": "no_unreviewed_publication",
@@ -596,6 +675,10 @@ def render_trial_metrics_markdown_summary(report: dict[str, Any]) -> str:
         % str(metrics.get("launch_gate_evidence", {}).get("real_evidence_missing_source_trace_count", 0)),
         "- Real evidence missing review trace count: `%s`"
         % str(metrics.get("launch_gate_evidence", {}).get("real_evidence_missing_review_trace_count", 0)),
+        "- Real evidence placeholder loop count: `%s`"
+        % str(metrics.get("launch_gate_evidence", {}).get("real_evidence_template_placeholder_loop_count", 0)),
+        "- Real evidence placeholder field count: `%s`"
+        % str(metrics.get("launch_gate_evidence", {}).get("real_evidence_template_placeholder_field_count", 0)),
         "- Evidence origins: `%s`"
         % str(metrics.get("launch_gate_evidence", {}).get("evidence_origin_counts", {})),
         "- Reviewer approval rate (<=1 revision): `%s`"

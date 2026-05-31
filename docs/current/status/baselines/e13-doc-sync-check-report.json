@@ -16,7 +16,7 @@
           "cli_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\cli.py",
           "api_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\api_app.py",
           "worker_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\worker.py",
-          "tp_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\scripts\\run_tp_tests.py",
+          "tp_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\scripts\\tp_tests.py",
           "cli_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\cli.md",
           "api_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\api.md",
           "worker_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\worker.md",

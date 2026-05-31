@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import subprocess
@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_quality_feedback_loop.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'quality_loop.py'
 
 
 def _build_bundle(skill_id: str, decision: str, status: str, reason_codes: list[str], quality_scores: dict[str, float]) -> dict[str, object]:

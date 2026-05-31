@@ -37,7 +37,7 @@
 
 ### 测试与 CI
 
-- CI 统一走 `python scripts/run_ci.py`
+- CI 统一走 `python scripts/ci.py`
 - `test_mvp.py` 已覆盖 text / audio / image / video / tabular 主链
 - `test_v2_schema_and_corpus.py` 已覆盖 corpus 组装、publication、quality、review artifacts
 - `test_quality_scoring.py` / `test_review_policy.py` 覆盖质量门禁逻辑

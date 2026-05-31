@@ -250,7 +250,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Status: Complete
 - Recommended model: Codex 5.3
 - Goal: define a machine-readable manifest for controlled trial samples.
-- Files: `docs/current/status/baselines/`, optional `scripts/validate_trial_manifest.py`, tests under `tests/`
+- Files: `docs/current/status/baselines/`, optional `scripts/validate_manifest.py`, tests under `tests/`
 - Work:
   - Add a trial sample manifest template with modality, scenario, source owner, sensitivity, asset list, review owner, target package format, and expected output type.
   - Add validation for required fields and unsupported sensitivity levels.
@@ -260,11 +260,11 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Evidence:
   - Added template `docs/current/status/baselines/trial-manifests/trial-sample-manifest.template.json` with required fields: `modality`, `scenario`, `source_owner`, `sensitivity`, `asset_list`, `review_owner`, `target_package_format`, `expected_output_type`.
   - Added modality examples: `trial-sample-text.example.json`, `trial-sample-audio.example.json`, `trial-sample-image.example.json`, `trial-sample-video.example.json`, `trial-sample-tabular.example.json`, `trial-sample-mixed-corpus.example.json`.
-  - Added validator `scripts/validate_trial_manifest.py` with actionable errors for missing required fields and unsupported `sensitivity`/`modality`/`target_package_format`.
+  - Added validator `scripts/validate_manifest.py` with actionable errors for missing required fields and unsupported `sensitivity`/`modality`/`target_package_format`.
   - Added focused tests `tests/test_validate_trial_manifest_script.py` for valid manifest pass path plus invalid-field actionable failure paths.
-  - 2026-05-22 iterative re-check (run 1): re-validated the CBT-02 artifact set (`trial-manifest` template/examples, `validate_trial_manifest.py`, and `tests/test_validate_trial_manifest_script.py`) and confirmed manifest validation plus focused script tests still pass without regression.
-  - 2026-05-23 iterative re-check (run 2): re-ran `validate_trial_manifest.py` across all six modality example manifests and `tests.test_validate_trial_manifest_script`; confirmed required-field/support-level validation paths remain passing without regression, and doc sync remains green.
-  - 2026-05-23 iterative re-check (run 3): re-ran `validate_trial_manifest.py --output -` for all six modality example manifests (`text/audio/image/video/tabular/mixed-corpus`), re-ran `python -m unittest tests.test_validate_trial_manifest_script` (3 tests), and re-ran `python scripts/run_doc_sync_check.py --output -`; all remained passing with no regression.
+  - 2026-05-22 iterative re-check (run 1): re-validated the CBT-02 artifact set (`trial-manifest` template/examples, `validate_manifest.py`, and `tests/test_validate_trial_manifest_script.py`) and confirmed manifest validation plus focused script tests still pass without regression.
+  - 2026-05-23 iterative re-check (run 2): re-ran `validate_manifest.py` across all six modality example manifests and `tests.test_validate_trial_manifest_script`; confirmed required-field/support-level validation paths remain passing without regression, and doc sync remains green.
+  - 2026-05-23 iterative re-check (run 3): re-ran `validate_manifest.py --output -` for all six modality example manifests (`text/audio/image/video/tabular/mixed-corpus`), re-ran `python -m unittest tests.test_validate_trial_manifest_script` (3 tests), and re-ran `python scripts/doc_sync.py --output -`; all remained passing with no regression.
 
 ### CBT-03 Default Human Review Mode
 
@@ -293,7 +293,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Documented enable/disable behavior in `docs/current/operations/env.md`.
   - 2026-05-22 iterative re-check (run 1): re-ran focused CBT-03 review-mode tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`) and confirmed controlled-trial mode still forces `review_required` with persisted `controlled_trial_requires_review` reason code.
   - 2026-05-23 iterative re-check (run 2): re-ran focused CBT-03 review-mode tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`) and confirmed controlled-trial mode still forces `review_required` with persisted `controlled_trial_requires_review` reason code; doc sync remains green.
-  - 2026-05-23 iterative re-check (run 3): re-verified controlled-trial review-mode wiring in `config.py`/`service_factory.py`/`review_policy.py` plus `docs/current/operations/env.md`, re-ran focused tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`), and re-ran `python scripts/run_doc_sync_check.py --output -`; all remained passing with `review_required` enforced and reason code persisted as `controlled_trial_requires_review`.
+  - 2026-05-23 iterative re-check (run 3): re-verified controlled-trial review-mode wiring in `config.py`/`service_factory.py`/`review_policy.py` plus `docs/current/operations/env.md`, re-ran focused tests (`tests.test_review_policy`, `tests.test_service_factory_split`, `tests.test_v2_models`, `tests.test_review_feedback`, `tests.test_openai_provider_config`), and re-ran `python scripts/doc_sync.py --output -`; all remained passing with `review_required` enforced and reason code persisted as `controlled_trial_requires_review`.
 
 ### CBT-04 Reviewer Packet Generator
 
@@ -333,7 +333,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - Aggregates review outcome, reviewer edit distance, latency, provider/runtime failures, retry count, artifact count, and cost placeholder fields.
     - Evaluates all trial success criteria and emits explicit failing condition IDs.
     - Marks critical GA blockers through `ga_discussion_blocked`.
-  - Added CLI/report runner `scripts/run_trial_metrics_collector.py`:
+  - Added CLI/report runner `scripts/trial_metrics.py`:
     - Emits JSON report and Markdown summary.
     - Supports `--fail-on-ga-blocker` for non-zero exit when critical GA conditions fail.
   - Added baseline template `docs/current/status/baselines/trial-metrics/trial-metrics-manifest.template.json`.
@@ -341,7 +341,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `tests/test_trial_metrics_collector.py`
     - `tests/test_trial_metrics_collector_script.py`
   - 2026-05-23 iterative re-check (run 1): re-ran focused CBT-05 metrics tests (`tests.test_trial_metrics_collector`, `tests.test_trial_metrics_collector_script`) and confirmed trial metrics JSON/Markdown outputs plus GA-blocker condition reporting remain passing; doc sync also remains green.
-  - 2026-05-25 iterative re-check (run 2): re-verified CBT-05 collector/runner paths in `src/omni_skill_pipeline/quality/trial_metrics.py` and `scripts/run_trial_metrics_collector.py`, re-ran focused tests (`tests.test_trial_metrics_collector`, `tests.test_trial_metrics_collector_script`), and re-ran `python scripts/run_doc_sync_check.py --output -`; all remained passing with GA-blocker condition reporting intact.
+  - 2026-05-25 iterative re-check (run 2): re-verified CBT-05 collector/runner paths in `src/omni_skill_pipeline/quality/trial_metrics.py` and `scripts/trial_metrics.py`, re-ran focused tests (`tests.test_trial_metrics_collector`, `tests.test_trial_metrics_collector_script`), and re-ran `python scripts/doc_sync.py --output -`; all remained passing with GA-blocker condition reporting intact.
 
 ### CBT-06 Agent Skill Package Model
 
@@ -458,7 +458,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - absolute-path leakage and token-like secret leakage
     - dangerous command markers and missing review approval signal
   - Added validation exports in `src/omni_skill_pipeline/validation/__init__.py`.
-  - Added script runner `scripts/run_skill_usability_validator.py` returning non-zero on failed validation and emitting JSON with `failure_codes`.
+  - Added script runner `scripts/skill_usability.py` returning non-zero on failed validation and emitting JSON with `failure_codes`.
   - Added CLI command `validate-skill` in `src/omni_skill_pipeline/cli.py` with package-level status and failure-code output.
   - Added focused tests:
     - `tests/test_skill_usability_validator.py`
@@ -497,7 +497,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
 - Status: Complete
 - Recommended model: Codex 5.5 for flow review, Codex 5.3 for script implementation
 - Goal: run one controlled-trial loop reproducibly.
-- Files: `scripts/run_controlled_trial.py`, `docs/current/operations/runbooks/`, tests under `tests/`
+- Files: `scripts/controlled_trial.py`, `docs/current/operations/runbooks/`, tests under `tests/`
 - Work:
   - Input a trial manifest.
   - Run distillation.
@@ -510,7 +510,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
   - Dry-run mode produces an execution plan.
   - Smoke test runs fully on fixtures.
 - Evidence:
-  - Added runner script `scripts/run_controlled_trial.py` with full CBT-11 sequence:
+  - Added runner script `scripts/controlled_trial.py` with full CBT-11 sequence:
     - trial-manifest validation
     - distillation request execution (single-asset and mixed corpus)
     - forced review mode through `OMNI_CONTROLLED_TRIAL_REVIEW_MODE`
@@ -545,7 +545,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - expected skill selection/output contract
     - explicit failure recording contract
     - live-agent/offline-CI separation rule for controlled trial
-  - Added recorder script `scripts/run_agent_smoke_record.py`:
+  - Added recorder script `scripts/agent_smoke.py`:
     - records one status row per `skill_id + agent`
     - supports statuses `agent_smoke_passed`, `agent_smoke_failed`, `not_run`
     - enforces non-empty `reason`
@@ -581,7 +581,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
       - `TRIAL_DANGEROUS_PRODUCTION_COMMAND`
       - `TRIAL_UNAPPROVED_SENSITIVE_DATA_CLASS`
     - emits reviewer-packet-compatible `risk_labels`.
-  - Added gate runner `scripts/run_trial_security_gate.py`:
+  - Added gate runner `scripts/trial_security.py`:
     - validates one bundle before export and returns non-zero on failure.
     - supports JSON output for audit evidence.
   - Enforced exporter pre-check in `src/omni_skill_pipeline/exporters/agent_skill_exporter.py`:
@@ -591,7 +591,7 @@ If any of the first four conditions fail, GA discussion stops and the next itera
     - `src/omni_skill_pipeline/review/packet.py`
     - `src/omni_skill_pipeline/service.py`
     - risk labels now include `source=trial_security_gate` when unsafe markers are present.
-  - Integrated gate into `scripts/run_controlled_trial.py`:
+  - Integrated gate into `scripts/controlled_trial.py`:
     - checks simulated-approved bundle before export.
     - records `trial_security_gate_report` per sample in run report.
   - Added focused tests:

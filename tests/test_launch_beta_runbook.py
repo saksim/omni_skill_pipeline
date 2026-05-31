@@ -27,9 +27,9 @@ class LaunchBetaRunbookTests(unittest.TestCase):
     def test_runbook_references_operational_scripts(self) -> None:
         content = RUNBOOK_PATH.read_text(encoding="utf-8")
         required_commands = [
-            "python scripts/run_ci.py",
-            "python scripts/run_container_smoke.py",
-            "python scripts/prune_tmp_media.py",
+            "python scripts/ci.py",
+            "python scripts/container_smoke.py",
+            "python scripts/prune_tmp.py",
         ]
         for command in required_commands:
             self.assertIn(command, content, "Missing command: %s" % command)

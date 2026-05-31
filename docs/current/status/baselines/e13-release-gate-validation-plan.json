@@ -7,7 +7,7 @@
       "description": "Run beta release gate pack (ci + container smoke + doc sync + quality/perf baselines).",
       "command": [
         "python",
-        "scripts/run_linux_validation_suite.py",
+        "scripts/linux_validate.py",
         "--python",
         "python",
         "--stages",
@@ -39,7 +39,7 @@
       "description": "Run GA release gate pack (postgres soak/ga + worker/provider/review/calibration hardening).",
       "command": [
         "python",
-        "scripts/run_linux_validation_suite.py",
+        "scripts/linux_validate.py",
         "--python",
         "python",
         "--stages",
@@ -69,7 +69,7 @@
       "description": "Run roadmap extension gate pack (LC-R-34~37 validation surface).",
       "command": [
         "python",
-        "scripts/run_linux_validation_suite.py",
+        "scripts/linux_validate.py",
         "--python",
         "python",
         "--stages",

@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_ops_readiness_evidence.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "ops_evidence.py"
 
 
 def _write_json(path: Path, payload: dict[str, object]) -> None:
@@ -24,15 +24,15 @@ def _release_gate_report() -> dict[str, object]:
         "stages": [
             {
                 "name": "beta_gate",
-                "command": ["python3", "scripts/run_linux_validation_suite.py", "--stages", "ci"],
+                "command": ["python3", "scripts/linux_validate.py", "--stages", "ci"],
             },
             {
                 "name": "ga_gate",
-                "command": ["python3", "scripts/run_linux_validation_suite.py", "--stages", "postgres_ga"],
+                "command": ["python3", "scripts/linux_validate.py", "--stages", "postgres_ga"],
             },
             {
                 "name": "roadmap_gate",
-                "command": ["python3", "scripts/run_linux_validation_suite.py", "--stages", "roadmap_extension"],
+                "command": ["python3", "scripts/linux_validate.py", "--stages", "roadmap_extension"],
             },
         ],
     }
@@ -61,13 +61,13 @@ def _production_ops_runbook() -> str:
     return """# Production Operations Baseline
 
 ## Deploy Workflow
-python scripts/run_release_gate_validation.py
+python scripts/release_gate.py
 docker run --rm -d
 
 ## Validation Workflow
-python scripts/run_launch_readiness_gate.py
-python scripts/run_doc_sync_check.py --output
-python scripts/run_ops_readiness_evidence.py
+python scripts/launch_gate.py
+python scripts/doc_sync.py --output
+python scripts/ops_evidence.py
 
 ## Rollback Workflow
 docker logs

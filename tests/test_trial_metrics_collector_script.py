@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_trial_metrics_collector.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "trial_metrics.py"
 
 
 def _build_loop(loop_id: str, modality: str) -> dict[str, object]:

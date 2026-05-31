@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_release_switch_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'release_switch.py'
 
 
 def _plan_payload(
@@ -52,7 +52,7 @@ def _release_gate_stage_contract_commands(
     return {
         'beta_gate': [
             'python3',
-            'scripts/run_linux_validation_suite.py',
+            'scripts/linux_validate.py',
             '--python',
             'python3',
             '--stages',
@@ -68,7 +68,7 @@ def _release_gate_stage_contract_commands(
         ],
         'ga_gate': [
             'python3',
-            'scripts/run_linux_validation_suite.py',
+            'scripts/linux_validate.py',
             '--python',
             'python3',
             '--stages',
@@ -83,7 +83,7 @@ def _release_gate_stage_contract_commands(
         ],
         'roadmap_gate': [
             'python3',
-            'scripts/run_linux_validation_suite.py',
+            'scripts/linux_validate.py',
             '--python',
             'python3',
             '--stages',
@@ -3834,9 +3834,9 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: release_gate, release_contract, doc_sync', completed.stdout)
-            self.assertIn('scripts/run_release_gate_validation.py', completed.stdout)
-            self.assertIn('scripts/run_tp_tests.py TP-E9-03 TP-E11-03 TP-E13-03', completed.stdout)
-            self.assertIn('scripts/run_doc_sync_check.py', completed.stdout)
+            self.assertIn('scripts/release_gate.py', completed.stdout)
+            self.assertIn('scripts/tp_tests.py TP-E9-03 TP-E11-03 TP-E13-03', completed.stdout)
+            self.assertIn('scripts/doc_sync.py', completed.stdout)
 
             plan = json.loads(output_path.read_text(encoding='utf-8'))
             self.assertEqual(plan.get('stage_count'), 3)
@@ -3915,8 +3915,8 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
         self.assertIn('--allow-secondary-failures', completed.stdout)
         self.assertIn('--calibration-margin 0.06', completed.stdout)
         self.assertNotIn('--keep-going', completed.stdout)
-        self.assertNotIn('scripts/run_tp_tests.py', completed.stdout)
-        self.assertNotIn('scripts/run_doc_sync_check.py --output', completed.stdout)
+        self.assertNotIn('scripts/tp_tests.py', completed.stdout)
+        self.assertNotIn('scripts/doc_sync.py --output', completed.stdout)
 
     def test_env_postgres_dsn_is_not_printed_in_release_gate_command(self) -> None:
         env = os.environ.copy()
@@ -3971,7 +3971,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
         command_lines = [
             line
             for line in completed.stdout.splitlines()
-            if 'scripts/run_release_gate_validation.py' in line
+            if 'scripts/release_gate.py' in line
         ]
         self.assertEqual(len(command_lines), 1)
         self.assertIn('--keep-going', command_lines[0])
@@ -4026,7 +4026,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                 "script = sys.argv[1] if len(sys.argv) > 1 else ''\n"
                 "dsn_visible = 'OMNI_TEST_POSTGRES_DSN' in os.environ\n"
                 "print('%s dsn-visible=%s' % (script, dsn_visible))\n"
-                "if script.endswith('run_release_gate_validation.py'):\n"
+                "if script.endswith('release_gate.py'):\n"
                 "    raise SystemExit(0 if dsn_visible else 5)\n"
                 "raise SystemExit(4 if dsn_visible else 0)\n",
                 encoding='utf-8',
@@ -4057,8 +4057,8 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                 env=env,
             )
         self.assertEqual(completed.returncode, 0, completed.stderr)
-        self.assertIn('scripts/run_release_gate_validation.py dsn-visible=True', completed.stdout)
-        self.assertIn('scripts/run_doc_sync_check.py dsn-visible=False', completed.stdout)
+        self.assertIn('scripts/release_gate.py dsn-visible=True', completed.stdout)
+        self.assertIn('scripts/doc_sync.py dsn-visible=False', completed.stdout)
 
     def test_script_decision_only_can_emit_go_decision(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -13585,7 +13585,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     continue
                 stage['command'] = [
                     'python3',
-                    'scripts/run_linux_validation_suite.py',
+                    'scripts/linux_validate.py',
                     '--python',
                     'python3',
                     '--stages',
@@ -13670,7 +13670,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     continue
                 stage['command'] = [
                     'python3',
-                    'scripts/run_linux_validation_suite.py',
+                    'scripts/linux_validate.py',
                     '--python',
                     'python3',
                     '--stages',
@@ -13755,7 +13755,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     continue
                 stage['command'] = [
                     'python3',
-                    'scripts/run_linux_validation_suite.py',
+                    'scripts/linux_validate.py',
                     '--python',
                     'python3',
                     '--stages',
@@ -13835,7 +13835,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     continue
                 stage['command'] = [
                     'python3',
-                    'scripts/run_linux_validation_suite.py',
+                    'scripts/linux_validate.py',
                     '--python',
                     'python3',
                     '--stages',
@@ -13918,8 +13918,8 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     break
                 stage['command'] = [
                     'python3',
-                    str((REPO_ROOT / 'scripts' / 'run_release_gate_validation.py').resolve()),
-                    'scripts/run_linux_validation_suite.py',
+                    str((REPO_ROOT / 'scripts' / 'release_gate.py').resolve()),
+                    'scripts/linux_validate.py',
                     *command[2:],
                 ]
                 break
@@ -13998,8 +13998,8 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
                     break
                 stage['command'] = [
                     'python3',
-                    'scripts/run_release_gate_validation.py',
-                    'scripts/run_linux_validation_suite.py',
+                    'scripts/release_gate.py',
+                    'scripts/linux_validate.py',
                     *command[2:],
                 ]
                 break
@@ -14070,7 +14070,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
 
             release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
             decoy_script = str(
-                (tmp_path / 'decoy' / 'scripts' / 'run_linux_validation_suite.py').resolve()
+                (tmp_path / 'decoy' / 'scripts' / 'linux_validate.py').resolve()
             )
             for stage in release_gate_plan.get('stages', []):
                 if not isinstance(stage, dict):
@@ -14154,7 +14154,7 @@ class ReleaseSwitchValidationScriptTests(unittest.TestCase):
 
             release_gate_plan = json.loads(bundle['release_gate_path'].read_text(encoding='utf-8'))
             decoy_script = str(
-                (tmp_path / 'decoy' / 'scripts' / 'run_linux_validation_suite.py').resolve()
+                (tmp_path / 'decoy' / 'scripts' / 'linux_validate.py').resolve()
             )
             for stage in release_gate_plan.get('stages', []):
                 if not isinstance(stage, dict):

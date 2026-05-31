@@ -28,6 +28,9 @@
       "unlabeled_loop_count": 0,
       "real_evidence_missing_source_trace_count": 0,
       "real_evidence_missing_review_trace_count": 0,
+      "real_evidence_template_placeholder_loop_count": 0,
+      "real_evidence_template_placeholder_field_count": 0,
+      "real_evidence_template_placeholder_records": [],
       "evidence_origin_counts": {
         "fixture": 10
       },
@@ -78,7 +81,7 @@
   },
   "success_criteria": {
     "status": "fail",
-    "passed_count": 13,
+    "passed_count": 14,
     "failed_count": 1,
     "failed_conditions": [
       {
@@ -158,6 +161,20 @@
         },
         "expected": {
           "missing_review_trace_count": 0
+        }
+      },
+      {
+        "id": "real_evidence_template_placeholders_replaced",
+        "description": "Every real-evidence loop must replace GL-31 TEMPLATE_REQUIRED_* placeholder values before launch-gate eligibility.",
+        "critical_ga_gate": true,
+        "status": "pass",
+        "actual": {
+          "placeholder_loop_count": 0,
+          "placeholder_field_count": 0
+        },
+        "expected": {
+          "placeholder_loop_count": 0,
+          "placeholder_field_count": 0
         }
       },
       {

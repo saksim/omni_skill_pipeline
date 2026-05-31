@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_controlled_trial.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "controlled_trial.py"
 
 
 def _text_manifest_payload() -> dict[str, object]:

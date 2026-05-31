@@ -226,8 +226,8 @@ python -m omni_skill_pipeline.worker \
 Use the prune utility to periodically remove stale entries:
 
 ```bash
-python scripts/prune_tmp_media.py --dry-run
-python scripts/prune_tmp_media.py --retention-hours 24
+python scripts/prune_tmp.py --dry-run
+python scripts/prune_tmp.py --retention-hours 24
 ```
 
 Recommended automation cadence: every 6-24 hours depending on media throughput.

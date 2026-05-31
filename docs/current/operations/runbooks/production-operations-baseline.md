@@ -25,7 +25,7 @@ It is not a GA declaration. It is an evidence-producing operations workflow boun
 1. Build and smoke-check container image:
 
 ```bash
-python scripts/run_container_smoke.py --image-tag omni-skill-pipeline:beta --port 18000
+python scripts/container_smoke.py --image-tag omni-skill-pipeline:beta --port 18000
 ```
 
 2. Start runtime service with explicit runtime env:
@@ -52,10 +52,10 @@ curl -fsS http://127.0.0.1:8000/healthz
 Run strict validation evidence before any launch claim:
 
 ```bash
-python scripts/run_release_gate_validation.py --python python3 --output docs/current/status/baselines/e13-release-gate-validation-plan.json
-python scripts/run_launch_readiness_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
-python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
-python scripts/run_ops_readiness_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
+python scripts/release_gate.py --python python3 --output docs/current/status/baselines/e13-release-gate-validation-plan.json
+python scripts/launch_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
+python scripts/doc_sync.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/ops_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
 ```
 
 Decision rules:
@@ -160,10 +160,10 @@ Alert handling sequence:
 Generate and archive the minimum GL-05 evidence set:
 
 ```bash
-python scripts/run_release_gate_validation.py --python python3 --output docs/current/status/baselines/e13-release-gate-validation-plan.json
-python scripts/run_launch_readiness_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
-python scripts/run_doc_sync_check.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
-python scripts/run_ops_readiness_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
+python scripts/release_gate.py --python python3 --output docs/current/status/baselines/e13-release-gate-validation-plan.json
+python scripts/launch_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
+python scripts/doc_sync.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/ops_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
 ```
 
 Required artifacts:

@@ -79,7 +79,7 @@ Include evidence references for each recommendation.
 
 ## Recording Command
 
-Script: `scripts/run_agent_smoke_record.py`
+Script: `scripts/agent_smoke.py`
 
 Report output (default):
 
@@ -88,7 +88,7 @@ Report output (default):
 ### Passed Example
 
 ```bash
-python scripts/run_agent_smoke_record.py \
+python scripts/agent_smoke.py \
   --skill-id trial-skill-001 \
   --agent codex \
   --status agent_smoke_passed \
@@ -103,7 +103,7 @@ python scripts/run_agent_smoke_record.py \
 ### Failed Example
 
 ```bash
-python scripts/run_agent_smoke_record.py \
+python scripts/agent_smoke.py \
   --skill-id trial-skill-001 \
   --agent claude-code \
   --status agent_smoke_failed \
@@ -119,7 +119,7 @@ python scripts/run_agent_smoke_record.py \
 ### Not Run Example
 
 ```bash
-python scripts/run_agent_smoke_record.py \
+python scripts/agent_smoke.py \
   --skill-id trial-skill-001 \
   --agent opencode \
   --status not_run \
