@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_loop_backfill_plan.v1",
-  "generated_at_utc": "2026-05-31T11:36:33Z",
+  "generated_at_utc": "2026-06-01T08:28:49Z",
   "plan_status": "ALREADY_THRESHOLD_READY",
   "thresholds": {
     "minimum_complete_loops": 2,

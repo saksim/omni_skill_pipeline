@@ -3109,6 +3109,157 @@ Strengthening path:
     - `python scripts/launch_gate.py --output - --summary-output - --print-json` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
   - 2026-05-31: local Windows full baseline refresh via `gl13_launch_evidence.py` remains blocked by long nested output path handling in downstream stage write (`FileNotFoundError` at GL-50 ingestion stage path creation); this does not change GL-58 contract correctness and should be validated end-to-end on Linux/CI.
 
+### GL-59 Submission Queue Follow-Up Resolution Escalation Action Plan Closure Cadence Escalation Acknowledgement Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Escalations Bridge
+
+- Status: Complete
+- Goal: convert GL-58 escalation-closure-cadence-escalation-closure-cadence snapshots into machine-readable escalation exports so operators can distinguish monitor-only open GL-58 rows from due and overdue-stalled GL-58 rows requiring explicit escalation handling, without changing launch-gate decision ownership.
+- Files:
+  - `scripts/gl59_closure_cadence_escalation_closure_cadence_escalations.py`
+  - `scripts/gl13_launch_evidence.py`
+  - `tests/test_gl59_closure_cadence_escalation_closure_cadence_escalations.py`
+  - `tests/test_gl13_launch_evidence.py`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+- Work:
+  - Add GL-59 escalation-closure-cadence-escalation-closure-cadence-escalations runner:
+    - input: GL-58 escalation-closure-cadence-escalation-closure-cadence report.
+    - output: `real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.v1` report + markdown summary.
+    - escalation surfaces:
+      - top-level status: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status`
+      - warning set: `warning_codes`
+      - counts: total/open/blocked-overdue-stalled/due/monitor
+      - explicit row exports: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_rows`
+  - Integrate GL-59 stage into GL-13 bridge:
+    - run after GL-58 escalation-closure-cadence-escalation-closure-cadence stage (both base and replay flows)
+    - add GL-59 report/summary paths and diagnostics to GL-16 evidence pack.
+  - Keep launch policy strictness unchanged:
+    - launch decision remains owned by `launch_gate.py`
+    - GL-59 only adds operator escalation diagnostics for GL-58 cadence execution gaps.
+- Acceptance:
+  - Every GL-13 bridge run emits GL-59 escalation report/summary and publishes GL-59 diagnostics in GL-16 evidence pack.
+  - Escalation diagnostics distinguish `..._ESCALATION_NOT_REQUIRED`, `..._ESCALATION_MONITORING`, `..._ESCALATION_DUE`, and `..._ESCALATION_OVERDUE_STALLED`.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-06-01: added `scripts/gl59_closure_cadence_escalation_closure_cadence_escalations.py`:
+    - converts GL-58 cadence-closure status and row-level cadence-item state into GL-59 escalation rows with deterministic severity/action mapping.
+    - emits due and overdue-stalled escalation diagnostics and supports `--fail-on-open` / `--fail-on-overdue-stalled`.
+  - 2026-06-01: updated `scripts/gl13_launch_evidence.py`:
+    - integrated GL-59 stage in base and replay paths.
+    - hardened Windows output alias handling for GL-58/GL-59 recomputed outputs to prevent long nested temp paths from leaving undeletable artifacts during focused tests.
+  - 2026-06-01: adjusted GL-59 status mapping so zero-open-row snapshots are reported as `..._ESCALATION_NOT_REQUIRED`, matching launch-evidence contract expectations for no-open escalation windows.
+  - 2026-06-01: focused verification passed:
+    - `python -m unittest tests.test_gl59_closure_cadence_escalation_closure_cadence_escalations`
+    - `python -m unittest tests.test_gl13_launch_evidence`
+    - `python scripts/doc_sync.py --output -`
+    - `python scripts/launch_gate.py --output - --summary-output -` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-60 Submission Queue Follow-Up Resolution Escalation Action Plan Closure Cadence Escalation Acknowledgement Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Escalation Closure Bridge
+
+- Status: Complete
+- Goal: convert GL-59 escalation snapshots into machine-readable closure diagnostics across cadence cycles so operators can distinguish net-new closure progress from stale open escalation rows and verify whether closed GL-59 escalation items are backed by GL-57 net-new closed closure evidence, without changing launch-gate decision ownership.
+- Files:
+  - `scripts/gl60_closure_cadence_escalation_closure_cadence_escalation_closure.py`
+  - `scripts/gl13_launch_evidence.py`
+  - `tests/test_gl60_closure_cadence_escalation_closure_cadence_escalation_closure.py`
+  - `tests/test_gl13_launch_evidence.py`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- Work:
+  - Add GL-60 escalation-closure-cadence-escalation-closure-cadence-escalation-closure runner:
+    - input: GL-59 escalation report + GL-57 escalation-closure report + optional previous GL-60 snapshot.
+    - output: `real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure.v1` report + markdown summary.
+    - closure surfaces:
+      - top-level status: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_status`
+      - warning set: `warning_codes`
+      - counts: total/open/previous-open/carried-open/stale-open/net-new-open/net-new-closed, plus GL-57-backed closure breakdown
+      - explicit id exports: carried/net-new-open/net-new-closed and GL-57-backed/unbacked closure ids
+      - explicit row exports: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_rows`
+  - Integrate GL-60 stage into GL-13 bridge:
+    - run after GL-59 escalation stage (both base and replay flows)
+    - add GL-60 report/summary paths and diagnostics to GL-16 evidence pack.
+    - remove duplicated GL-60 stage invocation in replay/base chains so each bridge run executes GL-60 exactly once per flow.
+  - Keep launch policy strictness unchanged:
+    - launch decision remains owned by `launch_gate.py`
+    - GL-60 only adds escalation-closure-cycle observability and GL-57-backed closure diagnostics.
+- Acceptance:
+  - Every GL-13 bridge run emits GL-60 escalation-closure report/summary and publishes GL-60 diagnostics in GL-16 evidence pack.
+  - Closure diagnostics distinguish `..._ESCALATION_CLOSURE_NOT_REQUIRED`, `..._ESCALATION_CLOSURE_BASELINE_INITIALIZED`, `..._ESCALATION_CLOSURE_PROGRESSING`, `..._ESCALATION_CLOSURE_STALLED`, and `..._ESCALATION_CLOSURE_CLEARED`.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-06-01: added `scripts/gl60_closure_cadence_escalation_closure_cadence_escalation_closure.py`:
+    - compares GL-59 open escalation ids cycle-to-cycle and emits carried-open vs net-new-open vs net-new-closed diagnostics.
+    - reconciles net-new closed GL-59 escalation ids against GL-57 net-new closed action evidence and emits backed/unbacked closure diagnostics.
+    - supports `--fail-on-stalled`.
+  - 2026-06-01: updated `scripts/gl13_launch_evidence.py`:
+    - integrated GL-60 stage in base and replay paths.
+    - removed duplicate GL-60 stage invocation in both flows to avoid repeated execution and duplicate diagnostics churn.
+    - GL-16 evidence pack now includes GL-60 report/summary paths and escalation-closure diagnostics fields.
+  - 2026-06-01: added/updated focused tests:
+    - `tests/test_gl60_closure_cadence_escalation_closure_cadence_escalation_closure.py`:
+      - not-required path
+      - progressing path with GL-57-backed net-new closed reconciliation
+      - stalled fail path
+    - `tests/test_gl13_launch_evidence.py`:
+      - updated READY/HOLD assertions for GL-60 escalation-closure diagnostics fields.
+  - 2026-06-01: focused verification passed:
+    - `python -m unittest tests.test_gl60_closure_cadence_escalation_closure_cadence_escalation_closure`
+    - `python -m unittest tests.test_gl13_launch_evidence`
+    - `python scripts/doc_sync.py --output -`
+    - `python scripts/launch_gate.py --output - --summary-output -` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
+### GL-61 Submission Queue Follow-Up Resolution Escalation Action Plan Closure Cadence Escalation Acknowledgement Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Bridge
+
+- Status: Complete
+- Goal: convert GL-60 escalation-closure snapshots into machine-readable refresh-cadence diagnostics so operators can distinguish on-schedule GL-60 closure cycles from due and overdue-stalled GL-60 closure cycles, without changing launch-gate decision ownership.
+- Files:
+  - `scripts/gl61_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.py`
+  - `scripts/gl13_launch_evidence.py`
+  - `tests/test_gl61_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.py`
+  - `tests/test_gl13_launch_evidence.py`
+  - `docs/current/status/2026-05-25-broad-product-launch-plan.md`
+  - `docs/current/status/CURRENT_STATUS.md`
+  - `docs/current/status/baselines/README.md`
+- Work:
+  - Add GL-61 escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence runner:
+    - input: GL-60 escalation-closure report + optional previous GL-61 snapshot.
+    - output: `real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.v1` report + markdown summary.
+    - cadence surfaces:
+      - top-level status: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status`
+      - warning set: `warning_codes`
+      - counts: total/open/stale-open, GL-60 net-new-closed deltas, GL-57-backed net-new-closed deltas, stall cycles
+      - refresh cadence: `cadence_status`, `next_refresh_due_utc`, `due_in_hours`
+      - explicit row exports: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows`
+  - Integrate GL-61 stage into GL-13 bridge:
+    - run after GL-60 escalation-closure stage (both base and replay flows)
+    - add GL-61 report/summary paths and diagnostics to GL-16 evidence pack.
+  - Keep launch policy strictness unchanged:
+    - launch decision remains owned by `launch_gate.py`
+    - GL-61 only adds operator cadence diagnostics for GL-60 closure-cycle execution discipline.
+- Acceptance:
+  - Every GL-13 bridge run emits GL-61 escalation-closure-cadence report/summary and publishes GL-61 diagnostics in GL-16 evidence pack.
+  - Diagnostics distinguish `..._ESCALATION_CLOSURE_CADENCE_NOT_REQUIRED`, `..._ESCALATION_CLOSURE_CADENCE_BASELINE_INITIALIZED`, `..._ESCALATION_CLOSURE_CADENCE_ON_SCHEDULE`, `..._ESCALATION_CLOSURE_CADENCE_DUE`, and `..._ESCALATION_CLOSURE_CADENCE_OVERDUE_STALLED`.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-06-01: added `scripts/gl61_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.py`:
+    - binds GL-60 escalation-closure status/counts to refresh cadence and stalled-cycle accumulation.
+    - emits due/overdue-stalled diagnostics and supports `--fail-on-overdue-stalled`.
+  - 2026-06-01: updated `scripts/gl13_launch_evidence.py`:
+    - integrated GL-61 stage in base and replay paths.
+    - GL-16 evidence pack now includes GL-61 report/summary paths and escalation-closure-cadence diagnostics fields.
+  - 2026-06-01: added/updated focused tests:
+    - `tests/test_gl61_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.py`:
+      - not-required path
+      - cadence-due path
+      - overdue-stalled fail path
+    - `tests/test_gl13_launch_evidence.py`:
+      - updated READY/HOLD assertions for GL-61 escalation-closure-cadence diagnostics fields.
+  - 2026-06-01: focused verification passed:
+    - `python -m unittest tests.test_gl61_closure_cadence_escalation_closure_cadence_escalation_closure_cadence`
+    - `python -m unittest tests.test_gl13_launch_evidence`
+    - `python scripts/doc_sync.py --output -`
+    - `python scripts/launch_gate.py --output - --summary-output -` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
+
 ## Execution Rules For GL Work
 
 - Execute `GL-*` in numeric order unless a later card is explicitly marked as independent.
@@ -3121,9 +3272,9 @@ Strengthening path:
 
 ## Recommended Next Step
 
-Proceed with `GL-59` (or next newly-defined GL card) to continue driving net-new launch-gate-eligible real loop/modality expansion while keeping GL-24/GL-33/GL-41/GL-42/GL-43/GL-44/GL-45/GL-46/GL-47/GL-48/GL-49/GL-50/GL-51/GL-52/GL-53/GL-54/GL-55/GL-56/GL-57/GL-58 operator-execution evidence fresh.
+Proceed with `GL-62` (or next newly-defined GL card) to continue driving net-new launch-gate-eligible real loop/modality expansion while keeping GL-24/GL-33/GL-41/GL-42/GL-43/GL-44/GL-45/GL-46/GL-47/GL-48/GL-49/GL-50/GL-51/GL-52/GL-53/GL-54/GL-55/GL-56/GL-57/GL-58/GL-59/GL-60/GL-61 operator-execution evidence fresh.
 
 Reason:
 
-- `GL-01` through `GL-58` are complete; baseline bridge now includes GL-58 escalation-closure-cadence-escalation-closure-cadence diagnostics on top of GL-57 escalation-closure-cadence-escalation-closure diagnostics.
+- `GL-01` through `GL-61` are complete; baseline bridge now includes GL-61 escalation-closure-cadence diagnostics on top of GL-60 escalation-closure diagnostics.
 - The remaining blocker is still real launch-gate-eligible loop/modality volume in baseline evidence, not release-gate/doc-sync/security contract coverage.

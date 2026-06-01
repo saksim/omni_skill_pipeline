@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -94,15 +95,28 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _read_json(path: Path) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(_path_for_io(path).read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("JSON root must be an object: %s" % path)
     return payload
 
 
 def _write_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    io_path = _path_for_io(path)
+    io_path.parent.mkdir(parents=True, exist_ok=True)
+    io_path.write_text(content, encoding="utf-8")
+
+
+def _path_for_io(path: Path) -> Path:
+    resolved = path.resolve()
+    if os.name != "nt":
+        return resolved
+    text = str(resolved)
+    if text.startswith("\\\\?\\"):
+        return Path(text)
+    if text.startswith("\\\\"):
+        return Path("\\\\?\\UNC\\" + text[2:])
+    return Path("\\\\?\\" + text)
 
 
 def _to_int(value: Any, *, default: int = 0) -> int:

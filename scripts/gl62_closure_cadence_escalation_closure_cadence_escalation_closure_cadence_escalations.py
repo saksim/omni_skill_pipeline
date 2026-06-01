@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import json
@@ -17,7 +17,7 @@ DEFAULT_ESCALATION_CLOSURE_CADENCE_REPORT_PATH = (
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
-    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-report.json"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-report.json"
 )
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT
@@ -26,7 +26,7 @@ DEFAULT_OUTPUT_PATH = (
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
-    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-report.json"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-report.json"
 )
 DEFAULT_SUMMARY_PATH = (
     REPO_ROOT
@@ -35,7 +35,7 @@ DEFAULT_SUMMARY_PATH = (
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
-    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary.md"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary.md"
 )
 
 
@@ -113,23 +113,23 @@ def _path_for_io(path: Path) -> Path:
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Generate GL-59 escalation diagnostics from GL-58 escalation-closure-cadence "
+            "Generate GL-62 escalation diagnostics from GL-61 escalation-closure-cadence "
             "snapshots by exporting monitor/due/overdue-stalled cadence-escalation rows."
         )
     )
     parser.add_argument(
-        "--submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-report",
+        "--submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-report",
         default=str(DEFAULT_ESCALATION_CLOSURE_CADENCE_REPORT_PATH),
     )
     parser.add_argument(
         "--output",
         default=str(DEFAULT_OUTPUT_PATH),
-        help='GL-59 report output path. Use "-" to skip writing file.',
+        help='GL-62 report output path. Use "-" to skip writing file.',
     )
     parser.add_argument(
         "--summary-output",
         default=str(DEFAULT_SUMMARY_PATH),
-        help='GL-59 summary output path. Use "-" to skip writing file.',
+        help='GL-62 summary output path. Use "-" to skip writing file.',
     )
     parser.add_argument("--owner", default="controlled-beta-ops")
     parser.add_argument(
@@ -153,7 +153,7 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Exit with code 1 when status is "
-            "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_OVERDUE_STALLED."
+            "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_OVERDUE_STALLED."
         ),
     )
     parser.add_argument("--print-json", action="store_true")
@@ -162,21 +162,21 @@ def _parse_args() -> argparse.Namespace:
 
 def _status_from_inputs(
     *,
-    cadence_status_gl58: str,
+    cadence_status_gl61: str,
     open_item_count: int,
     blocked_overdue_stalled_count: int,
     escalation_due_count: int,
 ) -> str:
-    status = cadence_status_gl58.strip().upper()
+    status = cadence_status_gl61.strip().upper()
     if open_item_count <= 0:
-        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED"
+        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED"
     if blocked_overdue_stalled_count > 0:
-        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_OVERDUE_STALLED"
+        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_OVERDUE_STALLED"
     if escalation_due_count > 0:
-        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_DUE"
+        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_DUE"
     if open_item_count > 0:
-        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_MONITORING"
-    return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED"
+        return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_MONITORING"
+    return "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED"
 
 
 def _build_report(
@@ -187,9 +187,9 @@ def _build_report(
     now_utc: datetime,
     escalate_after_due_hours: float,
 ) -> dict[str, Any]:
-    cadence_status_gl58 = str(
+    cadence_status_gl61 = str(
         escalation_closure_cadence_report.get(
-            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status",
+            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status",
             "unknown",
         )
     ).strip()
@@ -198,7 +198,7 @@ def _build_report(
         cadence_warning_codes = []
 
     cadence_counts = escalation_closure_cadence_report.get(
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts",
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts",
         {},
     )
     if not isinstance(cadence_counts, dict):
@@ -209,7 +209,7 @@ def _build_report(
         cadence_refresh = {}
 
     cadence_rows = escalation_closure_cadence_report.get(
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows",
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows",
         [],
     )
     if not isinstance(cadence_rows, list):
@@ -232,16 +232,16 @@ def _build_report(
             continue
 
         action_id = str(row.get("action_id_gl48", "")).strip()
-        closure_item_id_gl57 = str(row.get("closure_item_id_gl57", "")).strip()
-        row_owner = str(row.get("owner_gl57", "")).strip() or owner
+        closure_item_id_gl60 = str(row.get("closure_item_id_gl60", "")).strip()
+        row_owner = str(row.get("owner_gl60", "")).strip() or owner
 
         escalation_severity = "monitor"
         escalation_reason_code = (
-            "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_monitoring"
+            "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_monitoring"
         )
         escalation_action = "continue_cadence_monitoring"
         row_overdue_by_hours = report_level_overdue_by_hours
-        next_refresh_due_dt = _utc_timestamp_to_datetime(row.get("next_refresh_due_utc_gl58"))
+        next_refresh_due_dt = _utc_timestamp_to_datetime(row.get("next_refresh_due_utc_gl61"))
         if next_refresh_due_dt is not None:
             row_due_in_hours = (next_refresh_due_dt - now_utc).total_seconds() / 3600.0
             if row_due_in_hours < 0:
@@ -249,10 +249,10 @@ def _build_report(
             else:
                 row_overdue_by_hours = 0.0
 
-        if cadence_status_gl58.upper().endswith("_OVERDUE_STALLED"):
+        if cadence_status_gl61.upper().endswith("_OVERDUE_STALLED"):
             escalation_severity = "blocked_overdue_stalled"
             escalation_reason_code = (
-                "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled"
+                "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled"
             )
             escalation_action = "escalate_operator_immediately"
             blocked_overdue_stalled_count += 1
@@ -260,50 +260,50 @@ def _build_report(
             if row_overdue_by_hours >= escalate_after_due_hours:
                 escalation_severity = "due_breached"
                 escalation_reason_code = (
-                    "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_breached"
+                    "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_breached"
                 )
                 escalation_action = "escalate_due_breach"
             else:
                 escalation_severity = "due"
                 escalation_reason_code = (
-                    "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due"
+                    "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due"
                 )
                 escalation_action = "execute_due_refresh_cycle"
             escalation_due_count += 1
         elif cadence_item_status == "baseline_open":
             escalation_severity = "baseline_open"
             escalation_reason_code = (
-                "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_baseline_initialized"
+                "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_baseline_initialized"
             )
             escalation_action = "start_first_refresh_cycle"
         elif cadence_item_status == "on_schedule":
             escalation_severity = "on_schedule"
             escalation_reason_code = (
-                "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_on_schedule"
+                "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_on_schedule"
             )
             escalation_action = "monitor_until_due"
 
         escalation_rows.append(
             {
-                "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-%s"
-                % (action_id or closure_item_id_gl57 or "unbound"),
+                "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-%s"
+                % (action_id or closure_item_id_gl60 or "unbound"),
                 "escalation_item_status": "open",
                 "escalation_severity": escalation_severity,
                 "escalation_reason_code": escalation_reason_code,
                 "escalation_action": escalation_action,
                 "owner": row_owner,
-                "closure_item_id_gl57": closure_item_id_gl57,
-                "closure_progress_state_gl57": str(row.get("closure_progress_state_gl57", "")).strip().lower(),
-                "closure_item_status_gl57": str(row.get("closure_item_status_gl57", "")).strip().lower(),
+                "closure_item_id_gl60": closure_item_id_gl60,
+                "closure_progress_state_gl60": str(row.get("closure_progress_state_gl60", "")).strip().lower(),
+                "closure_item_status_gl60": str(row.get("closure_item_status_gl60", "")).strip().lower(),
                 "action_id_gl48": action_id,
-                "escalation_item_id_gl56": str(row.get("escalation_item_id_gl56", "")).strip(),
+                "escalation_item_id_gl59": str(row.get("escalation_item_id_gl59", "")).strip(),
                 "acknowledgement_ingestion_item_id_gl55": str(
                     row.get("acknowledgement_ingestion_item_id_gl55", "")
                 ).strip(),
                 "required_modality_gl47": str(row.get("required_modality_gl47", "")).strip().lower(),
-                "escalation_severity_gl56": str(row.get("escalation_severity_gl56", "")).strip().lower(),
-                "cadence_item_status_gl58": cadence_item_status,
-                "next_refresh_due_utc_gl58": str(row.get("next_refresh_due_utc_gl58", "")).strip(),
+                "escalation_severity_gl59": str(row.get("escalation_severity_gl59", "")).strip().lower(),
+                "cadence_item_status_gl61": cadence_item_status,
+                "next_refresh_due_utc_gl61": str(row.get("next_refresh_due_utc_gl61", "")).strip(),
                 "escalation_evaluated_at_utc": _datetime_to_utc_iso(now_utc),
             }
         )
@@ -333,13 +333,13 @@ def _build_report(
             0 if str(item.get("escalation_severity", "")).strip() in {"due_breached", "due"} else 1,
             str(item.get("required_modality_gl47", "")),
             str(item.get("action_id_gl48", "")),
-            str(item.get("closure_item_id_gl57", "")),
+            str(item.get("closure_item_id_gl60", "")),
         )
     )
 
     open_item_count = len(escalation_rows)
     status = _status_from_inputs(
-        cadence_status_gl58=cadence_status_gl58,
+        cadence_status_gl61=cadence_status_gl61,
         open_item_count=open_item_count,
         blocked_overdue_stalled_count=blocked_overdue_stalled_count,
         escalation_due_count=escalation_due_count,
@@ -348,15 +348,15 @@ def _build_report(
     warning_codes: list[str] = []
     if open_item_count > 0:
         warning_codes.append(
-            "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_items_present"
+            "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_items_present"
         )
     if blocked_overdue_stalled_count > 0:
         warning_codes.append(
-            "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled_escalation_required"
+            "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled_escalation_required"
         )
     if escalation_due_count > 0:
         warning_codes.append(
-            "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_escalation_required"
+            "acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_escalation_required"
         )
     warning_codes.extend(str(item).strip() for item in cadence_warning_codes if str(item).strip())
     warning_codes = _unique_preserve_order(warning_codes)
@@ -367,8 +367,8 @@ def _build_report(
         "blocked_overdue_stalled_item_count": blocked_overdue_stalled_count,
         "due_item_count": escalation_due_count,
         "monitor_item_count": max(0, open_item_count - blocked_overdue_stalled_count - escalation_due_count),
-        "cadence_stall_cycle_count_gl58": _to_int(cadence_counts.get("stall_cycle_count", 0), default=0),
-        "cadence_overdue_stalled_cycles_threshold_gl58": _to_int(
+        "cadence_stall_cycle_count_gl61": _to_int(cadence_counts.get("stall_cycle_count", 0), default=0),
+        "cadence_overdue_stalled_cycles_threshold_gl61": _to_int(
             cadence_counts.get("overdue_stalled_cycles_threshold", 0),
             default=0,
         ),
@@ -376,26 +376,26 @@ def _build_report(
     }
 
     return {
-        "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.v1",
+        "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.v1",
         "generated_at_utc": _datetime_to_utc_iso(now_utc),
         "owner": owner,
         "input_paths": {
-            "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report": str(
+            "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report": str(
                 escalation_closure_cadence_report_path
             ),
         },
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status_gl58": cadence_status_gl58,
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status": status,
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status_gl61": cadence_status_gl61,
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status": status,
         "warning_codes": warning_codes,
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts": counts,
-        "owner_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts": owner_counts,
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_rows": escalation_rows,
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts": counts,
+        "owner_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts": owner_counts,
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_rows": escalation_rows,
     }
 
 
 def _render_summary(report: dict[str, Any]) -> str:
     counts = report.get(
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts",
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts",
         {},
     )
     if not isinstance(counts, dict):
@@ -404,7 +404,7 @@ def _render_summary(report: dict[str, Any]) -> str:
     if not isinstance(warning_codes, list):
         warning_codes = []
     rows = report.get(
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_rows",
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_rows",
         [],
     )
     if not isinstance(rows, list):
@@ -413,17 +413,17 @@ def _render_summary(report: dict[str, Any]) -> str:
     lines = [
         "# Real Trial Submission Queue Follow-Up Resolution Escalation Action Plan Closure Cadence Escalation Acknowledgement Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Escalations Summary",
         "",
-        "- GL-58 escalation-closure-cadence status: `%s`"
+        "- GL-61 escalation-closure-cadence status: `%s`"
         % str(
             report.get(
-                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status_gl58",
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status_gl61",
                 "unknown",
             )
         ),
-        "- GL-59 escalation status: `%s`"
+        "- GL-62 escalation status: `%s`"
         % str(
             report.get(
-                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status",
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status",
                 "unknown",
             )
         ),
@@ -452,7 +452,7 @@ def _render_summary(report: dict[str, Any]) -> str:
                 % (
                     str(row.get("escalation_item_id", "")),
                     str(row.get("escalation_severity", "")),
-                    str(row.get("cadence_item_status_gl58", "")),
+                    str(row.get("cadence_item_status_gl61", "")),
                     str(row.get("required_modality_gl47", "")),
                     str(row.get("escalation_action", "")),
                 )
@@ -467,7 +467,7 @@ def main() -> int:
     args = _parse_args()
     escalation_closure_cadence_report_path = Path(
         str(
-            args.submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report
+            args.submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report
         ).strip()
     ).resolve()
     output_path = None if str(args.output).strip() == "-" else Path(str(args.output).strip()).resolve()
@@ -477,7 +477,7 @@ def main() -> int:
     try:
         if not escalation_closure_cadence_report_path.is_file():
             raise ValueError(
-                "GL-58 escalation-closure-cadence report path does not exist: %s"
+                "GL-61 escalation-closure-cadence report path does not exist: %s"
                 % escalation_closure_cadence_report_path
             )
         escalation_closure_cadence_report = _read_json(escalation_closure_cadence_report_path)
@@ -521,7 +521,7 @@ def main() -> int:
         )
 
     counts = report.get(
-        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts",
+        "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts",
         {},
     )
     if not isinstance(counts, dict):
@@ -532,7 +532,7 @@ def main() -> int:
         % (
             str(
                 report.get(
-                    "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status",
+                    "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status",
                     "unknown",
                 )
             ),
@@ -547,13 +547,15 @@ def main() -> int:
         return 1
     if bool(args.fail_on_overdue_stalled) and str(
         report.get(
-            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status",
+            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status",
             "",
         )
-    ).strip().upper() == "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_OVERDUE_STALLED":
+    ).strip().upper() == "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_OVERDUE_STALLED":
         return 1
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+

@@ -1,7 +1,9 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -122,6 +124,21 @@ REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CA
     REPO_ROOT
     / "scripts"
     / "gl59_closure_cadence_escalation_closure_cadence_escalations.py"
+)
+REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SCRIPT = (
+    REPO_ROOT
+    / "scripts"
+    / "gl60_closure_cadence_escalation_closure_cadence_escalation_closure.py"
+)
+REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SCRIPT = (
+    REPO_ROOT
+    / "scripts"
+    / "gl61_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.py"
+)
+REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SCRIPT = (
+    REPO_ROOT
+    / "scripts"
+    / "gl62_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.py"
 )
 REAL_LOOP_BACKFILL_HANDOFF_SCRIPT = REPO_ROOT / "scripts" / "gl24_handoff.py"
 REAL_LOOP_BACKFILL_HANDOFF_ESCALATIONS_SCRIPT = (
@@ -707,6 +724,60 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
     / "real-trial-loop-collection"
     / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary.md"
 )
+DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-report.json"
+)
+DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-summary.md"
+)
+DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-report.json"
+)
+DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-summary.md"
+)
+DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-report.json"
+)
+DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "current"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary.md"
+)
 DEFAULT_BACKFILL_HANDOFF_REPORT = (
     REPO_ROOT
     / "docs"
@@ -1148,6 +1219,42 @@ def _parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-output",
+        default=str(
+            DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_REPORT
+        ),
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-summary-output",
+        default=str(
+            DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SUMMARY
+        ),
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-output",
+        default=str(
+            DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_REPORT
+        ),
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-summary-output",
+        default=str(
+            DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SUMMARY
+        ),
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-output",
+        default=str(
+            DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_REPORT
+        ),
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary-output",
+        default=str(
+            DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SUMMARY
+        ),
+    )
+    parser.add_argument(
         "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-now-utc",
         default="",
         help="Optional UTC timestamp for deterministic GL-59 escalation evaluation.",
@@ -1207,6 +1314,34 @@ def _parse_args() -> argparse.Namespace:
         "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-now-utc",
         default="",
         help="Optional UTC timestamp for deterministic GL-58 escalation-closure cadence evaluation.",
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-refresh-interval-hours",
+        type=float,
+        default=24.0,
+        help="GL-61 escalation-closure-cadence refresh interval (hours).",
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-overdue-stalled-cycles",
+        type=int,
+        default=2,
+        help="GL-61 overdue stalled cycle threshold (default: 2).",
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-now-utc",
+        default="",
+        help="Optional UTC timestamp for deterministic GL-61 escalation-closure-cadence evaluation.",
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-now-utc",
+        default="",
+        help="Optional UTC timestamp for deterministic GL-62 escalation evaluation.",
+    )
+    parser.add_argument(
+        "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalate-after-due-hours",
+        type=float,
+        default=24.0,
+        help="GL-62 escalation threshold hours after GL-61 cadence due timestamp (default: 24).",
     )
     parser.add_argument(
         "--backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalate-after-due-hours",
@@ -1341,7 +1476,9 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--print-summary", action="store_true")
     parser.add_argument("--fail-on-blocker", action="store_true")
     parser.add_argument("--fail-on-hold", action="store_true")
-    return parser.parse_args()
+    args = parser.parse_args()
+    _apply_windows_output_path_aliases(args)
+    return args
 
 
 def _resolve_required_output_path(value: str, *, name: str) -> Path:
@@ -1361,16 +1498,95 @@ def _run_command(command: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def _path_for_io(path: Path) -> Path:
+    resolved = path.resolve()
+    if os.name != "nt":
+        return resolved
+    text = str(resolved)
+    if text.startswith("\\\\?\\"):
+        return Path(text)
+    if text.startswith("\\\\"):
+        return Path("\\\\?\\UNC\\" + text[2:])
+    return Path("\\\\?\\" + text)
+
+
+def _maybe_windows_shorten_output_path(raw_value: str, *, label: str) -> str:
+    resolved = Path(str(raw_value).strip()).resolve()
+    if os.name != "nt":
+        return str(resolved)
+    if len(str(resolved)) <= 248:
+        return str(resolved)
+
+    suffix = resolved.suffix
+    if not suffix:
+        suffix = ".md" if "summary" in label else ".json"
+
+    normalized_label = (
+        label.replace("_summary_output", "")
+        .replace("_manifest_output", "")
+        .replace("_template_output", "")
+        .replace("_output", "")
+        .replace("_", "-")
+    )
+    normalized_label = "".join(ch for ch in normalized_label if ch.isalnum() or ch == "-").strip("-")
+    if not normalized_label:
+        normalized_label = "gl13-output"
+    normalized_label = normalized_label[:28]
+    digest = hashlib.sha1(f"{label}:{resolved}".encode("utf-8")).hexdigest()[:10]
+    alias = resolved.parent / f"{normalized_label}-{digest}{suffix}"
+    if len(str(alias)) > 248:
+        alias = resolved.parent / f"gl13-{digest}{suffix}"
+    return str(alias)
+
+
+def _apply_windows_output_path_aliases(args: argparse.Namespace) -> None:
+    if os.name != "nt":
+        return
+    output_suffixes = (
+        "_output",
+        "_summary_output",
+        "_manifest_output",
+        "_template_output",
+    )
+    for attr_name, attr_value in vars(args).items():
+        if not attr_name.endswith(output_suffixes):
+            continue
+        if not isinstance(attr_value, str):
+            continue
+        cleaned = attr_value.strip()
+        if not cleaned or cleaned == "-":
+            continue
+        setattr(
+            args,
+            attr_name,
+            _maybe_windows_shorten_output_path(cleaned, label=attr_name),
+        )
+
+
+def _is_default_cli_path(*, raw_value: str, default_path: Path, label: str) -> bool:
+    resolved_default = default_path.resolve()
+    resolved_value = Path(str(raw_value).strip()).resolve()
+    if resolved_value == resolved_default:
+        return True
+    if os.name != "nt":
+        return False
+    aliased_default = Path(
+        _maybe_windows_shorten_output_path(str(resolved_default), label=label)
+    ).resolve()
+    return resolved_value == aliased_default
+
+
 def _read_json(path: Path) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(_path_for_io(path).read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("JSON root must be an object: %s" % path)
     return payload
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    io_path = _path_for_io(path)
+    io_path.parent.mkdir(parents=True, exist_ok=True)
+    io_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def _print_command_output(prefix: str, result: subprocess.CompletedProcess[str]) -> None:
@@ -1564,7 +1780,11 @@ def _build_backfill_submission_consumption_command(args: argparse.Namespace) -> 
     configured_real_inputs_path = Path(args.backfill_submission_real_inputs).resolve()
     real_inputs_path = (
         template_output_dir / default_real_inputs_path.name
-        if configured_real_inputs_path == default_real_inputs_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_real_inputs,
+            default_path=default_real_inputs_path,
+            label="backfill_submission_real_inputs",
+        )
         else configured_real_inputs_path
     )
     if not real_inputs_path.is_file():
@@ -1595,7 +1815,11 @@ def _build_backfill_submission_consumption_command(args: argparse.Namespace) -> 
     configured_consumption_output_path = Path(args.backfill_submission_consumption_output).resolve()
     consumption_output_path = (
         template_output_dir / default_consumption_output_path.name
-        if configured_consumption_output_path == default_consumption_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_consumption_output,
+            default_path=default_consumption_output_path,
+            label="backfill_submission_consumption_output",
+        )
         else configured_consumption_output_path
     )
 
@@ -1603,7 +1827,11 @@ def _build_backfill_submission_consumption_command(args: argparse.Namespace) -> 
     configured_consumption_summary_output_path = Path(args.backfill_submission_consumption_summary_output).resolve()
     consumption_summary_output_path = (
         template_output_dir / default_consumption_summary_output_path.name
-        if configured_consumption_summary_output_path == default_consumption_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_consumption_summary_output,
+            default_path=default_consumption_summary_output_path,
+            label="backfill_submission_consumption_summary_output",
+        )
         else configured_consumption_summary_output_path
     )
 
@@ -1611,7 +1839,11 @@ def _build_backfill_submission_consumption_command(args: argparse.Namespace) -> 
     configured_consumed_manifest_output_path = Path(args.backfill_submission_consumed_manifest_output).resolve()
     consumed_manifest_output_path = (
         template_output_dir / default_consumed_manifest_output_path.name
-        if configured_consumed_manifest_output_path == default_consumed_manifest_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_consumed_manifest_output,
+            default_path=default_consumed_manifest_output_path,
+            label="backfill_submission_consumed_manifest_output",
+        )
         else configured_consumed_manifest_output_path
     )
 
@@ -1643,7 +1875,11 @@ def _build_backfill_submission_throughput_command(args: argparse.Namespace) -> l
     configured_throughput_output_path = Path(args.backfill_submission_throughput_output).resolve()
     throughput_output_path = (
         Path(args.backfill_submission_consumption_output).resolve().parent / default_throughput_output_path.name
-        if configured_throughput_output_path == default_throughput_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_throughput_output,
+            default_path=default_throughput_output_path,
+            label="backfill_submission_throughput_output",
+        )
         else configured_throughput_output_path
     )
 
@@ -1652,7 +1888,11 @@ def _build_backfill_submission_throughput_command(args: argparse.Namespace) -> l
     throughput_summary_output_path = (
         Path(args.backfill_submission_consumption_summary_output).resolve().parent
         / default_throughput_summary_output_path.name
-        if configured_throughput_summary_output_path == default_throughput_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_throughput_summary_output,
+            default_path=default_throughput_summary_output_path,
+            label="backfill_submission_throughput_summary_output",
+        )
         else configured_throughput_summary_output_path
     )
 
@@ -1682,7 +1922,11 @@ def _build_backfill_submission_queue_command(args: argparse.Namespace) -> list[s
     configured_queue_output_path = Path(args.backfill_submission_queue_output).resolve()
     queue_output_path = (
         Path(args.backfill_submission_throughput_output).resolve().parent / default_queue_output_path.name
-        if configured_queue_output_path == default_queue_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_output,
+            default_path=default_queue_output_path,
+            label="backfill_submission_queue_output",
+        )
         else configured_queue_output_path
     )
 
@@ -1691,7 +1935,11 @@ def _build_backfill_submission_queue_command(args: argparse.Namespace) -> list[s
     queue_summary_output_path = (
         Path(args.backfill_submission_throughput_summary_output).resolve().parent
         / default_queue_summary_output_path.name
-        if configured_queue_summary_output_path == default_queue_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_summary_output,
+            default_path=default_queue_summary_output_path,
+            label="backfill_submission_queue_summary_output",
+        )
         else configured_queue_summary_output_path
     )
 
@@ -1723,7 +1971,11 @@ def _build_backfill_submission_queue_completion_command(args: argparse.Namespace
     configured_completion_output_path = Path(args.backfill_submission_queue_completion_output).resolve()
     completion_output_path = (
         Path(args.backfill_submission_queue_output).resolve().parent / default_completion_output_path.name
-        if configured_completion_output_path == default_completion_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_completion_output,
+            default_path=default_completion_output_path,
+            label="backfill_submission_queue_completion_output",
+        )
         else configured_completion_output_path
     )
 
@@ -1734,7 +1986,11 @@ def _build_backfill_submission_queue_completion_command(args: argparse.Namespace
     completion_summary_output_path = (
         Path(args.backfill_submission_queue_summary_output).resolve().parent
         / default_completion_summary_output_path.name
-        if configured_completion_summary_output_path == default_completion_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_completion_summary_output,
+            default_path=default_completion_summary_output_path,
+            label="backfill_submission_queue_completion_summary_output",
+        )
         else configured_completion_summary_output_path
     )
 
@@ -1764,7 +2020,11 @@ def _build_backfill_submission_queue_commitments_command(args: argparse.Namespac
     configured_commitments_output_path = Path(args.backfill_submission_queue_commitments_output).resolve()
     commitments_output_path = (
         Path(args.backfill_submission_queue_completion_output).resolve().parent / default_commitments_output_path.name
-        if configured_commitments_output_path == default_commitments_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_commitments_output,
+            default_path=default_commitments_output_path,
+            label="backfill_submission_queue_commitments_output",
+        )
         else configured_commitments_output_path
     )
 
@@ -1775,7 +2035,11 @@ def _build_backfill_submission_queue_commitments_command(args: argparse.Namespac
     commitments_summary_output_path = (
         Path(args.backfill_submission_queue_completion_summary_output).resolve().parent
         / default_commitments_summary_output_path.name
-        if configured_commitments_summary_output_path == default_commitments_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_commitments_summary_output,
+            default_path=default_commitments_summary_output_path,
+            label="backfill_submission_queue_commitments_summary_output",
+        )
         else configured_commitments_summary_output_path
     )
 
@@ -1810,7 +2074,11 @@ def _build_backfill_submission_queue_commitment_closure_command(args: argparse.N
     closure_output_path = (
         Path(args.backfill_submission_queue_commitments_output).resolve().parent
         / default_closure_output_path.name
-        if configured_closure_output_path == default_closure_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_commitment_closure_output,
+            default_path=default_closure_output_path,
+            label="backfill_submission_queue_commitment_closure_output",
+        )
         else configured_closure_output_path
     )
 
@@ -1821,7 +2089,11 @@ def _build_backfill_submission_queue_commitment_closure_command(args: argparse.N
     closure_summary_output_path = (
         Path(args.backfill_submission_queue_commitments_summary_output).resolve().parent
         / default_closure_summary_output_path.name
-        if configured_closure_summary_output_path == default_closure_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_commitment_closure_summary_output,
+            default_path=default_closure_summary_output_path,
+            label="backfill_submission_queue_commitment_closure_summary_output",
+        )
         else configured_closure_summary_output_path
     )
 
@@ -1850,7 +2122,11 @@ def _build_backfill_submission_queue_followup_command(args: argparse.Namespace) 
     followup_output_path = (
         Path(args.backfill_submission_queue_commitment_closure_output).resolve().parent
         / default_followup_output_path.name
-        if configured_followup_output_path == default_followup_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_output,
+            default_path=default_followup_output_path,
+            label="backfill_submission_queue_followup_output",
+        )
         else configured_followup_output_path
     )
 
@@ -1859,7 +2135,11 @@ def _build_backfill_submission_queue_followup_command(args: argparse.Namespace) 
     followup_summary_output_path = (
         Path(args.backfill_submission_queue_commitment_closure_summary_output).resolve().parent
         / default_followup_summary_output_path.name
-        if configured_followup_summary_output_path == default_followup_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_summary_output,
+            default_path=default_followup_summary_output_path,
+            label="backfill_submission_queue_followup_summary_output",
+        )
         else configured_followup_summary_output_path
     )
 
@@ -1888,7 +2168,11 @@ def _build_backfill_submission_queue_followup_resolution_command(args: argparse.
     resolution_output_path = (
         Path(args.backfill_submission_queue_followup_output).resolve().parent
         / default_resolution_output_path.name
-        if configured_resolution_output_path == default_resolution_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_output,
+            default_path=default_resolution_output_path,
+            label="backfill_submission_queue_followup_resolution_output",
+        )
         else configured_resolution_output_path
     )
 
@@ -1899,7 +2183,11 @@ def _build_backfill_submission_queue_followup_resolution_command(args: argparse.
     resolution_summary_output_path = (
         Path(args.backfill_submission_queue_followup_summary_output).resolve().parent
         / default_resolution_summary_output_path.name
-        if configured_resolution_summary_output_path == default_resolution_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_summary_output,
+            default_path=default_resolution_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_summary_output",
+        )
         else configured_resolution_summary_output_path
     )
 
@@ -1936,7 +2224,11 @@ def _build_backfill_submission_queue_followup_resolution_escalations_command(
     escalations_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_output).resolve().parent
         / default_escalations_output_path.name
-        if configured_escalations_output_path == default_escalations_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalations_output,
+            default_path=default_escalations_output_path,
+            label="backfill_submission_queue_followup_resolution_escalations_output",
+        )
         else configured_escalations_output_path
     )
 
@@ -1949,7 +2241,11 @@ def _build_backfill_submission_queue_followup_resolution_escalations_command(
     escalations_summary_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_summary_output).resolve().parent
         / default_escalations_summary_output_path.name
-        if configured_escalations_summary_output_path == default_escalations_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalations_summary_output,
+            default_path=default_escalations_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalations_summary_output",
+        )
         else configured_escalations_summary_output_path
     )
 
@@ -1986,7 +2282,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_acknowledgem
     ack_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_escalations_output).resolve().parent
         / default_ack_output_path.name
-        if configured_ack_output_path == default_ack_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_acknowledgements_output,
+            default_path=default_ack_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_acknowledgements_output",
+        )
         else configured_ack_output_path
     )
 
@@ -1999,7 +2299,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_acknowledgem
     ack_summary_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_escalations_summary_output).resolve().parent
         / default_ack_summary_output_path.name
-        if configured_ack_summary_output_path == default_ack_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_acknowledgements_summary_output,
+            default_path=default_ack_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_acknowledgements_summary_output",
+        )
         else configured_ack_summary_output_path
     )
 
@@ -2038,7 +2342,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_throughput_c
     throughput_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_escalation_acknowledgements_output).resolve().parent
         / default_throughput_output_path.name
-        if configured_throughput_output_path == default_throughput_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_throughput_output,
+            default_path=default_throughput_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_throughput_output",
+        )
         else configured_throughput_output_path
     )
 
@@ -2053,7 +2361,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_throughput_c
             args.backfill_submission_queue_followup_resolution_escalation_acknowledgements_summary_output
         ).resolve().parent
         / default_throughput_summary_output_path.name
-        if configured_throughput_summary_output_path == default_throughput_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_throughput_summary_output,
+            default_path=default_throughput_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_throughput_summary_output",
+        )
         else configured_throughput_summary_output_path
     )
 
@@ -2096,7 +2408,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
     action_plan_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_escalation_throughput_output).resolve().parent
         / default_action_plan_output_path.name
-        if configured_action_plan_output_path == default_action_plan_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_output,
+            default_path=default_action_plan_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_output",
+        )
         else configured_action_plan_output_path
     )
 
@@ -2111,7 +2427,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_throughput_summary_output
         ).resolve().parent
         / default_action_plan_summary_output_path.name
-        if configured_action_plan_summary_output_path == default_action_plan_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_summary_output,
+            default_path=default_action_plan_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_summary_output",
+        )
         else configured_action_plan_summary_output_path
     )
 
@@ -2154,7 +2474,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
     closure_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_escalation_action_plan_output).resolve().parent
         / default_closure_output_path.name
-        if configured_closure_output_path == default_closure_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_output,
+            default_path=default_closure_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_output",
+        )
         else configured_closure_output_path
     )
 
@@ -2169,7 +2493,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_summary_output
         ).resolve().parent
         / default_closure_summary_output_path.name
-        if configured_closure_summary_output_path == default_closure_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_summary_output,
+            default_path=default_closure_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_summary_output",
+        )
         else configured_closure_summary_output_path
     )
 
@@ -2212,7 +2540,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
     cadence_output_path = (
         Path(args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_output).resolve().parent
         / default_cadence_output_path.name
-        if configured_cadence_output_path == default_cadence_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_output,
+            default_path=default_cadence_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_output",
+        )
         else configured_cadence_output_path
     )
 
@@ -2227,7 +2559,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_summary_output
         ).resolve().parent
         / default_cadence_summary_output_path.name
-        if configured_cadence_summary_output_path == default_cadence_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_summary_output,
+            default_path=default_cadence_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_summary_output",
+        )
         else configured_cadence_summary_output_path
     )
 
@@ -2290,7 +2626,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_output
         ).resolve().parent
         / default_escalations_output_path.name
-        if configured_escalations_output_path == default_escalations_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_output,
+            default_path=default_escalations_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_output",
+        )
         else configured_escalations_output_path
     )
 
@@ -2305,7 +2645,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_summary_output
         ).resolve().parent
         / default_escalations_summary_output_path.name
-        if configured_escalations_summary_output_path == default_escalations_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_summary_output,
+            default_path=default_escalations_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_summary_output",
+        )
         else configured_escalations_summary_output_path
     )
 
@@ -2360,7 +2704,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_output
         ).resolve().parent
         / default_ingestion_output_path.name
-        if configured_ingestion_output_path == default_ingestion_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_output,
+            default_path=default_ingestion_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_output",
+        )
         else configured_ingestion_output_path
     )
 
@@ -2375,7 +2723,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_summary_output
         ).resolve().parent
         / default_ingestion_summary_output_path.name
-        if configured_ingestion_summary_output_path == default_ingestion_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_summary_output,
+            default_path=default_ingestion_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_summary_output",
+        )
         else configured_ingestion_summary_output_path
     )
 
@@ -2426,7 +2778,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_output
         ).resolve().parent
         / default_closure_output_path.name
-        if configured_closure_output_path == default_closure_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_output,
+            default_path=default_closure_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_output",
+        )
         else configured_closure_output_path
     )
 
@@ -2441,7 +2797,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_summary_output
         ).resolve().parent
         / default_closure_summary_output_path.name
-        if configured_closure_summary_output_path == default_closure_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_summary_output,
+            default_path=default_closure_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_summary_output",
+        )
         else configured_closure_summary_output_path
     )
 
@@ -2489,7 +2849,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_output
         ).resolve().parent
         / default_cadence_output_path.name
-        if configured_cadence_output_path == default_cadence_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_output,
+            default_path=default_cadence_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_output",
+        )
         else configured_cadence_output_path
     )
 
@@ -2504,7 +2868,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_summary_output
         ).resolve().parent
         / default_cadence_summary_output_path.name
-        if configured_cadence_summary_output_path == default_cadence_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_summary_output,
+            default_path=default_cadence_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_summary_output",
+        )
         else configured_cadence_summary_output_path
     )
 
@@ -2567,7 +2935,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_output
         ).resolve().parent
         / default_escalations_output_path.name
-        if configured_escalations_output_path == default_escalations_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_output,
+            default_path=default_escalations_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_output",
+        )
         else configured_escalations_output_path
     )
 
@@ -2582,7 +2954,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_summary_output
         ).resolve().parent
         / default_escalations_summary_output_path.name
-        if configured_escalations_summary_output_path == default_escalations_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_summary_output,
+            default_path=default_escalations_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_summary_output",
+        )
         else configured_escalations_summary_output_path
     )
 
@@ -2639,7 +3015,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_output
         ).resolve().parent
         / default_closure_output_path.name
-        if configured_closure_output_path == default_closure_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_output,
+            default_path=default_closure_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_output",
+        )
         else configured_closure_output_path
     )
 
@@ -2654,7 +3034,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_summary_output
         ).resolve().parent
         / default_closure_summary_output_path.name
-        if configured_closure_summary_output_path == default_closure_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_summary_output,
+            default_path=default_closure_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_summary_output",
+        )
         else configured_closure_summary_output_path
     )
 
@@ -2705,7 +3089,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_output
         ).resolve().parent
         / default_cadence_output_path.name
-        if configured_cadence_output_path == default_cadence_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_output,
+            default_path=default_cadence_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_output",
+        )
         else configured_cadence_output_path
     )
 
@@ -2720,7 +3108,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_summary_output
         ).resolve().parent
         / default_cadence_summary_output_path.name
-        if configured_cadence_summary_output_path == default_cadence_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_summary_output,
+            default_path=default_cadence_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_summary_output",
+        )
         else configured_cadence_summary_output_path
     )
 
@@ -2783,7 +3175,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_output
         ).resolve().parent
         / default_escalations_output_path.name
-        if configured_escalations_output_path == default_escalations_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_output,
+            default_path=default_escalations_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_output",
+        )
         else configured_escalations_output_path
     )
 
@@ -2798,7 +3194,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_summary_output
         ).resolve().parent
         / default_escalations_summary_output_path.name
-        if configured_escalations_summary_output_path == default_escalations_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_summary_output,
+            default_path=default_escalations_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_summary_output",
+        )
         else configured_escalations_summary_output_path
     )
 
@@ -2855,7 +3255,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_output
         ).resolve().parent
         / default_output_path.name
-        if configured_output_path == default_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_output,
+            default_path=default_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_output",
+        )
         else configured_output_path
     )
 
@@ -2870,7 +3274,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_summary_output
         ).resolve().parent
         / default_summary_output_path.name
-        if configured_summary_output_path == default_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output,
+            default_path=default_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output",
+        )
         else configured_summary_output_path
     )
 
@@ -2922,7 +3330,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_output
         ).resolve().parent
         / default_output_path.name
-        if configured_output_path == default_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output,
+            default_path=default_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output",
+        )
         else configured_output_path
     )
 
@@ -2937,9 +3349,28 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output
         ).resolve().parent
         / default_summary_output_path.name
-        if configured_summary_output_path == default_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output,
+            default_path=default_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output",
+        )
         else configured_summary_output_path
     )
+
+    # GL-58 paths may be recomputed from parent/default filename and can exceed
+    # Windows path limits; shorten deterministically when needed.
+    output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output",
+        )
+    ).resolve()
+    summary_output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(summary_output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output",
+        )
+    ).resolve()
 
     args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output = str(
         output_path
@@ -3000,7 +3431,11 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output
         ).resolve().parent
         / default_output_path.name
-        if configured_output_path == default_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output,
+            default_path=default_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output",
+        )
         else configured_output_path
     )
 
@@ -3015,9 +3450,28 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
             args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output
         ).resolve().parent
         / default_summary_output_path.name
-        if configured_summary_output_path == default_summary_output_path
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output,
+            default_path=default_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output",
+        )
         else configured_summary_output_path
     )
+
+    # GL-59 paths may be recomputed from parent/default filename and can exceed
+    # Windows path limits; shorten deterministically when needed.
+    output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output",
+        )
+    ).resolve()
+    summary_output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(summary_output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output",
+        )
+    ).resolve()
 
     args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output = str(
         output_path
@@ -3057,6 +3511,288 @@ def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_
         command.extend(["--now-utc", now_utc])
     return command
 
+
+def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command(
+    args: argparse.Namespace,
+) -> list[str]:
+    default_output_path = (
+        DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_REPORT.resolve()
+    )
+    configured_output_path = Path(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output
+    ).resolve()
+    output_path = (
+        Path(
+            args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output
+        ).resolve().parent
+        / default_output_path.name
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output,
+            default_path=default_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output",
+        )
+        else configured_output_path
+    )
+
+    default_summary_output_path = (
+        DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SUMMARY.resolve()
+    )
+    configured_summary_output_path = Path(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output
+    ).resolve()
+    summary_output_path = (
+        Path(
+            args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output
+        ).resolve().parent
+        / default_summary_output_path.name
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output,
+            default_path=default_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output",
+        )
+        else configured_summary_output_path
+    )
+
+    # GL-60 paths may be recomputed from parent/default filename and can exceed
+    # Windows path limits; shorten deterministically when needed.
+    output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output",
+        )
+    ).resolve()
+    summary_output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(summary_output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output",
+        )
+    ).resolve()
+
+    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output = str(output_path)
+    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output = str(summary_output_path)
+
+    command = [
+        sys.executable,
+        str(
+            REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SCRIPT
+        ),
+        "--submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-report",
+        str(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output
+            ).resolve()
+        ),
+        "--submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-report",
+        str(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_output
+            ).resolve()
+        ),
+        "--output",
+        str(output_path),
+        "--summary-output",
+        str(summary_output_path),
+        "--owner",
+        str(args.backfill_submission_owner).strip() or "controlled-beta-ops",
+    ]
+    return command
+
+
+def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command(
+    args: argparse.Namespace,
+) -> list[str]:
+    default_output_path = (
+        DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_REPORT.resolve()
+    )
+    configured_output_path = Path(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output
+    ).resolve()
+    output_path = (
+        Path(
+            args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output
+        ).resolve().parent
+        / default_output_path.name
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output,
+            default_path=default_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output",
+        )
+        else configured_output_path
+    )
+
+    default_summary_output_path = (
+        DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SUMMARY.resolve()
+    )
+    configured_summary_output_path = Path(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output
+    ).resolve()
+    summary_output_path = (
+        Path(
+            args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output
+        ).resolve().parent
+        / default_summary_output_path.name
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output,
+            default_path=default_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output",
+        )
+        else configured_summary_output_path
+    )
+
+    # GL-61 paths may be recomputed from parent/default filename and can exceed
+    # Windows path limits; shorten deterministically when needed.
+    output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output",
+        )
+    ).resolve()
+    summary_output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(summary_output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output",
+        )
+    ).resolve()
+
+    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output = str(
+        output_path
+    )
+    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output = str(
+        summary_output_path
+    )
+
+    command = [
+        sys.executable,
+        str(
+            REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SCRIPT
+        ),
+        "--submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-report",
+        str(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output
+            ).resolve()
+        ),
+        "--output",
+        str(output_path),
+        "--summary-output",
+        str(summary_output_path),
+        "--owner",
+        str(args.backfill_submission_owner).strip() or "controlled-beta-ops",
+        "--refresh-interval-hours",
+        str(
+            float(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh_interval_hours
+            )
+        ),
+        "--overdue-stalled-cycles",
+        str(
+            int(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled_cycles
+            )
+        ),
+    ]
+    now_utc = str(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_now_utc
+    ).strip()
+    if now_utc:
+        command.extend(["--now-utc", now_utc])
+    return command
+
+
+
+def _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command(
+    args: argparse.Namespace,
+) -> list[str]:
+    default_output_path = (
+        DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_REPORT.resolve()
+    )
+    configured_output_path = Path(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output
+    ).resolve()
+    output_path = (
+        Path(
+            args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output
+        ).resolve().parent
+        / default_output_path.name
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output,
+            default_path=default_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output",
+        )
+        else configured_output_path
+    )
+
+    default_summary_output_path = (
+        DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SUMMARY.resolve()
+    )
+    configured_summary_output_path = Path(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output
+    ).resolve()
+    summary_output_path = (
+        Path(
+            args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output
+        ).resolve().parent
+        / default_summary_output_path.name
+        if _is_default_cli_path(
+            raw_value=args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output,
+            default_path=default_summary_output_path,
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output",
+        )
+        else configured_summary_output_path
+    )
+
+    # GL-62 paths may be recomputed from parent/default filename and can exceed
+    # Windows path limits; shorten deterministically when needed.
+    output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output",
+        )
+    ).resolve()
+    summary_output_path = Path(
+        _maybe_windows_shorten_output_path(
+            str(summary_output_path),
+            label="backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output",
+        )
+    ).resolve()
+
+    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output = str(
+        output_path
+    )
+    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output = str(
+        summary_output_path
+    )
+
+    command = [
+        sys.executable,
+        str(
+            REAL_LOOP_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SCRIPT
+        ),
+        "--submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-report",
+        str(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output
+            ).resolve()
+        ),
+        "--output",
+        str(output_path),
+        "--summary-output",
+        str(summary_output_path),
+        "--owner",
+        str(args.backfill_submission_owner).strip() or "controlled-beta-ops",
+        "--escalate-after-due-hours",
+        str(
+            float(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalate_after_due_hours
+            )
+        ),
+    ]
+    now_utc = str(
+        args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_now_utc
+    ).strip()
+    if now_utc:
+        command.extend(["--now-utc", now_utc])
+    return command
 
 def _build_backfill_handoff_command(args: argparse.Namespace) -> list[str]:
     command = [
@@ -3191,6 +3927,8 @@ def _build_evidence_pack(
     backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_report: dict[str, Any],
     backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report: dict[str, Any],
     backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report: dict[str, Any],
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report: dict[str, Any],
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report: dict[str, Any],
     backfill_handoff_report: dict[str, Any],
     backfill_handoff_escalations_report: dict[str, Any],
     run_report_paths: list[Path],
@@ -3532,6 +4270,50 @@ def _build_evidence_pack(
         dict,
     ):
         backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_counts = {}
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts = (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts",
+            {},
+        )
+    )
+    if not isinstance(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts,
+        dict,
+    ):
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts = {}
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts = (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report.get(
+            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts",
+            {},
+        )
+    )
+    if not isinstance(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts,
+        dict,
+    ):
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts = {}
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh = (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report.get(
+            "refresh_cadence",
+            {},
+        )
+    )
+    if not isinstance(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh,
+        dict,
+    ):
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh = {}
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_counts = (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report.get(
+            "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_counts",
+            {},
+        )
+    )
+    if not isinstance(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_counts,
+        dict,
+    ):
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_counts = {}
     backfill_handoff_counts = backfill_handoff_report.get("queue_item_counts", {})
     if not isinstance(backfill_handoff_counts, dict):
         backfill_handoff_counts = {}
@@ -3799,6 +4581,26 @@ def _build_evidence_pack(
             "real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary": str(
                 Path(
                     args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_summary_output
+                ).resolve()
+            ),
+            "real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report": str(
+                Path(
+                    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output
+                ).resolve()
+            ),
+            "real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary": str(
+                Path(
+                    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary_output
+                ).resolve()
+            ),
+            "real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report": str(
+                Path(
+                    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output
+                ).resolve()
+            ),
+            "real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary": str(
+                Path(
+                    args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_summary_output
                 ).resolve()
             ),
             "real_trial_backfill_handoff_report": str(Path(args.backfill_handoff_output).resolve()),
@@ -5795,6 +6597,226 @@ def _build_evidence_pack(
                 "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_rows",
                 [],
             ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_status": str(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                    "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_status",
+                    "unknown",
+                )
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_warning_codes": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "warning_codes",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_total_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "total_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_previous_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "previous_open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "carried_open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_stale_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "stale_open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "net_new_open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "net_new_closed_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl57_net_new_closed_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "net_new_closed_backed_by_gl57_net_new_closed_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl57_net_new_closed_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "net_new_closed_without_gl57_net_new_closed_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "gl57_net_new_closed_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_action_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts.get(
+                    "gl57_net_new_closed_action_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_owner_counts": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "owner_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_counts",
+                {},
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_ids": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_ids",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_ids": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_ids",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_ids": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_ids",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl57_net_new_closed_item_ids": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl57_net_new_closed_item_ids",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl57_net_new_closed_item_ids": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl57_net_new_closed_item_ids",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_item_ids": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_item_ids",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_rows": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_rows",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status": str(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report.get(
+                    "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status",
+                    "unknown",
+                )
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_warning_codes": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report.get(
+                "warning_codes",
+                [],
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_total_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "total_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_stale_open_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "stale_open_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_net_new_closed_item_count_gl60": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "net_new_closed_item_count_gl60",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_net_new_closed_backed_by_gl57_net_new_closed_item_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "net_new_closed_backed_by_gl57_net_new_closed_item_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_stall_cycle_count": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "stall_cycle_count",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled_cycles_threshold": int(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts.get(
+                    "overdue_stalled_cycles_threshold",
+                    0,
+                )
+                or 0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh_interval_hours": float(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh.get(
+                    "refresh_interval_hours",
+                    0.0,
+                )
+                or 0.0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_state": str(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh.get(
+                    "cadence_status",
+                    "unknown",
+                )
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": str(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh.get(
+                    "previous_generated_at_utc",
+                    "",
+                )
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": str(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh.get(
+                    "next_refresh_due_utc",
+                    "",
+                )
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_in_hours": float(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh.get(
+                    "due_in_hours",
+                    0.0,
+                )
+                or 0.0
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_evaluated_at_utc": str(
+                backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh.get(
+                    "evaluated_at_utc",
+                    "",
+                )
+            ),
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows": backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report.get(
+                "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows",
+                [],
+            ),
             "backfill_submission_ingestion_replay_applied": bool(
                 getattr(args, "backfill_submission_ingestion_replay_applied", False)
             ),
@@ -6505,6 +7527,65 @@ def main() -> int:
                 replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result.returncode
             )
 
+        replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command = (
+            _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command(
+                args
+            )
+        )
+        replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result = _run_command(
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command
+        )
+        _print_command_output(
+            "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-replay",
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result,
+        )
+        if (
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result.returncode
+            != 0
+        ):
+            return (
+                replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result.returncode
+            )
+        replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command = (
+            _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command(
+                args
+            )
+        )
+        replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result = _run_command(
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command
+        )
+        _print_command_output(
+            "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-replay",
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result,
+        )
+        if (
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result.returncode
+            != 0
+        ):
+            return (
+                replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result.returncode
+            )
+
+        replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command = (
+            _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command(
+                args
+            )
+        )
+        replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result = _run_command(
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command
+        )
+        _print_command_output(
+            "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-replay",
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result,
+        )
+        if (
+            replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result.returncode
+            != 0
+        ):
+            return (
+                replay_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result.returncode
+            )
+
         args.backfill_submission_ingestion_replay_applied = True
         args.backfill_submission_ingestion_replay_manifest_paths = [str(consumed_manifest_path)]
 
@@ -6876,6 +7957,65 @@ def main() -> int:
             backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result.returncode
         )
 
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command = (
+        _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command(
+            args
+        )
+    )
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result = _run_command(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_command
+    )
+    _print_command_output(
+        "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure",
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result,
+    )
+    if (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result.returncode
+        != 0
+    ):
+        return (
+            backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_result.returncode
+        )
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command = (
+        _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command(
+            args
+        )
+    )
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result = _run_command(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_command
+    )
+    _print_command_output(
+        "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence",
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result,
+    )
+    if (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result.returncode
+        != 0
+    ):
+        return (
+            backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_result.returncode
+        )
+
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command = (
+        _build_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command(
+            args
+        )
+    )
+    backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result = _run_command(
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_command
+    )
+    _print_command_output(
+        "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations",
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result,
+    )
+    if (
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result.returncode
+        != 0
+    ):
+        return (
+            backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_result.returncode
+        )
+
     launch_gate_command = _build_launch_gate_command(
         args,
         trial_metrics_report=trial_metrics_output,
@@ -7001,6 +8141,21 @@ def main() -> int:
                 args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output
             ).resolve()
         )
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report = _read_json(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_output
+            ).resolve()
+        )
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report = _read_json(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_output
+            ).resolve()
+        )
+        backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report = _read_json(
+            Path(
+                args.backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_output
+            ).resolve()
+        )
         backfill_handoff_report = _read_json(Path(args.backfill_handoff_output).resolve())
         backfill_handoff_escalations_report = _read_json(Path(args.backfill_handoff_escalations_output).resolve())
     except (OSError, json.JSONDecodeError, ValueError) as exc:
@@ -7041,6 +8196,9 @@ def main() -> int:
             backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_report,
             backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report,
             backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report,
+            backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report,
+            backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_report,
+            backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report,
             backfill_handoff_report=backfill_handoff_report,
             backfill_handoff_escalations_report=backfill_handoff_escalations_report,
             run_report_paths=run_report_paths,
@@ -7079,3 +8237,16 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+
+
+
+
+
+
+
+
+
+
+
