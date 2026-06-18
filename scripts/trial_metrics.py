@@ -32,7 +32,7 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Aggregate controlled-trial loop metrics and evaluate GA discussion conditions "
-            "from docs/current/status/2026-05-18-controlled-business-trial-iteration.md."
+            "from docs/working/status/2026-05-18-controlled-business-trial-iteration.md."
         ),
     )
     parser.add_argument(

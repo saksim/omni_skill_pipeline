@@ -11,7 +11,7 @@ ARTIFACT_ROOT="${ARTIFACT_ROOT:-release-artifacts}"
 ARTIFACT_DIR="${ARTIFACT_ROOT}/${RELEASE_ID}"
 LOG_DIR="${ARTIFACT_DIR}/logs"
 META_DIR="${ARTIFACT_DIR}/meta"
-BASELINE_DIR="${REPO_ROOT}/docs/current/status/baselines"
+BASELINE_DIR="${REPO_ROOT}/docs/working/status/baselines"
 VERSIONED_RUNTIME_IMAGE_TAG="${VERSIONED_RUNTIME_IMAGE_TAG:-omni-skill-pipeline:${RELEASE_ID}}"
 TEST_IMAGE_TAG="${TEST_IMAGE_TAG:-omni-skill-pipeline:test-${RELEASE_ID}}"
 TEST_IMAGE_ALIAS="${TEST_IMAGE_ALIAS:-omni-skill-pipeline:test}"
@@ -390,9 +390,9 @@ preflight_source_tree() {
     "scripts/release_switch.py"
     "tests"
     "infra/sql/001_init.sql"
-    "docs/current/contracts/SKILL.template.md"
-    "docs/current/contracts/skill.schema.json"
-    "docs/current/contracts/skill-graph.schema.json"
+    "docs/latest/contracts/SKILL.template.md"
+    "docs/latest/contracts/skill.schema.json"
+    "docs/latest/contracts/skill-graph.schema.json"
   )
   local path
 
@@ -405,7 +405,7 @@ preflight_source_tree() {
 
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     local ignored_output
-    ignored_output="$(git check-ignore -v docs/current/contracts docs/current/contracts/SKILL.template.md docs/current/contracts/skill.schema.json docs/current/contracts/skill-graph.schema.json || true)"
+    ignored_output="$(git check-ignore -v docs/latest/contracts docs/latest/contracts/SKILL.template.md docs/latest/contracts/skill.schema.json docs/latest/contracts/skill-graph.schema.json || true)"
     if [[ -n "${ignored_output}" ]]; then
       printf '%s\n' "${ignored_output}" >&2
       code=1
@@ -502,7 +502,7 @@ api_acceptance() {
     --max-time 30 \
     -H "Content-Type: application/json" \
     "${auth_args[@]}" \
-    -d '{"title":"Release Smoke","file_path":"docs/current/contracts/SKILL.template.md","goal":{"domain":"release_smoke"}}' \
+    -d '{"title":"Release Smoke","file_path":"docs/latest/contracts/SKILL.template.md","goal":{"domain":"release_smoke"}}' \
     >/dev/null || code=$?
 
   docker logs --tail 300 "${API_CONTAINER_NAME}" || true
@@ -624,11 +624,11 @@ fi
 if stage_succeeded build_test_image && stage_succeeded postgres_preflight; then
   run_or_plan_step ci_gate \
     docker run --rm \
-      -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
+      -v "${BASELINE_DIR}:/app/docs/working/status/baselines" \
       "${TEST_IMAGE_TAG}" \
       python scripts/ci.py --python python3 --keep-going --isolate-test-files \
         --coverage-fail-under "${COVERAGE_FAIL_UNDER}" \
-        --coverage-xml docs/current/status/baselines/coverage.xml
+        --coverage-xml docs/working/status/baselines/coverage.xml
 else
   skip_step ci_gate "build_test_image or postgres_preflight did not pass"
 fi
@@ -663,7 +663,7 @@ if stage_succeeded build_test_image && runtime_image_ready; then
   run_or_plan_step linux_validation_suite \
     docker run --rm --network host \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
+      -v "${BASELINE_DIR}:/app/docs/working/status/baselines" \
       -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
       "${TEST_IMAGE_TAG}" \
       python scripts/linux_validate.py \
@@ -679,7 +679,7 @@ if stage_succeeded build_test_image && runtime_image_ready; then
   run_or_plan_step release_switch \
     docker run --rm --network host \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      -v "${BASELINE_DIR}:/app/docs/current/status/baselines" \
+      -v "${BASELINE_DIR}:/app/docs/working/status/baselines" \
       -e OMNI_TEST_POSTGRES_DSN="${OMNI_TEST_POSTGRES_DSN:-}" \
       "${TEST_IMAGE_TAG}" \
       python scripts/release_switch.py \

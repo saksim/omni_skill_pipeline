@@ -21,9 +21,9 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         self.assertIn("run_step source_preflight preflight_source_tree", content)
         self.assertIn("run_or_plan_step postgres_preflight postgres_preflight", content)
         self.assertIn("missing OMNI_TEST_POSTGRES_DSN", content)
-        self.assertIn("docs/current/contracts/SKILL.template.md", content)
-        self.assertIn("docs/current/contracts/skill.schema.json", content)
-        self.assertIn("docs/current/contracts/skill-graph.schema.json", content)
+        self.assertIn("docs/latest/contracts/SKILL.template.md", content)
+        self.assertIn("docs/latest/contracts/skill.schema.json", content)
+        self.assertIn("docs/latest/contracts/skill-graph.schema.json", content)
         self.assertIn("src/omni_skill_pipeline/adapters/__init__.py", content)
         self.assertIn("src/omni_skill_pipeline/adapters/audio.py", content)
         self.assertIn("src/omni_skill_pipeline/adapters/image.py", content)
@@ -31,7 +31,7 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         self.assertIn("src/omni_skill_pipeline/adapters/text.py", content)
         self.assertIn("src/omni_skill_pipeline/adapters/video.py", content)
         self.assertIn("infra/sql/001_init.sql", content)
-        self.assertIn("git check-ignore -v docs/current/contracts", content)
+        self.assertIn("git check-ignore -v docs/latest/contracts", content)
 
     def test_script_skips_runtime_dependent_stages_after_runtime_build_failure(self) -> None:
         content = SCRIPT_PATH.read_text(encoding="utf-8")
@@ -81,17 +81,17 @@ class LinuxReleaseTestScriptTests(unittest.TestCase):
         test_ignore = TEST_DOCKERIGNORE_PATH.read_text(encoding="utf-8")
 
         for content in (root_ignore, test_ignore):
-            self.assertIn("!docs/current/contracts/", content)
-            self.assertIn("!docs/current/contracts/**", content)
+            self.assertIn("!docs/latest/contracts/", content)
+            self.assertIn("!docs/latest/contracts/**", content)
             self.assertIn("!infra/sql/001_init.sql", content)
 
     def test_runtime_dockerfile_copies_contract_files_explicitly(self) -> None:
         content = DOCKERFILE_PATH.read_text(encoding="utf-8")
 
-        self.assertIn("COPY docs/current/contracts/SKILL.template.md", content)
-        self.assertIn("docs/current/contracts/skill.schema.json", content)
-        self.assertIn("docs/current/contracts/skill-graph.schema.json", content)
-        self.assertIn("./docs/current/contracts/", content)
+        self.assertIn("COPY docs/latest/contracts/SKILL.template.md", content)
+        self.assertIn("docs/latest/contracts/skill.schema.json", content)
+        self.assertIn("docs/latest/contracts/skill-graph.schema.json", content)
+        self.assertIn("./docs/latest/contracts/", content)
 
 
 if __name__ == "__main__":

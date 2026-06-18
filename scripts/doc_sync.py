@@ -14,32 +14,32 @@ DEFAULT_CLI_SOURCE_PATH = REPO_ROOT / 'src' / 'omni_skill_pipeline' / 'cli.py'
 DEFAULT_API_SOURCE_PATH = REPO_ROOT / 'src' / 'omni_skill_pipeline' / 'api_app.py'
 DEFAULT_WORKER_SOURCE_PATH = REPO_ROOT / 'src' / 'omni_skill_pipeline' / 'worker.py'
 DEFAULT_TP_SOURCE_PATH = REPO_ROOT / 'scripts' / 'tp_tests.py'
-DEFAULT_CLI_DOC_PATH = REPO_ROOT / 'docs' / 'current' / 'operations' / 'cli.md'
-DEFAULT_API_DOC_PATH = REPO_ROOT / 'docs' / 'current' / 'operations' / 'api.md'
-DEFAULT_WORKER_DOC_PATH = REPO_ROOT / 'docs' / 'current' / 'operations' / 'worker.md'
-DEFAULT_TESTING_DOC_PATH = REPO_ROOT / 'docs' / 'current' / 'operations' / 'testing.md'
+DEFAULT_CLI_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'cli.md'
+DEFAULT_API_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'api.md'
+DEFAULT_WORKER_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'worker.md'
+DEFAULT_TESTING_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'testing.md'
 DEFAULT_ARCH_MIGRATION_DOC_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'architecture' / 'v1-to-v2-migration-guide.md'
+    REPO_ROOT / 'docs' / 'latest' / 'architecture' / 'v1-to-v2-migration-guide.md'
 )
 DEFAULT_OPS_MIGRATION_DOC_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'operations' / 'v1-to-v2-migration-runbook.md'
+    REPO_ROOT / 'docs' / 'latest' / 'operations' / 'v1-to-v2-migration-runbook.md'
 )
 DEFAULT_RELEASE_STANDARD_DOC_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'v2-release-switch-standard.md'
+    REPO_ROOT / 'docs' / 'releases' / 'standards' / 'v2-release-switch-standard.md'
 )
 DEFAULT_RELEASE_HISTORY_DOC_PATH = (
-    REPO_ROOT / 'docs' / 'history' / 'status' / '2026-04-26-v2-release-switch-standard.md'
+    REPO_ROOT / 'docs' / 'releases' / 'status' / '2026-04-26-v2-release-switch-standard.md'
 )
 DEFAULT_LAUNCH_BETA_RUNBOOK_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'launch-beta.md'
+    REPO_ROOT / 'docs' / 'latest' / 'operations' / 'runbooks' / 'launch-beta.md'
 )
 DEFAULT_DOCKER_ZERO_TO_RELEASE_RUNBOOK_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'docker-zero-to-release.md'
+    REPO_ROOT / 'docs' / 'latest' / 'operations' / 'runbooks' / 'docker-zero-to-release.md'
 )
 DEFAULT_PRODUCTION_OPS_RUNBOOK_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'operations' / 'runbooks' / 'production-operations-baseline.md'
+    REPO_ROOT / 'docs' / 'latest' / 'operations' / 'runbooks' / 'production-operations-baseline.md'
 )
-DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
+DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
 
 _MARKDOWN_LINK_PATTERN = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
 _CLI_COMMAND_PATTERN = re.compile(r"add_parser\('([a-z0-9_-]+)'")
@@ -606,19 +606,19 @@ def main() -> int:
                     tp_source_text,
                     {
                         'README.md': readme_text,
-                        'docs/current/operations/api.md': api_doc_text,
-                        'docs/current/operations/cli.md': cli_doc_text,
-                        'docs/current/operations/worker.md': worker_doc_text,
-                        'docs/current/operations/testing.md': testing_doc_text,
-                        'docs/current/architecture/v1-to-v2-migration-guide.md': arch_migration_doc_text,
-                        'docs/current/operations/v1-to-v2-migration-runbook.md': ops_migration_doc_text,
-                        'docs/current/status/v2-release-switch-standard.md': release_standard_doc_text,
-                        'docs/history/status/2026-04-26-v2-release-switch-standard.md': release_history_doc_text,
-                        'docs/current/operations/runbooks/launch-beta.md': launch_beta_runbook_text,
-                        'docs/current/operations/runbooks/docker-zero-to-release.md': (
+                        'docs/latest/operations/api.md': api_doc_text,
+                        'docs/latest/operations/cli.md': cli_doc_text,
+                        'docs/latest/operations/worker.md': worker_doc_text,
+                        'docs/latest/operations/testing.md': testing_doc_text,
+                        'docs/latest/architecture/v1-to-v2-migration-guide.md': arch_migration_doc_text,
+                        'docs/latest/operations/v1-to-v2-migration-runbook.md': ops_migration_doc_text,
+                        'docs/releases/standards/v2-release-switch-standard.md': release_standard_doc_text,
+                        'docs/releases/status/2026-04-26-v2-release-switch-standard.md': release_history_doc_text,
+                        'docs/latest/operations/runbooks/launch-beta.md': launch_beta_runbook_text,
+                        'docs/latest/operations/runbooks/docker-zero-to-release.md': (
                             docker_zero_to_release_runbook_text
                         ),
-                        'docs/current/operations/runbooks/production-operations-baseline.md': (
+                        'docs/latest/operations/runbooks/production-operations-baseline.md': (
                             production_ops_runbook_text
                         ),
                     },

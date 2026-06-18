@@ -827,7 +827,7 @@ def main() -> int:
             "generated_at_utc": _utc_now_iso(),
             "release_gate": {
                 "latest_release_decision": str(args.release_decision).strip().upper(),
-                "evidence_ref": "docs/current/status/baselines/e13-release-switch-decision-report.json",
+                "evidence_ref": "docs/working/status/baselines/e13-release-switch-decision-report.json",
             },
             "operator_signoff": {
                 "cost_per_accepted_skill_accepted": True,
