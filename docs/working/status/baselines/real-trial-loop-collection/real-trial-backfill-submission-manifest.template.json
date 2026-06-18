@@ -1,10 +1,10 @@
 {
   "manifest_id": "gl31-real-backfill-submission-template",
   "manifest_version": "1.0",
-  "generated_at_utc": "2026-05-31T06:54:56Z",
+  "generated_at_utc": "2026-06-18T09:24:09Z",
   "description": "GL-31 template manifest generated from pending backfill intake actions. Replace TEMPLATE_REQUIRED_* values with real evidence before ingestion.",
   "owner": "controlled-beta-ops",
-  "source_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json",
+  "source_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json",
   "loops": [
     {
       "loop_id": "real-text-slot-001-template",

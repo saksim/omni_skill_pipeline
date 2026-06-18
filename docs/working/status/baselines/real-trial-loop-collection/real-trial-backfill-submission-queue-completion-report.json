@@ -1,12 +1,12 @@
 {
   "schema_version": "real_trial_submission_queue_completion.v1",
-  "generated_at_utc": "2026-05-31T06:54:57Z",
+  "generated_at_utc": "2026-06-18T09:24:09Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
-    "submission_queue_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-report.json",
-    "submission_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-throughput-report.json",
-    "handoff_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-report.json",
-    "previous_completion_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-completion-report.json"
+    "submission_queue_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-report.json",
+    "submission_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-throughput-report.json",
+    "handoff_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-report.json",
+    "previous_completion_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-completion-report.json"
   },
   "queue_status": "QUEUE_ACTIVE",
   "completion_status": "COMPLETION_IN_PROGRESS",
@@ -32,10 +32,10 @@
   "cycle_movement_verification": {
     "cadence_status": "CADENCE_ON_SCHEDULE",
     "cadence_refresh_interval_hours": 24.0,
-    "cadence_previous_queue_generated_at_utc": "2026-05-30T14:38:38Z",
-    "cadence_next_refresh_due_utc": "2026-05-31T14:38:38Z",
-    "cadence_due_in_hours": 7.728,
-    "cadence_evaluated_at_utc": "2026-05-31T06:54:57Z",
+    "cadence_previous_queue_generated_at_utc": "2026-06-18T09:21:34Z",
+    "cadence_next_refresh_due_utc": "2026-06-19T09:21:34Z",
+    "cadence_due_in_hours": 23.957,
+    "cadence_evaluated_at_utc": "2026-06-18T09:24:09Z",
     "throughput_status": "THROUGHPUT_STALLED",
     "throughput_threshold_met": false,
     "throughput_net_new_loop_count": 0,

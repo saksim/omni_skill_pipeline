@@ -1,0 +1,161 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence.v1",
+  "generated_at_utc": "2026-06-18T09:24:11Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-a99b10763e.json",
+    "previous_acknowledgement_closure_cadence_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-f7cbe583f7.json"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_status_gl51": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_STALLED",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ON_SCHEDULE",
+  "warning_codes": [
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_closure_cadence_items_present",
+    "acknowledgement_ingestion_closure_stalled",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_closure_items_present",
+    "no_net_new_closed_acknowledgement_ingestion_items",
+    "no_net_new_launch_gate_eligible_real_loops",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_items_present",
+    "acknowledgement_input_missing",
+    "open_action_plan_closure_cadence_escalation_items_present",
+    "open_followup_resolution_escalation_action_plan_closure_items_present",
+    "action_plan_closure_stalled",
+    "open_followup_resolution_escalation_action_plan_items_present",
+    "no_net_new_closed_action_plan_items",
+    "stale_open_action_plan_items_present",
+    "no_net_new_resolved_acknowledgements",
+    "modality_gap_persists",
+    "loop_volume_gap_persists",
+    "open_acknowledgement_items_present",
+    "escalation_ack_blocked",
+    "open_escalation_acknowledgement_items_present"
+  ],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_counts": {
+    "total_item_count": 10,
+    "open_item_count": 10,
+    "stale_open_item_count": 0,
+    "net_new_closed_item_count_gl51": 0,
+    "net_new_launch_gate_eligible_loop_count_gl51": 0,
+    "stall_cycle_count": 1,
+    "overdue_stalled_cycles_threshold": 2
+  },
+  "refresh_cadence": {
+    "refresh_interval_hours": 24.0,
+    "cadence_status": "CADENCE_ON_SCHEDULE",
+    "previous_generated_at_utc": "2026-06-18T09:23:47Z",
+    "next_refresh_due_utc": "2026-06-19T09:23:47Z",
+    "due_in_hours": 23.993,
+    "evaluated_at_utc": "2026-06-18T09:24:11Z"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_rows": [
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-002-audio",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "audio",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-002-audio",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-006-audio",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "audio",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-006-audio",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-010-audio",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "audio",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-010-audio",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-003-image",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "image",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-003-image",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-007-image",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "image",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-007-image",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-001-text",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "text",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-001-text",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-005-text",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "text",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-005-text",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-009-text",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "text",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-009-text",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-004-video",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "video",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-004-video",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-008-video",
+      "closure_state_gl51": "open_new",
+      "acknowledgement_ingestion_state_gl50": "ack_input_missing",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "video",
+      "owner_gl51": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-008-video",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+    }
+  ]
+}

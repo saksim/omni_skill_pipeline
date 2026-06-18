@@ -1,9 +1,9 @@
 {
   "schema_version": "real_trial_backfill_submission_consumption.v1",
-  "generated_at_utc": "2026-05-31T06:54:56Z",
+  "generated_at_utc": "2026-06-18T09:24:09Z",
   "input_paths": {
-    "submission_manifest_template": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.template.json",
-    "real_submissions_input": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-real-inputs.json"
+    "submission_manifest_template": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.template.json",
+    "real_submissions_input": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-real-inputs.json"
   },
   "owner": "controlled-beta-ops",
   "consumption_status": "NO_SUBMISSIONS_PROVIDED",
@@ -15,7 +15,7 @@
     "invalid_submission_count": 0,
     "unresolved_submission_count": 0
   },
-  "consumed_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.consumed.json",
+  "consumed_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.consumed.json",
   "consumption_linkage_records": [],
   "pending_template_rows": [
     {

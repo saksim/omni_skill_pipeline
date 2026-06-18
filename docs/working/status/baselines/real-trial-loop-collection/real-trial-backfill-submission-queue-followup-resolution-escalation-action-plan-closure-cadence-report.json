@@ -1,35 +1,126 @@
 {
   "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence.v1",
-  "generated_at_utc": "2026-06-01T05:05:57Z",
+  "generated_at_utc": "2026-06-18T09:24:11Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
-    "submission_queue_followup_resolution_escalation_action_plan_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-report.json",
-    "collection_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpaj58qsrh\\collection-report.json",
-    "previous_action_plan_closure_cadence_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-report.json"
+    "submission_queue_followup_resolution_escalation_action_plan_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-report.json",
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
+    "previous_action_plan_closure_cadence_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-report.json"
   },
-  "followup_resolution_escalation_action_plan_closure_status_gl47": "ACTION_PLAN_CLOSURE_NOT_REQUIRED",
-  "collection_program_status_gl12": "READY_FOR_CONTROLLED_BETA_EVIDENCE",
-  "followup_resolution_escalation_action_plan_closure_cadence_status": "ACTION_PLAN_CLOSURE_CADENCE_NOT_REQUIRED",
+  "followup_resolution_escalation_action_plan_closure_status_gl47": "ACTION_PLAN_CLOSURE_STALLED",
+  "collection_program_status_gl12": "COLLECTION_INCOMPLETE",
+  "followup_resolution_escalation_action_plan_closure_cadence_status": "ACTION_PLAN_CLOSURE_CADENCE_ON_SCHEDULE",
   "warning_codes": [
+    "open_followup_resolution_escalation_action_plan_closure_items_present",
+    "action_plan_closure_stalled",
+    "no_net_new_launch_gate_eligible_real_loops",
+    "open_followup_resolution_escalation_action_plan_items_present",
     "no_net_new_closed_action_plan_items",
-    "no_net_new_resolved_acknowledgements"
+    "stale_open_action_plan_items_present",
+    "no_net_new_resolved_acknowledgements",
+    "modality_gap_persists",
+    "loop_volume_gap_persists",
+    "open_acknowledgement_items_present",
+    "escalation_ack_blocked",
+    "open_escalation_acknowledgement_items_present"
   ],
   "followup_resolution_escalation_action_plan_closure_cadence_counts": {
-    "total_action_count": 0,
-    "open_action_count": 0,
-    "stale_open_action_count": 0,
+    "total_action_count": 10,
+    "open_action_count": 10,
+    "stale_open_action_count": 10,
     "net_new_closed_action_count_gl47": 0,
-    "net_new_launch_gate_eligible_loop_count_gl47": 1,
-    "stall_cycle_count": 0,
+    "net_new_launch_gate_eligible_loop_count_gl47": 0,
+    "stall_cycle_count": 2,
     "overdue_stalled_cycles_threshold": 2
   },
   "refresh_cadence": {
     "refresh_interval_hours": 24.0,
-    "cadence_status": "CADENCE_NOT_REQUIRED",
-    "previous_generated_at_utc": "2026-06-01T05:05:54Z",
-    "next_refresh_due_utc": "",
-    "due_in_hours": 0.0,
-    "evaluated_at_utc": "2026-06-01T05:05:57Z"
+    "cadence_status": "CADENCE_ON_SCHEDULE",
+    "previous_generated_at_utc": "2026-06-18T09:21:35Z",
+    "next_refresh_due_utc": "2026-06-19T09:21:35Z",
+    "due_in_hours": 23.957,
+    "evaluated_at_utc": "2026-06-18T09:24:11Z"
   },
-  "followup_resolution_escalation_action_plan_closure_cadence_rows": []
+  "followup_resolution_escalation_action_plan_closure_cadence_rows": [
+    {
+      "action_id": "gl46-slot-002-audio",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "audio",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-006-audio",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "audio",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-010-audio",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "audio",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-003-image",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "image",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-007-image",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "image",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-001-text",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "text",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-005-text",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "text",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-009-text",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "text",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-004-video",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "video",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    },
+    {
+      "action_id": "gl46-slot-008-video",
+      "closure_state_gl47": "open_carried",
+      "cadence_item_status": "on_schedule",
+      "required_modality_gl47": "video",
+      "owner_gl47": "controlled-beta-ops",
+      "linked_submission_loop_id_gl47": ""
+    }
+  ]
 }

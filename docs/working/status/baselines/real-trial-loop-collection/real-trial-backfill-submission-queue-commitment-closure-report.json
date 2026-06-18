@@ -1,39 +1,456 @@
 {
   "schema_version": "real_trial_submission_queue_commitment_closure.v1",
-  "generated_at_utc": "2026-06-01T05:05:56Z",
+  "generated_at_utc": "2026-06-18T09:24:10Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
-    "submission_queue_commitments_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpaj58qsrh\\real-trial-backfill-submission-queue-commitments-report.json",
-    "submission_queue_completion_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpaj58qsrh\\real-trial-backfill-submission-queue-completion-report.json",
-    "previous_commitment_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-commitment-closure-report.json"
+    "submission_queue_commitments_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-commitments-report.json",
+    "submission_queue_completion_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-completion-report.json",
+    "previous_commitment_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-commitment-closure-report.json"
   },
-  "queue_status": "QUEUE_NOT_REQUIRED",
-  "queue_cadence_status": "CADENCE_NOT_REQUIRED",
-  "commitment_status_gl39": "COMMITMENTS_NOT_REQUIRED",
-  "cadence_run_obligation_status_gl39": "RUN_NOT_REQUIRED",
-  "commitment_closure_status": "CLOSURE_NOT_REQUIRED",
-  "cadence_run_closure_status": "CLOSURE_RUN_NOT_REQUIRED",
-  "warning_codes": [],
-  "unresolved_execution_blockers": [],
+  "queue_status": "QUEUE_ACTIVE",
+  "queue_cadence_status": "CADENCE_ON_SCHEDULE",
+  "commitment_status_gl39": "COMMITMENTS_ACTIVE",
+  "cadence_run_obligation_status_gl39": "RUN_ON_SCHEDULE_WITH_OPEN_COMMITMENTS",
+  "commitment_closure_status": "CLOSURE_STALE_ROLLOVER_REQUIRED",
+  "cadence_run_closure_status": "CLOSURE_RUN_ACTIVE",
+  "warning_codes": [
+    "commitment_stale_rollover_detected"
+  ],
+  "unresolved_execution_blockers": [
+    "pending_submission_actions_remain",
+    "submission_action_plan_waiting_for_submissions"
+  ],
   "closure_counts": {
-    "total_commitment_count": 0,
+    "total_commitment_count": 10,
     "closed_with_acknowledgement_count": 0,
-    "active_commitment_count": 0,
+    "active_commitment_count": 10,
     "pending_acknowledgement_count": 0,
     "blocked_submission_errors_count": 0,
     "escalation_required_count": 0,
     "rebuild_required_count": 0,
-    "stale_rollover_count": 0,
+    "stale_rollover_count": 10,
     "net_new_closed_with_acknowledgement_count": 0,
-    "unchanged_open_commitment_count": 0,
+    "unchanged_open_commitment_count": 10,
     "newly_open_commitment_count": 0
   },
   "previous_cycle_snapshot": {
     "available": true,
-    "generated_at_utc": "2026-06-01T05:05:53Z",
+    "generated_at_utc": "2026-06-18T09:21:34Z",
     "closed_with_acknowledgement_count": 0
   },
-  "commitment_closure_rows": [],
+  "commitment_closure_rows": [
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-002-audio",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-002-audio",
+      "backfill_action_id": "gl23-slot-002-audio",
+      "required_modality": "audio",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 1,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-006-audio",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-006-audio",
+      "backfill_action_id": "gl23-slot-006-audio",
+      "required_modality": "audio",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 1,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-010-audio",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-010-audio",
+      "backfill_action_id": "gl23-slot-010-audio",
+      "required_modality": "audio",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 1,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-001-text",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-001-text",
+      "backfill_action_id": "gl23-slot-001-text",
+      "required_modality": "text",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 2,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-005-text",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-005-text",
+      "backfill_action_id": "gl23-slot-005-text",
+      "required_modality": "text",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 2,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-009-text",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-009-text",
+      "backfill_action_id": "gl23-slot-009-text",
+      "required_modality": "text",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 2,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-003-image",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-003-image",
+      "backfill_action_id": "gl23-slot-003-image",
+      "required_modality": "image",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 3,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-007-image",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-007-image",
+      "backfill_action_id": "gl23-slot-007-image",
+      "required_modality": "image",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 3,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-004-video",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-004-video",
+      "backfill_action_id": "gl23-slot-004-video",
+      "required_modality": "video",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 4,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-008-video",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-008-video",
+      "backfill_action_id": "gl23-slot-008-video",
+      "required_modality": "video",
+      "owner": "controlled-beta-ops",
+      "priority_rank": 4,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status_gl39": "pending_submission",
+      "source_transition_state_gl39": "pending_submission",
+      "transition_match_strategy": "queue_item_id",
+      "transition_state_gl38": "pending_submission",
+      "completion_queue_item_status_gl37": "pending_submission",
+      "completion_handoff_queue_status_gl24": "open",
+      "closure_state": "open_commitment",
+      "closure_acknowledged": false,
+      "stale_rollover": true,
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "linked_submission_loop_id": "",
+      "linked_submission_review_task_id": "",
+      "linked_submission_reviewed_at_utc": "",
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "reason": "pending_template_submission_required",
+      "escalation_severity": ""
+    }
+  ],
   "closure_acknowledgement_rows": [],
-  "stale_rollover_rows": []
+  "stale_rollover_rows": [
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-002-audio",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-002-audio",
+      "backfill_action_id": "gl23-slot-002-audio",
+      "required_modality": "audio",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-006-audio",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-006-audio",
+      "backfill_action_id": "gl23-slot-006-audio",
+      "required_modality": "audio",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-010-audio",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-010-audio",
+      "backfill_action_id": "gl23-slot-010-audio",
+      "required_modality": "audio",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-001-text",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-001-text",
+      "backfill_action_id": "gl23-slot-001-text",
+      "required_modality": "text",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-005-text",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-005-text",
+      "backfill_action_id": "gl23-slot-005-text",
+      "required_modality": "text",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-009-text",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-009-text",
+      "backfill_action_id": "gl23-slot-009-text",
+      "required_modality": "text",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-003-image",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-003-image",
+      "backfill_action_id": "gl23-slot-003-image",
+      "required_modality": "image",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-007-image",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-007-image",
+      "backfill_action_id": "gl23-slot-007-image",
+      "required_modality": "image",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-004-video",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-004-video",
+      "backfill_action_id": "gl23-slot-004-video",
+      "required_modality": "video",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-008-video",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-008-video",
+      "backfill_action_id": "gl23-slot-008-video",
+      "required_modality": "video",
+      "owner": "controlled-beta-ops",
+      "closure_state": "open_commitment",
+      "transition_state_gl38": "pending_submission",
+      "commitment_status_gl39": "pending_submission",
+      "stale_reason_codes": [
+        "unchanged_open_commitment_across_cycles"
+      ],
+      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+    }
+  ]
 }

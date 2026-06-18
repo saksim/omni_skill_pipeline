@@ -1,12 +1,12 @@
 {
   "schema_version": "real_trial_submission_throughput.v1",
-  "generated_at_utc": "2026-05-31T06:54:57Z",
+  "generated_at_utc": "2026-06-18T09:24:09Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
-    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
-    "backfill_execution_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-execution-report.json",
-    "backfill_submission_consumption_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-consumption-report.json",
-    "previous_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-throughput-report.json"
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
+    "backfill_execution_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-execution-report.json",
+    "backfill_submission_consumption_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-consumption-report.json",
+    "previous_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-throughput-report.json"
   },
   "throughput_status": "THROUGHPUT_STALLED",
   "threshold_met": false,

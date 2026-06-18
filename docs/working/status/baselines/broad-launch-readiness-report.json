@@ -1,6 +1,6 @@
 {
   "schema_version": "broad_launch_readiness.v1",
-  "generated_at_utc": "2026-05-30T11:28:43.089367+00:00",
+  "generated_at_utc": "2026-06-18T09:24:12.905315+00:00",
   "decision": "HOLD",
   "decision_code": 0,
   "launch_levels": {
@@ -47,7 +47,7 @@
       "id": "trial_metrics_evidence",
       "status": "pass",
       "blocking": true,
-      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+      "actual": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
       "expected": "readable trial metrics report",
       "details": "Trial metrics report is present."
     },
@@ -171,7 +171,7 @@
       "actual": {
         "status": "pass",
         "failed_count": 0,
-        "source": "doc_sync.py"
+        "source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\e13-doc-sync-check-report.json"
       },
       "expected": {
         "status": "pass",
@@ -211,13 +211,13 @@
     }
   ],
   "evidence_paths": {
-    "release_switch_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-release-switch-decision-report.json",
-    "current_status_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\CURRENT_STATUS.md",
-    "trial_metrics_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
-    "controlled_trial_run_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-    "agent_smoke_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\agent-smoke-report.json",
+    "release_switch_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\e13-release-switch-decision-report.json",
+    "current_status_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\CURRENT_STATUS.md",
+    "trial_metrics_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+    "controlled_trial_run_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
+    "agent_smoke_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\agent-smoke-report.json",
     "security_gate_report": "",
-    "doc_sync_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\e13-doc-sync-check-report.json",
-    "operations_readiness_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\operations-readiness-report.json"
+    "doc_sync_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\e13-doc-sync-check-report.json",
+    "operations_readiness_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\operations-readiness-report.json"
   }
 }

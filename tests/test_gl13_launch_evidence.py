@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import importlib.util
 import json
 import subprocess
 import sys
@@ -116,6 +117,89 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
         call_keywords = {keyword.arg for keyword in evidence_pack_calls[0].keywords if keyword.arg}
         self.assertEqual(call_keywords - signature_keywords, set())
         self.assertEqual(signature_keywords - call_keywords, set())
+
+    def test_evidence_pack_path_hygiene_normalizes_repo_paths_and_flags_old_current(self) -> None:
+        spec = importlib.util.spec_from_file_location("gl13_launch_evidence_under_test", SCRIPT_PATH)
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        pack = {
+            "evidence_paths": {
+                "collection_report": str(
+                    REPO_ROOT
+                    / "docs"
+                    / "working"
+                    / "status"
+                    / "baselines"
+                    / "real-trial-loop-collection"
+                    / "real-trial-loop-collection-report.json"
+                ),
+                "stale_collection_report": str(
+                    REPO_ROOT
+                    / "docs"
+                    / "current"
+                    / "status"
+                    / "baselines"
+                    / "real-trial-loop-collection"
+                    / "real-trial-loop-collection-report.json"
+                ),
+            },
+            "input_sources": {
+                "run_report_paths": [
+                    str(REPO_ROOT / "docs" / "working" / "status" / "baselines" / "controlled-trial" / "run.json")
+                ]
+            },
+        }
+
+        module._normalize_evidence_pack_paths(pack)
+        self.assertEqual(
+            pack["evidence_paths"]["collection_report"],
+            "docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json",
+        )
+        self.assertEqual(
+            pack["evidence_paths"]["stale_collection_report"],
+            "docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json",
+        )
+        self.assertEqual(
+            pack["input_sources"]["run_report_paths"],
+            ["docs/working/status/baselines/controlled-trial/run.json"],
+        )
+
+        hygiene = module._build_path_hygiene(pack)
+        self.assertEqual(hygiene.get("repo_root_absolute_path_count"), 0)
+        self.assertEqual(hygiene.get("old_docs_current_path_count"), 1)
+        self.assertEqual(
+            hygiene.get("old_docs_current_paths"),
+            ["docs/current/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json"],
+        )
+
+        long_default = (
+            REPO_ROOT
+            / "docs"
+            / "working"
+            / "status"
+            / "baselines"
+            / "real-trial-loop-collection"
+            / (
+                "real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-"
+                "cadence-escalation-acknowledgement-ingestion-report.json"
+            )
+        )
+        label = (
+            "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_"
+            "escalation_acknowledgement_ingestion_output"
+        )
+        aliased_default = module._maybe_windows_shorten_output_path(str(long_default), label=label)
+        if Path(aliased_default).resolve() != long_default.resolve():
+            self.assertFalse(
+                module._is_default_cli_path(
+                    raw_value=aliased_default,
+                    default_path=long_default,
+                    label=label,
+                )
+            )
 
     def test_pipeline_produces_ready_for_controlled_beta_with_real_loop(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

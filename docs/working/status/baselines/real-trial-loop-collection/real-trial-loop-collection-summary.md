@@ -21,8 +21,8 @@
 - Real loops with template placeholders not replaced: `0`
 - Real template placeholder field count: `0`
 - Recommended backfill slots: `10`
-- Ingested loop manifests: `2/2`
-- Duplicate loop ids resolved: `10`
+- Ingested loop manifests: `0/0`
+- Duplicate loop ids resolved: `0`
 - Skipped non-loop-manifest JSON files: `0`
 
 ## Blockers

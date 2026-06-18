@@ -1,8 +1,8 @@
 {
   "schema_version": "real_trial_backfill_submission_templates.v1",
-  "generated_at_utc": "2026-05-31T06:54:56Z",
+  "generated_at_utc": "2026-06-18T09:24:09Z",
   "input_paths": {
-    "intake_actions_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json"
+    "intake_actions_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json"
   },
   "owner": "controlled-beta-ops",
   "template_status": "TEMPLATES_READY",
@@ -98,7 +98,7 @@
       "template_loop_id": "real-audio-slot-010-template"
     }
   ],
-  "manifest_template_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.template.json",
+  "manifest_template_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.template.json",
   "launch_gap_snapshot": {
     "program_status": "COLLECTION_INCOMPLETE",
     "missing_complete_loops_to_threshold": 10,

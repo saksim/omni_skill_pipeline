@@ -1,147 +1,22 @@
 {
   "schema_version": "real_trial_loop_collection.v1",
-  "generated_at_utc": "2026-05-31T06:54:56Z",
+  "generated_at_utc": "2026-06-18T09:24:08Z",
   "source_run_report_paths": [
-    "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json"
+    "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json"
   ],
-  "source_loop_manifest_paths": [
-    "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-    "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.consumed.json"
-  ],
+  "source_loop_manifest_paths": [],
   "source_loop_manifest_dirs": [],
   "input_report_count": 1,
-  "input_loop_manifest_count": 2,
-  "ingested_loop_manifest_count": 2,
+  "input_loop_manifest_count": 0,
+  "ingested_loop_manifest_count": 0,
   "input_loop_manifest_dir_count": 0,
   "skipped_non_loop_manifest_count": 0,
   "skipped_non_loop_manifest_paths": [],
-  "input_source_count": 3,
+  "input_source_count": 1,
   "deduplicated_loop_count": 10,
-  "duplicate_loop_ids": [
-    "gl02-audio-001",
-    "gl02-audio-002",
-    "gl02-image-001",
-    "gl02-image-002",
-    "gl02-mixed-001",
-    "gl02-tabular-001",
-    "gl02-text-001",
-    "gl02-text-002",
-    "gl02-video-001",
-    "gl02-video-002"
-  ],
-  "duplicate_resolution_count": 10,
-  "duplicate_resolution_records": [
-    {
-      "loop_id": "gl02-text-001",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-text-002",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-audio-001",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-audio-002",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-image-001",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-image-002",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-video-001",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-video-002",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-tabular-001",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    },
-    {
-      "loop_id": "gl02-mixed-001",
-      "resolution_reason": "stable_source_path_tiebreaker",
-      "existing_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
-      "candidate_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "selected_source_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-metrics-manifest.json",
-      "existing_reviewed_at_utc": "",
-      "candidate_reviewed_at_utc": "",
-      "existing_collected_at_utc": "",
-      "candidate_collected_at_utc": ""
-    }
-  ],
+  "duplicate_loop_ids": [],
+  "duplicate_resolution_count": 0,
+  "duplicate_resolution_records": [],
   "evidence_origin_counts": {
     "fixture": 10
   },
