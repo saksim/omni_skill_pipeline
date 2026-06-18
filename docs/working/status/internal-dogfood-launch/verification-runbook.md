@@ -105,6 +105,27 @@ python -m omni_skill_pipeline.cli show-template
 - 命令成功退出。
 - 输出包含 skill template 内容。
 
+## Step 6.1: API happy path smoke
+
+When the local API is running, execute the internal dogfood API smoke:
+
+```powershell
+python scripts\internal_dogfood_smoke.py --base-url http://127.0.0.1:8000
+```
+
+Dry-run plan:
+
+```powershell
+python scripts\internal_dogfood_smoke.py --dry-run
+```
+
+Pass conditions:
+- `/healthz` returns HTTP 2xx.
+- `/v1/templates/skill` returns non-empty content.
+- `/v1/distill/text` returns a skill payload.
+- `/v1/review/queue` returns an `items` list.
+- If text distillation creates a pending review task, that task is visible in the pending review queue.
+
 ## Step 7：Docker smoke
 
 如果当前环境有 Docker：
