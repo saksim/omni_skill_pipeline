@@ -13,10 +13,10 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BENCHMARK_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
 )
 DEFAULT_PLAN_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-soak-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-soak-plan.json'
 )
 DEFAULT_STAGES = ('tp_postgres', 'review_queue', 'dual_write_benchmark')
 ALL_STAGES = tuple(DEFAULT_STAGES)

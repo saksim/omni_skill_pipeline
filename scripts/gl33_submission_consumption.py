@@ -14,7 +14,7 @@ TEMPLATE_PLACEHOLDER_TOKEN = "TEMPLATE_REQUIRED_"
 DEFAULT_TEMPLATE_MANIFEST_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -23,7 +23,7 @@ DEFAULT_TEMPLATE_MANIFEST_PATH = (
 DEFAULT_REAL_SUBMISSIONS_INPUT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -32,7 +32,7 @@ DEFAULT_REAL_SUBMISSIONS_INPUT_PATH = (
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -41,7 +41,7 @@ DEFAULT_OUTPUT_PATH = (
 DEFAULT_SUMMARY_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -50,7 +50,7 @@ DEFAULT_SUMMARY_PATH = (
 DEFAULT_CONSUMED_MANIFEST_OUTPUT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"

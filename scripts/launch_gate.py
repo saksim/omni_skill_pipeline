@@ -11,30 +11,30 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CURRENT_STATUS_DOC = REPO_ROOT / "docs" / "current" / "status" / "CURRENT_STATUS.md"
+DEFAULT_CURRENT_STATUS_DOC = REPO_ROOT / "docs" / "working" / "status" / "CURRENT_STATUS.md"
 DEFAULT_RELEASE_SWITCH_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e13-release-switch-decision-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e13-release-switch-decision-report.json"
 )
 DEFAULT_TRIAL_METRICS_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "controlled-trial" / "trial-metrics-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "controlled-trial" / "trial-metrics-report.json"
 )
 DEFAULT_CONTROLLED_TRIAL_RUN_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "controlled-trial" / "controlled-trial-run-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "controlled-trial" / "controlled-trial-run-report.json"
 )
 DEFAULT_AGENT_SMOKE_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "controlled-trial" / "agent-smoke-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "controlled-trial" / "agent-smoke-report.json"
 )
 DEFAULT_DOC_SYNC_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e13-doc-sync-check-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e13-doc-sync-check-report.json"
 )
 DEFAULT_OPERATIONS_READINESS_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "operations-readiness-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-report.json"
 )
 DEFAULT_OUTPUT_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "broad-launch-readiness-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "broad-launch-readiness-report.json"
 )
 DEFAULT_SUMMARY_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "broad-launch-readiness-summary.md"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "broad-launch-readiness-summary.md"
 )
 
 DECISIONS = (

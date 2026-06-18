@@ -13,13 +13,13 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CALIBRATION_MANIFEST = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
 )
 DEFAULT_CALIBRATION_REPORT_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-report.json'
 )
 DEFAULT_PLAN_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-calibration-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-calibration-ga-validation-plan.json'
 )
 DEFAULT_STAGES = (
     'calibration_contract',

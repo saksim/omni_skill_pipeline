@@ -11,7 +11,7 @@ def main() -> None:
 
     from omni_skill_pipeline.schema import SKILL_SCHEMA  # pylint: disable=import-outside-toplevel
 
-    target = repo_root / "docs" / "current" / "contracts" / "skill.schema.json"
+    target = repo_root / "docs" / "latest" / "contracts" / "skill.schema.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(
         json.dumps(SKILL_SCHEMA, ensure_ascii=False, indent=2) + "\n",

@@ -30,7 +30,7 @@ from omni_skill_pipeline.models import (
 from omni_skill_pipeline.persistence import DualWriteArtifactRepository, PostgresRepository
 from omni_skill_pipeline.repository import FileArtifactRepository
 
-DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e8-dual-write-benchmark-report.json'
+DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e8-dual-write-benchmark-report.json'
 DEFAULT_DRAFT_DIR = REPO_ROOT / 'tests' / '.tmp_runtime' / 'dual_write_benchmark'
 SCHEMA_SQL_PATH = REPO_ROOT / 'infra' / 'sql' / '001_init.sql'
 

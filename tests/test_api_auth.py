@@ -45,7 +45,7 @@ def _build_settings(api_key: str | None):
         api_key=api_key,
         tenant_access_json='',
         tenant_access_file='',
-        template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
+        template_path=REPO_ROOT / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md',
     )
 
 

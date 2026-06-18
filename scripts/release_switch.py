@@ -14,43 +14,43 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DOC_SYNC_REPORT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
 )
 DEFAULT_QUALITY_REPORT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-quality-regression-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-quality-regression-report.json'
 )
 DEFAULT_PERF_REPORT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-perf-cost-baseline-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-perf-cost-baseline-report.json'
 )
 DEFAULT_POSTGRES_SOAK_BENCHMARK_REPORT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
 )
 DEFAULT_RELEASE_STANDARD_DOC = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'v2-release-switch-standard.md'
+    REPO_ROOT / 'docs' / 'releases' / 'standards' / 'v2-release-switch-standard.md'
 )
 DEFAULT_BETA_SUITE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-beta-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-beta-suite-plan.json'
 )
 DEFAULT_GA_SUITE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-ga-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-ga-suite-plan.json'
 )
 DEFAULT_ROADMAP_SUITE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-roadmap-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-roadmap-suite-plan.json'
 )
 DEFAULT_RELEASE_GATE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-validation-plan.json'
 )
 DEFAULT_PLAN_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-switch-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-switch-validation-plan.json'
 )
 DEFAULT_DECISION_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-switch-decision-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-switch-decision-report.json'
 )
 DEFAULT_CALIBRATION_MANIFEST = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
 )
 DEFAULT_CALIBRATION_REPORT_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-report.json'
 )
 DEFAULT_CONTAINER_IMAGE_TAG = 'omni-skill-pipeline:beta'
 DEFAULT_CONTAINER_NAME = 'omni-skill-pipeline-smoke'

@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"

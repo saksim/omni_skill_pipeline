@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ACTION_PLAN_CLOSURE_REPORT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -21,7 +21,7 @@ DEFAULT_ACTION_PLAN_CLOSURE_REPORT_PATH = (
 DEFAULT_COLLECTION_REPORT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -30,7 +30,7 @@ DEFAULT_COLLECTION_REPORT_PATH = (
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -39,7 +39,7 @@ DEFAULT_OUTPUT_PATH = (
 DEFAULT_SUMMARY_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"

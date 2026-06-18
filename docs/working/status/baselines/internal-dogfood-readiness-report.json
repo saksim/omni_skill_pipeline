@@ -1,6 +1,6 @@
 {
   "schema_version": "internal_dogfood_readiness.v1",
-  "generated_at_utc": "2026-06-18T06:26:34.388470+00:00",
+  "generated_at_utc": "2026-06-18T06:55:48.271293+00:00",
   "decision": "READY_FOR_INTERNAL_DOGFOOD",
   "decision_code": 0,
   "scope": "internal_dogfood_only",
@@ -89,20 +89,20 @@
       "blocking": true,
       "actual": {
         "source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\internal-dogfood-api-health-report.json",
-        "status": "degraded",
-        "http_status": 503,
+        "status": "ready",
+        "http_status": 200,
         "payload": {
           "schema_version": "internal_dogfood_api_health.v1",
-          "generated_at_utc": "2026-06-18T06:19:23Z",
-          "status": "degraded",
-          "http_status": 503,
+          "generated_at_utc": "2026-06-18T06:55:30Z",
+          "status": "ready",
+          "http_status": 200,
           "internal_dogfood_only": true,
-          "interpretation": "Accepted only as an internal dogfood degraded health explanation. This is not external launch health evidence.",
+          "interpretation": "API health is ready for internal dogfood. This is still not external launch evidence.",
           "checks": [
             {
               "name": "template_path",
-              "ok": false,
-              "detail": "template file is missing: docs/current/contracts/SKILL.template.md"
+              "ok": true,
+              "detail": "template file is readable."
             },
             {
               "name": "draft_dir",

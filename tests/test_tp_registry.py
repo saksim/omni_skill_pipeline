@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-WORK_ORDERS_PATH = REPO_ROOT / "docs" / "current" / "architecture" / "skill-distillation-v2-work-orders.md"
+WORK_ORDERS_PATH = REPO_ROOT / "docs" / "working" / "architecture" / "skill-distillation-v2-work-orders.md"
 TP_ID_PATTERN = re.compile(r"TP-E\d{1,2}-\d{2,3}(?!\d)")
 
 

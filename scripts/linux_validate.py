@@ -13,19 +13,19 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DOC_SYNC_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-doc-sync-check-report.json'
 )
 DEFAULT_QUALITY_MANIFEST = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-quality-regression-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-quality-regression-manifest.json'
 )
 DEFAULT_QUALITY_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-quality-regression-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-quality-regression-report.json'
 )
 DEFAULT_PERF_MANIFEST = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-perf-cost-baseline-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-perf-cost-baseline-manifest.json'
 )
 DEFAULT_PERF_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-perf-cost-baseline-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-perf-cost-baseline-report.json'
 )
 DEFAULT_CONTAINER_IMAGE_TAG = 'omni-skill-pipeline:beta'
 DEFAULT_CONTAINER_NAME = 'omni-skill-pipeline-smoke'
@@ -34,40 +34,40 @@ DEFAULT_CONTAINER_PORT = 18000
 DEFAULT_CONTAINER_TIMEOUT_SECONDS = 30.0
 DEFAULT_CONTAINER_INTERVAL_SECONDS = 1.0
 DEFAULT_POSTGRES_SOAK_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-soak-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-soak-plan.json'
 )
 DEFAULT_POSTGRES_SOAK_BENCHMARK_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-soak-benchmark-report.json'
 )
 DEFAULT_POSTGRES_GA_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-ga-validation-plan.json'
 )
 DEFAULT_POSTGRES_GA_BENCHMARK_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-postgres-ga-benchmark-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-postgres-ga-benchmark-report.json'
 )
 DEFAULT_WORKER_GA_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-worker-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-worker-ga-validation-plan.json'
 )
 DEFAULT_REVIEW_QUEUE_GA_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-review-queue-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-review-queue-ga-validation-plan.json'
 )
 DEFAULT_PROVIDER_GA_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-provider-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-provider-ga-validation-plan.json'
 )
 DEFAULT_CALIBRATION_MANIFEST = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
 )
 DEFAULT_CALIBRATION_REPORT_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-report.json'
 )
 DEFAULT_CALIBRATION_GA_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-calibration-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-calibration-ga-validation-plan.json'
 )
 DEFAULT_ROADMAP_EXTENSION_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-roadmap-extension-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-roadmap-extension-validation-plan.json'
 )
 DEFAULT_PLAN_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-linux-validation-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-linux-validation-suite-plan.json'
 )
 DEFAULT_STAGES = (
     'ci',

@@ -56,15 +56,15 @@ def get_repo_root() -> Path:
         return Path(env_root).resolve()
 
     current_workdir = Path.cwd().resolve()
-    if (current_workdir / 'docs' / 'current' / 'contracts' / 'SKILL.template.md').is_file():
+    if (current_workdir / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md').is_file():
         return current_workdir
 
     package_root = Path(__file__).resolve().parents[2]
-    if (package_root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md').is_file():
+    if (package_root / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md').is_file():
         return package_root
 
     container_root = Path('/app')
-    if (container_root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md').is_file():
+    if (container_root / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md').is_file():
         return container_root
 
     return package_root
@@ -90,8 +90,8 @@ def load_settings(repo_root: Path = None) -> Settings:
         repo_root=root,
         draft_dir=root / 'skills' / 'drafts',
         published_dir=root / 'skills' / 'published',
-        template_path=root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
-        schema_path=root / 'docs' / 'current' / 'contracts' / 'skill.schema.json',
+        template_path=root / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md',
+        schema_path=root / 'docs' / 'latest' / 'contracts' / 'skill.schema.json',
         api_key=os.getenv('OMNI_API_KEY'),
         rate_limit_requests=int(os.getenv('OMNI_RATE_LIMIT_REQUESTS', '0')),
         rate_limit_window_seconds=int(os.getenv('OMNI_RATE_LIMIT_WINDOW_SECONDS', '60')),

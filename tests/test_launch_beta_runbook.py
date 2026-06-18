@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-RUNBOOK_PATH = REPO_ROOT / "docs" / "current" / "operations" / "runbooks" / "launch-beta.md"
+RUNBOOK_PATH = REPO_ROOT / "docs" / "latest" / "operations" / "runbooks" / "launch-beta.md"
 
 
 class LaunchBetaRunbookTests(unittest.TestCase):

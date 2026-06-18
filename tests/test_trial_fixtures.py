@@ -146,7 +146,7 @@ class TrialFixtureTests(unittest.TestCase):
         shutil.rmtree(self.workspace, ignore_errors=True)
 
     def test_manifest_example_assets_exist_for_all_modalities(self) -> None:
-        manifest_root = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'trial-manifests'
+        manifest_root = REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'trial-manifests'
         manifest_files = [
             manifest_root / 'trial-sample-text.example.json',
             manifest_root / 'trial-sample-audio.example.json',

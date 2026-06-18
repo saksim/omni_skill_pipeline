@@ -55,7 +55,7 @@ from omni_skill_pipeline.validation import evaluate_trial_security_from_bundle  
 DEFAULT_MANIFEST_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "trial-manifests"
@@ -64,7 +64,7 @@ DEFAULT_MANIFEST_PATH = (
 DEFAULT_OUTPUT_DIR = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"

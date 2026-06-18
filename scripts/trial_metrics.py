@@ -18,13 +18,13 @@ from omni_skill_pipeline.quality.trial_metrics import (  # noqa: E402
 )
 
 DEFAULT_MANIFEST_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "trial-metrics" / "trial-metrics-manifest.template.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "trial-metrics" / "trial-metrics-manifest.template.json"
 )
 DEFAULT_OUTPUT_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "trial-metrics" / "trial-metrics-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "trial-metrics" / "trial-metrics-report.json"
 )
 DEFAULT_SUMMARY_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "trial-metrics" / "trial-metrics-summary.md"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "trial-metrics" / "trial-metrics-summary.md"
 )
 
 

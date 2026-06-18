@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUN_REPORT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -20,7 +20,7 @@ DEFAULT_RUN_REPORT_PATH = (
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -29,7 +29,7 @@ DEFAULT_OUTPUT_PATH = (
 DEFAULT_SUMMARY_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -38,7 +38,7 @@ DEFAULT_SUMMARY_PATH = (
 DEFAULT_MANIFEST_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -47,7 +47,7 @@ DEFAULT_MANIFEST_PATH = (
 DEFAULT_BACKFILL_PLAN_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"

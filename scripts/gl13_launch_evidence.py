@@ -150,7 +150,7 @@ LAUNCH_READINESS_GATE_SCRIPT = REPO_ROOT / "scripts" / "launch_gate.py"
 DEFAULT_RUN_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -159,7 +159,7 @@ DEFAULT_RUN_REPORT = (
 DEFAULT_COLLECTION_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -168,7 +168,7 @@ DEFAULT_COLLECTION_REPORT = (
 DEFAULT_COLLECTION_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -177,7 +177,7 @@ DEFAULT_COLLECTION_SUMMARY = (
 DEFAULT_REAL_TRIAL_MANIFEST = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -186,7 +186,7 @@ DEFAULT_REAL_TRIAL_MANIFEST = (
 DEFAULT_BACKFILL_PLAN_OUTPUT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -195,7 +195,7 @@ DEFAULT_BACKFILL_PLAN_OUTPUT = (
 DEFAULT_BACKFILL_EXECUTION_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -204,7 +204,7 @@ DEFAULT_BACKFILL_EXECUTION_REPORT = (
 DEFAULT_BACKFILL_EXECUTION_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -213,7 +213,7 @@ DEFAULT_BACKFILL_EXECUTION_SUMMARY = (
 DEFAULT_BACKFILL_INTAKE_ACTIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -222,7 +222,7 @@ DEFAULT_BACKFILL_INTAKE_ACTIONS_REPORT = (
 DEFAULT_BACKFILL_INTAKE_ACTIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -231,7 +231,7 @@ DEFAULT_BACKFILL_INTAKE_ACTIONS_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -240,7 +240,7 @@ DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -249,7 +249,7 @@ DEFAULT_BACKFILL_SUBMISSION_TEMPLATES_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_MANIFEST_TEMPLATE = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -258,7 +258,7 @@ DEFAULT_BACKFILL_SUBMISSION_MANIFEST_TEMPLATE = (
 DEFAULT_BACKFILL_SUBMISSION_REAL_INPUTS = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -267,7 +267,7 @@ DEFAULT_BACKFILL_SUBMISSION_REAL_INPUTS = (
 DEFAULT_BACKFILL_SUBMISSION_CONSUMPTION_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -276,7 +276,7 @@ DEFAULT_BACKFILL_SUBMISSION_CONSUMPTION_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_CONSUMPTION_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -285,7 +285,7 @@ DEFAULT_BACKFILL_SUBMISSION_CONSUMPTION_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_CONSUMED_MANIFEST = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -295,7 +295,7 @@ DEFAULT_BACKFILL_SUBMISSION_CONSUMED_MANIFEST = (
 DEFAULT_BACKFILL_SUBMISSION_THROUGHPUT_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -304,7 +304,7 @@ DEFAULT_BACKFILL_SUBMISSION_THROUGHPUT_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_THROUGHPUT_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -313,7 +313,7 @@ DEFAULT_BACKFILL_SUBMISSION_THROUGHPUT_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -322,7 +322,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -331,7 +331,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMPLETION_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -340,7 +340,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMPLETION_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMPLETION_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -349,7 +349,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMPLETION_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENTS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -358,7 +358,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENTS_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENTS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -367,7 +367,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENTS_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENT_CLOSURE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -376,7 +376,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENT_CLOSURE_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENT_CLOSURE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -385,7 +385,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_COMMITMENT_CLOSURE_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -394,7 +394,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -403,7 +403,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -412,7 +412,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -421,7 +421,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -430,7 +430,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATIONS_REPORT = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -439,7 +439,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATIONS_SUMMARY = (
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACKNOWLEDGEMENTS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -448,7 +448,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACKNOWLEDGEMENT
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACKNOWLEDGEMENTS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -457,7 +457,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACKNOWLEDGEMENT
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_THROUGHPUT_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -466,7 +466,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_THROUGHPUT_REPO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_THROUGHPUT_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -475,7 +475,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_THROUGHPUT_SUMM
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -484,7 +484,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_REP
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -493,7 +493,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_SUM
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -502,7 +502,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -511,7 +511,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -520,7 +520,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -529,7 +529,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -538,7 +538,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -547,7 +547,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_INGESTION_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -556,7 +556,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_INGESTION_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -565,7 +565,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -574,7 +574,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -583,7 +583,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -592,7 +592,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -601,7 +601,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -610,7 +610,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -619,7 +619,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -628,7 +628,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -637,7 +637,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -646,7 +646,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -655,7 +655,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -664,7 +664,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -673,7 +673,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -682,7 +682,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -691,7 +691,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -700,7 +700,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -709,7 +709,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -718,7 +718,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -727,7 +727,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -736,7 +736,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -745,7 +745,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -754,7 +754,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -763,7 +763,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -772,7 +772,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACKNOWLEDGEMENT_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -781,7 +781,7 @@ DEFAULT_BACKFILL_SUBMISSION_QUEUE_FOLLOWUP_RESOLUTION_ESCALATION_ACTION_PLAN_CLO
 DEFAULT_BACKFILL_HANDOFF_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -790,7 +790,7 @@ DEFAULT_BACKFILL_HANDOFF_REPORT = (
 DEFAULT_BACKFILL_HANDOFF_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -799,7 +799,7 @@ DEFAULT_BACKFILL_HANDOFF_SUMMARY = (
 DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -808,7 +808,7 @@ DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_REPORT = (
 DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -817,7 +817,7 @@ DEFAULT_BACKFILL_HANDOFF_ESCALATIONS_SUMMARY = (
 DEFAULT_TRIAL_METRICS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -826,7 +826,7 @@ DEFAULT_TRIAL_METRICS_REPORT = (
 DEFAULT_TRIAL_METRICS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -835,7 +835,7 @@ DEFAULT_TRIAL_METRICS_SUMMARY = (
 DEFAULT_LAUNCH_READINESS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "broad-launch-readiness-report.json"
@@ -843,7 +843,7 @@ DEFAULT_LAUNCH_READINESS_REPORT = (
 DEFAULT_LAUNCH_READINESS_SUMMARY = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "broad-launch-readiness-summary.md"
@@ -851,16 +851,16 @@ DEFAULT_LAUNCH_READINESS_SUMMARY = (
 DEFAULT_RELEASE_SWITCH_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "e13-release-switch-decision-report.json"
 )
-DEFAULT_CURRENT_STATUS_DOC = REPO_ROOT / "docs" / "current" / "status" / "CURRENT_STATUS.md"
+DEFAULT_CURRENT_STATUS_DOC = REPO_ROOT / "docs" / "working" / "status" / "CURRENT_STATUS.md"
 DEFAULT_AGENT_SMOKE_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -869,7 +869,7 @@ DEFAULT_AGENT_SMOKE_REPORT = (
 DEFAULT_DOC_SYNC_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "e13-doc-sync-check-report.json"
@@ -877,7 +877,7 @@ DEFAULT_DOC_SYNC_REPORT = (
 DEFAULT_OPERATIONS_READINESS_REPORT = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "operations-readiness-report.json"
@@ -885,7 +885,7 @@ DEFAULT_OPERATIONS_READINESS_REPORT = (
 DEFAULT_EVIDENCE_PACK = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
