@@ -52,6 +52,8 @@ The documentation tree is split by lifecycle stage. Use the layer name as the fi
 - [Controlled Business Trial Iteration](working/status/2026-05-18-controlled-business-trial-iteration.md)
 - [Broad Product Launch Plan](working/status/2026-05-25-broad-product-launch-plan.md)
 - [项目卡点评估（2026-06-18）](working/status/2026-06-18-project-blocker-assessment.md)
+- [内部玩具上线施工计划（2026-06-18）](working/status/2026-06-18-internal-dogfood-launch-construction-plan.md)
+- [Internal Dogfood Launch Docs](working/status/internal-dogfood-launch/README.md)
 - [Skill Distillation V2 Roadmap](working/architecture/skill-distillation-v2-roadmap.md)
 - [Skill Distillation V2 Implementation Backlog](working/architecture/skill-distillation-v2-implementation-backlog.md)
 - [Skill Distillation V2 Work Orders](working/architecture/skill-distillation-v2-work-orders.md)
