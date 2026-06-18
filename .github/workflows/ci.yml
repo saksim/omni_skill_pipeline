@@ -36,7 +36,7 @@ jobs:
       - name: Run CI test suite with coverage gate
         env:
           PYTHONPATH: src
-        run: python scripts/run_ci.py --coverage-fail-under 50 --coverage-xml coverage.xml
+        run: python scripts/ci.py --coverage-fail-under 50 --coverage-xml coverage.xml
 
       - name: Upload coverage XML
         if: always()

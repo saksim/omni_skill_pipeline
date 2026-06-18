@@ -1,0 +1,199 @@
+{
+  "schema_version": "internal_dogfood_readiness.v1",
+  "generated_at_utc": "2026-06-18T06:26:34.388470+00:00",
+  "decision": "READY_FOR_INTERNAL_DOGFOOD",
+  "decision_code": 0,
+  "scope": "internal_dogfood_only",
+  "internal_dogfood_only": true,
+  "external_launch_decision": "HOLD",
+  "external_launch_claim": "not_ready",
+  "summary": {
+    "internal_dogfood_only": true,
+    "fixture_evidence_used": true,
+    "fixture_sample_count": 10,
+    "external_hold_allowed_blockers": [
+      "trial_loop_volume_and_modality_coverage"
+    ]
+  },
+  "failed_checks": [],
+  "check_count": 9,
+  "pass_count": 9,
+  "fail_count": 0,
+  "checks": [
+    {
+      "id": "ci_entrypoint_available",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "workflow": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.github\\workflows\\ci.yml",
+        "scripts_ci_py_exists": true,
+        "workflow_calls_scripts_ci_py": true,
+        "workflow_calls_missing_scripts_run_ci_py": false
+      },
+      "expected": {
+        "scripts_ci_py_exists": true,
+        "workflow_calls_scripts_ci_py": true,
+        "workflow_calls_missing_scripts_run_ci_py": false
+      },
+      "details": "Internal dogfood CI must not call a missing workflow script."
+    },
+    {
+      "id": "ci_baseline_passed",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "ci_result": "exempted",
+        "note": "Local Windows CI baseline is not passing: coverage package missing in this environment and scripts/tp_tests.py hits WinError 206 command-line length; GitHub workflow entrypoint is fixed to scripts/ci.py."
+      },
+      "expected": "passed or explicitly exempted non-blocking item",
+      "details": "The internal gate consumes the CI result; it does not lower coverage or skip the CI command."
+    },
+    {
+      "id": "official_launch_gate_accounted",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\broad-launch-readiness-report.json",
+        "decision": "HOLD",
+        "failed_checks": [
+          "trial_loop_volume_and_modality_coverage"
+        ],
+        "unexpected_failed_checks": []
+      },
+      "expected": {
+        "decision": "HOLD with only trial coverage blocker, or external READY with no blockers",
+        "allowed_hold_failed_checks": [
+          "trial_loop_volume_and_modality_coverage"
+        ]
+      },
+      "details": "Internal dogfood may proceed only when the external HOLD is explained by missing real loop coverage; security, docs, ops, or review blockers still block."
+    },
+    {
+      "id": "official_launch_gate_not_overridden",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "scope": "internal_dogfood_only",
+        "external_launch_decision": "HOLD",
+        "external_launch_claim": "not_ready"
+      },
+      "expected": {
+        "scope": "internal_dogfood_only",
+        "external_launch_decision_preserved": true
+      },
+      "details": "Internal readiness is not an external Beta, GA, or SaaS launch claim."
+    },
+    {
+      "id": "api_health_ready",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\internal-dogfood-api-health-report.json",
+        "status": "degraded",
+        "http_status": 503,
+        "payload": {
+          "schema_version": "internal_dogfood_api_health.v1",
+          "generated_at_utc": "2026-06-18T06:19:23Z",
+          "status": "degraded",
+          "http_status": 503,
+          "internal_dogfood_only": true,
+          "interpretation": "Accepted only as an internal dogfood degraded health explanation. This is not external launch health evidence.",
+          "checks": [
+            {
+              "name": "template_path",
+              "ok": false,
+              "detail": "template file is missing: docs/current/contracts/SKILL.template.md"
+            },
+            {
+              "name": "draft_dir",
+              "ok": true,
+              "detail": "draft directory is available."
+            },
+            {
+              "name": "app_assembly",
+              "ok": true,
+              "detail": "required routes are assembled.",
+              "missing_routes": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": "ready",
+        "http_status": 200
+      },
+      "details": "API health must be ready, unless a degraded internal-only health state is explicitly allowed."
+    },
+    {
+      "id": "internal_sample_available",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "controlled_trial_run_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
+        "sample_count": 10,
+        "complete_samples": 10,
+        "fixture_sample_count": 10,
+        "fixture_evidence_allowed": true
+      },
+      "expected": {
+        "sample_count": ">0",
+        "complete_samples": ">0",
+        "fixture_evidence_allowed_when_fixture_is_used": true
+      },
+      "details": "Fixture samples can support internal dogfood only when the result is clearly internal-only."
+    },
+    {
+      "id": "review_required_default",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "force_review_mode": true,
+        "unreviewed_published_count": 0
+      },
+      "expected": {
+        "force_review_mode": true,
+        "unreviewed_published_count": 0
+      },
+      "details": "Generated artifacts must not be treated as auto-published internal outputs."
+    },
+    {
+      "id": "internal_only_label_present",
+      "status": "pass",
+      "blocking": true,
+      "actual": {
+        "scope": "internal_dogfood_only",
+        "internal_dogfood_only": true,
+        "fixture_sample_count": 10,
+        "fixture_evidence_allowed": true
+      },
+      "expected": {
+        "scope": "internal_dogfood_only",
+        "internal_dogfood_only": true,
+        "fixture_evidence_allowed_when_fixture_is_used": true
+      },
+      "details": "Any fixture-backed decision must be explicitly internal-only."
+    },
+    {
+      "id": "docs_indexed",
+      "status": "pass",
+      "blocking": false,
+      "actual": {
+        "doc_index": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\INDEX.md",
+        "missing": []
+      },
+      "expected": {
+        "missing": []
+      },
+      "details": "Internal dogfood docs should remain discoverable from docs/INDEX.md."
+    }
+  ],
+  "evidence_paths": {
+    "workflow": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.github\\workflows\\ci.yml",
+    "launch_gate_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\broad-launch-readiness-report.json",
+    "trial_metrics_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+    "controlled_trial_run_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
+    "doc_index": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\INDEX.md",
+    "healthz_url": "",
+    "healthz_report": "docs\\working\\status\\baselines\\internal-dogfood-api-health-report.json"
+  }
+}

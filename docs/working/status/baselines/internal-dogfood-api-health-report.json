@@ -1,0 +1,26 @@
+{
+  "schema_version": "internal_dogfood_api_health.v1",
+  "generated_at_utc": "2026-06-18T06:19:23Z",
+  "status": "degraded",
+  "http_status": 503,
+  "internal_dogfood_only": true,
+  "interpretation": "Accepted only as an internal dogfood degraded health explanation. This is not external launch health evidence.",
+  "checks": [
+    {
+      "name": "template_path",
+      "ok": false,
+      "detail": "template file is missing: docs/current/contracts/SKILL.template.md"
+    },
+    {
+      "name": "draft_dir",
+      "ok": true,
+      "detail": "draft directory is available."
+    },
+    {
+      "name": "app_assembly",
+      "ok": true,
+      "detail": "required routes are assembled.",
+      "missing_routes": []
+    }
+  ]
+}
