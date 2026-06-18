@@ -24,6 +24,7 @@
 - [Distillation Platform Strategy Assessment](current/status/2026-05-17-distillation-platform-strategy-assessment.md)
 - [Controlled Business Trial Iteration](current/status/2026-05-18-controlled-business-trial-iteration.md)
 - [Broad Product Launch Plan](current/status/2026-05-25-broad-product-launch-plan.md)
+- [项目卡点评估（2026-06-18）](current/status/2026-06-18-project-blocker-assessment.md)
 - [E0 Baseline Pack](current/status/baselines/README.md)
 
 Launch gate runner: `python scripts/launch_gate.py --output - --summary-output -`
