@@ -133,7 +133,19 @@ Pass conditions:
 ```powershell
 python scripts\container_smoke.py --dry-run
 python scripts\container_smoke.py --image-tag omni-skill-pipeline:dogfood --port 18000
+python scripts\container_smoke.py --image-tag omni-skill-pipeline:dogfood --port 18000 --docker-config-dir .tmp_docker_config --output docs\working\status\baselines\internal-dogfood-container-smoke-report.json --summary-output docs\working\status\baselines\internal-dogfood-container-smoke-summary.md
 ```
+
+`internal-dogfood-container-smoke-report.json` must be read before judging this step. A successful internal Docker smoke requires `decision=PASS` and `healthz=pass`; `docker_cli=pass` and `docker_daemon=pass` alone only prove the Docker host is reachable.
+
+Known structured failure categories:
+
+- `docker_cli_missing`: Docker CLI is not installed or not in `PATH`.
+- `docker_daemon_unavailable`: Docker daemon is not reachable.
+- `docker_base_image_pull_failed`: build reached Docker but could not pull base image metadata/token.
+- `docker_build_failed`: Docker build failed after base-image access.
+- `docker_run_failed`: container did not start.
+- `health_check_failed`: container started but `/healthz` did not become available.
 
 如果当前环境无 Docker：
 
