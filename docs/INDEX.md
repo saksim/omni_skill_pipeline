@@ -62,6 +62,7 @@ The documentation tree is split by lifecycle stage. Use the layer name as the fi
 - [Internal Dogfood Fail Queue Update 20260618T0806Z](working/status/baselines/internal-dogfood-fail-queue-20260618T0806Z.md)
 - [Internal Dogfood Verification Runbook](working/status/internal-dogfood-launch/verification-runbook.md)
 - [Internal Dogfood Happy Path Smoke 20260618T0834Z](working/status/baselines/internal-dogfood-happy-path-smoke-20260618T0834Z.md)
+- [Internal Dogfood GL13 Evidence Pack Repair 20260618T0854Z](working/status/baselines/internal-dogfood-gl13-evidence-pack-20260618T0854Z.md)
 - [Skill Distillation V2 Roadmap](working/architecture/skill-distillation-v2-roadmap.md)
 - [Skill Distillation V2 Implementation Backlog](working/architecture/skill-distillation-v2-implementation-backlog.md)
 - [Skill Distillation V2 Work Orders](working/architecture/skill-distillation-v2-work-orders.md)

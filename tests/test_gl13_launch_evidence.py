@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 import subprocess
 import sys
@@ -95,6 +96,27 @@ def _run_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
+    def test_evidence_pack_signature_matches_main_call_keywords(self) -> None:
+        tree = ast.parse(SCRIPT_PATH.read_text(encoding="utf-8-sig"))
+        evidence_pack_function = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "_build_evidence_pack"
+        )
+        signature_keywords = {argument.arg for argument in evidence_pack_function.args.kwonlyargs}
+        evidence_pack_calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "_build_evidence_pack"
+        ]
+
+        self.assertEqual(len(evidence_pack_calls), 1)
+        call_keywords = {keyword.arg for keyword in evidence_pack_calls[0].keywords if keyword.arg}
+        self.assertEqual(call_keywords - signature_keywords, set())
+        self.assertEqual(signature_keywords - call_keywords, set())
+
     def test_pipeline_produces_ready_for_controlled_beta_with_real_loop(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
