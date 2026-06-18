@@ -1,6 +1,6 @@
 {
   "schema_version": "internal_dogfood_readiness.v1",
-  "generated_at_utc": "2026-06-18T06:55:48.271293+00:00",
+  "generated_at_utc": "2026-06-18T08:06:56.291221+00:00",
   "decision": "READY_FOR_INTERNAL_DOGFOOD",
   "decision_code": 0,
   "scope": "internal_dogfood_only",
@@ -43,7 +43,7 @@
       "blocking": true,
       "actual": {
         "ci_result": "exempted",
-        "note": "Local Windows CI baseline is not passing: coverage package missing in this environment and scripts/tp_tests.py hits WinError 206 command-line length; GitHub workflow entrypoint is fixed to scripts/ci.py."
+        "note": "Local full CI baseline is still blocked by the missing coverage package in this environment; scripts/tp_tests.py --all now passes via chunked unittest execution on Windows."
       },
       "expected": "passed or explicitly exempted non-blocking item",
       "details": "The internal gate consumes the CI result; it does not lower coverage or skip the CI command."

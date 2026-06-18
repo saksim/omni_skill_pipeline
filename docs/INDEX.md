@@ -59,6 +59,7 @@ The documentation tree is split by lifecycle stage. Use the layer name as the fi
 - [Internal Dogfood API Health Report](working/status/baselines/internal-dogfood-api-health-report.json)
 - [Internal Dogfood Launch Record 20260618T0643Z](working/status/baselines/internal-dogfood-launch-20260618T0643Z-summary.md)
 - [Internal Dogfood Launch Record 20260618T0656Z](working/status/baselines/internal-dogfood-launch-20260618T0656Z-summary.md)
+- [Internal Dogfood Fail Queue Update 20260618T0806Z](working/status/baselines/internal-dogfood-fail-queue-20260618T0806Z.md)
 - [Skill Distillation V2 Roadmap](working/architecture/skill-distillation-v2-roadmap.md)
 - [Skill Distillation V2 Implementation Backlog](working/architecture/skill-distillation-v2-implementation-backlog.md)
 - [Skill Distillation V2 Work Orders](working/architecture/skill-distillation-v2-work-orders.md)
