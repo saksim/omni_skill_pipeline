@@ -1,0 +1,52 @@
+{
+  "name": "gl03-controlled-beta-sample",
+  "assets": [
+    {
+      "source_uri": "examples/trial/text/slow-query-notes.md",
+      "modality": "text",
+      "title_hint": "Slow Query Notes",
+      "role": "primary",
+      "metadata": {
+        "owner": "beta-operator",
+        "sensitivity": "internal_sanitized"
+      }
+    },
+    {
+      "source_uri": "examples/trial/image/service-latency-dashboard.png",
+      "modality": "image",
+      "title_hint": "Latency Dashboard",
+      "role": "supporting",
+      "metadata": {
+        "owner": "beta-operator",
+        "sensitivity": "internal_sanitized"
+      }
+    },
+    {
+      "source_uri": "examples/trial/mixed/incident-review-transcript.md",
+      "modality": "audio",
+      "title_hint": "Incident Review Transcript",
+      "role": "supporting",
+      "metadata": {
+        "owner": "beta-operator",
+        "sensitivity": "internal_sanitized"
+      }
+    }
+  ],
+  "goal": {
+    "goal_type": "build_skill",
+    "audience": "ops",
+    "rigor": "production",
+    "granularity": "procedure",
+    "domain": "incident_response"
+  },
+  "tags": [
+    "controlled-beta",
+    "gl03",
+    "sanitized"
+  ],
+  "metadata": {
+    "review_owner": "beta-reviewer",
+    "target_package_format": "portable",
+    "expected_output_type": "runbook_skill"
+  }
+}

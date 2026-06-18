@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_review_queue_ga_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'ga_review_queue.py'
 
 
 class ReviewQueueGaValidationScriptTests(unittest.TestCase):

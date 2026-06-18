@@ -1,0 +1,94 @@
+{
+  "package_name": "image-based-service-health-inspection-skill",
+  "description": "Fixture OCR: error rate trend status: degraded",
+  "target": "portable",
+  "files": [
+    {
+      "relative_path": "references/evidence.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 402,
+      "sha256": "d5c21699fc0097024c5f4ce02d28aa750e40775fa1a385a79fe1ae5c97c5bf5e"
+    },
+    {
+      "relative_path": "references/examples.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 72,
+      "sha256": "bfbea8af2fb778bcc9afe359a1192b7878dc2abfd5a719d775faf918e240da10"
+    },
+    {
+      "relative_path": "SKILL.md",
+      "category": "primary",
+      "required": true,
+      "media_type": "text/markdown",
+      "size_bytes": 863,
+      "sha256": "fa3806b837799ffa0037c6b0c68e9a1ec119abe7bc608086af66a27c0b859599"
+    }
+  ],
+  "references": [
+    {
+      "reference_id": "726f45ba-1ef4-4ec2-a096-633d3ad2be35",
+      "title": "Evidence 726f45ba-1ef4-4ec2-a096-633d3ad2be35 (image:ocr:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "726f45ba-1ef4-4ec2-a096-633d3ad2be35"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "db787d3d-3471-46e2-8601-b2e9f4f65ca0",
+      "title": "Evidence db787d3d-3471-46e2-8601-b2e9f4f65ca0 (image:region:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "db787d3d-3471-46e2-8601-b2e9f4f65ca0"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "00909ded-25f4-4721-99b5-ea5226840e19",
+      "title": "Evidence 00909ded-25f4-4721-99b5-ea5226840e19 (image:scene:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "00909ded-25f4-4721-99b5-ea5226840e19"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "36ba799d-3f0d-4074-9a31-605a5ac8364b",
+      "title": "Evidence 36ba799d-3f0d-4074-9a31-605a5ac8364b (image:layout:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\error-rate-trend.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "36ba799d-3f0d-4074-9a31-605a5ac8364b"
+      ],
+      "metadata": {}
+    }
+  ],
+  "validation_status": "passed",
+  "source_bundle": {
+    "bundle_id": "simulated-approval",
+    "graph_id": "1253d0c6-28dd-4881-a24b-a6eb216bbd58",
+    "skill_id": "6ddd9792-1d6a-4603-b732-0ddd0a033430",
+    "corpus_id": "",
+    "artifact_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\publications\\manifest.json",
+    "metadata": {}
+  },
+  "review_status": "published",
+  "hashes": {
+    "package_files_sha256": "6a33115bb1f12840a018460c48c9d27352830990455b2d3ac5102e7f45f634ab",
+    "skill_markdown_sha256": "fa3806b837799ffa0037c6b0c68e9a1ec119abe7bc608086af66a27c0b859599"
+  },
+  "metadata": {
+    "target_layout": "skills/portable/image-based-service-health-inspection-skill",
+    "export_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-image-002-bundle.approved.json",
+    "schema_version": "agent_skill_package.v1"
+  },
+  "created_at": "2026-05-25T10:17:08Z",
+  "package_id": "48aa6925-8999-40f8-b525-27e2d6a07728"
+}

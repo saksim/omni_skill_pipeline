@@ -379,20 +379,33 @@ class LocalJobWorker(object):
     def _dispatch_review_queue_job(self, payload: dict[str, Any]) -> None:
         repository = self._require_review_queue_repository()
         action = str(payload.get('action', 'claim')).strip().lower() or 'claim'
+        tenant_scope = payload.get('tenant_scope')
+        normalized_tenant_scope = tenant_scope if isinstance(tenant_scope, dict) else None
         if action == 'list':
             queue_status = str(payload.get('queue_status', 'pending')).strip() or 'pending'
             limit_raw = payload.get('limit', 100)
             limit = int(limit_raw) if str(limit_raw).strip() else 100
-            repository.list_review_queue(queue_status=queue_status, limit=limit)
+            repository.list_review_queue(
+                queue_status=queue_status,
+                limit=limit,
+                tenant_scope=normalized_tenant_scope,
+            )
             return
         if action == 'claim':
             review_task_id = str(payload.get('review_task_id', '')).strip() or None
             consumer = str(payload.get('consumer', 'review-consumer')).strip() or 'review-consumer'
-            repository.claim_review_task(review_task_id=review_task_id, consumer=consumer)
+            repository.claim_review_task(
+                review_task_id=review_task_id,
+                consumer=consumer,
+                tenant_scope=normalized_tenant_scope,
+            )
             return
         if action == 'consume':
             consumer = str(payload.get('consumer', 'review-consumer')).strip() or 'review-consumer'
-            repository.consume_review_task(consumer=consumer)
+            repository.consume_review_task(
+                consumer=consumer,
+                tenant_scope=normalized_tenant_scope,
+            )
             return
         if action == 'close':
             review_task_id = str(payload.get('review_task_id', '')).strip()
@@ -401,11 +414,44 @@ class LocalJobWorker(object):
             status = str(payload.get('status', 'published')).strip() or 'published'
             closed_by = str(payload.get('closed_by', 'review-operator')).strip() or 'review-operator'
             review_notes = str(payload.get('review_notes', '')).strip()
+            decision = str(payload.get('decision', '')).strip() or None
+            reason_codes_payload = payload.get('reason_codes')
+            reason_codes = reason_codes_payload if isinstance(reason_codes_payload, list) else None
+            reviewer_edits_payload = payload.get('reviewer_edits')
+            reviewer_edits = reviewer_edits_payload if isinstance(reviewer_edits_payload, dict) else None
             repository.close_review_task(
                 review_task_id,
                 status=status,
                 closed_by=closed_by,
                 review_notes=review_notes,
+                decision=decision,
+                reason_codes=reason_codes,
+                reviewer_edits=reviewer_edits,
+                tenant_scope=normalized_tenant_scope,
+            )
+            return
+        if action in {'approve', 'reject', 'needs_rework', 'needs-rework', 'needs rework'}:
+            review_task_id = str(payload.get('review_task_id', '')).strip()
+            if not review_task_id:
+                raise ValueError('review_queue %s action requires review_task_id.' % action)
+            update_fn = getattr(repository, 'update_review_task_decision', None)
+            if update_fn is None:
+                raise ValueError('Review queue decision operation is not configured.')
+            reviewer = str(payload.get('reviewer', payload.get('closed_by', 'review-operator'))).strip() or 'review-operator'
+            review_notes = str(payload.get('review_notes', '')).strip()
+            reason_codes_payload = payload.get('reason_codes')
+            reason_codes = reason_codes_payload if isinstance(reason_codes_payload, list) else None
+            reviewer_edits_payload = payload.get('reviewer_edits')
+            reviewer_edits = reviewer_edits_payload if isinstance(reviewer_edits_payload, dict) else None
+            status = str(payload.get('status', '')).strip() or None
+            update_fn(
+                review_task_id,
+                decision=action,
+                reviewer=reviewer,
+                reason_codes=reason_codes,
+                review_notes=review_notes,
+                reviewer_edits=reviewer_edits,
+                status=status,
             )
             return
         raise ValueError('Unsupported review_queue action: %s' % action)

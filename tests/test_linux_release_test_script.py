@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "run_linux_release_test.sh"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "linux_release.sh"
 DOCKERFILE_PATH = REPO_ROOT / "Dockerfile"
 ROOT_DOCKERIGNORE_PATH = REPO_ROOT / ".dockerignore"
 TEST_DOCKERIGNORE_PATH = REPO_ROOT / "Dockerfile.test.dockerignore"

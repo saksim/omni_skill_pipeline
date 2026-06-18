@@ -387,7 +387,7 @@ class VideoAdapter(object):
                 'error': str(exc),
                 'strategy': 'prune_tmp_media',
                 'recovery_log': str(recovery_log),
-                'recovery_command': 'python scripts/prune_tmp_media.py --retention-hours 24',
+                'recovery_command': 'python scripts/prune_tmp.py --retention-hours 24',
             }
             return
 

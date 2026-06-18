@@ -14,6 +14,12 @@ from omni_skill_pipeline.interfaces import AtomExtractor
 from omni_skill_pipeline.extraction.atom_extractor import LegacyInsightAtomExtractor
 from omni_skill_pipeline.extraction.evidence_builder import EvidenceBuilder
 from omni_skill_pipeline.models import (
+    AgentSkillPackage,
+    AgentSkillPackageFile,
+    AgentSkillPackageReference,
+    AgentSkillPackageSourceBundle,
+    AgentSkillTarget,
+    AgentSkillValidationStatus,
     Asset,
     AtomType,
     Corpus,
@@ -29,6 +35,7 @@ from omni_skill_pipeline.models import (
     InsightType,
     LoadedAsset,
     Modality,
+    ReviewStatus,
     ReviewDecision,
     ReviewTask,
     SemanticAtom,
@@ -152,6 +159,77 @@ class V2ModelTests(unittest.TestCase):
         self.assertEqual(json.loads(corpus.to_json())['assets'][0]['source_uri'], 'file:///incident.md')
         self.assertEqual(json.loads(atom.to_json())['atom_type'], 'claim')
 
+    def test_agent_skill_package_serialization_and_validation(self) -> None:
+        package = AgentSkillPackage(
+            package_name='postgres-slow-query-review',
+            description='Review PostgreSQL slow query plans before changing indexes.',
+            target=AgentSkillTarget.CODEX,
+            files=[
+                AgentSkillPackageFile(
+                    relative_path='SKILL.md',
+                    category='primary',
+                    required=True,
+                    media_type='text/markdown',
+                    size_bytes=1024,
+                    sha256='a' * 64,
+                ),
+                AgentSkillPackageFile(
+                    relative_path='references/evidence.md',
+                    category='reference',
+                    required=False,
+                    media_type='text/markdown',
+                    size_bytes=2048,
+                    sha256='b' * 64,
+                ),
+            ],
+            references=[
+                AgentSkillPackageReference(
+                    reference_id='ref-incident-postmortem',
+                    title='Incident Postmortem',
+                    source_uri='file:///tmp/incident-postmortem.md',
+                    reference_type='evidence',
+                    evidence_refs=['ev-1', 'ev-2'],
+                )
+            ],
+            validation_status=AgentSkillValidationStatus.PASSED,
+            source_bundle=AgentSkillPackageSourceBundle(
+                bundle_id='bundle-1',
+                graph_id='graph-1',
+                skill_id='skill-1',
+                corpus_id='corpus-1',
+                artifact_manifest_path='skills/drafts/postgres-slow-query-review/publication_manifest.json',
+            ),
+            review_status=ReviewStatus.REVIEW_PENDING,
+            hashes={
+                'package_sha256': 'c' * 64,
+                'skill_markdown_sha256': 'd' * 64,
+            },
+            metadata={
+                'target_layout': '.codex/skills/postgres-slow-query-review',
+                'schema_version': 'agent_skill_package.v1',
+            },
+        )
+        package.validate()
+        payload = package.to_dict()
+        self.assertEqual(payload['target'], AgentSkillTarget.CODEX.value)
+        self.assertEqual(payload['validation_status'], AgentSkillValidationStatus.PASSED.value)
+        self.assertEqual(payload['review_status'], ReviewStatus.REVIEW_PENDING.value)
+        self.assertEqual(payload['files'][0]['relative_path'], 'SKILL.md')
+        self.assertEqual(payload['references'][0]['source_uri'], 'file:///tmp/incident-postmortem.md')
+        self.assertEqual(payload['source_bundle']['graph_id'], 'graph-1')
+        self.assertEqual(payload['hashes']['package_sha256'], 'c' * 64)
+
+    def test_agent_skill_package_validate_requires_source_bundle_identifier(self) -> None:
+        package = AgentSkillPackage(
+            package_name='invalid-package',
+            description='Missing source bundle identifiers should fail.',
+            target=AgentSkillTarget.PORTABLE,
+            files=[AgentSkillPackageFile(relative_path='SKILL.md')],
+            source_bundle=AgentSkillPackageSourceBundle(),
+        )
+        with self.assertRaises(ValueError):
+            package.validate()
+
     def test_corpus_request_can_represent_multi_asset_distillation(self) -> None:
         request = CorpusDistillRequest.from_dict(
             {
@@ -205,6 +283,20 @@ class V2ModelTests(unittest.TestCase):
         self.assertIn('S_REWRITE_ACTIONABLE_STEPS', payload['revision_suggestions'])
         self.assertEqual(payload['score_snapshot']['overall_score'], 0.69)
         self.assertEqual(payload['thresholds']['auto_publish_min_actionability'], 0.72)
+
+    def test_review_task_controlled_trial_reason_code_maps_to_manual_review_suggestion(self) -> None:
+        task = ReviewTask.from_review_policy(
+            skill_id='skill-controlled-trial',
+            review_policy={
+                'decision': ReviewDecision.REVIEW_REQUIRED.value,
+                'reason_codes': ['controlled_trial_requires_review'],
+                'score_snapshot': {'overall_score': 0.91},
+            },
+        )
+        payload = task.to_dict()
+        self.assertEqual(payload['decision'], 'review_required')
+        self.assertIn('controlled_trial_requires_review', payload['reason_codes'])
+        self.assertIn('S_MANUAL_REVIEW_REQUIRED', payload['revision_suggestions'])
 
     def test_review_task_auto_publish_is_marked_published(self) -> None:
         task = ReviewTask.from_review_policy(

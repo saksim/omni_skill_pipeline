@@ -18,7 +18,7 @@ class TPRegistryScriptTests(unittest.TestCase):
 
     def test_list_command_exposes_known_work_orders(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "scripts/run_tp_tests.py", "--list"],
+            [sys.executable, "scripts/tp_tests.py", "--list"],
             cwd=REPO_ROOT,
             check=False,
             capture_output=True,
@@ -34,17 +34,17 @@ class TPRegistryScriptTests(unittest.TestCase):
 
         listed_tp_ids = self._extract_tp_ids(completed.stdout)
         missing = sorted(work_order_tp_ids - listed_tp_ids)
-        self.assertFalse(missing, "Missing TP mappings in run_tp_tests.py: %s" % ", ".join(missing))
+        self.assertFalse(missing, "Missing TP mappings in tp_tests.py: %s" % ", ".join(missing))
         extra = sorted(listed_tp_ids - work_order_tp_ids)
         self.assertFalse(
             extra,
-            "Undocumented TP mappings in run_tp_tests.py (not found in work-orders): %s"
+            "Undocumented TP mappings in tp_tests.py (not found in work-orders): %s"
             % ", ".join(extra),
         )
 
     def test_all_dry_run_builds_unittest_command(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "scripts/run_tp_tests.py", "--all", "--dry-run", "--python", sys.executable],
+            [sys.executable, "scripts/tp_tests.py", "--all", "--dry-run", "--python", sys.executable],
             cwd=REPO_ROOT,
             check=False,
             capture_output=True,

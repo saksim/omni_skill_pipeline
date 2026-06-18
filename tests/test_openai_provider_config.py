@@ -39,6 +39,61 @@ class OpenAIProviderConfigTests(unittest.TestCase):
         self.assertEqual(settings.openai_failure_budget_max_failures, 9)
         self.assertEqual(settings.openai_failure_budget_window_seconds, 120.0)
 
+    def test_load_settings_reads_controlled_trial_review_mode_flags(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_CONTROLLED_TRIAL_REVIEW_MODE': 'true',
+                'OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE': 'trial_gate_manual_review',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertTrue(settings.controlled_trial_review_mode)
+        self.assertEqual(settings.controlled_trial_review_reason_code, 'trial_gate_manual_review')
+
+    def test_load_settings_reads_portable_skill_markdown_line_limit(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT': '150',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertEqual(settings.portable_skill_markdown_line_limit, 150)
+
+    def test_load_settings_reads_artifact_repository_mode_settings(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_ARTIFACT_REPOSITORY_MODE': 'dual_write',
+                'OMNI_POSTGRES_REPOSITORY_DSN': 'postgresql://repo',
+                'OMNI_DUAL_WRITE_CONTINUE_ON_SECONDARY_ERROR': 'false',
+                'OMNI_DUAL_WRITE_SECONDARY_PREFIX': 'mirror_',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertEqual(settings.artifact_repository_mode, 'dual_write')
+        self.assertEqual(settings.postgres_repository_dsn, 'postgresql://repo')
+        self.assertFalse(settings.dual_write_continue_on_secondary_error)
+        self.assertEqual(settings.dual_write_secondary_prefix, 'mirror_')
+
+    def test_load_settings_reads_governance_ledger_dir_setting(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_GOVERNANCE_LEDGER_DIR': 'governance-data',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertEqual(
+            settings.governance_ledger_dir,
+            (REPO_ROOT / 'governance-data').resolve(),
+        )
+
     def test_client_mixin_wires_timeout_to_openai_client(self) -> None:
         captured_kwargs: dict[str, object] = {}
 

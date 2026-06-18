@@ -1,0 +1,22 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalations.v1",
+  "generated_at_utc": "2026-06-01T05:05:57Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-report.json",
+    "submission_queue_followup_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-report.json"
+  },
+  "followup_resolution_status_gl42": "FOLLOWUP_RESOLUTION_NOT_REQUIRED",
+  "followup_status_gl41": "FOLLOWUP_NOT_REQUIRED",
+  "followup_resolution_escalation_status": "FOLLOWUP_RESOLUTION_ESCALATION_NOT_REQUIRED",
+  "warning_codes": [],
+  "followup_resolution_escalation_counts": {
+    "total_item_count": 0,
+    "open_item_count": 0,
+    "blocked_item_count": 0,
+    "pending_ack_item_count": 0,
+    "active_item_count": 0
+  },
+  "owner_followup_resolution_escalation_counts": {},
+  "followup_resolution_escalation_rows": []
+}

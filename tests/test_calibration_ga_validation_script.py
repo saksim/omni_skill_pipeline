@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_calibration_ga_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'ga_calibration.py'
 
 
 class CalibrationGaValidationScriptTests(unittest.TestCase):
@@ -41,7 +41,7 @@ class CalibrationGaValidationScriptTests(unittest.TestCase):
                 completed.stdout,
             )
             self.assertIn('tests.test_review_policy.ReviewPolicyTests', completed.stdout)
-            self.assertIn('scripts/tune_review_policy.py', completed.stdout)
+            self.assertIn('scripts/tune_review.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
             self.assertEqual(report.get('stage_count'), 3)
@@ -85,7 +85,7 @@ class CalibrationGaValidationScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: calibration_report', completed.stdout)
-            self.assertIn('scripts/tune_review_policy.py', completed.stdout)
+            self.assertIn('scripts/tune_review.py', completed.stdout)
             self.assertIn('--manifest %s' % str(manifest_path.resolve()), completed.stdout)
             self.assertIn('--output %s' % str(calibration_report_path.resolve()), completed.stdout)
             self.assertIn('--margin 0.08', completed.stdout)

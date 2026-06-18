@@ -1,0 +1,30 @@
+{
+  "manifest_id": "cbt02-trial-sample-audio",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Controlled trial audio sample manifest example.",
+  "samples": [
+    {
+      "sample_id": "audio-001",
+      "modality": "audio",
+      "scenario": "incident review call to runbook update skill",
+      "source_owner": "sre-team",
+      "sensitivity": "confidential",
+      "asset_list": [
+        {
+          "asset_id": "audio-asset-001",
+          "asset_type": "audio",
+          "uri": "examples/trial/audio/incident-review-call.wav"
+        },
+        {
+          "asset_id": "audio-asset-002",
+          "asset_type": "transcript",
+          "uri": "examples/trial/audio/incident-review-call.transcript.md"
+        }
+      ],
+      "review_owner": "trial-reviewer-b",
+      "target_package_format": "claude-code",
+      "expected_output_type": "runbook_update_skill"
+    }
+  ]
+}

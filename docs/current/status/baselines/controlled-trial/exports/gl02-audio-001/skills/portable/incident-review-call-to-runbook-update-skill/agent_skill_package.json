@@ -1,0 +1,104 @@
+{
+  "package_name": "incident-review-call-to-runbook-update-skill",
+  "description": "# Incident Review Call Transcript (Sanitized)",
+  "target": "portable",
+  "files": [
+    {
+      "relative_path": "references/evidence.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 457,
+      "sha256": "956e9b88ab7419994cb62d4add4b772247d60835c0889359f08d6afff742069d"
+    },
+    {
+      "relative_path": "references/examples.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 72,
+      "sha256": "bfbea8af2fb778bcc9afe359a1192b7878dc2abfd5a719d775faf918e240da10"
+    },
+    {
+      "relative_path": "SKILL.md",
+      "category": "primary",
+      "required": true,
+      "media_type": "text/markdown",
+      "size_bytes": 821,
+      "sha256": "045fbfdf79f349bc109fa7b0b2f1440a9bc91c00d93a9b8c0e2a83459c7c5666"
+    }
+  ],
+  "references": [
+    {
+      "reference_id": "943de65d-9538-4f73-848d-b1e282b9a77a",
+      "title": "Evidence 943de65d-9538-4f73-848d-b1e282b9a77a (timestamp:segment:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "943de65d-9538-4f73-848d-b1e282b9a77a"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "8b3ef5d6-5fb0-4395-a1fd-4343f700ee90",
+      "title": "Evidence 8b3ef5d6-5fb0-4395-a1fd-4343f700ee90 (timestamp:4.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "8b3ef5d6-5fb0-4395-a1fd-4343f700ee90"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "189d3fd4-7131-47c8-84ca-b454d1c6647b",
+      "title": "Evidence 189d3fd4-7131-47c8-84ca-b454d1c6647b (timestamp:80.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "189d3fd4-7131-47c8-84ca-b454d1c6647b"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "db658bf4-546a-4e12-a68a-80d645b05a2d",
+      "title": "Evidence db658bf4-546a-4e12-a68a-80d645b05a2d (timestamp:131.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "db658bf4-546a-4e12-a68a-80d645b05a2d"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "51670c37-bf5a-409b-a82a-0212a71a6586",
+      "title": "Evidence 51670c37-bf5a-409b-a82a-0212a71a6586 (timestamp:185.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "51670c37-bf5a-409b-a82a-0212a71a6586"
+      ],
+      "metadata": {}
+    }
+  ],
+  "validation_status": "passed",
+  "source_bundle": {
+    "bundle_id": "simulated-approval",
+    "graph_id": "c083d745-9bcf-4ec1-ab8c-671bd22d5544",
+    "skill_id": "6b9cc854-cc45-42b8-9a23-5c56ee3b7950",
+    "corpus_id": "",
+    "artifact_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-review-call-to-runbook-update-skill-6b9cc854\\publications\\manifest.json",
+    "metadata": {}
+  },
+  "review_status": "published",
+  "hashes": {
+    "package_files_sha256": "d5da644bc1715bf46f1572f4b84ea97420199f8b6c8027a948c63a56840f505f",
+    "skill_markdown_sha256": "045fbfdf79f349bc109fa7b0b2f1440a9bc91c00d93a9b8c0e2a83459c7c5666"
+  },
+  "metadata": {
+    "target_layout": "skills/portable/incident-review-call-to-runbook-update-skill",
+    "export_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-audio-001-bundle.approved.json",
+    "schema_version": "agent_skill_package.v1"
+  },
+  "created_at": "2026-05-25T10:17:08Z",
+  "package_id": "5db76d7b-ed43-41ab-bd7a-e1b062238464"
+}

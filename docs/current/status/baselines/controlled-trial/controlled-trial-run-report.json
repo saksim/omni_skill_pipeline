@@ -1,0 +1,587 @@
+{
+  "run_id": "controlled-trial-20260525T101709Z",
+  "generated_at_utc": "2026-05-25T10:17:09Z",
+  "manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\trial-manifests\\trial-sample-launch-expansion-fixture.example.json",
+  "plan_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\controlled-trial-execution-plan.json",
+  "sample_count": 10,
+  "use_fixture_stubs": true,
+  "force_review_mode": true,
+  "review_reason_code": "controlled_trial_requires_review",
+  "samples": [
+    {
+      "sample_id": "gl02-text-001",
+      "modality": "text",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\database-slow-query-notes-to-review-skill-28a66f6e\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\database-slow-query-notes-to-review-skill-28a66f6e\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-text-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-001\\skills\\portable\\database-slow-query-notes-to-review-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-001\\skills\\portable\\database-slow-query-notes-to-review-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-001\\skills\\portable\\database-slow-query-notes-to-review-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-001\\skills\\portable\\database-slow-query-notes-to-review-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-001\\skills\\portable\\database-slow-query-notes-to-review-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 32,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-text-001",
+        "status": "complete",
+        "modality": "text",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 49.98,
+        "provider_failure_count": 0,
+        "provider_call_count": 0,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-text-002",
+      "modality": "text",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\slow-query-remediation-follow-up-notes-to-review-skill-2d3d0baf\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\slow-query-remediation-follow-up-notes-to-review-skill-2d3d0baf\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-text-002-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-002\\skills\\portable\\slow-query-remediation-follow-up-notes-to-review-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-002\\skills\\portable\\slow-query-remediation-follow-up-notes-to-review-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-002\\skills\\portable\\slow-query-remediation-follow-up-notes-to-review-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-002\\skills\\portable\\slow-query-remediation-follow-up-notes-to-review-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-text-002\\skills\\portable\\slow-query-remediation-follow-up-notes-to-review-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 32,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-text-002",
+        "status": "complete",
+        "modality": "text",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 75.742,
+        "provider_failure_count": 0,
+        "provider_call_count": 0,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-audio-001",
+      "modality": "audio",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-review-call-to-runbook-update-skill-6b9cc854\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-review-call-to-runbook-update-skill-6b9cc854\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-audio-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-001\\skills\\portable\\incident-review-call-to-runbook-update-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-001\\skills\\portable\\incident-review-call-to-runbook-update-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-001\\skills\\portable\\incident-review-call-to-runbook-update-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-001\\skills\\portable\\incident-review-call-to-runbook-update-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-001\\skills\\portable\\incident-review-call-to-runbook-update-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 22,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-audio-001",
+        "status": "complete",
+        "modality": "audio",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 39.709,
+        "provider_failure_count": 0,
+        "provider_call_count": 0,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-audio-002",
+      "modality": "audio",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-audio-002-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-002\\skills\\portable\\audio-follow-up-call-to-runbook-revision-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-002\\skills\\portable\\audio-follow-up-call-to-runbook-revision-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-002\\skills\\portable\\audio-follow-up-call-to-runbook-revision-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-002\\skills\\portable\\audio-follow-up-call-to-runbook-revision-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-audio-002\\skills\\portable\\audio-follow-up-call-to-runbook-revision-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 22,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-audio-002",
+        "status": "complete",
+        "modality": "audio",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 42.926,
+        "provider_failure_count": 0,
+        "provider_call_count": 0,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-image-001",
+      "modality": "image",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-image-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-001\\skills\\portable\\dashboard-screenshots-to-alert-diagnostic-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-001\\skills\\portable\\dashboard-screenshots-to-alert-diagnostic-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-001\\skills\\portable\\dashboard-screenshots-to-alert-diagnostic-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-001\\skills\\portable\\dashboard-screenshots-to-alert-diagnostic-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-001\\skills\\portable\\dashboard-screenshots-to-alert-diagnostic-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 24,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-image-001",
+        "status": "complete",
+        "modality": "image",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 48.01,
+        "provider_failure_count": 0,
+        "provider_call_count": 2,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-image-002",
+      "modality": "image",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\image-based-service-health-inspection-skill-6ddd9792\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-image-002-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-002\\skills\\portable\\image-based-service-health-inspection-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-002\\skills\\portable\\image-based-service-health-inspection-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-002\\skills\\portable\\image-based-service-health-inspection-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-002\\skills\\portable\\image-based-service-health-inspection-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-image-002\\skills\\portable\\image-based-service-health-inspection-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 23,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-image-002",
+        "status": "complete",
+        "modality": "image",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 33.394,
+        "provider_failure_count": 0,
+        "provider_call_count": 2,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-video-001",
+      "modality": "video",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\screen-recording-walkthrough-to-sop-skill-a5643d72\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\screen-recording-walkthrough-to-sop-skill-a5643d72\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-video-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-001\\skills\\portable\\screen-recording-walkthrough-to-sop-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-001\\skills\\portable\\screen-recording-walkthrough-to-sop-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-001\\skills\\portable\\screen-recording-walkthrough-to-sop-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-001\\skills\\portable\\screen-recording-walkthrough-to-sop-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-001\\skills\\portable\\screen-recording-walkthrough-to-sop-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 23,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-video-001",
+        "status": "complete",
+        "modality": "video",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 75.614,
+        "provider_failure_count": 0,
+        "provider_call_count": 8,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-video-002",
+      "modality": "video",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-video-002-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-002\\skills\\portable\\video-rerun-for-operation-checklist-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-002\\skills\\portable\\video-rerun-for-operation-checklist-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-002\\skills\\portable\\video-rerun-for-operation-checklist-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-002\\skills\\portable\\video-rerun-for-operation-checklist-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-video-002\\skills\\portable\\video-rerun-for-operation-checklist-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 23,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-video-002",
+        "status": "complete",
+        "modality": "video",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 55.575,
+        "provider_failure_count": 0,
+        "provider_call_count": 8,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-tabular-001",
+      "modality": "tabular",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\latency-and-error-report-to-guardrail-skill-1163495b\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-tabular-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-tabular-001\\skills\\portable\\latency-and-error-report-to-guardrail-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-tabular-001\\skills\\portable\\latency-and-error-report-to-guardrail-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-tabular-001\\skills\\portable\\latency-and-error-report-to-guardrail-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-tabular-001\\skills\\portable\\latency-and-error-report-to-guardrail-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-tabular-001\\skills\\portable\\latency-and-error-report-to-guardrail-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 96,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-tabular-001",
+        "status": "complete",
+        "modality": "tabular",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 553.439,
+        "provider_failure_count": 0,
+        "provider_call_count": 0,
+        "retry_count": 0,
+        "artifact_count": 17,
+        "estimated_cost_usd": 0.0
+      }
+    },
+    {
+      "sample_id": "gl02-mixed-001",
+      "modality": "mixed_corpus",
+      "target": "portable",
+      "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-bundle-to-runbook-skill-d57097a2\\bundle.json",
+      "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\incident-bundle-to-runbook-skill-d57097a2\\reviewer_packet.json",
+      "approved_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-mixed-001-bundle.approved.json",
+      "export_results": [
+        {
+          "target": "portable",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\SKILL.md",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\agent_skill_package.json"
+        }
+      ],
+      "validator_reports": [
+        {
+          "status": "pass",
+          "package_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\agent_skill_package.json",
+          "skill_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\SKILL.md",
+          "references_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\exports\\gl02-mixed-001\\skills\\portable\\incident-bundle-to-runbook-skill\\references",
+          "max_lines": 500,
+          "actual_line_count": 27,
+          "failure_code_count": 0,
+          "failure_codes": [],
+          "issues": [],
+          "target": "portable"
+        }
+      ],
+      "trial_security_gate_report": {
+        "status": "pass",
+        "failure_code_count": 0,
+        "failure_codes": [],
+        "issues": [],
+        "risk_labels": []
+      },
+      "loop_metrics": {
+        "loop_id": "gl02-mixed-001",
+        "status": "complete",
+        "modality": "mixed_corpus",
+        "evidence_origin": "fixture",
+        "launch_gate_eligible": false,
+        "launch_gate_ineligible_reason": "fixture_evidence_not_launch_gate_eligible",
+        "review_outcome": "approved",
+        "revisions_before_approval": 1,
+        "reviewer_edit_distance_pct": 20.0,
+        "agent_smoke_result": "passed",
+        "published_without_review": false,
+        "critical_secret_or_pii_leak": false,
+        "high_severity_incident": false,
+        "latency_ms": 87.309,
+        "provider_failure_count": 0,
+        "provider_call_count": 2,
+        "retry_count": 0,
+        "artifact_count": 20,
+        "estimated_cost_usd": 0.0
+      }
+    }
+  ],
+  "metrics_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-manifest.json",
+  "metrics_report_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+  "metrics_summary_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\trial-metrics-summary.md",
+  "metrics_status": "fail",
+  "ga_discussion_blocked": true
+}

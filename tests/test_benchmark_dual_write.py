@@ -10,11 +10,11 @@ from pathlib import Path
 from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'benchmark_dual_write.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'bench_dual_write.py'
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-import scripts.benchmark_dual_write as benchmark_dual_write
+import scripts.bench_dual_write as benchmark_dual_write
 
 
 class BenchmarkDualWriteScriptTests(unittest.TestCase):

@@ -152,6 +152,8 @@ def _build_settings(
         api_key=api_key,
         rate_limit_requests=rate_limit_requests,
         rate_limit_window_seconds=rate_limit_window_seconds,
+        tenant_access_json='',
+        tenant_access_file='',
         template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
         draft_dir=REPO_ROOT / 'skills' / 'drafts',
     )

@@ -1,0 +1,184 @@
+{
+  "package_name": "video-rerun-for-operation-checklist-skill",
+  "description": "Open release dashboard and verify gate status is GO.",
+  "target": "portable",
+  "files": [
+    {
+      "relative_path": "references/evidence.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 1079,
+      "sha256": "9e18a3822d926ccf372afe4966843c38d3508b928bdd93022087c761333f59f4"
+    },
+    {
+      "relative_path": "references/examples.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 72,
+      "sha256": "bfbea8af2fb778bcc9afe359a1192b7878dc2abfd5a719d775faf918e240da10"
+    },
+    {
+      "relative_path": "SKILL.md",
+      "category": "primary",
+      "required": true,
+      "media_type": "text/markdown",
+      "size_bytes": 935,
+      "sha256": "bdcdf22830301b52f668590b5d00e6c1c167ab3d76b0fb755271fb93ff677689"
+    }
+  ],
+  "references": [
+    {
+      "reference_id": "80482f82-f9d2-4226-8b5c-8326ff972b7c",
+      "title": "Evidence 80482f82-f9d2-4226-8b5c-8326ff972b7c (video:timestamp:segment:0001-3.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "80482f82-f9d2-4226-8b5c-8326ff972b7c"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "5cde1a3f-8741-45d9-bd22-ce455c75da36",
+      "title": "Evidence 5cde1a3f-8741-45d9-bd22-ce455c75da36 (video:timestamp:3.00-6.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "5cde1a3f-8741-45d9-bd22-ce455c75da36"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "0ba37050-d971-4bcd-b613-b37984e7d2d7",
+      "title": "Evidence 0ba37050-d971-4bcd-b613-b37984e7d2d7 (video:timestamp:6.00-9.00)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "0ba37050-d971-4bcd-b613-b37984e7d2d7"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "051e4bb3-362f-4544-a8d8-89245f5dcf7b",
+      "title": "Evidence 051e4bb3-362f-4544-a8d8-89245f5dcf7b (frame:0001@2.00s:ocr)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "051e4bb3-362f-4544-a8d8-89245f5dcf7b"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "01c77b53-d615-40b6-988b-f956ece8aae6",
+      "title": "Evidence 01c77b53-d615-40b6-988b-f956ece8aae6 (frame:0001@2.00s:scene)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "01c77b53-d615-40b6-988b-f956ece8aae6"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "fd24b07d-87e8-4ea7-bd70-797c59103d1c",
+      "title": "Evidence fd24b07d-87e8-4ea7-bd70-797c59103d1c (frame:0002@4.00s:ocr)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "fd24b07d-87e8-4ea7-bd70-797c59103d1c"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "9be9d794-a8c7-4a28-989a-d8b0c4425a89",
+      "title": "Evidence 9be9d794-a8c7-4a28-989a-d8b0c4425a89 (frame:0002@4.00s:scene)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "9be9d794-a8c7-4a28-989a-d8b0c4425a89"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "571b09c1-1641-43af-9a61-e15c704015eb",
+      "title": "Evidence 571b09c1-1641-43af-9a61-e15c704015eb (video:scene_cluster:0001@2.00s-4.00s)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "571b09c1-1641-43af-9a61-e15c704015eb"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61",
+      "title": "Evidence 51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61 (frame:0001@2.00s:event)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "0f4568cb-adee-48d3-ab1e-7ddf51785523",
+      "title": "Evidence 0f4568cb-adee-48d3-ab1e-7ddf51785523 (frame:0002@4.00s:event)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "0f4568cb-adee-48d3-ab1e-7ddf51785523"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "c353f498-a515-430d-9381-34f28e3632a3",
+      "title": "Evidence c353f498-a515-430d-9381-34f28e3632a3 (frame:0001@2.00s:subtitle:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "c353f498-a515-430d-9381-34f28e3632a3"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "022e2cd6-1018-4d4c-b6df-73216f08ab5c",
+      "title": "Evidence 022e2cd6-1018-4d4c-b6df-73216f08ab5c (frame:0002@4.00s:subtitle:0002)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "022e2cd6-1018-4d4c-b6df-73216f08ab5c"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6",
+      "title": "Evidence cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6 (frame:0002@4.00s:subtitle:0003)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+      ],
+      "metadata": {}
+    }
+  ],
+  "validation_status": "passed",
+  "source_bundle": {
+    "bundle_id": "simulated-approval",
+    "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+    "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+    "corpus_id": "",
+    "artifact_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\publications\\manifest.json",
+    "metadata": {}
+  },
+  "review_status": "published",
+  "hashes": {
+    "package_files_sha256": "9a7318e303cf56384f9c37251f36634009ee63323ac363669396a6cf557a8b50",
+    "skill_markdown_sha256": "bdcdf22830301b52f668590b5d00e6c1c167ab3d76b0fb755271fb93ff677689"
+  },
+  "metadata": {
+    "target_layout": "skills/portable/video-rerun-for-operation-checklist-skill",
+    "export_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-video-002-bundle.approved.json",
+    "schema_version": "agent_skill_package.v1"
+  },
+  "created_at": "2026-05-25T10:17:08Z",
+  "package_id": "5fdd411f-313c-4946-8270-b36036dd5317"
+}

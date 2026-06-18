@@ -52,6 +52,9 @@ class PublicationHarmonizerTests(unittest.TestCase):
         self.assertEqual(result[0].path, 'SKILL.md')
         self.assertEqual(result[0].content['graph_id'], 'graph-1')
         self.assertEqual(result[0].content['skill_id'], skill.skill_id)
+        self.assertIn('line_count', result[0].content)
+        self.assertIn('line_limit', result[0].content)
+        self.assertIn('references', result[0].content)
         self.assertIn('Rollback bad release.', result[0].content['text'])
 
         self.assertEqual(result[1].publication_type, PublicationType.SKILL_JSON)

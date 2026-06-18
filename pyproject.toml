@@ -9,7 +9,7 @@ description = "Distill text, audio, video, and image evidence into reusable SKIL
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-  { name = "Codex" }
+  { name = "saksim" }
 ]
 dependencies = [
   "pydantic>=2.8,<3.0",

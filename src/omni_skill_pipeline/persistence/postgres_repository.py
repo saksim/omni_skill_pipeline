@@ -71,6 +71,7 @@ class PostgresRepository(ArtifactRepository):
             cursor = connection.cursor()
             self._upsert_skill(cursor, bundle)
             self._upsert_skill_version(cursor, bundle)
+            self._upsert_tenant_scope(cursor, bundle)
             if review_task_payload:
                 self._upsert_review_task(cursor, skill_id=bundle.skill.skill_id, payload=review_task_payload)
             for publication_payload in publication_payloads:
@@ -187,6 +188,58 @@ class PostgresRepository(ArtifactRepository):
                 bundle.skill_markdown,
                 self._json_dumps(skill.evidence_refs),
                 skill.created_at,
+            ),
+        )
+
+    def _upsert_tenant_scope(self, cursor: CursorProtocol, bundle: DistillBundle) -> None:
+        tenant_scope = self._resolve_tenant_scope(bundle)
+        if not tenant_scope:
+            return
+        cursor.execute(
+            """
+            INSERT INTO tenant_scopes (
+                scope_id,
+                skill_id,
+                organization_id,
+                project_id,
+                user_id,
+                role,
+                api_key_id,
+                source,
+                metadata,
+                created_at
+            ) VALUES (
+                %s::uuid,
+                %s::uuid,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s::jsonb,
+                %s::timestamptz
+            )
+            ON CONFLICT (skill_id) DO UPDATE SET
+                organization_id = EXCLUDED.organization_id,
+                project_id = EXCLUDED.project_id,
+                user_id = EXCLUDED.user_id,
+                role = EXCLUDED.role,
+                api_key_id = EXCLUDED.api_key_id,
+                source = EXCLUDED.source,
+                metadata = EXCLUDED.metadata
+            """,
+            (
+                new_id(),
+                bundle.skill.skill_id,
+                str(tenant_scope.get('organization_id', '')).strip(),
+                str(tenant_scope.get('project_id', '')).strip(),
+                str(tenant_scope.get('user_id', '')).strip() or None,
+                str(tenant_scope.get('role', '')).strip() or None,
+                str(tenant_scope.get('api_key_id', '')).strip() or None,
+                str(tenant_scope.get('source', '')).strip() or 'request_metadata',
+                self._json_dumps(tenant_scope.get('metadata', {})),
+                utc_now_iso(),
             ),
         )
 
@@ -354,11 +407,11 @@ class PostgresRepository(ArtifactRepository):
         )
 
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
-        if isinstance(bundle.review_task, ReviewTask):
-            return bundle.review_task.to_dict()
         payload = bundle.adapter_metadata.get('review_task')
         if isinstance(payload, dict):
             return dict(payload)
+        if isinstance(bundle.review_task, ReviewTask):
+            return bundle.review_task.to_dict()
         return {}
 
     def _resolve_lineage_links(self, bundle: DistillBundle) -> list[dict[str, Any]]:
@@ -501,6 +554,17 @@ class PostgresRepository(ArtifactRepository):
         if status in {ReviewStatus.PUBLISHED.value, ReviewStatus.REJECTED.value}:
             return 'closed'
         return 'pending'
+
+    def _resolve_tenant_scope(self, bundle: DistillBundle) -> dict[str, Any]:
+        adapter_scope = bundle.adapter_metadata.get('tenant_scope')
+        if isinstance(adapter_scope, dict):
+            return dict(adapter_scope)
+        request_scope = bundle.request_payload.get('metadata')
+        if isinstance(request_scope, dict):
+            nested = request_scope.get('tenant_scope')
+            if isinstance(nested, dict):
+                return dict(nested)
+        return {}
 
     def _json_dumps(self, payload: Any) -> str:
         return json.dumps(payload, ensure_ascii=False, default=self._json_default)

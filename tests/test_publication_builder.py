@@ -73,6 +73,21 @@ class PublicationBuilderTests(unittest.TestCase):
         self.assertEqual([item.publication_type for item in publications], [PublicationType.SKILL_MARKDOWN, PublicationType.SKILL_JSON])
         markdown = publications[0]
         self.assertEqual(markdown.path, "SKILL.md")
+        self.assertEqual(markdown.metadata["renderer"], "portable_skill_markdown_v1")
+        self.assertIn('---', markdown.content["text"])
+        self.assertIn('## Workflow', markdown.content["text"])
+        self.assertIn('## Decision Rules', markdown.content["text"])
+        self.assertIn('## Validation', markdown.content["text"])
+        self.assertIn('## Failure Modes', markdown.content["text"])
+        self.assertIn('## References', markdown.content["text"])
+        self.assertIn("references/evidence.md", markdown.content["text"])
+        self.assertIn("references/examples.md", markdown.content["text"])
+        self.assertIn("Use when", markdown.content["description"])
+        self.assertGreater(markdown.content["line_count"], 0)
+        self.assertLessEqual(markdown.content["line_count"], markdown.content["line_limit"])
+        self.assertIn("references/evidence.md", markdown.content["references"])
+        self.assertIn("references/examples.md", markdown.content["references"])
+        self.assertIn("Evidence References", markdown.content["references"]["references/evidence.md"])
         self.assertIn("Rollback the latest deployment.", markdown.content["text"])
         as_json = publications[1]
         self.assertEqual(as_json.path, "skill.json")
@@ -118,6 +133,22 @@ class PublicationBuilderTests(unittest.TestCase):
         builder = PublicationBuilder()
         with self.assertRaises(ValueError):
             builder.build(graph, publication_types=[""])
+
+    def test_builder_respects_portable_line_limit(self) -> None:
+        graph = self._build_graph()
+        graph.steps.extend(
+            [
+                StepNode(step=2, action='Collect timeline evidence from logs.', why='Increase context breadth.', node_id='step-2'),
+                StepNode(step=3, action='Group duplicate alerts by dependency.', why='Reduce noisy branches.', node_id='step-3'),
+                StepNode(step=4, action='Run rollback verification checks.', why='Ensure service recovery.', node_id='step-4'),
+                StepNode(step=5, action='Document incident closure evidence.', why='Preserve audit trail.', node_id='step-5'),
+            ]
+        )
+        builder = PublicationBuilder(portable_skill_line_limit=24)
+        publications = builder.build(graph)
+        markdown = publications[0]
+        self.assertEqual(markdown.content["line_limit"], 24)
+        self.assertLessEqual(markdown.content["line_count"], 24)
 
 
 if __name__ == "__main__":

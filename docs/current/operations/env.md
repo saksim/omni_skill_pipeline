@@ -1,13 +1,13 @@
 # Environment
 
-## 判词
+## Baseline
 
-运行前只需要一个干净的 Python 3.11 环境、可选 media binaries 和按需配置的 OpenAI credentials；不要把解释器绝对路径写死在文档里。
+Runtime only needs a clean Python 3.11 environment, optional media binaries, and provider credentials when those providers are enabled. Do not hard-code absolute interpreter paths in documentation.
 
 ## Runtime
 
 - Python: `3.11+`
-- 安装方式：优先使用 isolated virtual environment
+- Install mode: prefer an isolated virtual environment.
 - Package root: `src/omni_skill_pipeline/`
 - API entry: `apps/api/main.py`
 - Worker entry: `apps/worker/main.py`
@@ -35,84 +35,121 @@ python -m pip install -r requirements-dev.txt
 
 ## OpenAI Variables
 
-- `OPENAI_API_KEY`: 启用 OpenAI provider 所需
-- `OPENAI_BASE_URL`: 可选，自定义兼容端点
-- `OMNI_OPENAI_LLM_MODEL`: LLM composer model，默认 `gpt-4.1`
-- `OMNI_OPENAI_VISION_MODEL`: Vision model，默认 `gpt-4.1-mini`
-- `OMNI_OPENAI_TRANSCRIBE_MODEL`: ASR model，默认 `gpt-4o-transcribe`
-- `OMNI_OPENAI_TIMEOUT_SECONDS`: OpenAI provider request timeout in seconds，默认 `60`
-- `OMNI_OPENAI_RETRY_MAX_ATTEMPTS`: OpenAI provider 总尝试次数（含首次调用），默认 `3`
-- `OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS`: OpenAI provider 退避基数秒数，默认 `0.5`（指数退避）
-- `OMNI_OPENAI_CIRCUIT_BREAKER_CONSECUTIVE_FAILURES`: 连续失败熔断阈值，默认 `3`
-- `OMNI_OPENAI_CIRCUIT_BREAKER_COOLDOWN_SECONDS`: 熔断冷却时间（秒），默认 `30`
-- `OMNI_OPENAI_FAILURE_BUDGET_MAX_FAILURES`: failure budget 窗口内最大失败次数，默认 `6`
-- `OMNI_OPENAI_FAILURE_BUDGET_WINDOW_SECONDS`: failure budget 统计窗口（秒），默认 `60`
-- `OMNI_TRANSCRIPTION_LANGUAGE`: 可选，ASR language hint
+- `OPENAI_API_KEY`: required when OpenAI provider calls are enabled.
+- `OPENAI_BASE_URL`: optional compatible endpoint override.
+- `OMNI_OPENAI_LLM_MODEL`: LLM composer model, default `gpt-4.1`.
+- `OMNI_OPENAI_VISION_MODEL`: vision model, default `gpt-4.1-mini`.
+- `OMNI_OPENAI_TRANSCRIBE_MODEL`: ASR model, default `gpt-4o-transcribe`.
+- `OMNI_OPENAI_TIMEOUT_SECONDS`: provider request timeout in seconds, default `60`.
+- `OMNI_OPENAI_RETRY_MAX_ATTEMPTS`: total attempts including the first call, default `3`.
+- `OMNI_OPENAI_RETRY_BASE_DELAY_SECONDS`: retry backoff base delay in seconds, default `0.5`.
+- `OMNI_OPENAI_CIRCUIT_BREAKER_CONSECUTIVE_FAILURES`: consecutive failure threshold, default `3`.
+- `OMNI_OPENAI_CIRCUIT_BREAKER_COOLDOWN_SECONDS`: circuit breaker cooldown in seconds, default `30`.
+- `OMNI_OPENAI_FAILURE_BUDGET_MAX_FAILURES`: max failures inside the rolling budget window, default `6`.
+- `OMNI_OPENAI_FAILURE_BUDGET_WINDOW_SECONDS`: failure budget window in seconds, default `60`.
+- `OMNI_TRANSCRIPTION_LANGUAGE`: optional ASR language hint.
 
 ## API Variables
 
-- `OMNI_API_KEY`: 可选。设置后仅 `POST /v1/distill/*` 端点强制校验 `X-API-Key` 或 `Authorization: Bearer <key>`；`GET /healthz` 与 `GET /v1/templates/skill` 保持免鉴权。
-- `OMNI_RATE_LIMIT_REQUESTS`: 每个窗口允许请求数。`0` 表示关闭限流，默认 `0`。
-- `OMNI_RATE_LIMIT_WINDOW_SECONDS`: 限流窗口秒数，默认 `60`。
+- `OMNI_API_KEY`: optional. When set, `POST /v1/distill/*` and `POST /v1/governance/*` require `X-API-Key` or `Authorization: Bearer <key>`. `GET /healthz` and `GET /v1/templates/skill` remain unauthenticated.
+- `OMNI_RATE_LIMIT_REQUESTS`: allowed requests per window. `0` disables rate limiting, default `0`.
+- `OMNI_RATE_LIMIT_WINDOW_SECONDS`: rate limit window length in seconds, default `60`.
 
 ## API Ops Contract Defaults
 
-- `OMNI_API_KEY` 为空：distill 接口不鉴权。
-- `OMNI_RATE_LIMIT_REQUESTS=0`：限流关闭。
-- `OMNI_RATE_LIMIT_REQUESTS>0`：按 `OMNI_RATE_LIMIT_WINDOW_SECONDS` 形成滑动窗口，超限返回 `429` 与 `Retry-After` header。
-- 统一错误体见 `docs/current/operations/api.md` 的 `Error Contract`。
+- `OMNI_API_KEY` empty: distill and governance POST routes do not require API key auth.
+- `OMNI_RATE_LIMIT_REQUESTS=0`: rate limiting is disabled.
+- `OMNI_RATE_LIMIT_REQUESTS>0`: requests are counted in a sliding window controlled by `OMNI_RATE_LIMIT_WINDOW_SECONDS`; over-limit responses return `429` and `Retry-After`.
+- Unified API errors are documented in `docs/current/operations/api.md`.
+
+## Tenant Access (GL-08)
+
+- `OMNI_TENANT_ACCESS_JSON`: optional inline tenant access-control JSON payload.
+- `OMNI_TENANT_ACCESS_FILE`: optional path to tenant access-control JSON file, used when `OMNI_TENANT_ACCESS_JSON` is empty.
+- When tenant access is configured, API enforces tenant key authz/quota on product routes:
+  - missing tenant key -> `401`
+  - invalid or revoked key -> `403`
+  - cross-tenant scope -> `403`
+  - tenant quota exceeded -> `429` with `Retry-After`
 
 ## Health / Readiness Inputs
 
-- `GET /healthz` 当前检查三项：
-  - template path readability（`docs/current/contracts/SKILL.template.md`）
-  - draft directory availability（`skills/drafts/`）
-  - required route assembly（`/healthz`、`/v1/templates/skill`、五个 distill 路由）
-- 当前版本未提供独立 env 覆盖 `template_path`/`draft_dir`；它们由 repo root 派生。
-- 当任一检查失败时，`/healthz` 返回 `503` 与 `status=degraded`。
+- `GET /healthz` currently checks:
+  - template path readability (`docs/current/contracts/SKILL.template.md`)
+  - draft directory availability (`skills/drafts/`)
+  - required route assembly (`/healthz`, `/v1/templates/skill`, and the five distill routes)
+- The current version does not provide separate env overrides for `template_path` or `draft_dir`; they are derived from repo root.
+- When any check fails, `/healthz` returns `503` with `status=degraded`.
 
 ## Media Variables
 
-- `OMNI_FFMPEG_BIN`: 默认 `ffmpeg`
-- `OMNI_FFPROBE_BIN`: 默认 `ffprobe`
-- `OMNI_TESSERACT_BIN`: 默认 `tesseract`
-- `OMNI_TESSERACT_LANGUAGES`: 默认 `eng+chi_sim`
+- `OMNI_FFMPEG_BIN`: default `ffmpeg`.
+- `OMNI_FFPROBE_BIN`: default `ffprobe`.
+- `OMNI_TESSERACT_BIN`: default `tesseract`.
+- `OMNI_TESSERACT_LANGUAGES`: default `eng+chi_sim`.
 
 ## Video Sampling Variables
 
-- `OMNI_KEYFRAME_INTERVAL_SECONDS`: 默认 `8`
-- `OMNI_MAX_KEYFRAMES`: 默认 `6`
-- `OMNI_VIDEO_SCENE_THRESHOLD`: 默认 `0.32`
-- `OMNI_VIDEO_FRAME_DEDUPE_DISTANCE`: 默认 `5`
+- `OMNI_KEYFRAME_INTERVAL_SECONDS`: default `8`.
+- `OMNI_MAX_KEYFRAMES`: default `6`.
+- `OMNI_VIDEO_SCENE_THRESHOLD`: default `0.32`.
+- `OMNI_VIDEO_FRAME_DEDUPE_DISTANCE`: default `5`.
 
-## Behavior Variable
+## Behavior Variables
 
-- `OMNI_PREFER_LLM_COMPOSER`: 默认 `true`
+- `OMNI_PREFER_LLM_COMPOSER`: default `true`.
+- `OMNI_CONTROLLED_TRIAL_REVIEW_MODE`: default `false`. Set to `true` to force all distilled results to `review_required` and prevent auto-publish.
+- `OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE`: default `controlled_trial_requires_review`; persisted reason code for controlled-trial review enforcement.
+- `OMNI_PORTABLE_SKILL_MARKDOWN_LINE_LIMIT`: default `220`, minimum `21`; controls the maximum body length for portable `SKILL.md`, with long evidence moved into `publications/references/`.
 
 ## Notes
 
-- `.env.example` 列出了当前可配置变量的基线模板。
-- `docs/current/contracts/` 是模板与 schema 的真相源。
-- `scripts/export_skill_schema.py` 会导出到 `docs/current/contracts/skill.schema.json`。
-- 视频临时文件会落到 `.tmp_omni_media/`；每次任务的临时工作目录会被清理，但根目录仍建议定期 prune。
+- `.env.example` lists the baseline configurable variables.
+- `docs/current/contracts/` is the source of truth for templates and schemas.
+- `scripts/export_schema.py` exports the schema to `docs/current/contracts/skill.schema.json`.
+- Temporary video/media files are written under `.tmp_omni_media/`; each task cleans its temporary workspace, but the root should still be pruned periodically.
 
 ## Postgres Integration Test Variable
 
-- `OMNI_TEST_POSTGRES_DSN`: Postgres DSN，用于 `tests/test_postgres_repository_integration.py`、`tests/test_dual_write_repository_integration.py` 与 `scripts/benchmark_dual_write.py`。
+- `OMNI_TEST_POSTGRES_DSN`: Postgres DSN used by `tests/test_postgres_repository_integration.py`, `tests/test_dual_write_repository_integration.py`, and `scripts/bench_dual_write.py`.
+
+## GL-06 Artifact Repository Mode
+
+- `OMNI_ARTIFACT_REPOSITORY_MODE`: `file` (default), `postgres`, or `dual_write`.
+- `OMNI_POSTGRES_REPOSITORY_DSN`: required when mode is `postgres` or `dual_write`.
+- `OMNI_DUAL_WRITE_CONTINUE_ON_SECONDARY_ERROR`: active in `dual_write` mode, default `true`.
+- `OMNI_DUAL_WRITE_SECONDARY_PREFIX`: active in `dual_write` mode, default `secondary_`.
+
+Mode semantics:
+
+- `file`: file artifact repository only (`skills/drafts/*`).
+- `postgres`: Postgres-first repository.
+- `dual_write`: Postgres as primary and file artifacts as secondary debug sidecar for diagnostics and replay.
 
 ## Scratch Root Prune Variables
 
-- `OMNI_TMP_MEDIA_ROOT`: scratch-root path for temporary media artifacts (default: `.tmp_omni_media`).
-- `OMNI_TMP_MEDIA_RETENTION_HOURS`: retention window in hours for prune jobs (default: `24`).
+- `OMNI_TMP_MEDIA_ROOT`: scratch-root path for temporary media artifacts, default `.tmp_omni_media`.
+- `OMNI_TMP_MEDIA_RETENTION_HOURS`: retention window in hours for prune jobs, default `24`.
 
 ## Scratch Root Prune Command
 
 ```bash
-python scripts/prune_tmp_media.py --dry-run
-python scripts/prune_tmp_media.py --retention-hours 24
+python scripts/prune_tmp.py --dry-run
+python scripts/prune_tmp.py --retention-hours 24
 ```
 
 ## Logging Variables
 
-- `OMNI_LOG_LEVEL`: global runtime log level for API/service/worker (default: `INFO`).
-- `OMNI_LOG_FORMAT`: `json` or `plain` (default: `json`).
+- `OMNI_LOG_LEVEL`: global runtime log level for API/service/worker, default `INFO`.
+- `OMNI_LOG_FORMAT`: `json` or `plain`, default `json`.
+
+## GL-03 Recommended Beta Defaults
+
+For controlled external Beta onboarding:
+
+- Set `OMNI_CONTROLLED_TRIAL_REVIEW_MODE=true`.
+- Keep `OMNI_CONTROLLED_TRIAL_REVIEW_REASON_CODE=controlled_trial_requires_review`.
+- Configure `OMNI_API_KEY` for partner-facing API environments.
+- Set a non-zero rate limit for safety:
+  - `OMNI_RATE_LIMIT_REQUESTS=60`
+  - `OMNI_RATE_LIMIT_WINDOW_SECONDS=60`

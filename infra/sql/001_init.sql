@@ -131,3 +131,18 @@ CREATE TABLE lineage_links (
 CREATE INDEX idx_lineage_links_skill_id ON lineage_links(skill_id);
 CREATE INDEX idx_lineage_links_related_skill_id ON lineage_links(related_skill_id);
 CREATE INDEX idx_lineage_links_relation_type ON lineage_links(relation_type);
+
+CREATE TABLE tenant_scopes (
+    scope_id UUID PRIMARY KEY,
+    skill_id UUID NOT NULL REFERENCES skills(skill_id) ON DELETE CASCADE UNIQUE,
+    organization_id TEXT NOT NULL,
+    project_id TEXT NOT NULL,
+    user_id TEXT,
+    role TEXT,
+    api_key_id TEXT,
+    source TEXT NOT NULL DEFAULT 'request_metadata',
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_tenant_scopes_org_project ON tenant_scopes(organization_id, project_id);

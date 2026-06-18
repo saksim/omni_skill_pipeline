@@ -156,6 +156,55 @@ class ReviewQueueRepositoryTests(unittest.TestCase):
         self.assertEqual(len(closed_items), 1)
         self.assertEqual(closed_items[0]['review_task_id'], review_task_id)
 
+    def test_close_persists_structured_decision_reason_codes_and_reviewer_edits(self) -> None:
+        repository = FileArtifactRepository(self.workspace / 'drafts')
+        bundle = _build_bundle_with_review(ReviewDecision.REVIEW_REQUIRED)
+        repository.save_bundle(bundle)
+
+        review_task_id = bundle.review_task.review_task_id
+        repository.claim_review_task(review_task_id=review_task_id, consumer='review-ops')
+
+        closed = repository.close_review_task(
+            review_task_id,
+            status='published',
+            closed_by='review-lead',
+            review_notes='approved with minor edits',
+            decision='approved',
+            reason_codes=['SAFE', 'MANUAL_CHECK_COMPLETE'],
+            reviewer_edits={'skill_markdown_patch': 'typo fix'},
+        )
+        self.assertIsNotNone(closed)
+        self.assertEqual(closed['decision'], 'approve')
+        self.assertEqual(closed['reason_codes'], ['SAFE', 'MANUAL_CHECK_COMPLETE'])
+        self.assertEqual(closed['reviewer_edits'], {'skill_markdown_patch': 'typo fix'})
+
+        closed_items = repository.list_review_queue(queue_status='closed')
+        self.assertEqual(closed_items[0]['decision'], 'approve')
+        self.assertEqual(closed_items[0]['reason_codes'], ['SAFE', 'MANUAL_CHECK_COMPLETE'])
+        self.assertEqual(closed_items[0]['reviewer_edits'], {'skill_markdown_patch': 'typo fix'})
+
+    def test_update_review_task_decision_maps_to_structured_status(self) -> None:
+        repository = FileArtifactRepository(self.workspace / 'drafts')
+        bundle = _build_bundle_with_review(ReviewDecision.REVIEW_REQUIRED)
+        repository.save_bundle(bundle)
+        review_task_id = bundle.review_task.review_task_id
+        repository.claim_review_task(review_task_id=review_task_id, consumer='review-ops')
+
+        needs_rework = repository.update_review_task_decision(
+            review_task_id,
+            decision='needs rework',
+            reviewer='qa-reviewer',
+            reason_codes=['TRACEABILITY_LOW'],
+            review_notes='add evidence links',
+            reviewer_edits={'checklist_diff': 'added validation step'},
+        )
+        self.assertIsNotNone(needs_rework)
+        self.assertEqual(needs_rework['decision'], 'needs_rework')
+        self.assertEqual(needs_rework['status'], 'needs_rework')
+        self.assertEqual(needs_rework['closed_by'], 'qa-reviewer')
+        self.assertEqual(needs_rework['reason_codes'], ['TRACEABILITY_LOW'])
+        self.assertEqual(needs_rework['reviewer_edits'], {'checklist_diff': 'added validation step'})
+
     def test_non_review_required_task_is_not_enqueued(self) -> None:
         repository = FileArtifactRepository(self.workspace / 'drafts')
         bundle = _build_bundle_with_review(ReviewDecision.AUTO_PUBLISH)

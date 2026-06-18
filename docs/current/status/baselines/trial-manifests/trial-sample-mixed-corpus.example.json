@@ -1,0 +1,35 @@
+{
+  "manifest_id": "cbt02-trial-sample-mixed-corpus",
+  "manifest_version": "1.0",
+  "created_on": "2026-05-19",
+  "description": "Controlled trial mixed corpus sample manifest example.",
+  "samples": [
+    {
+      "sample_id": "mixed-001",
+      "modality": "mixed_corpus",
+      "scenario": "incident bundle to runbook skill",
+      "source_owner": "incident-response",
+      "sensitivity": "confidential",
+      "asset_list": [
+        {
+          "asset_id": "mixed-asset-001",
+          "asset_type": "document",
+          "uri": "examples/trial/mixed/incident-postmortem.md"
+        },
+        {
+          "asset_id": "mixed-asset-002",
+          "asset_type": "screenshot",
+          "uri": "examples/trial/mixed/incident-dashboard.png"
+        },
+        {
+          "asset_id": "mixed-asset-003",
+          "asset_type": "transcript",
+          "uri": "examples/trial/mixed/incident-review-transcript.md"
+        }
+      ],
+      "review_owner": "trial-reviewer-f",
+      "target_package_format": "all",
+      "expected_output_type": "runbook_skill"
+    }
+  ]
+}

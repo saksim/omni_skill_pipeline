@@ -44,6 +44,7 @@ class _StubReviewQueueRepository(object):
         *,
         queue_status: str | None = 'pending',
         limit: int = 100,
+        tenant_scope=None,
     ) -> list[dict[str, str]]:
         if limit <= 0:
             return []
@@ -70,6 +71,7 @@ class _StubReviewQueueRepository(object):
         review_task_id: str | None = None,
         *,
         consumer: str = 'review-consumer',
+        tenant_scope=None,
     ) -> dict[str, str] | None:
         target_review_task_id = str(review_task_id or '').strip()
         if not target_review_task_id:
@@ -87,8 +89,8 @@ class _StubReviewQueueRepository(object):
         self.consumed[target_review_task_id] = claimed
         return dict(claimed)
 
-    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, str] | None:
-        return self.claim_review_task(consumer=consumer)
+    def consume_review_task(self, *, consumer: str = 'review-consumer', tenant_scope=None) -> dict[str, str] | None:
+        return self.claim_review_task(consumer=consumer, tenant_scope=tenant_scope)
 
     def close_review_task(
         self,
@@ -97,6 +99,10 @@ class _StubReviewQueueRepository(object):
         status: str = 'published',
         closed_by: str = 'review-operator',
         review_notes: str = '',
+        decision: str | None = None,
+        reason_codes=None,
+        reviewer_edits=None,
+        tenant_scope=None,
     ) -> dict[str, str] | None:
         target_review_task_id = str(review_task_id).strip()
         if not target_review_task_id:
@@ -111,12 +117,61 @@ class _StubReviewQueueRepository(object):
         closed = dict(source)
         closed['queue_status'] = 'closed'
         closed['status'] = str(status).strip().lower() or 'published'
+        if decision:
+            decision_text = str(decision).strip().lower()
+            if decision_text in {'approve', 'approved'}:
+                closed['decision'] = 'approve'
+            elif decision_text in {'reject', 'rejected'}:
+                closed['decision'] = 'reject'
+            elif decision_text in {'needs_rework', 'needs-rework', 'needs rework'}:
+                closed['decision'] = 'needs_rework'
         closed['closed_by'] = closed_by.strip() or 'review-operator'
         closed['closed_at'] = '2026-04-25T10:05:00Z'
         if review_notes.strip():
             closed['review_notes'] = review_notes.strip()
+        if isinstance(reason_codes, list):
+            closed['reason_codes'] = [str(item).strip() for item in reason_codes if str(item).strip()]
+        if isinstance(reviewer_edits, dict):
+            closed['reviewer_edits'] = {str(key).strip(): value for key, value in reviewer_edits.items() if str(key).strip()}
         self.closed[target_review_task_id] = closed
         return dict(closed)
+
+    def update_review_task_decision(
+        self,
+        review_task_id: str,
+        *,
+        decision: str,
+        reviewer: str = 'review-operator',
+        reason_codes=None,
+        review_notes: str = '',
+        reviewer_edits=None,
+        status: str | None = None,
+        tenant_scope=None,
+    ) -> dict[str, str] | None:
+        normalized_decision = str(decision).strip().lower()
+        if normalized_decision in {'approved'}:
+            normalized_decision = 'approve'
+        if normalized_decision in {'rejected'}:
+            normalized_decision = 'reject'
+        if normalized_decision in {'needs-rework', 'needs rework'}:
+            normalized_decision = 'needs_rework'
+        if normalized_decision not in {'approve', 'reject', 'needs_rework'}:
+            raise ValueError('invalid decision')
+        if normalized_decision == 'approve':
+            resolved_status = status or 'published'
+        elif normalized_decision == 'reject':
+            resolved_status = status or 'rejected'
+        else:
+            resolved_status = status or 'needs_rework'
+        return self.close_review_task(
+            review_task_id,
+            status=resolved_status,
+            closed_by=reviewer,
+            review_notes=review_notes,
+            decision=normalized_decision,
+            reason_codes=reason_codes,
+            reviewer_edits=reviewer_edits,
+        )
 
 
 class _StubService(object):
@@ -147,6 +202,8 @@ def _build_settings(*, template_path: Path, draft_dir: Path) -> SimpleNamespace:
         api_key='',
         rate_limit_requests=0,
         rate_limit_window_seconds=60,
+        tenant_access_json='',
+        tenant_access_file='',
         template_path=template_path,
         draft_dir=draft_dir,
     )
@@ -230,6 +287,60 @@ class ApiReviewQueueEndpointTests(unittest.TestCase):
         closed = self.client.get('/v1/review/queue', params={'queue_status': 'closed'}).json()['items']
         self.assertEqual(len(closed), 1)
         self.assertEqual(closed[0]['review_task_id'], 'task-1')
+
+    def test_close_review_queue_item_persists_reason_codes_and_reviewer_edits(self) -> None:
+        claim = self.client.post('/v1/review/queue/claim', json={'review_task_id': 'task-1', 'consumer': 'ops'})
+        self.assertEqual(claim.status_code, 200)
+
+        response = self.client.post(
+            '/v1/review/queue/task-1/close',
+            json={
+                'status': 'published',
+                'decision': 'approved',
+                'closed_by': 'ops-lead',
+                'review_notes': 'manual checklist passed',
+                'reason_codes': ['SAFE', 'HUMAN_REVIEW'],
+                'reviewer_edits': {'skill_markdown_patch': 'none'},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['decision'], 'approve')
+        self.assertEqual(payload['reason_codes'], ['SAFE', 'HUMAN_REVIEW'])
+        self.assertEqual(payload['reviewer_edits'], {'skill_markdown_patch': 'none'})
+
+    def test_decision_endpoint_updates_review_task_with_structured_action(self) -> None:
+        claim = self.client.post('/v1/review/queue/claim', json={'review_task_id': 'task-1', 'consumer': 'ops'})
+        self.assertEqual(claim.status_code, 200)
+
+        response = self.client.post(
+            '/v1/review/queue/task-1/decision',
+            json={
+                'decision': 'needs-rework',
+                'reviewer': 'qa-lead',
+                'reason_codes': ['TRACEABILITY_LOW'],
+                'review_notes': 'add stronger evidence refs',
+                'reviewer_edits': {'checklist_diff': 'added verification section'},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['queue_status'], 'closed')
+        self.assertEqual(payload['status'], 'needs_rework')
+        self.assertEqual(payload['decision'], 'needs_rework')
+        self.assertEqual(payload['closed_by'], 'qa-lead')
+        self.assertEqual(payload['reason_codes'], ['TRACEABILITY_LOW'])
+        self.assertEqual(payload['reviewer_edits'], {'checklist_diff': 'added verification section'})
+
+    def test_decision_endpoint_rejects_invalid_decision(self) -> None:
+        response = self.client.post(
+            '/v1/review/queue/task-1/decision',
+            json={'decision': 'ship-it'},
+        )
+        self.assertEqual(response.status_code, 422)
+        payload = response.json()['error']
+        self.assertEqual(payload['type'], 'validation')
+        self.assertEqual(payload['code'], 'validation_error')
 
     def test_claim_returns_404_when_queue_is_empty(self) -> None:
         first = self.client.post('/v1/review/queue/claim', json={'consumer': 'ops-reviewer'})

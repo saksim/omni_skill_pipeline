@@ -6,6 +6,8 @@
 
 - [Architecture](current/architecture/ARCHITECTURE.md)
 - [Skill Distillation V2](current/architecture/skill-distillation-v2.md)
+- [Agent Skill Package Model](current/architecture/agent-skill-package-model.md)
+- [Portable Skill Renderer](current/architecture/portable-skill-renderer.md)
 - [Skill Distillation V2 Roadmap](current/architecture/skill-distillation-v2-roadmap.md)
 - [Skill Distillation V2 Implementation Backlog](current/architecture/skill-distillation-v2-implementation-backlog.md)
 - [Skill Distillation V2 Work Orders](current/architecture/skill-distillation-v2-work-orders.md)
@@ -18,9 +20,13 @@
 ### Status
 
 - [Current Status](current/status/CURRENT_STATUS.md)
-- [Launch Readiness Master Plan](current/status/launch-readiness-master-plan.md)
+- [Launch Readiness Master Plan (Historical Baseline, 2026-04-24)](current/status/launch-readiness-master-plan.md)
 - [Distillation Platform Strategy Assessment](current/status/2026-05-17-distillation-platform-strategy-assessment.md)
+- [Controlled Business Trial Iteration](current/status/2026-05-18-controlled-business-trial-iteration.md)
+- [Broad Product Launch Plan](current/status/2026-05-25-broad-product-launch-plan.md)
 - [E0 Baseline Pack](current/status/baselines/README.md)
+
+Launch gate runner: `python scripts/launch_gate.py --output - --summary-output -`
 
 ### Operations
 
@@ -29,6 +35,7 @@
 - [CLI](current/operations/cli.md)
 - [Environment](current/operations/env.md)
 - [Testing](current/operations/testing.md)
+- [Script Name Map](current/operations/script-name-map.md)
 
 ## Assessments
 

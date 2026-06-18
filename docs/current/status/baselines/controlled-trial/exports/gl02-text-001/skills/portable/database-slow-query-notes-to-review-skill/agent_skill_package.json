@@ -1,0 +1,144 @@
+{
+  "package_name": "database-slow-query-notes-to-review-skill",
+  "description": "PostgreSQL Slow Query Notes",
+  "target": "portable",
+  "files": [
+    {
+      "relative_path": "references/evidence.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 519,
+      "sha256": "206a0b1788ae3acfc683cef1141d9a13dab1d547f2b8c3c02d85f1b398bbe1d8"
+    },
+    {
+      "relative_path": "references/examples.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 72,
+      "sha256": "bfbea8af2fb778bcc9afe359a1192b7878dc2abfd5a719d775faf918e240da10"
+    },
+    {
+      "relative_path": "SKILL.md",
+      "category": "primary",
+      "required": true,
+      "media_type": "text/markdown",
+      "size_bytes": 1721,
+      "sha256": "6f3b2099e47011c5cd9790f9bdba00dd13eb148cd8a9bfe9519fec18a28d7387"
+    }
+  ],
+  "references": [
+    {
+      "reference_id": "34c72fcf-eda0-48a5-af5b-a0d21262e81a",
+      "title": "Evidence 34c72fcf-eda0-48a5-af5b-a0d21262e81a (section:1)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "34c72fcf-eda0-48a5-af5b-a0d21262e81a"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "01698bdd-b740-4330-b3f4-6456da304a0b",
+      "title": "Evidence 01698bdd-b740-4330-b3f4-6456da304a0b (section:1.1)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "01698bdd-b740-4330-b3f4-6456da304a0b"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "207cbab2-8935-4609-ba50-4d570038a8d0",
+      "title": "Evidence 207cbab2-8935-4609-ba50-4d570038a8d0 (section:1.1:paragraph:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "207cbab2-8935-4609-ba50-4d570038a8d0"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "556b5858-7709-4979-9521-2290f440d4b0",
+      "title": "Evidence 556b5858-7709-4979-9521-2290f440d4b0 (section:1.2)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "556b5858-7709-4979-9521-2290f440d4b0"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "599cd9ae-a16b-4268-98e3-fe349dad3f9a",
+      "title": "Evidence 599cd9ae-a16b-4268-98e3-fe349dad3f9a (section:1.2:paragraph:0002)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "599cd9ae-a16b-4268-98e3-fe349dad3f9a"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "5d51aa26-21f8-4eb7-bda6-474a7067cb2b",
+      "title": "Evidence 5d51aa26-21f8-4eb7-bda6-474a7067cb2b (section:1.3)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "5d51aa26-21f8-4eb7-bda6-474a7067cb2b"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "684bd5c0-cc9c-4ad2-b131-2be9ee3a233e",
+      "title": "Evidence 684bd5c0-cc9c-4ad2-b131-2be9ee3a233e (section:1.3:paragraph:0003)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "684bd5c0-cc9c-4ad2-b131-2be9ee3a233e"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "10625179-4aeb-45e6-b59c-15d2beafc634",
+      "title": "Evidence 10625179-4aeb-45e6-b59c-15d2beafc634 (section:1.4)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "10625179-4aeb-45e6-b59c-15d2beafc634"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "43c84d5c-ebb3-4e62-9ee3-9465cae204fa",
+      "title": "Evidence 43c84d5c-ebb3-4e62-9ee3-9465cae204fa (section:1.4:paragraph:0004)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "43c84d5c-ebb3-4e62-9ee3-9465cae204fa"
+      ],
+      "metadata": {}
+    }
+  ],
+  "validation_status": "passed",
+  "source_bundle": {
+    "bundle_id": "simulated-approval",
+    "graph_id": "81499ac2-3c35-43a2-b6dc-f378834ee745",
+    "skill_id": "28a66f6e-663a-4eb5-9040-b864061a1125",
+    "corpus_id": "",
+    "artifact_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\database-slow-query-notes-to-review-skill-28a66f6e\\publications\\manifest.json",
+    "metadata": {}
+  },
+  "review_status": "published",
+  "hashes": {
+    "package_files_sha256": "637ff0f9fc4934deae3d1c3617de27ed111346bc0bb96158d48062a4e0c10fe6",
+    "skill_markdown_sha256": "6f3b2099e47011c5cd9790f9bdba00dd13eb148cd8a9bfe9519fec18a28d7387"
+  },
+  "metadata": {
+    "target_layout": "skills/portable/database-slow-query-notes-to-review-skill",
+    "export_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-text-001-bundle.approved.json",
+    "schema_version": "agent_skill_package.v1"
+  },
+  "created_at": "2026-05-25T10:17:08Z",
+  "package_id": "9e8cdf93-5bfe-4b1a-822b-43cb7c8b137e"
+}

@@ -1,0 +1,1150 @@
+{
+  "asset": {
+    "modality": "image",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+    "metadata": {
+      "filename": "service-latency-dashboard.png",
+      "width": 640,
+      "height": 360,
+      "format": "PNG"
+    },
+    "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "span_ref": "image:ocr:0001",
+      "content_type": "ocr",
+      "content": "Fixture OCR: service latency dashboard\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:ocr_full"
+      ],
+      "evidence_id": "cfff114c-8b5b-46df-9eb5-ed200f1a047a"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "span_ref": "image:region:0001",
+      "content_type": "ocr",
+      "content": "Fixture OCR: service latency dashboard",
+      "speaker": null,
+      "confidence": 0.91,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:metric",
+        "region_size:1"
+      ],
+      "evidence_id": "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "span_ref": "image:region:0002",
+      "content_type": "ocr",
+      "content": "status: degraded",
+      "speaker": null,
+      "confidence": 0.89,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:status",
+        "region_size:1"
+      ],
+      "evidence_id": "2a7faa8b-1fb2-4cf7-a120-52ba4929d149"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "span_ref": "image:scene:0001",
+      "content_type": "scene",
+      "content": "Fixture scene summary for service-latency-dashboard.",
+      "speaker": null,
+      "confidence": 0.72,
+      "tags": [
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "evidence_id": "dc5dd313-a1bf-40df-815f-acafff56caa0"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "span_ref": "image:layout:0001",
+      "content_type": "scene",
+      "content": "Fixture scene summary for service-latency-dashboard.",
+      "speaker": null,
+      "confidence": 0.74,
+      "tags": [
+        "block:layout",
+        "source:scene_summary",
+        "layout_role:dashboard",
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "evidence_id": "fe17c008-9065-47f3-bd75-01190077b648"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "concept",
+      "summary": "Fixture OCR: service latency dashboard\nstatus: degraded",
+      "evidence_refs": [
+        "cfff114c-8b5b-46df-9eb5-ed200f1a047a"
+      ],
+      "confidence": 0.65,
+      "insight_id": "379bdb74-c813-4424-a86a-c7c3de6fd2f2"
+    }
+  ],
+  "skill": {
+    "name": "dashboard screenshots to alert diagnostic skill",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: service latency dashboard status: degraded",
+    "source_modality": "image",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert image evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Image source",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Fixture OCR: service latency dashboard status: degraded",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Fixture OCR: service latency dashboard",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "status: degraded",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "cfff114c-8b5b-46df-9eb5-ed200f1a047a@image:ocr:0001",
+      "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9@image:region:0001",
+      "2a7faa8b-1fb2-4cf7-a120-52ba4929d149@image:region:0002",
+      "dc5dd313-a1bf-40df-815f-acafff56caa0@image:scene:0001",
+      "fe17c008-9065-47f3-bd75-01190077b648@image:layout:0001"
+    ],
+    "confidence": 0.8,
+    "version": "0.1.0",
+    "summary": "Fixture OCR: service latency dashboard status: degraded",
+    "tags": [
+      "controlled_trial",
+      "image",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd"
+  },
+  "skill_markdown": "---\nname: \"dashboard screenshots to alert diagnostic skill\"\ndescription: \"Use when Use when converting image evidence into build_skill.. Fixture OCR: service latency dashboard status: degraded\"\n---\n\n# dashboard screenshots to alert diagnostic skill\n\n## Workflow\n1. Fixture OCR: service latency dashboard status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.)\n2. Fixture OCR: service latency dashboard (Why: Derived from evidence fallback because no procedure atoms were found.)\n3. status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+  "skill_graph": {
+    "name": "dashboard screenshots to alert diagnostic skill",
+    "goal": "Distill controlled_trial material into build_skill for self.",
+    "source_modalities": [
+      "image"
+    ],
+    "audience": "self",
+    "summary": "Fixture OCR: service latency dashboard\nstatus: degraded",
+    "tags": [
+      "controlled_trial",
+      "skill_graph"
+    ],
+    "domain": "controlled_trial",
+    "trigger": [
+      "Use when converting image evidence into build_skill."
+    ],
+    "inputs": [
+      "Image frames or screenshots"
+    ],
+    "preconditions": [
+      "Confirm source evidence is complete and correctly scoped to the goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Fixture OCR: service latency dashboard status: degraded",
+        "why": "Derived from evidence fallback because no procedure atoms were found.",
+        "atom_refs": [],
+        "evidence_refs": [
+          "cfff114c-8b5b-46df-9eb5-ed200f1a047a"
+        ],
+        "metadata": {
+          "fallback_source": "evidence",
+          "source_span_ref": "image:ocr:0001"
+        },
+        "node_type": "step",
+        "node_id": "7e333156-8cb1-489c-ae84-6c8043cd1f58"
+      },
+      {
+        "step": 2,
+        "action": "Fixture OCR: service latency dashboard",
+        "why": "Derived from evidence fallback because no procedure atoms were found.",
+        "atom_refs": [],
+        "evidence_refs": [
+          "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9"
+        ],
+        "metadata": {
+          "fallback_source": "evidence",
+          "source_span_ref": "image:region:0001"
+        },
+        "node_type": "step",
+        "node_id": "39ee336c-1dcb-41c2-8e44-8e6626482fde"
+      },
+      {
+        "step": 3,
+        "action": "status: degraded",
+        "why": "Derived from evidence fallback because no procedure atoms were found.",
+        "atom_refs": [],
+        "evidence_refs": [
+          "2a7faa8b-1fb2-4cf7-a120-52ba4929d149"
+        ],
+        "metadata": {
+          "fallback_source": "evidence",
+          "source_span_ref": "image:region:0002"
+        },
+        "node_type": "step",
+        "node_id": "3e75864b-e295-4a64-9fc9-b83aefb6397b"
+      }
+    ],
+    "decisions": [],
+    "verifications": [],
+    "risks": [],
+    "examples": [],
+    "variables": [],
+    "edges": [
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "39ee336c-1dcb-41c2-8e44-8e6626482fde",
+        "target_node_id": "7e333156-8cb1-489c-ae84-6c8043cd1f58",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "29452d6c-d50d-4c66-b976-f50ac2a158d2"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "3e75864b-e295-4a64-9fc9-b83aefb6397b",
+        "target_node_id": "39ee336c-1dcb-41c2-8e44-8e6626482fde",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "f56e234b-4a56-41c6-bcee-2331801e7ef6"
+      }
+    ],
+    "evidence_refs": [
+      "cfff114c-8b5b-46df-9eb5-ed200f1a047a",
+      "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9",
+      "2a7faa8b-1fb2-4cf7-a120-52ba4929d149",
+      "dc5dd313-a1bf-40df-815f-acafff56caa0",
+      "fe17c008-9065-47f3-bd75-01190077b648"
+    ],
+    "atom_refs": [
+      "c4e44e80-becd-4a6c-9c36-5f491c614c66"
+    ],
+    "confidence": 0.64,
+    "version": "0.1.0",
+    "review_status": "draft",
+    "created_at": "2026-05-25T10:17:08Z",
+    "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63"
+  },
+  "publications": [
+    {
+      "publication_type": "skill_markdown",
+      "content": {
+        "filename": "SKILL.md",
+        "text": "---\nname: \"dashboard screenshots to alert diagnostic skill\"\ndescription: \"Use when Use when converting image evidence into build_skill.. Fixture OCR: service latency dashboard status: degraded\"\n---\n\n# dashboard screenshots to alert diagnostic skill\n\n## Workflow\n1. Fixture OCR: service latency dashboard status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.)\n2. Fixture OCR: service latency dashboard (Why: Derived from evidence fallback because no procedure atoms were found.)\n3. status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "description": "Use when Use when converting image evidence into build_skill.. Fixture OCR: service latency dashboard status: degraded",
+        "line_count": 24,
+        "line_limit": 220,
+        "references": {
+          "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `image`\n- evidence_ref_count: `5`\n\n## Evidence References\n- `cfff114c-8b5b-46df-9eb5-ed200f1a047a`\n- `9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9`\n- `2a7faa8b-1fb2-4cf7-a120-52ba4929d149`\n- `dc5dd313-a1bf-40df-815f-acafff56caa0`\n- `fe17c008-9065-47f3-bd75-01190077b648`\n\n## OCR Notes\n- Keep OCR details and uncertain fragments here for reviewer traceability.\n",
+          "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+        },
+        "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+        "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd"
+      },
+      "path": "SKILL.md",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+        "skill_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+        "version": "0.1.0",
+        "renderer": "portable_skill_markdown_v1",
+        "evidence_refs": [
+          "cfff114c-8b5b-46df-9eb5-ed200f1a047a",
+          "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9",
+          "2a7faa8b-1fb2-4cf7-a120-52ba4929d149",
+          "dc5dd313-a1bf-40df-815f-acafff56caa0",
+          "fe17c008-9065-47f3-bd75-01190077b648"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "76d18b34-a696-4f1c-89c4-054f87025b0c"
+    },
+    {
+      "publication_type": "skill_json",
+      "content": {
+        "filename": "skill.json",
+        "skill": {
+          "name": "dashboard screenshots to alert diagnostic skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: service latency dashboard status: degraded",
+          "source_modality": "image",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert image evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Image source",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Fixture OCR: service latency dashboard status: degraded",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Fixture OCR: service latency dashboard",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "status: degraded",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "cfff114c-8b5b-46df-9eb5-ed200f1a047a@image:ocr:0001",
+            "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9@image:region:0001",
+            "2a7faa8b-1fb2-4cf7-a120-52ba4929d149@image:region:0002",
+            "dc5dd313-a1bf-40df-815f-acafff56caa0@image:scene:0001",
+            "fe17c008-9065-47f3-bd75-01190077b648@image:layout:0001"
+          ],
+          "confidence": 0.8,
+          "version": "0.1.0",
+          "summary": "Fixture OCR: service latency dashboard status: degraded",
+          "tags": [
+            "controlled_trial",
+            "image",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd"
+        },
+        "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+        "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd"
+      },
+      "path": "skill.json",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+        "skill_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+        "version": "0.1.0",
+        "renderer": "skill_json_v1_compat",
+        "evidence_refs": [
+          "cfff114c-8b5b-46df-9eb5-ed200f1a047a",
+          "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9",
+          "2a7faa8b-1fb2-4cf7-a120-52ba4929d149",
+          "dc5dd313-a1bf-40df-815f-acafff56caa0",
+          "fe17c008-9065-47f3-bd75-01190077b648"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "952cc4f4-7e9d-48a1-b5e8-8e65d0f819d2"
+    }
+  ],
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 0.8333,
+    "overall_score": 0.9722,
+    "diagnostics": {
+      "step_count": 3.0,
+      "evidence_node_count": 5.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_task": {
+    "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+    "decision": "auto_publish",
+    "reason_codes": [
+      "controlled_trial_requires_review",
+      "simulated_human_approval"
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.8333,
+      "overall_score": 0.9722
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "review_notes": "Simulated human approval in controlled-trial runner.",
+    "status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "review_task_id": "d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07"
+  },
+  "corpus": null,
+  "evidence_nodes": [
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "modality": "image",
+      "content_type": "ocr",
+      "span_ref": "image:ocr:0001",
+      "text_content": "Fixture OCR: service latency dashboard\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture OCR: service latency dashboard\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.78,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:ocr_full"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "cfff114c-8b5b-46df-9eb5-ed200f1a047a"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "modality": "image",
+      "content_type": "ocr",
+      "span_ref": "image:region:0001",
+      "text_content": "Fixture OCR: service latency dashboard",
+      "payload": {
+        "legacy_content": "Fixture OCR: service latency dashboard"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.91,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:metric",
+        "region_size:1"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "modality": "image",
+      "content_type": "ocr",
+      "span_ref": "image:region:0002",
+      "text_content": "status: degraded",
+      "payload": {
+        "legacy_content": "status: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.89,
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:status",
+        "region_size:1"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "2a7faa8b-1fb2-4cf7-a120-52ba4929d149"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "modality": "image",
+      "content_type": "scene",
+      "span_ref": "image:scene:0001",
+      "text_content": "Fixture scene summary for service-latency-dashboard.",
+      "payload": {
+        "legacy_content": "Fixture scene summary for service-latency-dashboard."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.72,
+      "tags": [
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "dc5dd313-a1bf-40df-815f-acafff56caa0"
+    },
+    {
+      "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+      "modality": "image",
+      "content_type": "scene",
+      "span_ref": "image:layout:0001",
+      "text_content": "Fixture scene summary for service-latency-dashboard.",
+      "payload": {
+        "legacy_content": "Fixture scene summary for service-latency-dashboard."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.74,
+      "tags": [
+        "block:layout",
+        "source:scene_summary",
+        "layout_role:dashboard",
+        "fixture",
+        "scene",
+        "png"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "fe17c008-9065-47f3-bd75-01190077b648"
+    }
+  ],
+  "request_payload": {
+    "image_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+    "title": "dashboard screenshots to alert diagnostic skill",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "controlled_trial"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\bundle.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\evidence_nodes.json",
+    "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\publications",
+    "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\publications\\manifest.json",
+    "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\quality_score.json",
+    "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\review_task.json",
+    "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\review_feedback.json",
+    "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\reviewer_packet.json",
+    "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\review_policy.json",
+    "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\publications\\SKILL.md",
+    "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\publications\\skill.json",
+    "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\review_queue\\pending\\d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07.json"
+  },
+  "adapter_metadata": {
+    "frame_count": 1,
+    "ocr_region_count": 2,
+    "ocr_layout_roles": [
+      "layout_role:metric",
+      "layout_role:status"
+    ],
+    "layout_evidence_count": 1,
+    "provider_calls": [
+      {
+        "channel": "image_ocr",
+        "provider": "fixture-ocr",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      },
+      {
+        "channel": "image_analysis",
+        "provider": "FixtureImageAnalyzer",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      }
+    ],
+    "evidence_node_count": 5,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "quality_scores": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.8333,
+      "overall_score": 0.9722,
+      "diagnostics": {
+        "step_count": 3.0,
+        "evidence_node_count": 5.0,
+        "publication_count": 2.0
+      }
+    },
+    "review_policy": {
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.8333,
+        "overall_score": 0.9722
+      }
+    },
+    "review_task": {
+      "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.8333,
+        "overall_score": 0.9722
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "review_notes": "",
+      "status": "review_pending",
+      "created_at": "2026-05-25T10:17:08Z",
+      "review_task_id": "d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07"
+    },
+    "review_feedback": {
+      "review_task_id": "d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07",
+      "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+      "decision": "review_required",
+      "status": "review_pending",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "categories": [
+        "manual_review"
+      ],
+      "atom_actions": [],
+      "graph_actions": [],
+      "policy_actions": [
+        {
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.8333,
+        "overall_score": 0.9722
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      }
+    },
+    "reviewer_packet": {
+      "schema_version": "reviewer_packet.v1",
+      "created_at": "2026-05-25T10:17:08Z",
+      "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+      "skill_name": "dashboard screenshots to alert diagnostic skill",
+      "review_task_id": "d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07",
+      "review_status": "review_pending",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "input_summary": {
+        "title": "dashboard screenshots to alert diagnostic skill",
+        "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: service latency dashboard status: degraded",
+        "summary": "Fixture OCR: service latency dashboard status: degraded",
+        "modalities": [
+          "image"
+        ],
+        "evidence_unit_count": 5,
+        "evidence_node_count": 5,
+        "asset_count": 1,
+        "asset_refs": []
+      },
+      "evidence_links": [
+        {
+          "evidence_id": "cfff114c-8b5b-46df-9eb5-ed200f1a047a",
+          "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+          "span_ref": "image:ocr:0001",
+          "content_type": "ocr",
+          "modality": "image",
+          "confidence": 0.78,
+          "summary": "Fixture OCR: service latency dashboard status: degraded",
+          "tags": [
+            "engine:fixture-ocr",
+            "block:ocr_full"
+          ]
+        },
+        {
+          "evidence_id": "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9",
+          "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+          "span_ref": "image:region:0001",
+          "content_type": "ocr",
+          "modality": "image",
+          "confidence": 0.91,
+          "summary": "Fixture OCR: service latency dashboard",
+          "tags": [
+            "engine:fixture-ocr",
+            "block:region",
+            "source:ocr_group",
+            "layout_role:metric",
+            "region_size:1"
+          ]
+        },
+        {
+          "evidence_id": "2a7faa8b-1fb2-4cf7-a120-52ba4929d149",
+          "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+          "span_ref": "image:region:0002",
+          "content_type": "ocr",
+          "modality": "image",
+          "confidence": 0.89,
+          "summary": "status: degraded",
+          "tags": [
+            "engine:fixture-ocr",
+            "block:region",
+            "source:ocr_group",
+            "layout_role:status",
+            "region_size:1"
+          ]
+        },
+        {
+          "evidence_id": "dc5dd313-a1bf-40df-815f-acafff56caa0",
+          "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+          "span_ref": "image:scene:0001",
+          "content_type": "scene",
+          "modality": "image",
+          "confidence": 0.72,
+          "summary": "Fixture scene summary for service-latency-dashboard.",
+          "tags": [
+            "fixture",
+            "scene",
+            "png"
+          ]
+        },
+        {
+          "evidence_id": "fe17c008-9065-47f3-bd75-01190077b648",
+          "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+          "span_ref": "image:layout:0001",
+          "content_type": "scene",
+          "modality": "image",
+          "confidence": 0.74,
+          "summary": "Fixture scene summary for service-latency-dashboard.",
+          "tags": [
+            "block:layout",
+            "source:scene_summary",
+            "layout_role:dashboard",
+            "fixture",
+            "scene",
+            "png"
+          ]
+        }
+      ],
+      "generated_skill": {
+        "skill": {
+          "name": "dashboard screenshots to alert diagnostic skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Fixture OCR: service latency dashboard status: degraded",
+          "source_modality": "image",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert image evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Image source",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Fixture OCR: service latency dashboard status: degraded",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Fixture OCR: service latency dashboard",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "status: degraded",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "cfff114c-8b5b-46df-9eb5-ed200f1a047a@image:ocr:0001",
+            "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9@image:region:0001",
+            "2a7faa8b-1fb2-4cf7-a120-52ba4929d149@image:region:0002",
+            "dc5dd313-a1bf-40df-815f-acafff56caa0@image:scene:0001",
+            "fe17c008-9065-47f3-bd75-01190077b648@image:layout:0001"
+          ],
+          "confidence": 0.8,
+          "version": "0.1.0",
+          "summary": "Fixture OCR: service latency dashboard status: degraded",
+          "tags": [
+            "controlled_trial",
+            "image",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd"
+        },
+        "skill_markdown_preview": "--- name: \"dashboard screenshots to alert diagnostic skill\" description: \"Use when Use when converting image evidence into build_skill.. Fixture OCR: service latency dashboard status: degraded\" --- # dashboard screenshots to alert diagnostic skill ## Workflow 1. Fixture OCR: service latency dashboard status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.) 2. Fixture OCR: service latency dashboard (Why: Derived from evidence fallback because no procedure atoms were found.) 3. status: degraded (Why: Derived from evidence fallback because no procedure atoms were found.) ## Decision Rules - No explicit branch rule was extracted; execute workflow order first. ## Validation - Confirm each key conclusion can be traced back to evidence_refs. ## Failure Modes - Do not auto-publish trial output before human review approval. ## References - [Evidence](references/evidence.md) - [Examples](references/examples.md)",
+        "step_count": 3,
+        "decision_rule_count": 0,
+        "verification_count": 2,
+        "publication_types": [
+          "skill_markdown",
+          "skill_json"
+        ],
+        "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63"
+      },
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.8333,
+        "overall_score": 0.9722,
+        "diagnostics": {
+          "step_count": 3.0,
+          "evidence_node_count": 5.0,
+          "publication_count": 2.0
+        }
+      },
+      "review_policy": {
+        "decision": "review_required",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        },
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.8333,
+          "overall_score": 0.9722
+        }
+      },
+      "review_feedback": {
+        "review_task_id": "d651fc03-0d1b-4353-9bc1-3a8e4fbe7d07",
+        "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+        "decision": "review_required",
+        "status": "review_pending",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "categories": [
+          "manual_review"
+        ],
+        "atom_actions": [],
+        "graph_actions": [],
+        "policy_actions": [
+          {
+            "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+            "target": "policy",
+            "intent": "escalate_manual_review",
+            "reason_code": "MANUAL_REVIEW_FALLBACK",
+            "params": {
+              "priority": "medium"
+            }
+          }
+        ],
+        "revision_suggestions": [
+          "S_MANUAL_REVIEW_REQUIRED"
+        ],
+        "follow_up_checks": [
+          "CHECK_MANUAL_REVIEW_OUTCOME"
+        ],
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.8333,
+          "overall_score": 0.9722
+        },
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        }
+      },
+      "risk_flags": [
+        {
+          "code": "controlled_trial_requires_review",
+          "severity": "medium",
+          "source": "review_policy"
+        },
+        {
+          "code": "image_requires_ocr_review",
+          "severity": "medium",
+          "source": "modality"
+        }
+      ],
+      "approval_checklist": [
+        {
+          "check_id": "factual_accuracy",
+          "label": "Confirm generated skill facts match evidence.",
+          "required": true
+        },
+        {
+          "check_id": "actionability",
+          "label": "Confirm steps are concrete and executable by the target agent.",
+          "required": true
+        },
+        {
+          "check_id": "dangerous_operations",
+          "label": "Confirm dangerous commands or production changes are clearly guarded.",
+          "required": true
+        },
+        {
+          "check_id": "description_trigger",
+          "label": "Confirm description would trigger only for the intended scenario.",
+          "required": true
+        },
+        {
+          "check_id": "ocr_visual_check",
+          "label": "Confirm OCR and visual interpretation.",
+          "required": true
+        }
+      ]
+    },
+    "provider_footprint": {
+      "corpus_id": "",
+      "asset_breakdown": [
+        {
+          "asset_id": "95516018-d78e-450b-8a20-c0db39cbb3c6",
+          "role": "primary",
+          "modality": "image",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+          "call_total": 2,
+          "provider_calls": [
+            {
+              "channel": "image_analysis",
+              "provider": "FixtureImageAnalyzer",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            },
+            {
+              "channel": "image_ocr",
+              "provider": "fixture-ocr",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "total_calls": 2,
+        "total_successes": 2,
+        "total_failures": 0,
+        "providers": {
+          "FixtureImageAnalyzer": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "fixture-ocr": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          }
+        },
+        "channels": {
+          "image_analysis": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "image_ocr": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          }
+        }
+      },
+      "runtime_provider_audits": [],
+      "runtime_summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      }
+    }
+  },
+  "simulated_review": {
+    "approved_at_utc": "2026-05-25T10:17:08Z",
+    "approved_by": "controlled-trial-runner",
+    "mode": "simulated"
+  }
+}

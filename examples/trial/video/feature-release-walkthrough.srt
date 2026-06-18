@@ -1,0 +1,11 @@
+1
+00:00:00,000 --> 00:00:03,000
+Open release dashboard and verify gate status is GO.
+
+2
+00:00:03,000 --> 00:00:06,000
+Compare latency and error-rate after rollout.
+
+3
+00:00:06,000 --> 00:00:09,000
+If regression persists, roll back and attach evidence pack.

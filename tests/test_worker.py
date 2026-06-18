@@ -133,7 +133,13 @@ class _StubReviewQueueRepository(object):
         self.claim_calls = 0
         self.close_calls = 0
 
-    def list_review_queue(self, *, queue_status: str | None = 'pending', limit: int = 100) -> list[dict[str, str]]:
+    def list_review_queue(
+        self,
+        *,
+        queue_status: str | None = 'pending',
+        limit: int = 100,
+        tenant_scope=None,
+    ) -> list[dict[str, str]]:
         self.list_calls += 1
         normalized = str(queue_status or '').strip().lower()
         items: list[dict[str, str]]
@@ -150,7 +156,13 @@ class _StubReviewQueueRepository(object):
             items = []
         return items[: max(limit, 0)]
 
-    def claim_review_task(self, review_task_id: str | None = None, *, consumer: str = 'review-consumer') -> dict[str, str] | None:
+    def claim_review_task(
+        self,
+        review_task_id: str | None = None,
+        *,
+        consumer: str = 'review-consumer',
+        tenant_scope=None,
+    ) -> dict[str, str] | None:
         self.claim_calls += 1
         target = str(review_task_id or '').strip()
         if not target:
@@ -166,8 +178,8 @@ class _StubReviewQueueRepository(object):
         self.consumed[target] = claimed
         return dict(claimed)
 
-    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, str] | None:
-        return self.claim_review_task(consumer=consumer)
+    def consume_review_task(self, *, consumer: str = 'review-consumer', tenant_scope=None) -> dict[str, str] | None:
+        return self.claim_review_task(consumer=consumer, tenant_scope=tenant_scope)
 
     def close_review_task(
         self,
@@ -176,6 +188,10 @@ class _StubReviewQueueRepository(object):
         status: str = 'published',
         closed_by: str = 'review-operator',
         review_notes: str = '',
+        decision: str | None = None,
+        reason_codes=None,
+        reviewer_edits=None,
+        tenant_scope=None,
     ) -> dict[str, str] | None:
         self.close_calls += 1
         target = str(review_task_id).strip()
@@ -187,10 +203,56 @@ class _StubReviewQueueRepository(object):
         closed = dict(source)
         closed['queue_status'] = 'closed'
         closed['status'] = str(status).strip().lower() or 'published'
+        if decision:
+            decision_text = str(decision).strip().lower()
+            if decision_text in {'approve', 'approved'}:
+                closed['decision'] = 'approve'
+            elif decision_text in {'reject', 'rejected'}:
+                closed['decision'] = 'reject'
+            elif decision_text in {'needs_rework', 'needs-rework', 'needs rework'}:
+                closed['decision'] = 'needs_rework'
         closed['closed_by'] = closed_by.strip() or 'review-operator'
         closed['review_notes'] = review_notes.strip()
+        if isinstance(reason_codes, list):
+            closed['reason_codes'] = [str(item).strip() for item in reason_codes if str(item).strip()]
+        if isinstance(reviewer_edits, dict):
+            closed['reviewer_edits'] = {str(key).strip(): value for key, value in reviewer_edits.items() if str(key).strip()}
         self.closed[target] = closed
         return dict(closed)
+
+    def update_review_task_decision(
+        self,
+        review_task_id: str,
+        *,
+        decision: str,
+        reviewer: str = 'review-operator',
+        reason_codes=None,
+        review_notes: str = '',
+        reviewer_edits=None,
+        status: str | None = None,
+    ) -> dict[str, str] | None:
+        normalized = str(decision).strip().lower()
+        if normalized in {'approved'}:
+            normalized = 'approve'
+        if normalized in {'rejected'}:
+            normalized = 'reject'
+        if normalized in {'needs-rework', 'needs rework'}:
+            normalized = 'needs_rework'
+        if normalized == 'approve':
+            resolved_status = status or 'published'
+        elif normalized == 'reject':
+            resolved_status = status or 'rejected'
+        else:
+            resolved_status = status or 'needs_rework'
+        return self.close_review_task(
+            review_task_id,
+            status=resolved_status,
+            closed_by=reviewer,
+            review_notes=review_notes,
+            decision=normalized,
+            reason_codes=reason_codes,
+            reviewer_edits=reviewer_edits,
+        )
 
 
 class _ReviewQueueOnlyService(object):
@@ -553,6 +615,44 @@ class WorkerTaskTypeUpgradeTests(unittest.TestCase):
             self.assertEqual(queue_repository.pending, {})
             self.assertIn('task-1', queue_repository.consumed)
             self.assertTrue((jobs_root / 'completed' / 'job-review-claim.json').exists())
+
+    def test_review_queue_approve_job_is_supported(self) -> None:
+        from omni_skill_pipeline import worker as worker_module
+
+        queue_repository = _StubReviewQueueRepository()
+        service = _ReviewQueueOnlyService(queue_repository)
+        queue_repository.claim_review_task(review_task_id='task-1', consumer='queue-worker')
+        payload = {
+            'kind': 'review_queue',
+            'action': 'approve',
+            'review_task_id': 'task-1',
+            'reviewer': 'qa-lead',
+            'reason_codes': ['SAFE'],
+            'review_notes': 'ready to publish',
+            'reviewer_edits': {'skill_markdown_patch': 'none'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            jobs_root = Path(temp_dir) / 'jobs'
+            _write_pending_job(jobs_root, 'job-review-approve.json', payload)
+
+            with (
+                patch.object(worker_module, 'build_service', return_value=service),
+                patch.object(worker_module, 'configure_logging', return_value=None),
+            ):
+                worker = worker_module.LocalJobWorker(jobs_root)
+                processed = worker.run_once()
+
+            self.assertEqual(processed, 1)
+            self.assertEqual(queue_repository.close_calls, 1)
+            self.assertIn('task-1', queue_repository.closed)
+            closed = queue_repository.closed['task-1']
+            self.assertEqual(closed['decision'], 'approve')
+            self.assertEqual(closed['status'], 'published')
+            self.assertEqual(closed['closed_by'], 'qa-lead')
+            self.assertEqual(closed['reason_codes'], ['SAFE'])
+            self.assertEqual(closed['reviewer_edits'], {'skill_markdown_patch': 'none'})
+            self.assertTrue((jobs_root / 'completed' / 'job-review-approve.json').exists())
 
     def test_rebuild_publication_job_replays_text_request(self) -> None:
         from omni_skill_pipeline import worker as worker_module

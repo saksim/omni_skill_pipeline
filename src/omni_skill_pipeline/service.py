@@ -39,6 +39,8 @@ from omni_skill_pipeline.quality.review_policy import ReviewPolicy
 from omni_skill_pipeline.quality.scoring import QualityScorer
 from omni_skill_pipeline.redaction import redact_sensitive_data
 from omni_skill_pipeline.render import render_skill_markdown_compat
+from omni_skill_pipeline.review.packet import ReviewerPacketBuilder
+from omni_skill_pipeline.governance import GovernanceLedger
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +81,14 @@ def _bundle_trace_extra(bundle: DistillBundle) -> dict[str, object]:
     graph_id = bundle.skill_graph.graph_id if bundle.skill_graph is not None else ''
     review_status = ''
     if bundle.review_task is not None:
-        review_status = bundle.review_task.status.value
+        review_task_status = getattr(bundle.review_task, 'status', None)
+        if hasattr(review_task_status, 'value'):
+            review_status = str(review_task_status.value)
+        elif isinstance(review_task_status, str):
+            review_status = review_task_status
+        elif isinstance(bundle.review_task, dict):
+            status_value = bundle.review_task.get('status', '')
+            review_status = str(status_value).strip()
     elif bundle.skill_graph is not None:
         review_status = bundle.skill_graph.review_status.value
     return {
@@ -97,6 +106,7 @@ class DistillationService(object):
     def __init__(
         self,
         repository: ArtifactRepository,
+        governance_ledger: GovernanceLedger | None = None,
         *,
         text_adapter: DistillAdapter[TextDistillRequest],
         audio_adapter: DistillAdapter[AudioDistillRequest],
@@ -116,6 +126,7 @@ class DistillationService(object):
         publication_orchestrator: PublicationOrchestrator | None = None,
     ) -> None:
         self.repository = repository
+        self.governance_ledger = governance_ledger
         self.text_adapter = text_adapter
         self.audio_adapter = audio_adapter
         self.image_adapter = image_adapter
@@ -130,6 +141,7 @@ class DistillationService(object):
         self.quality_scorer = quality_scorer or QualityScorer()
         self.review_policy = review_policy or ReviewPolicy()
         self.review_feedback_engine = review_feedback_engine or ReviewFeedbackEngine()
+        self.reviewer_packet_builder = ReviewerPacketBuilder()
         self.corpus_loader = corpus_loader or DefaultCorpusLoader(
             text_adapter=self.text_adapter,
             audio_adapter=self.audio_adapter,
@@ -158,6 +170,115 @@ class DistillationService(object):
 
     def distill_video(self, request: VideoDistillRequest) -> DistillBundle:
         return self._distill_with_logging(modality='video', request=request, adapter=self.video_adapter)
+
+    def _record_bundle_governance(
+        self,
+        *,
+        bundle: DistillBundle,
+        source: str,
+        action: str,
+    ) -> None:
+        if self.governance_ledger is None:
+            return
+        tenant_scope = self._resolve_tenant_scope(request_metadata=bundle.request_payload.get('metadata', {}))
+        review_task_payload = self._resolve_review_task_payload(bundle)
+        provider_footprint = {}
+        if isinstance(bundle.adapter_metadata, dict):
+            provider_payload = bundle.adapter_metadata.get('provider_footprint')
+            if isinstance(provider_payload, dict):
+                provider_footprint = provider_payload
+
+        provider_summary = provider_footprint.get('summary', {}) if isinstance(provider_footprint, dict) else {}
+        providers = provider_summary.get('providers', {}) if isinstance(provider_summary, dict) else {}
+        total_calls = self._safe_int(provider_summary.get('total_calls', 0))
+        total_failures = self._safe_int(provider_summary.get('total_failures', 0))
+        corpus_id = ''
+        if bundle.corpus is not None:
+            corpus_id = str(bundle.corpus.corpus_id).strip()
+        if not corpus_id and isinstance(bundle.adapter_metadata, dict):
+            corpus_id = str(bundle.adapter_metadata.get('corpus_id', '')).strip()
+        run_id = corpus_id or str(bundle.skill.skill_id).strip()
+        event_base_metadata = {
+            'source': source,
+            'bundle_id': bundle.skill.skill_id,
+            'publication_count': len(bundle.publications),
+            'evidence_count': len(bundle.evidence_units),
+            'review_task_id': str(review_task_payload.get('review_task_id', '')).strip(),
+        }
+
+        self.governance_ledger.record_cost_entry(
+            {
+                **tenant_scope,
+                'run_id': run_id,
+                'skill_id': bundle.skill.skill_id,
+                'bundle_id': bundle.skill.skill_id,
+                'event_kind': 'run',
+                'provider': 'all',
+                'operation': action,
+                'call_count': total_calls,
+                'failure_count': total_failures,
+                'estimated_cost_usd': 0.0,
+                'currency': 'USD',
+                'metadata': {
+                    **event_base_metadata,
+                    'provider_count': len(providers) if isinstance(providers, dict) else 0,
+                },
+            }
+        )
+        self.governance_ledger.record_cost_entry(
+            {
+                **tenant_scope,
+                'run_id': run_id,
+                'skill_id': bundle.skill.skill_id,
+                'bundle_id': bundle.skill.skill_id,
+                'event_kind': 'skill',
+                'provider': 'all',
+                'operation': 'skill.persist',
+                'call_count': 1,
+                'failure_count': 0,
+                'estimated_cost_usd': 0.0,
+                'currency': 'USD',
+                'metadata': event_base_metadata,
+            }
+        )
+        if isinstance(providers, dict):
+            for provider_name, counter in sorted(providers.items()):
+                if not isinstance(counter, dict):
+                    continue
+                provider_calls = self._safe_int(counter.get('calls', 0))
+                provider_failures = self._safe_int(counter.get('failures', 0))
+                self.governance_ledger.record_cost_entry(
+                    {
+                        **tenant_scope,
+                        'run_id': run_id,
+                        'skill_id': bundle.skill.skill_id,
+                        'bundle_id': bundle.skill.skill_id,
+                        'event_kind': 'provider_call',
+                        'provider': str(provider_name).strip() or 'unknown',
+                        'operation': action,
+                        'call_count': provider_calls,
+                        'failure_count': provider_failures,
+                        'estimated_cost_usd': 0.0,
+                        'currency': 'USD',
+                        'metadata': {
+                            **event_base_metadata,
+                            'provider_successes': self._safe_int(counter.get('successes', 0)),
+                        },
+                    }
+                )
+        self.governance_ledger.record_audit_event(
+            {
+                **tenant_scope,
+                'event_type': 'distill_completed',
+                'status': 'success',
+                'skill_id': bundle.skill.skill_id,
+                'review_task_id': str(review_task_payload.get('review_task_id', '')).strip(),
+                'metadata': {
+                    **event_base_metadata,
+                    'review_status': str(review_task_payload.get('status', '')).strip(),
+                },
+            }
+        )
 
     def distill_corpus(self, request: CorpusDistillRequest) -> DistillBundle:
         context_tokens, _, _ = _ensure_request_context('distill-corpus')
@@ -199,9 +320,43 @@ class DistillationService(object):
             review_decision = self.review_policy.decide(quality_scores).to_dict()
             review_task = ReviewTask.from_review_policy(skill_id=skill.skill_id, review_policy=review_decision)
             review_feedback = self.review_feedback_engine.build(review_task).to_dict()
+            tenant_scope = self._resolve_tenant_scope(request_metadata=request.metadata)
+            review_task_with_tenant = self._with_tenant_scope_review_task(
+                review_task=review_task,
+                tenant_scope=tenant_scope,
+            )
+            review_feedback_with_tenant = self._with_tenant_scope_payload(
+                payload=review_feedback,
+                tenant_scope=tenant_scope,
+            )
             provider_footprint = self._build_provider_footprint(
                 asset_adapter_metadata=loaded_corpus.adapter_metadata,
                 corpus_id=loaded_corpus.corpus.corpus_id,
+            )
+            cross_asset_refs = self._build_cross_asset_refs_for_packet(
+                corpus=loaded_corpus.corpus,
+                evidence_nodes=loaded_corpus.evidence_nodes,
+                evidence_units=loaded_corpus.evidence_units,
+                skill=skill,
+                insights=insights,
+            )
+            reviewer_packet = self.reviewer_packet_builder.build(
+                skill=skill,
+                skill_markdown=markdown,
+                evidence_units=loaded_corpus.evidence_units,
+                insights=insights,
+                quality_scores=quality_scores,
+                review_task=review_task,
+                review_policy=review_decision,
+                review_feedback=review_feedback_with_tenant,
+                publications=publications,
+                skill_graph=skill_graph,
+                corpus=loaded_corpus.corpus,
+                evidence_nodes=loaded_corpus.evidence_nodes,
+                corpus_assets=[item.to_dict() for item in loaded_corpus.corpus.assets],
+                cross_asset_refs=cross_asset_refs,
+                request_payload=redact_sensitive_data(request.to_dict()),
+                references_payload=self._resolve_publication_references(publications),
             )
             bundle = DistillBundle(
                 asset=primary_loaded.asset,
@@ -225,14 +380,21 @@ class DistillationService(object):
                     'publication_types': [item.publication_type.value for item in publications],
                     'quality_scores': quality_scores,
                     'review_policy': review_decision,
-                    'review_task': review_task.to_dict(),
-                    'review_feedback': review_feedback,
+                    'review_task': review_task_with_tenant,
+                    'review_feedback': review_feedback_with_tenant,
+                    'reviewer_packet': reviewer_packet,
                     'corpus_assets': [item.to_dict() for item in loaded_corpus.corpus.assets],
                     'asset_adapter_metadata': loaded_corpus.adapter_metadata,
                     'provider_footprint': provider_footprint,
+                    'tenant_scope': tenant_scope,
                 }),
             )
             self.repository.save_bundle(bundle)
+            self._record_bundle_governance(
+                bundle=bundle,
+                source='corpus_distill',
+                action='distill.execute',
+            )
             logger.info(
                 'Corpus distillation completed.',
                 extra={
@@ -312,6 +474,15 @@ class DistillationService(object):
         review_decision = self.review_policy.decide(quality_scores).to_dict()
         review_task = ReviewTask.from_review_policy(skill_id=skill.skill_id, review_policy=review_decision)
         review_feedback = self.review_feedback_engine.build(review_task).to_dict()
+        tenant_scope = self._resolve_tenant_scope(request_metadata=request.to_dict().get('metadata', {}))
+        review_task_with_tenant = self._with_tenant_scope_review_task(
+            review_task=review_task,
+            tenant_scope=tenant_scope,
+        )
+        review_feedback_with_tenant = self._with_tenant_scope_payload(
+            payload=review_feedback,
+            tenant_scope=tenant_scope,
+        )
         provider_footprint = self._build_provider_footprint(
             asset_adapter_metadata={
                 loaded.asset.asset_id: {
@@ -321,6 +492,21 @@ class DistillationService(object):
                     'adapter_metadata': loaded.adapter_metadata,
                 }
             }
+        )
+        reviewer_packet = self.reviewer_packet_builder.build(
+            skill=skill,
+            skill_markdown=markdown,
+            evidence_units=loaded.evidence_units,
+            insights=insights,
+            quality_scores=quality_scores,
+            review_task=review_task,
+            review_policy=review_decision,
+            review_feedback=review_feedback_with_tenant,
+            publications=publications,
+            skill_graph=skill_graph,
+            evidence_nodes=evidence_nodes,
+            request_payload=redact_sensitive_data(request.to_dict()),
+            references_payload=self._resolve_publication_references(publications),
         )
         bundle = DistillBundle(
             asset=loaded.asset,
@@ -340,12 +526,19 @@ class DistillationService(object):
                 'publication_types': [item.publication_type.value for item in publications],
                 'quality_scores': quality_scores,
                 'review_policy': review_decision,
-                'review_task': review_task.to_dict(),
-                'review_feedback': review_feedback,
+                'review_task': review_task_with_tenant,
+                'review_feedback': review_feedback_with_tenant,
+                'reviewer_packet': reviewer_packet,
                 'provider_footprint': provider_footprint,
+                'tenant_scope': tenant_scope,
             }),
         )
         self.repository.save_bundle(bundle)
+        self._record_bundle_governance(
+            bundle=bundle,
+            source='single_asset_distill',
+            action='distill.execute',
+        )
         return bundle
 
     def _build_provider_footprint(
@@ -587,6 +780,47 @@ class DistillationService(object):
         except (TypeError, ValueError):
             return 0
 
+    def _resolve_tenant_scope(self, *, request_metadata: Any) -> dict[str, str]:
+        if not isinstance(request_metadata, dict):
+            return {}
+        scope_payload = request_metadata.get('tenant_scope')
+        if not isinstance(scope_payload, dict):
+            return {}
+        organization_id = str(scope_payload.get('organization_id', '')).strip()
+        project_id = str(scope_payload.get('project_id', '')).strip()
+        resolved: dict[str, str] = {}
+        if organization_id:
+            resolved['organization_id'] = organization_id
+        if project_id:
+            resolved['project_id'] = project_id
+        return resolved
+
+    def _with_tenant_scope_payload(
+        self,
+        *,
+        payload: dict[str, Any],
+        tenant_scope: dict[str, str],
+    ) -> dict[str, Any]:
+        if not tenant_scope:
+            return dict(payload)
+        normalized = dict(payload)
+        normalized.setdefault('organization_id', tenant_scope.get('organization_id', ''))
+        normalized.setdefault('project_id', tenant_scope.get('project_id', ''))
+        return normalized
+
+    def _with_tenant_scope_review_task(
+        self,
+        *,
+        review_task: ReviewTask,
+        tenant_scope: dict[str, str],
+    ) -> dict[str, Any]:
+        payload = review_task.to_dict()
+        if not tenant_scope:
+            return payload
+        payload['organization_id'] = tenant_scope.get('organization_id', '')
+        payload['project_id'] = tenant_scope.get('project_id', '')
+        return payload
+
     def _build_publications(
         self,
         *,
@@ -601,6 +835,116 @@ class DistillationService(object):
             evidence_nodes=evidence_nodes,
             skill=skill,
         )
+
+    def _resolve_publication_references(self, publications: list[Publication]) -> dict[str, str]:
+        for publication in publications:
+            if publication.publication_type.value != 'skill_markdown':
+                continue
+            if not isinstance(publication.content, dict):
+                continue
+            references = publication.content.get('references')
+            if not isinstance(references, dict):
+                continue
+            output: dict[str, str] = {}
+            for key, value in references.items():
+                path_text = str(key).strip().replace('\\', '/')
+                if not path_text:
+                    continue
+                output[path_text] = str(value)
+            return output
+        return {}
+
+    def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
+        adapter_metadata = bundle.adapter_metadata if isinstance(bundle.adapter_metadata, dict) else {}
+        adapter_payload = adapter_metadata.get('review_task')
+        if isinstance(adapter_payload, dict):
+            return dict(adapter_payload)
+        if isinstance(bundle.review_task, dict):
+            return dict(bundle.review_task)
+        if hasattr(bundle.review_task, 'to_dict'):
+            payload = bundle.review_task.to_dict()
+            if isinstance(payload, dict):
+                return payload
+        return {}
+
+    def _build_cross_asset_refs_for_packet(
+        self,
+        *,
+        corpus,
+        evidence_nodes,
+        evidence_units,
+        skill: SkillDocument,
+        insights,
+    ) -> list[dict[str, object]]:
+        if corpus is None or len(corpus.assets) < 2:
+            return []
+        asset_index = {item.asset_id: item for item in corpus.assets}
+        evidence_index: dict[str, dict[str, object]] = {}
+        for node in evidence_nodes:
+            evidence_index[node.evidence_id] = {
+                'evidence_id': node.evidence_id,
+                'asset_id': node.asset_id,
+                'modality': node.modality.value,
+                'content_type': node.content_type.value,
+                'span_ref': node.span_ref,
+            }
+        for unit in evidence_units:
+            evidence_index.setdefault(
+                unit.evidence_id,
+                {
+                    'evidence_id': unit.evidence_id,
+                    'asset_id': unit.asset_id,
+                    'modality': '',
+                    'content_type': unit.content_type.value,
+                    'span_ref': unit.span_ref,
+                },
+            )
+
+        refs: list[dict[str, object]] = []
+        candidates = [('skill', skill.skill_id, skill.name, skill.evidence_refs)]
+        candidates.extend(('insight', item.insight_id, item.summary, item.evidence_refs) for item in insights)
+        for reference_type, reference_id, summary, evidence_refs in candidates:
+            evidence_items: list[dict[str, object]] = []
+            asset_ids: list[str] = []
+            modalities: list[str] = []
+            for evidence_ref in evidence_refs:
+                evidence_id = str(evidence_ref).split('@', 1)[0]
+                record = evidence_index.get(evidence_id)
+                if record is None:
+                    continue
+                asset = asset_index.get(str(record.get('asset_id', '')))
+                if asset is None:
+                    continue
+                asset_ids.append(asset.asset_id)
+                modalities.append(asset.modality.value)
+                evidence_items.append(
+                    {
+                        'evidence_id': evidence_id,
+                        'asset_id': asset.asset_id,
+                        'modality': asset.modality.value,
+                        'role': asset.role,
+                        'content_type': str(record.get('content_type', '')),
+                        'span_ref': str(record.get('span_ref', '')),
+                        'source_uri': asset.source_uri,
+                    }
+                )
+            unique_asset_ids = []
+            for asset_id in asset_ids:
+                if asset_id not in unique_asset_ids:
+                    unique_asset_ids.append(asset_id)
+            if len(unique_asset_ids) < 2:
+                continue
+            refs.append(
+                {
+                    'reference_type': reference_type,
+                    'reference_id': reference_id,
+                    'summary': str(summary).strip(),
+                    'asset_ids': unique_asset_ids,
+                    'modalities': list(dict.fromkeys(modalities)),
+                    'evidence': evidence_items,
+                }
+            )
+        return refs
 
 
 def build_service(repo_root: Optional[str] = None) -> DistillationService:

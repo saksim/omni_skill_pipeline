@@ -25,6 +25,32 @@ class _StubBundle(object):
 
 
 class _StubService(object):
+    class _StubReviewQueueRepository(object):
+        def list_review_queue(self, *, queue_status='pending', limit=100, tenant_scope=None):
+            return []
+
+        def claim_review_task(self, review_task_id=None, *, consumer='review-consumer', tenant_scope=None):
+            return None
+
+        def close_review_task(
+            self,
+            review_task_id,
+            *,
+            status='published',
+            closed_by='review-operator',
+            review_notes='',
+            decision=None,
+            reason_codes=None,
+            reviewer_edits=None,
+            tenant_scope=None,
+        ):
+            return None
+
+        def consume_review_task(self, *, consumer='review-consumer', tenant_scope=None):
+            return None
+
+    repository = _StubReviewQueueRepository()
+
     def distill_text(self, request):
         return _StubBundle()
 
@@ -40,14 +66,21 @@ class _StubService(object):
     def distill_video(self, request):
         return _StubBundle()
 
+    def distill_corpus(self, request):
+        return _StubBundle()
+
 
 def _build_settings(*, template_path: Path, draft_dir: Path) -> SimpleNamespace:
     return SimpleNamespace(
         api_key='',
         rate_limit_requests=0,
         rate_limit_window_seconds=60,
+        tenant_access_json='',
+        tenant_access_file='',
         template_path=template_path,
         draft_dir=draft_dir,
+        repo_root=REPO_ROOT,
+        governance_ledger_dir=template_path.parent / 'governance',
     )
 
 

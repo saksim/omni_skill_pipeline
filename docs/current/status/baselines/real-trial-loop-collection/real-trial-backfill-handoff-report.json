@@ -1,0 +1,558 @@
+{
+  "schema_version": "real_trial_backfill_handoff.v1",
+  "generated_at_utc": "2026-05-31T06:54:57Z",
+  "input_paths": {
+    "intake_actions_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json",
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
+    "acknowledgements_report": ""
+  },
+  "handoff_status": "HANDOFF_ACTIONS_PENDING",
+  "owner": "controlled-beta-ops",
+  "queue_item_counts": {
+    "total_queue_item_count": 10,
+    "open_queue_item_count": 10,
+    "submission_linked_pending_ack_count": 0,
+    "closure_acknowledged_count": 0
+  },
+  "acknowledgement_snapshot": {
+    "input_acknowledgement_count": 0,
+    "valid_acknowledgement_count": 0,
+    "invalid_acknowledgement_count": 0,
+    "invalid_acknowledgement_records": []
+  },
+  "acknowledgement_sla_snapshot": {
+    "evaluation_timestamp_utc": "2026-05-31T06:54:57Z",
+    "pending_ack_sla_hours": 24.0,
+    "pending_ack_overdue_hours": 72.0,
+    "acknowledgement_sla_status": "ACK_SLA_NOT_REQUIRED",
+    "pending_ack_within_sla_count": 0,
+    "pending_ack_sla_breached_count": 0,
+    "pending_ack_overdue_count": 0,
+    "pending_ack_missing_reference_timestamp_count": 0,
+    "pending_ack_sla_breached_queue_items": [],
+    "pending_ack_overdue_queue_items": [],
+    "pending_ack_tracking_incomplete_queue_items": []
+  },
+  "launch_gap_snapshot": {
+    "program_status": "COLLECTION_INCOMPLETE",
+    "missing_complete_loops_to_threshold": 10,
+    "missing_modalities_to_threshold": 4,
+    "blockers": [
+      "real_loop_volume_below_threshold",
+      "real_loop_modality_coverage_below_threshold"
+    ]
+  },
+  "submission_snapshot": {
+    "launch_gate_eligible_real_submission_count": 0,
+    "launch_gate_eligible_real_submission_count_by_modality": {}
+  },
+  "submission_linkage_snapshot": {
+    "linkage_strategy_counts": {
+      "action_id_and_slot_index": 0,
+      "action_id_only": 0,
+      "slot_index_only": 0,
+      "modality_fallback": 0,
+      "none": 10
+    },
+    "unlinked_submission_count": 0,
+    "unlinked_submissions": []
+  },
+  "queue_items": [
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-001-text",
+      "action_id": "gl23-slot-001-text",
+      "slot_index": 1,
+      "required_modality": "text",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real text loop for missing modality coverage",
+      "operator_task": "Collect one launch-gate-eligible real text loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "text"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "text"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-002-audio",
+      "action_id": "gl23-slot-002-audio",
+      "slot_index": 2,
+      "required_modality": "audio",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real audio loop for missing modality coverage",
+      "operator_task": "Collect one launch-gate-eligible real audio loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "audio"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "audio"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-003-image",
+      "action_id": "gl23-slot-003-image",
+      "slot_index": 3,
+      "required_modality": "image",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real image loop for missing modality coverage",
+      "operator_task": "Collect one launch-gate-eligible real image loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "image"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "image"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-004-video",
+      "action_id": "gl23-slot-004-video",
+      "slot_index": 4,
+      "required_modality": "video",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real video loop for missing modality coverage",
+      "operator_task": "Collect one launch-gate-eligible real video loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "video"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "video"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-005-text",
+      "action_id": "gl23-slot-005-text",
+      "slot_index": 5,
+      "required_modality": "text",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real text loop for remaining volume threshold",
+      "operator_task": "Collect one launch-gate-eligible real text loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "text"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "text"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-006-audio",
+      "action_id": "gl23-slot-006-audio",
+      "slot_index": 6,
+      "required_modality": "audio",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real audio loop for remaining volume threshold",
+      "operator_task": "Collect one launch-gate-eligible real audio loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "audio"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "audio"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-007-image",
+      "action_id": "gl23-slot-007-image",
+      "slot_index": 7,
+      "required_modality": "image",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real image loop for remaining volume threshold",
+      "operator_task": "Collect one launch-gate-eligible real image loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "image"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "image"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-008-video",
+      "action_id": "gl23-slot-008-video",
+      "slot_index": 8,
+      "required_modality": "video",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real video loop for remaining volume threshold",
+      "operator_task": "Collect one launch-gate-eligible real video loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "video"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "video"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-009-text",
+      "action_id": "gl23-slot-009-text",
+      "slot_index": 9,
+      "required_modality": "text",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real text loop for remaining volume threshold",
+      "operator_task": "Collect one launch-gate-eligible real text loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "text"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "text"
+      },
+      "submission_linkage_strategy": "none"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-010-audio",
+      "action_id": "gl23-slot-010-audio",
+      "slot_index": 10,
+      "required_modality": "audio",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops",
+      "intake_action_status": "pending",
+      "queue_status": "open",
+      "title": "Collect real audio loop for remaining volume threshold",
+      "operator_task": "Collect one launch-gate-eligible real audio loop and record full review trace.",
+      "closure_evidence_requirements": {
+        "required_loop_manifest_fields": [
+          "loop_id",
+          "modality",
+          "evidence_origin",
+          "launch_gate_eligible",
+          "source_system",
+          "source_reference",
+          "collected_at_utc",
+          "review_task_id",
+          "reviewed_by",
+          "reviewed_at_utc"
+        ],
+        "required_field_values": {
+          "evidence_origin": "real",
+          "launch_gate_eligible": true,
+          "status": "complete",
+          "modality": "audio"
+        },
+        "validation_note": "Closure must appear in the next GL-12 collection report and GL-22 execution report without relaxing launch-gate policy."
+      },
+      "closure_acknowledgement": {
+        "status": "pending_submission",
+        "missing_reason": "No unmatched launch-gate-eligible real submission available for required modality.",
+        "required_modality": "audio"
+      },
+      "submission_linkage_strategy": "none"
+    }
+  ],
+  "open_queue_items": [
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-001-text",
+      "action_id": "gl23-slot-001-text",
+      "slot_index": 1,
+      "required_modality": "text",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-002-audio",
+      "action_id": "gl23-slot-002-audio",
+      "slot_index": 2,
+      "required_modality": "audio",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-003-image",
+      "action_id": "gl23-slot-003-image",
+      "slot_index": 3,
+      "required_modality": "image",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-004-video",
+      "action_id": "gl23-slot-004-video",
+      "slot_index": 4,
+      "required_modality": "video",
+      "reason": "missing_target_launch_modality",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-005-text",
+      "action_id": "gl23-slot-005-text",
+      "slot_index": 5,
+      "required_modality": "text",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-006-audio",
+      "action_id": "gl23-slot-006-audio",
+      "slot_index": 6,
+      "required_modality": "audio",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-007-image",
+      "action_id": "gl23-slot-007-image",
+      "slot_index": 7,
+      "required_modality": "image",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-008-video",
+      "action_id": "gl23-slot-008-video",
+      "slot_index": 8,
+      "required_modality": "video",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-009-text",
+      "action_id": "gl23-slot-009-text",
+      "slot_index": 9,
+      "required_modality": "text",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    },
+    {
+      "queue_item_id": "gl24-queue-gl23-slot-010-audio",
+      "action_id": "gl23-slot-010-audio",
+      "slot_index": 10,
+      "required_modality": "audio",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "assignee": "controlled-beta-ops",
+      "owner": "controlled-beta-ops"
+    }
+  ],
+  "pending_ack_queue_items": [],
+  "pending_ack_sla_breached_queue_items": [],
+  "pending_ack_overdue_queue_items": [],
+  "pending_ack_tracking_incomplete_queue_items": []
+}

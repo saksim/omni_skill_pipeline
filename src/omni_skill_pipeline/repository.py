@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
@@ -51,6 +52,9 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         review_feedback_payload = self._resolve_review_feedback_payload(bundle)
         if review_feedback_payload:
             artifacts["review_feedback"] = bundle_dir / "review_feedback.json"
+        reviewer_packet_payload = self._resolve_reviewer_packet_payload(bundle)
+        if reviewer_packet_payload:
+            artifacts["reviewer_packet"] = bundle_dir / "reviewer_packet.json"
         review_policy_payload = bundle.adapter_metadata.get("review_policy")
         if isinstance(review_policy_payload, dict) and review_policy_payload:
             artifacts["review_policy"] = bundle_dir / "review_policy.json"
@@ -94,6 +98,11 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
                 json.dumps(redact_sensitive_data(review_feedback_payload), ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
+        if "reviewer_packet" in artifacts:
+            artifacts["reviewer_packet"].write_text(
+                json.dumps(redact_sensitive_data(reviewer_packet_payload), ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
         if "review_policy" in artifacts:
             artifacts["review_policy"].write_text(
                 json.dumps(redact_sensitive_data(review_policy_payload), ensure_ascii=False, indent=2) + "\n",
@@ -103,6 +112,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             bundle=bundle,
             review_task_payload=review_task_payload,
             review_task_path=artifacts.get('review_task'),
+            reviewer_packet_path=artifacts.get('reviewer_packet'),
             bundle_path=artifacts['bundle'],
         )
         if queue_item_path is not None:
@@ -121,36 +131,65 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         *,
         queue_status: str | None = 'pending',
         limit: int = 100,
+        tenant_scope: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         if limit <= 0:
             return []
         entries: list[dict[str, Any]] = []
+        normalized_scope = self._normalize_tenant_scope(tenant_scope)
         for item_path in self._iter_review_queue_files(queue_status):
             payload = self._read_queue_item(item_path)
             if payload is None:
+                continue
+            normalized_status = str(queue_status).strip().lower() if queue_status is not None else ''
+            if normalized_status and normalized_status != 'all':
+                payload_status = str(payload.get('queue_status', '')).strip().lower()
+                if payload_status != normalized_status:
+                    continue
+            if not self._queue_item_matches_tenant_scope(payload, normalized_scope):
                 continue
             entries.append(payload)
         entries.sort(key=lambda item: (str(item.get('enqueued_at', '')), str(item.get('review_task_id', ''))))
         return entries[:limit]
 
-    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, Any] | None:
-        return self.claim_review_task(consumer=consumer)
+    def consume_review_task(
+        self,
+        *,
+        consumer: str = 'review-consumer',
+        tenant_scope: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
+        return self.claim_review_task(consumer=consumer, tenant_scope=tenant_scope)
 
     def claim_review_task(
         self,
         review_task_id: str | None = None,
         *,
         consumer: str = 'review-consumer',
+        tenant_scope: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         target_review_task_id = str(review_task_id or '').strip()
+        normalized_scope = self._normalize_tenant_scope(tenant_scope)
         queue_entry: dict[str, Any] | None = None
         if target_review_task_id:
             pending_path = self.review_queue_pending_dir / ('%s.json' % target_review_task_id)
             if not pending_path.exists():
                 return None
             queue_entry = self._read_queue_item(pending_path)
+            if queue_entry is None:
+                return None
+            if not self._queue_item_matches_tenant_scope(queue_entry, normalized_scope):
+                return None
         else:
-            queue_entry = next(iter(self.list_review_queue(queue_status='pending', limit=1)), None)
+            queue_entry = next(
+                iter(
+                    self.list_review_queue(
+                        queue_status='pending',
+                        limit=1,
+                        tenant_scope=normalized_scope,
+                    )
+                ),
+                None,
+            )
             if queue_entry is None:
                 return None
             target_review_task_id = str(queue_entry.get('review_task_id', '')).strip()
@@ -175,7 +214,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         consumed_payload['consumed_at'] = claimed_at
         consumed_payload['claimed_by'] = consumer.strip() or 'review-consumer'
         consumed_path.write_text(json.dumps(consumed_payload, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
-        pending_path.unlink(missing_ok=True)
+        self._retire_queue_file(pending_path, consumed_payload)
         return consumed_payload
 
     def close_review_task(
@@ -185,12 +224,17 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         status: str = 'published',
         closed_by: str = 'review-operator',
         review_notes: str = '',
+        decision: str | None = None,
+        reason_codes: Sequence[str] | None = None,
+        reviewer_edits: dict[str, Any] | None = None,
+        tenant_scope: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         target_review_task_id = str(review_task_id).strip()
         if not target_review_task_id:
             return None
 
         self._ensure_review_queue_dirs()
+        normalized_scope = self._normalize_tenant_scope(tenant_scope)
         source_path: Path | None = None
         for candidate in (
             self.review_queue_consumed_dir / ('%s.json' % target_review_task_id),
@@ -206,6 +250,8 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         payload = self._read_queue_item(source_path)
         if payload is None:
             return None
+        if not self._queue_item_matches_tenant_scope(payload, normalized_scope):
+            return None
 
         closed_payload = dict(payload)
         closed_payload['review_task_id'] = target_review_task_id
@@ -213,8 +259,18 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         normalized_status = str(status).strip().lower()
         if normalized_status:
             closed_payload['status'] = normalized_status
+        normalized_decision = self._normalize_close_decision(decision)
+        if normalized_decision:
+            closed_payload['decision'] = normalized_decision
         closed_payload['closed_by'] = closed_by.strip() or 'review-operator'
         closed_payload['closed_at'] = utc_now_iso()
+        closed_payload['reason_codes'] = unique_preserve_order(
+            self._normalize_reason_codes(reason_codes, fallback=closed_payload.get('reason_codes'))
+        )
+        closed_payload['reviewer_edits'] = self._normalize_reviewer_edits(
+            reviewer_edits,
+            fallback=closed_payload.get('reviewer_edits'),
+        )
         if review_notes.strip():
             closed_payload['review_notes'] = review_notes.strip()
         else:
@@ -226,19 +282,57 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             encoding='utf-8',
         )
         if source_path != closed_path:
-            source_path.unlink(missing_ok=True)
+            self._retire_queue_file(source_path, closed_payload)
         return closed_payload
 
+    def update_review_task_decision(
+        self,
+        review_task_id: str,
+        *,
+        decision: str,
+        reviewer: str = 'review-operator',
+        reason_codes: Sequence[str] | None = None,
+        review_notes: str = '',
+        reviewer_edits: dict[str, Any] | None = None,
+        status: str | None = None,
+        tenant_scope: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
+        normalized_decision = self._normalize_close_decision(decision)
+        if not normalized_decision:
+            raise ValueError('review decision must be one of approve/reject/needs_rework.')
+        if normalized_decision == 'approve':
+            resolved_status = status or 'published'
+        elif normalized_decision == 'reject':
+            resolved_status = status or 'rejected'
+        else:
+            resolved_status = status or 'needs_rework'
+        return self.close_review_task(
+            review_task_id,
+            status=resolved_status,
+            closed_by=reviewer,
+            review_notes=review_notes,
+            decision=normalized_decision,
+            reason_codes=reason_codes,
+            reviewer_edits=reviewer_edits,
+            tenant_scope=tenant_scope,
+        )
+
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
-        if isinstance(bundle.review_task, ReviewTask):
-            return bundle.review_task.to_dict()
         payload = bundle.adapter_metadata.get('review_task')
         if isinstance(payload, dict):
             return dict(payload)
+        if isinstance(bundle.review_task, ReviewTask):
+            return bundle.review_task.to_dict()
         return {}
 
     def _resolve_review_feedback_payload(self, bundle: DistillBundle) -> dict[str, Any]:
         payload = bundle.adapter_metadata.get('review_feedback')
+        if isinstance(payload, dict):
+            return dict(payload)
+        return {}
+
+    def _resolve_reviewer_packet_payload(self, bundle: DistillBundle) -> dict[str, Any]:
+        payload = bundle.adapter_metadata.get('reviewer_packet')
         if isinstance(payload, dict):
             return dict(payload)
         return {}
@@ -249,6 +343,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         bundle: DistillBundle,
         review_task_payload: dict[str, Any],
         review_task_path: Path | None,
+        reviewer_packet_path: Path | None,
         bundle_path: Path,
     ) -> Path | None:
         if not self._should_enqueue_review_task(review_task_payload):
@@ -259,9 +354,9 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         consumed_path = self.review_queue_consumed_dir / pending_path.name
         closed_path = self.review_queue_closed_dir / pending_path.name
         if consumed_path.exists():
-            consumed_path.unlink()
+            self._remove_queue_file(consumed_path)
         if closed_path.exists():
-            closed_path.unlink()
+            self._remove_queue_file(closed_path)
 
         queue_item = {
             'review_task_id': review_task_id,
@@ -279,7 +374,10 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             'review_notes': str(review_task_payload.get('review_notes', '')).strip(),
             'queue_status': 'pending',
             'enqueued_at': utc_now_iso(),
+            'organization_id': str(review_task_payload.get('organization_id', '')).strip(),
+            'project_id': str(review_task_payload.get('project_id', '')).strip(),
             'review_task_path': str(review_task_path) if review_task_path is not None else '',
+            'reviewer_packet_path': str(reviewer_packet_path) if reviewer_packet_path is not None else '',
             'bundle_path': str(bundle_path),
         }
         pending_path.write_text(
@@ -299,6 +397,27 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         self.review_queue_pending_dir.mkdir(parents=True, exist_ok=True)
         self.review_queue_consumed_dir.mkdir(parents=True, exist_ok=True)
         self.review_queue_closed_dir.mkdir(parents=True, exist_ok=True)
+
+    def _remove_queue_file(self, path: Path) -> None:
+        try:
+            path.unlink(missing_ok=True)
+        except PermissionError:
+            try:
+                os.remove(path)
+            except PermissionError:
+                return
+
+    def _retire_queue_file(self, path: Path, payload: dict[str, Any]) -> None:
+        if not path.exists():
+            return
+        try:
+            path.write_text(
+                json.dumps(redact_sensitive_data(payload), ensure_ascii=False, indent=2) + "\n",
+                encoding='utf-8',
+            )
+        except OSError:
+            pass
+        self._remove_queue_file(path)
 
     def _iter_review_queue_files(self, queue_status: str | None) -> list[Path]:
         normalized = str(queue_status).strip().lower() if queue_status is not None else ''
@@ -330,7 +449,74 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             return None
         payload = dict(payload)
         payload.setdefault('queue_status', item_path.parent.name)
+        payload['reason_codes'] = unique_preserve_order(
+            self._normalize_reason_codes(None, fallback=payload.get('reason_codes'))
+        )
+        payload['reviewer_edits'] = self._normalize_reviewer_edits(None, fallback=payload.get('reviewer_edits'))
         return payload
+
+    def _normalize_close_decision(self, value: str | None) -> str:
+        normalized = str(value or '').strip().lower()
+        mapping = {
+            'approve': 'approve',
+            'approved': 'approve',
+            'reject': 'reject',
+            'rejected': 'reject',
+            'needs_rework': 'needs_rework',
+            'needs-rework': 'needs_rework',
+            'needs rework': 'needs_rework',
+        }
+        return mapping.get(normalized, '')
+
+    def _normalize_reason_codes(self, value: Sequence[str] | None, *, fallback: Any) -> list[str]:
+        payload = value if value is not None else fallback
+        if payload is None:
+            return []
+        if not isinstance(payload, Sequence) or isinstance(payload, (str, bytes)):
+            return []
+        normalized: list[str] = []
+        for item in payload:
+            code = str(item).strip()
+            if code:
+                normalized.append(code)
+        return normalized
+
+    def _normalize_reviewer_edits(self, value: dict[str, Any] | None, *, fallback: Any) -> dict[str, Any]:
+        payload = value if value is not None else fallback
+        if not isinstance(payload, dict):
+            return {}
+        normalized: dict[str, Any] = {}
+        for key, item in payload.items():
+            key_text = str(key).strip()
+            if not key_text:
+                continue
+            normalized[key_text] = item
+        return normalized
+
+    def _normalize_tenant_scope(self, scope: dict[str, Any] | None) -> dict[str, str]:
+        if not isinstance(scope, dict):
+            return {}
+        normalized: dict[str, str] = {}
+        organization_id = str(scope.get('organization_id', '')).strip()
+        project_id = str(scope.get('project_id', '')).strip()
+        if organization_id:
+            normalized['organization_id'] = organization_id
+        if project_id:
+            normalized['project_id'] = project_id
+        return normalized
+
+    def _queue_item_matches_tenant_scope(self, payload: dict[str, Any], scope: dict[str, str]) -> bool:
+        if not scope:
+            return True
+        organization_id = str(payload.get('organization_id', '')).strip()
+        project_id = str(payload.get('project_id', '')).strip()
+        expected_organization_id = scope.get('organization_id', '')
+        expected_project_id = scope.get('project_id', '')
+        if expected_organization_id and organization_id != expected_organization_id:
+            return False
+        if expected_project_id and project_id != expected_project_id:
+            return False
+        return True
 
     def _write_json_array(self, target: Path, items: Sequence[Any]) -> None:
         payload = []
@@ -384,13 +570,34 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
     def _write_publication_file(self, target: Path, publication: Publication) -> None:
         if publication.publication_type.value == 'skill_markdown':
             text = ''
+            references: dict[str, Any] = {}
             if isinstance(publication.content, dict):
                 text = str(publication.content.get('text', '') or '')
+                references_payload = publication.content.get('references')
+                if isinstance(references_payload, dict):
+                    references = references_payload
             target.write_text(str(redact_sensitive_data(text)), encoding='utf-8')
+            self._write_publication_references(target.parent, references)
             return
         payload = publication.content if isinstance(publication.content, dict) else {'content': publication.content}
         payload = redact_sensitive_data(payload)
         target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    def _write_publication_references(self, publications_dir: Path, references: dict[str, Any]) -> None:
+        if not references:
+            return
+        for raw_relative_path, raw_content in references.items():
+            relative_path = str(raw_relative_path).strip().replace('\\', '/')
+            if not relative_path:
+                continue
+            normalized_parts = [part for part in relative_path.split('/') if part and part != '.']
+            if not normalized_parts or any(part == '..' for part in normalized_parts):
+                continue
+            target = publications_dir
+            for part in normalized_parts:
+                target = target / part
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(str(redact_sensitive_data(raw_content)), encoding='utf-8')
 
     def _build_cross_asset_refs(self, bundle: DistillBundle) -> list[dict[str, Any]]:
         if bundle.corpus is None or len(bundle.corpus.assets) < 2:

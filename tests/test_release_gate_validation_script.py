@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_release_gate_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'release_gate.py'
 
 
 class ReleaseGateValidationScriptTests(unittest.TestCase):
@@ -41,7 +41,7 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: beta_gate, ga_gate, roadmap_gate', completed.stdout)
-            self.assertIn('scripts/run_linux_validation_suite.py', completed.stdout)
+            self.assertIn('scripts/linux_validate.py', completed.stdout)
             self.assertIn(
                 '--stages ci container_smoke doc_sync quality_regression perf_cost_baseline',
                 completed.stdout,
@@ -214,7 +214,7 @@ class ReleaseGateValidationScriptTests(unittest.TestCase):
         command_lines = [
             line
             for line in completed.stdout.splitlines()
-            if 'scripts/run_linux_validation_suite.py' in line
+            if 'scripts/linux_validate.py' in line
         ]
         self.assertEqual(len(command_lines), 2)
         for line in command_lines:

@@ -1,0 +1,104 @@
+{
+  "package_name": "dashboard-screenshots-to-alert-diagnostic-skill",
+  "description": "Fixture OCR: service latency dashboard status: degraded",
+  "target": "portable",
+  "files": [
+    {
+      "relative_path": "references/evidence.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 444,
+      "sha256": "42d9061642f133aaad27c5eeb00a04a6a882ac1c213e9db6619656824671b551"
+    },
+    {
+      "relative_path": "references/examples.md",
+      "category": "reference",
+      "required": false,
+      "media_type": "text/markdown",
+      "size_bytes": 72,
+      "sha256": "bfbea8af2fb778bcc9afe359a1192b7878dc2abfd5a719d775faf918e240da10"
+    },
+    {
+      "relative_path": "SKILL.md",
+      "category": "primary",
+      "required": true,
+      "media_type": "text/markdown",
+      "size_bytes": 982,
+      "sha256": "d5b647f930a702df13fd64f1f094e92226e2dad4ab3a673c507be83b7b33c5a7"
+    }
+  ],
+  "references": [
+    {
+      "reference_id": "cfff114c-8b5b-46df-9eb5-ed200f1a047a",
+      "title": "Evidence cfff114c-8b5b-46df-9eb5-ed200f1a047a (image:ocr:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "cfff114c-8b5b-46df-9eb5-ed200f1a047a"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9",
+      "title": "Evidence 9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9 (image:region:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "9ba3cf26-46ca-4f20-9f29-f0a1942e8cd9"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "2a7faa8b-1fb2-4cf7-a120-52ba4929d149",
+      "title": "Evidence 2a7faa8b-1fb2-4cf7-a120-52ba4929d149 (image:region:0002)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "2a7faa8b-1fb2-4cf7-a120-52ba4929d149"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "dc5dd313-a1bf-40df-815f-acafff56caa0",
+      "title": "Evidence dc5dd313-a1bf-40df-815f-acafff56caa0 (image:scene:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "dc5dd313-a1bf-40df-815f-acafff56caa0"
+      ],
+      "metadata": {}
+    },
+    {
+      "reference_id": "fe17c008-9065-47f3-bd75-01190077b648",
+      "title": "Evidence fe17c008-9065-47f3-bd75-01190077b648 (image:layout:0001)",
+      "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\image\\service-latency-dashboard.png",
+      "reference_type": "evidence",
+      "evidence_refs": [
+        "fe17c008-9065-47f3-bd75-01190077b648"
+      ],
+      "metadata": {}
+    }
+  ],
+  "validation_status": "passed",
+  "source_bundle": {
+    "bundle_id": "simulated-approval",
+    "graph_id": "5f6e73fb-ad9a-40ba-86ff-05709a4ffa63",
+    "skill_id": "b397af02-9c2d-4f01-8d13-65901df074bd",
+    "corpus_id": "",
+    "artifact_manifest_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\dashboard-screenshots-to-alert-diagnostic-skill-b397af02\\publications\\manifest.json",
+    "metadata": {}
+  },
+  "review_status": "published",
+  "hashes": {
+    "package_files_sha256": "eb01b5f1652b4c444a59700369c7c43dccb8cbeb8544c38f07d5cc5382ac9f0f",
+    "skill_markdown_sha256": "d5b647f930a702df13fd64f1f094e92226e2dad4ab3a673c507be83b7b33c5a7"
+  },
+  "metadata": {
+    "target_layout": "skills/portable/dashboard-screenshots-to-alert-diagnostic-skill",
+    "export_bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\controlled-trial\\simulated-approval\\gl02-image-001-bundle.approved.json",
+    "schema_version": "agent_skill_package.v1"
+  },
+  "created_at": "2026-05-25T10:17:08Z",
+  "package_id": "24004f0a-a9a2-4307-a806-7b0fc5f9151c"
+}

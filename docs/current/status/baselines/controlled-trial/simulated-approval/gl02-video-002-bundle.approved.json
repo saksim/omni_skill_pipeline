@@ -1,0 +1,2007 @@
+{
+  "asset": {
+    "modality": "video",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+    "metadata": {
+      "filename": "feature-release-walkthrough.mp4",
+      "duration_seconds": 9.0,
+      "width": 640,
+      "height": 360,
+      "fps": 1.0,
+      "frame_count": 9
+    },
+    "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "video:timestamp:segment:0001-3.00",
+      "content_type": "speech",
+      "content": "Open release dashboard and verify gate status is GO.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown",
+        "source:audio_track"
+      ],
+      "evidence_id": "80482f82-f9d2-4226-8b5c-8326ff972b7c"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "video:timestamp:3.00-6.00",
+      "content_type": "speech",
+      "content": "Compare latency and error-rate after rollout.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown",
+        "source:audio_track"
+      ],
+      "evidence_id": "5cde1a3f-8741-45d9-bd22-ce455c75da36"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "video:timestamp:6.00-9.00",
+      "content_type": "speech",
+      "content": "If regression persists, roll back and attach evidence pack.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown",
+        "source:audio_track"
+      ],
+      "evidence_id": "0ba37050-d971-4bcd-b613-b37984e7d2d7"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0001@2.00s:ocr",
+      "content_type": "ocr",
+      "content": "Fixture OCR: frame_001\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:fixture-ocr",
+        "source:scene"
+      ],
+      "evidence_id": "051e4bb3-362f-4544-a8d8-89245f5dcf7b"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0001@2.00s:scene",
+      "content_type": "scene",
+      "content": "Fixture scene summary for frame_001.",
+      "speaker": null,
+      "confidence": 0.7,
+      "tags": [
+        "fixture",
+        "scene",
+        "png",
+        "source:scene"
+      ],
+      "evidence_id": "01c77b53-d615-40b6-988b-f956ece8aae6"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0002@4.00s:ocr",
+      "content_type": "ocr",
+      "content": "Fixture OCR: frame_002\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:fixture-ocr",
+        "source:timeline"
+      ],
+      "evidence_id": "fd24b07d-87e8-4ea7-bd70-797c59103d1c"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0002@4.00s:scene",
+      "content_type": "scene",
+      "content": "Fixture scene summary for frame_002.",
+      "speaker": null,
+      "confidence": 0.7,
+      "tags": [
+        "fixture",
+        "scene",
+        "png",
+        "source:timeline"
+      ],
+      "evidence_id": "9be9d794-a8c7-4a28-989a-d8b0c4425a89"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "video:scene_cluster:0001@2.00s-4.00s",
+      "content_type": "scene",
+      "content": "Scene cluster 1 covers 2 keyframes from 2.00s to 4.00s. Sources: scene, timeline.",
+      "speaker": null,
+      "confidence": 0.77,
+      "tags": [
+        "block:scene_cluster",
+        "timeline:scene",
+        "cluster_size:2",
+        "source_mix:scene,timeline"
+      ],
+      "evidence_id": "571b09c1-1641-43af-9a61-e15c704015eb"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0001@2.00s:event",
+      "content_type": "event",
+      "content": "Fixture scene summary for frame_001. | OCR: Fixture OCR: frame_001\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.81,
+      "tags": [
+        "block:frame_event",
+        "event_type:incident_signal",
+        "timeline:frame_event",
+        "frame_anchor:frame:0001@2.00s",
+        "frame_source:scene"
+      ],
+      "evidence_id": "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0002@4.00s:event",
+      "content_type": "event",
+      "content": "Fixture scene summary for frame_002. | OCR: Fixture OCR: frame_002\nstatus: degraded",
+      "speaker": null,
+      "confidence": 0.77,
+      "tags": [
+        "block:frame_event",
+        "event_type:incident_signal",
+        "timeline:frame_event",
+        "frame_anchor:frame:0002@4.00s",
+        "frame_source:timeline"
+      ],
+      "evidence_id": "0f4568cb-adee-48d3-ab1e-7ddf51785523"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0001@2.00s:subtitle:0001",
+      "content_type": "speech",
+      "content": "Open release dashboard and verify gate status is GO.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "block:subtitle_alignment",
+        "timeline:subtitle",
+        "aligned_frame:frame:0001@2.00s",
+        "alignment_mode:nearest_time",
+        "source_span:video:timestamp:segment:0001-3.00",
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "evidence_id": "c353f498-a515-430d-9381-34f28e3632a3"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0002@4.00s:subtitle:0002",
+      "content_type": "speech",
+      "content": "Compare latency and error-rate after rollout.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "block:subtitle_alignment",
+        "timeline:subtitle",
+        "aligned_frame:frame:0002@4.00s",
+        "alignment_mode:time_window",
+        "source_span:video:timestamp:3.00-6.00",
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "evidence_id": "022e2cd6-1018-4d4c-b6df-73216f08ab5c"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "span_ref": "frame:0002@4.00s:subtitle:0003",
+      "content_type": "speech",
+      "content": "If regression persists, roll back and attach evidence pack.",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "block:subtitle_alignment",
+        "timeline:subtitle",
+        "aligned_frame:frame:0002@4.00s",
+        "alignment_mode:nearest_time",
+        "source_span:video:timestamp:6.00-9.00",
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "evidence_id": "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "verification",
+      "summary": "Open release dashboard and verify gate status is GO.",
+      "evidence_refs": [
+        "80482f82-f9d2-4226-8b5c-8326ff972b7c"
+      ],
+      "confidence": 0.75,
+      "insight_id": "2d0ebd49-a9ae-46e2-b018-5eccf5b45cde"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If regression persists, roll back and attach evidence pack.",
+      "evidence_refs": [
+        "0ba37050-d971-4bcd-b613-b37984e7d2d7"
+      ],
+      "confidence": 0.74,
+      "insight_id": "a589ef7e-167a-442d-92a8-b1120fd7ea75"
+    },
+    {
+      "insight_type": "verification",
+      "summary": "Open release dashboard and verify gate status is GO.",
+      "evidence_refs": [
+        "c353f498-a515-430d-9381-34f28e3632a3"
+      ],
+      "confidence": 0.75,
+      "insight_id": "7d0f53f4-5600-4970-bccd-9f1b3b825bfb"
+    },
+    {
+      "insight_type": "rule",
+      "summary": "If regression persists, roll back and attach evidence pack.",
+      "evidence_refs": [
+        "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+      ],
+      "confidence": 0.74,
+      "insight_id": "c251268c-b8fe-4b43-875e-b2ec28c7e376"
+    }
+  ],
+  "skill": {
+    "name": "video rerun for operation checklist skill",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: Open release dashboard and verify gate status is GO.",
+    "source_modality": "video",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert video evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Video source",
+      "Distillation goal",
+      "Keyframe/OCR evidence"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Open release dashboard and verify gate status is GO.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Compare latency and error-rate after rollout.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "If regression persists, roll back and attach evidence pack.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [
+      "If regression persists, roll back and attach evidence pack."
+    ],
+    "anti_patterns": [],
+    "verification": [
+      "Open release dashboard and verify gate status is GO."
+    ],
+    "evidence_refs": [
+      "80482f82-f9d2-4226-8b5c-8326ff972b7c@video:timestamp:segment:0001-3.00",
+      "5cde1a3f-8741-45d9-bd22-ce455c75da36@video:timestamp:3.00-6.00",
+      "0ba37050-d971-4bcd-b613-b37984e7d2d7@video:timestamp:6.00-9.00",
+      "051e4bb3-362f-4544-a8d8-89245f5dcf7b@frame:0001@2.00s:ocr",
+      "01c77b53-d615-40b6-988b-f956ece8aae6@frame:0001@2.00s:scene",
+      "fd24b07d-87e8-4ea7-bd70-797c59103d1c@frame:0002@4.00s:ocr",
+      "9be9d794-a8c7-4a28-989a-d8b0c4425a89@frame:0002@4.00s:scene",
+      "571b09c1-1641-43af-9a61-e15c704015eb@video:scene_cluster:0001@2.00s-4.00s",
+      "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61@frame:0001@2.00s:event",
+      "0f4568cb-adee-48d3-ab1e-7ddf51785523@frame:0002@4.00s:event",
+      "c353f498-a515-430d-9381-34f28e3632a3@frame:0001@2.00s:subtitle:0001",
+      "022e2cd6-1018-4d4c-b6df-73216f08ab5c@frame:0002@4.00s:subtitle:0002",
+      "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6@frame:0002@4.00s:subtitle:0003"
+    ],
+    "confidence": 0.95,
+    "version": "0.1.0",
+    "summary": "Open release dashboard and verify gate status is GO.",
+    "tags": [
+      "controlled_trial",
+      "video",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb"
+  },
+  "skill_markdown": "---\nname: \"video rerun for operation checklist skill\"\ndescription: \"Use when Use when converting video evidence into build_skill.. Open release dashboard and verify gate status is GO.\"\n---\n\n# video rerun for operation checklist skill\n\n## Workflow\n1. Evaluate rule: If regression persists, roll back and attach evidence pack. (Why: Derived from rule atom fallback because no procedure atoms were found.)\n2. Evaluate rule: If regression persists, roll back and attach evidence pack. (Why: Derived from rule atom fallback because no procedure atoms were found.)\n\n## Decision Rules\n- If regression persists, roll back and attach evidence pack. -> Apply the matching action.\n\n## Validation\n- Open release dashboard and verify gate status is GO.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+  "skill_graph": {
+    "name": "video rerun for operation checklist skill",
+    "goal": "Distill controlled_trial material into build_skill for self.",
+    "source_modalities": [
+      "video"
+    ],
+    "audience": "self",
+    "summary": "Open release dashboard and verify gate status is GO.",
+    "tags": [
+      "controlled_trial",
+      "skill_graph"
+    ],
+    "domain": "controlled_trial",
+    "trigger": [
+      "Use when converting video evidence into build_skill."
+    ],
+    "inputs": [
+      "Video source and sampled frames"
+    ],
+    "preconditions": [
+      "Confirm source evidence is complete and correctly scoped to the goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Evaluate rule: If regression persists, roll back and attach evidence pack.",
+        "why": "Derived from rule atom fallback because no procedure atoms were found.",
+        "atom_refs": [
+          "8024865e-b62c-4849-807a-a2af2f015e1d"
+        ],
+        "evidence_refs": [
+          "0ba37050-d971-4bcd-b613-b37984e7d2d7"
+        ],
+        "metadata": {
+          "fallback_from_atom_type": "rule"
+        },
+        "node_type": "step",
+        "node_id": "9a5571ff-f13b-4dfa-8df3-2782b18c3f5d"
+      },
+      {
+        "step": 2,
+        "action": "Evaluate rule: If regression persists, roll back and attach evidence pack.",
+        "why": "Derived from rule atom fallback because no procedure atoms were found.",
+        "atom_refs": [
+          "5cdb3cc4-ce20-4370-b778-5257bee95585"
+        ],
+        "evidence_refs": [
+          "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+        ],
+        "metadata": {
+          "fallback_from_atom_type": "rule"
+        },
+        "node_type": "step",
+        "node_id": "ce522a80-b85a-4e01-a6ed-a3b808aa4b89"
+      }
+    ],
+    "decisions": [
+      {
+        "condition": "If regression persists, roll back and attach evidence pack.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "8024865e-b62c-4849-807a-a2af2f015e1d"
+        ],
+        "evidence_refs": [
+          "0ba37050-d971-4bcd-b613-b37984e7d2d7"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "67e94147-7146-491f-9796-baee26d848ce"
+      },
+      {
+        "condition": "If regression persists, roll back and attach evidence pack.",
+        "decision": "Apply the matching action.",
+        "rationale": "",
+        "atom_refs": [
+          "5cdb3cc4-ce20-4370-b778-5257bee95585"
+        ],
+        "evidence_refs": [
+          "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "854aaf30-e5bf-4c8a-ae2a-dff15ec8ff01"
+      }
+    ],
+    "verifications": [
+      {
+        "check": "Open release dashboard and verify gate status is GO.",
+        "expected": "",
+        "atom_refs": [
+          "bf6603b2-1ccb-45b4-bd31-8a5e9a6cd456"
+        ],
+        "evidence_refs": [
+          "80482f82-f9d2-4226-8b5c-8326ff972b7c"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "c7eb67c2-aac1-41c3-a25f-3db7e7c700b4"
+      },
+      {
+        "check": "Open release dashboard and verify gate status is GO.",
+        "expected": "",
+        "atom_refs": [
+          "ae2f4250-5bab-4193-a31b-ff6b8ac8fc5a"
+        ],
+        "evidence_refs": [
+          "c353f498-a515-430d-9381-34f28e3632a3"
+        ],
+        "metadata": {},
+        "node_type": "verification",
+        "node_id": "e9507669-3073-46cb-bc68-90f5c46b927d"
+      }
+    ],
+    "risks": [],
+    "examples": [],
+    "variables": [],
+    "edges": [
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "ce522a80-b85a-4e01-a6ed-a3b808aa4b89",
+        "target_node_id": "9a5571ff-f13b-4dfa-8df3-2782b18c3f5d",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "0ce58e12-fb28-4546-82bc-f42bdf28885d"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "9a5571ff-f13b-4dfa-8df3-2782b18c3f5d",
+        "target_node_id": "67e94147-7146-491f-9796-baee26d848ce",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "05ac4abc-7a3b-495e-a807-bdcf1769adac"
+      },
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "9a5571ff-f13b-4dfa-8df3-2782b18c3f5d",
+        "target_node_id": "854aaf30-e5bf-4c8a-ae2a-dff15ec8ff01",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "cf1ca0dd-fc48-4732-b012-8288345ea19b"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "ce522a80-b85a-4e01-a6ed-a3b808aa4b89",
+        "target_node_id": "c7eb67c2-aac1-41c3-a25f-3db7e7c700b4",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "8e99f079-c12a-4cf6-9e19-03c7399148f3"
+      },
+      {
+        "edge_type": "verified_by",
+        "source_node_id": "ce522a80-b85a-4e01-a6ed-a3b808aa4b89",
+        "target_node_id": "e9507669-3073-46cb-bc68-90f5c46b927d",
+        "rationale": "Final step should be validated explicitly.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "9c46504b-8bcf-4fef-a793-19828ba3b68f"
+      }
+    ],
+    "evidence_refs": [
+      "80482f82-f9d2-4226-8b5c-8326ff972b7c",
+      "5cde1a3f-8741-45d9-bd22-ce455c75da36",
+      "0ba37050-d971-4bcd-b613-b37984e7d2d7",
+      "84aa00f8-097c-4888-8b80-908f54435b75",
+      "051e4bb3-362f-4544-a8d8-89245f5dcf7b",
+      "01c77b53-d615-40b6-988b-f956ece8aae6",
+      "c73362fd-6af1-4d91-bfcc-7a6151275f77",
+      "fd24b07d-87e8-4ea7-bd70-797c59103d1c",
+      "9be9d794-a8c7-4a28-989a-d8b0c4425a89",
+      "571b09c1-1641-43af-9a61-e15c704015eb",
+      "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61",
+      "0f4568cb-adee-48d3-ab1e-7ddf51785523",
+      "c353f498-a515-430d-9381-34f28e3632a3",
+      "022e2cd6-1018-4d4c-b6df-73216f08ab5c",
+      "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+    ],
+    "atom_refs": [
+      "bf6603b2-1ccb-45b4-bd31-8a5e9a6cd456",
+      "8024865e-b62c-4849-807a-a2af2f015e1d",
+      "ae2f4250-5bab-4193-a31b-ff6b8ac8fc5a",
+      "5cdb3cc4-ce20-4370-b778-5257bee95585"
+    ],
+    "confidence": 0.76,
+    "version": "0.1.0",
+    "review_status": "draft",
+    "created_at": "2026-05-25T10:17:08Z",
+    "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88"
+  },
+  "publications": [
+    {
+      "publication_type": "skill_markdown",
+      "content": {
+        "filename": "SKILL.md",
+        "text": "---\nname: \"video rerun for operation checklist skill\"\ndescription: \"Use when Use when converting video evidence into build_skill.. Open release dashboard and verify gate status is GO.\"\n---\n\n# video rerun for operation checklist skill\n\n## Workflow\n1. Evaluate rule: If regression persists, roll back and attach evidence pack. (Why: Derived from rule atom fallback because no procedure atoms were found.)\n2. Evaluate rule: If regression persists, roll back and attach evidence pack. (Why: Derived from rule atom fallback because no procedure atoms were found.)\n\n## Decision Rules\n- If regression persists, roll back and attach evidence pack. -> Apply the matching action.\n\n## Validation\n- Open release dashboard and verify gate status is GO.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "description": "Use when Use when converting video evidence into build_skill.. Open release dashboard and verify gate status is GO.",
+        "line_count": 23,
+        "line_limit": 220,
+        "references": {
+          "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `video`\n- evidence_ref_count: `15`\n\n## Evidence References\n- `80482f82-f9d2-4226-8b5c-8326ff972b7c`\n- `5cde1a3f-8741-45d9-bd22-ce455c75da36`\n- `0ba37050-d971-4bcd-b613-b37984e7d2d7`\n- `84aa00f8-097c-4888-8b80-908f54435b75`\n- `051e4bb3-362f-4544-a8d8-89245f5dcf7b`\n- `01c77b53-d615-40b6-988b-f956ece8aae6`\n- `c73362fd-6af1-4d91-bfcc-7a6151275f77`\n- `fd24b07d-87e8-4ea7-bd70-797c59103d1c`\n- `9be9d794-a8c7-4a28-989a-d8b0c4425a89`\n- `571b09c1-1641-43af-9a61-e15c704015eb`\n- `51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61`\n- `0f4568cb-adee-48d3-ab1e-7ddf51785523`\n- `c353f498-a515-430d-9381-34f28e3632a3`\n- `022e2cd6-1018-4d4c-b6df-73216f08ab5c`\n- `cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6`\n\n## Transcript Notes\n- Keep long transcript excerpts in this references file, not in main `SKILL.md`.\n\n## OCR Notes\n- Keep OCR details and uncertain fragments here for reviewer traceability.\n\n## Keyframe Notes\n- Keep keyframe-level observations here and summarize only stable steps in main skill.\n",
+          "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+        },
+        "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+        "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb"
+      },
+      "path": "SKILL.md",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+        "skill_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+        "version": "0.1.0",
+        "renderer": "portable_skill_markdown_v1",
+        "evidence_refs": [
+          "80482f82-f9d2-4226-8b5c-8326ff972b7c",
+          "5cde1a3f-8741-45d9-bd22-ce455c75da36",
+          "0ba37050-d971-4bcd-b613-b37984e7d2d7",
+          "84aa00f8-097c-4888-8b80-908f54435b75",
+          "051e4bb3-362f-4544-a8d8-89245f5dcf7b",
+          "01c77b53-d615-40b6-988b-f956ece8aae6",
+          "c73362fd-6af1-4d91-bfcc-7a6151275f77",
+          "fd24b07d-87e8-4ea7-bd70-797c59103d1c",
+          "9be9d794-a8c7-4a28-989a-d8b0c4425a89",
+          "571b09c1-1641-43af-9a61-e15c704015eb",
+          "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61",
+          "0f4568cb-adee-48d3-ab1e-7ddf51785523",
+          "c353f498-a515-430d-9381-34f28e3632a3",
+          "022e2cd6-1018-4d4c-b6df-73216f08ab5c",
+          "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "690f818e-3216-4a81-baf4-adf018a2694a"
+    },
+    {
+      "publication_type": "skill_json",
+      "content": {
+        "filename": "skill.json",
+        "skill": {
+          "name": "video rerun for operation checklist skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Open release dashboard and verify gate status is GO.",
+          "source_modality": "video",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert video evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Video source",
+            "Distillation goal",
+            "Keyframe/OCR evidence"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Open release dashboard and verify gate status is GO.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Compare latency and error-rate after rollout.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "If regression persists, roll back and attach evidence pack.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [
+            "If regression persists, roll back and attach evidence pack."
+          ],
+          "anti_patterns": [],
+          "verification": [
+            "Open release dashboard and verify gate status is GO."
+          ],
+          "evidence_refs": [
+            "80482f82-f9d2-4226-8b5c-8326ff972b7c@video:timestamp:segment:0001-3.00",
+            "5cde1a3f-8741-45d9-bd22-ce455c75da36@video:timestamp:3.00-6.00",
+            "0ba37050-d971-4bcd-b613-b37984e7d2d7@video:timestamp:6.00-9.00",
+            "051e4bb3-362f-4544-a8d8-89245f5dcf7b@frame:0001@2.00s:ocr",
+            "01c77b53-d615-40b6-988b-f956ece8aae6@frame:0001@2.00s:scene",
+            "fd24b07d-87e8-4ea7-bd70-797c59103d1c@frame:0002@4.00s:ocr",
+            "9be9d794-a8c7-4a28-989a-d8b0c4425a89@frame:0002@4.00s:scene",
+            "571b09c1-1641-43af-9a61-e15c704015eb@video:scene_cluster:0001@2.00s-4.00s",
+            "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61@frame:0001@2.00s:event",
+            "0f4568cb-adee-48d3-ab1e-7ddf51785523@frame:0002@4.00s:event",
+            "c353f498-a515-430d-9381-34f28e3632a3@frame:0001@2.00s:subtitle:0001",
+            "022e2cd6-1018-4d4c-b6df-73216f08ab5c@frame:0002@4.00s:subtitle:0002",
+            "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6@frame:0002@4.00s:subtitle:0003"
+          ],
+          "confidence": 0.95,
+          "version": "0.1.0",
+          "summary": "Open release dashboard and verify gate status is GO.",
+          "tags": [
+            "controlled_trial",
+            "video",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb"
+        },
+        "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+        "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb"
+      },
+      "path": "skill.json",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+        "skill_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88",
+        "version": "0.1.0",
+        "renderer": "skill_json_v1_compat",
+        "evidence_refs": [
+          "80482f82-f9d2-4226-8b5c-8326ff972b7c",
+          "5cde1a3f-8741-45d9-bd22-ce455c75da36",
+          "0ba37050-d971-4bcd-b613-b37984e7d2d7",
+          "84aa00f8-097c-4888-8b80-908f54435b75",
+          "051e4bb3-362f-4544-a8d8-89245f5dcf7b",
+          "01c77b53-d615-40b6-988b-f956ece8aae6",
+          "c73362fd-6af1-4d91-bfcc-7a6151275f77",
+          "fd24b07d-87e8-4ea7-bd70-797c59103d1c",
+          "9be9d794-a8c7-4a28-989a-d8b0c4425a89",
+          "571b09c1-1641-43af-9a61-e15c704015eb",
+          "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61",
+          "0f4568cb-adee-48d3-ab1e-7ddf51785523",
+          "c353f498-a515-430d-9381-34f28e3632a3",
+          "022e2cd6-1018-4d4c-b6df-73216f08ab5c",
+          "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "1979efbb-a572-4c1b-8acc-62f92c77d764"
+    }
+  ],
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 0.736,
+    "overall_score": 0.956,
+    "diagnostics": {
+      "step_count": 3.0,
+      "evidence_node_count": 15.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_task": {
+    "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+    "decision": "auto_publish",
+    "reason_codes": [
+      "controlled_trial_requires_review",
+      "simulated_human_approval"
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.736,
+      "overall_score": 0.956
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "review_notes": "Simulated human approval in controlled-trial runner.",
+    "status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "review_task_id": "0521af47-2967-4ce9-a747-db22cb5019c9"
+  },
+  "corpus": null,
+  "evidence_nodes": [
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "speech",
+      "span_ref": "video:timestamp:segment:0001-3.00",
+      "text_content": "Open release dashboard and verify gate status is GO.",
+      "payload": {
+        "legacy_content": "Open release dashboard and verify gate status is GO."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown",
+        "source:audio_track"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "80482f82-f9d2-4226-8b5c-8326ff972b7c"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "speech",
+      "span_ref": "video:timestamp:3.00-6.00",
+      "text_content": "Compare latency and error-rate after rollout.",
+      "payload": {
+        "legacy_content": "Compare latency and error-rate after rollout."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown",
+        "source:audio_track"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "5cde1a3f-8741-45d9-bd22-ce455c75da36"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "speech",
+      "span_ref": "video:timestamp:6.00-9.00",
+      "text_content": "If regression persists, roll back and attach evidence pack.",
+      "payload": {
+        "legacy_content": "If regression persists, roll back and attach evidence pack."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown",
+        "source:audio_track"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "0ba37050-d971-4bcd-b613-b37984e7d2d7"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "scene",
+      "span_ref": "frame:0001@2.00s",
+      "text_content": "Frame evidence group frame:0001@2.00s",
+      "payload": {
+        "lineage_role": "frame_anchor",
+        "lineage_span": "frame:0001@2.00s",
+        "child_types": [
+          "ocr",
+          "scene",
+          "event",
+          "speech"
+        ]
+      },
+      "time_range": {
+        "start_ms": 2000,
+        "end_ms": 2000
+      },
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "lineage:frame_anchor"
+      ],
+      "parents": [],
+      "children": [
+        "051e4bb3-362f-4544-a8d8-89245f5dcf7b",
+        "01c77b53-d615-40b6-988b-f956ece8aae6",
+        "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61",
+        "c353f498-a515-430d-9381-34f28e3632a3"
+      ],
+      "derived_from": [],
+      "evidence_id": "84aa00f8-097c-4888-8b80-908f54435b75"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "ocr",
+      "span_ref": "frame:0001@2.00s:ocr",
+      "text_content": "Fixture OCR: frame_001\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture OCR: frame_001\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:fixture-ocr",
+        "source:scene"
+      ],
+      "parents": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "children": [],
+      "derived_from": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "evidence_id": "051e4bb3-362f-4544-a8d8-89245f5dcf7b"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "scene",
+      "span_ref": "frame:0001@2.00s:scene",
+      "text_content": "Fixture scene summary for frame_001.",
+      "payload": {
+        "legacy_content": "Fixture scene summary for frame_001."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.7,
+      "tags": [
+        "fixture",
+        "scene",
+        "png",
+        "source:scene"
+      ],
+      "parents": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "children": [],
+      "derived_from": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "evidence_id": "01c77b53-d615-40b6-988b-f956ece8aae6"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "scene",
+      "span_ref": "frame:0002@4.00s",
+      "text_content": "Frame evidence group frame:0002@4.00s",
+      "payload": {
+        "lineage_role": "frame_anchor",
+        "lineage_span": "frame:0002@4.00s",
+        "child_types": [
+          "ocr",
+          "scene",
+          "event",
+          "speech"
+        ]
+      },
+      "time_range": {
+        "start_ms": 4000,
+        "end_ms": 4000
+      },
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.8,
+      "tags": [
+        "lineage:frame_anchor"
+      ],
+      "parents": [],
+      "children": [
+        "fd24b07d-87e8-4ea7-bd70-797c59103d1c",
+        "9be9d794-a8c7-4a28-989a-d8b0c4425a89",
+        "0f4568cb-adee-48d3-ab1e-7ddf51785523",
+        "022e2cd6-1018-4d4c-b6df-73216f08ab5c",
+        "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+      ],
+      "derived_from": [],
+      "evidence_id": "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "ocr",
+      "span_ref": "frame:0002@4.00s:ocr",
+      "text_content": "Fixture OCR: frame_002\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture OCR: frame_002\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.75,
+      "tags": [
+        "engine:fixture-ocr",
+        "source:timeline"
+      ],
+      "parents": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "children": [],
+      "derived_from": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "evidence_id": "fd24b07d-87e8-4ea7-bd70-797c59103d1c"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "scene",
+      "span_ref": "frame:0002@4.00s:scene",
+      "text_content": "Fixture scene summary for frame_002.",
+      "payload": {
+        "legacy_content": "Fixture scene summary for frame_002."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.7,
+      "tags": [
+        "fixture",
+        "scene",
+        "png",
+        "source:timeline"
+      ],
+      "parents": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "children": [],
+      "derived_from": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "evidence_id": "9be9d794-a8c7-4a28-989a-d8b0c4425a89"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "scene",
+      "span_ref": "video:scene_cluster:0001@2.00s-4.00s",
+      "text_content": "Scene cluster 1 covers 2 keyframes from 2.00s to 4.00s. Sources: scene, timeline.",
+      "payload": {
+        "legacy_content": "Scene cluster 1 covers 2 keyframes from 2.00s to 4.00s. Sources: scene, timeline."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.77,
+      "tags": [
+        "block:scene_cluster",
+        "timeline:scene",
+        "cluster_size:2",
+        "source_mix:scene,timeline"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "571b09c1-1641-43af-9a61-e15c704015eb"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "event",
+      "span_ref": "frame:0001@2.00s:event",
+      "text_content": "Fixture scene summary for frame_001. | OCR: Fixture OCR: frame_001\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture scene summary for frame_001. | OCR: Fixture OCR: frame_001\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.81,
+      "tags": [
+        "block:frame_event",
+        "event_type:incident_signal",
+        "timeline:frame_event",
+        "frame_anchor:frame:0001@2.00s",
+        "frame_source:scene"
+      ],
+      "parents": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "children": [],
+      "derived_from": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "evidence_id": "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "event",
+      "span_ref": "frame:0002@4.00s:event",
+      "text_content": "Fixture scene summary for frame_002. | OCR: Fixture OCR: frame_002\nstatus: degraded",
+      "payload": {
+        "legacy_content": "Fixture scene summary for frame_002. | OCR: Fixture OCR: frame_002\nstatus: degraded"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.77,
+      "tags": [
+        "block:frame_event",
+        "event_type:incident_signal",
+        "timeline:frame_event",
+        "frame_anchor:frame:0002@4.00s",
+        "frame_source:timeline"
+      ],
+      "parents": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "children": [],
+      "derived_from": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "evidence_id": "0f4568cb-adee-48d3-ab1e-7ddf51785523"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "speech",
+      "span_ref": "frame:0001@2.00s:subtitle:0001",
+      "text_content": "Open release dashboard and verify gate status is GO.",
+      "payload": {
+        "legacy_content": "Open release dashboard and verify gate status is GO."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "block:subtitle_alignment",
+        "timeline:subtitle",
+        "aligned_frame:frame:0001@2.00s",
+        "alignment_mode:nearest_time",
+        "source_span:video:timestamp:segment:0001-3.00",
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "parents": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "children": [],
+      "derived_from": [
+        "84aa00f8-097c-4888-8b80-908f54435b75"
+      ],
+      "evidence_id": "c353f498-a515-430d-9381-34f28e3632a3"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "speech",
+      "span_ref": "frame:0002@4.00s:subtitle:0002",
+      "text_content": "Compare latency and error-rate after rollout.",
+      "payload": {
+        "legacy_content": "Compare latency and error-rate after rollout."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "block:subtitle_alignment",
+        "timeline:subtitle",
+        "aligned_frame:frame:0002@4.00s",
+        "alignment_mode:time_window",
+        "source_span:video:timestamp:3.00-6.00",
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "parents": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "children": [],
+      "derived_from": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "evidence_id": "022e2cd6-1018-4d4c-b6df-73216f08ab5c"
+    },
+    {
+      "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+      "modality": "video",
+      "content_type": "speech",
+      "span_ref": "frame:0002@4.00s:subtitle:0003",
+      "text_content": "If regression persists, roll back and attach evidence pack.",
+      "payload": {
+        "legacy_content": "If regression persists, roll back and attach evidence pack."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "block:subtitle_alignment",
+        "timeline:subtitle",
+        "aligned_frame:frame:0002@4.00s",
+        "alignment_mode:nearest_time",
+        "source_span:video:timestamp:6.00-9.00",
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "parents": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "children": [],
+      "derived_from": [
+        "c73362fd-6af1-4d91-bfcc-7a6151275f77"
+      ],
+      "evidence_id": "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6"
+    }
+  ],
+  "request_payload": {
+    "video_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+    "title": "video rerun for operation checklist skill",
+    "transcript": null,
+    "transcript_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.srt",
+    "language": null,
+    "prompt": null,
+    "keyframe_interval_seconds": null,
+    "max_keyframes": null,
+    "scene_threshold": null,
+    "dedupe_distance": null,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "controlled_trial"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\bundle.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\evidence_nodes.json",
+    "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\publications",
+    "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\publications\\manifest.json",
+    "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\quality_score.json",
+    "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\review_task.json",
+    "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\review_feedback.json",
+    "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\reviewer_packet.json",
+    "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\review_policy.json",
+    "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\publications\\SKILL.md",
+    "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\video-rerun-for-operation-checklist-skill-199afaba\\publications\\skill.json",
+    "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\review_queue\\pending\\0521af47-2967-4ce9-a747-db22cb5019c9.json"
+  },
+  "adapter_metadata": {
+    "video_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+    "duration_seconds": 9.0,
+    "fps": 1.0,
+    "audio_track_extracted": true,
+    "audio_evidence_count": 3,
+    "keyframes": [
+      {
+        "source": "scene",
+        "timestamp_seconds": 2.0,
+        "scene_score": null
+      },
+      {
+        "source": "timeline",
+        "timestamp_seconds": 4.0,
+        "scene_score": null
+      }
+    ],
+    "scene_threshold": 0.32,
+    "dedupe_distance": 5,
+    "scene_cluster_count": 1,
+    "scene_clusters": [
+      {
+        "cluster_id": 1,
+        "span_ref": "video:scene_cluster:0001@2.00s-4.00s",
+        "start_seconds": 2.0,
+        "end_seconds": 4.0,
+        "frame_count": 2,
+        "sources": [
+          "scene",
+          "timeline"
+        ],
+        "frame_spans": [
+          "frame:0001@2.00s",
+          "frame:0002@4.00s"
+        ],
+        "max_scene_score": null
+      }
+    ],
+    "frame_event_count": 2,
+    "subtitle_alignment_count": 3,
+    "scratch_cleanup": {
+      "status": "deferred",
+      "work_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.tmp_omni_media\\omni_video_6cab27a1d98c446c937065b9e57588d4",
+      "error": "[WinError 5] 拒绝访问。: 'D:\\\\Download\\\\gaming\\\\new_program\\\\data_helper\\\\3_omni_skill_pipeline\\\\.tmp_omni_media\\\\omni_video_6cab27a1d98c446c937065b9e57588d4\\\\fixture_audio.srt'",
+      "strategy": "prune_tmp_media",
+      "recovery_log": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.tmp_omni_media\\.cleanup_recovery.log",
+      "recovery_command": "python scripts/prune_tmp.py --retention-hours 24"
+    },
+    "provider_calls": [
+      {
+        "channel": "video_audio_extract",
+        "provider": "FixtureMediaProcessor",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      },
+      {
+        "channel": "video_audio_parse",
+        "provider": "AudioAdapter",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      },
+      {
+        "channel": "video_frame_analysis",
+        "provider": "FixtureImageAnalyzer",
+        "calls": 2,
+        "successes": 2,
+        "failures": 0
+      },
+      {
+        "channel": "video_frame_ocr",
+        "provider": "fixture-ocr",
+        "calls": 2,
+        "successes": 2,
+        "failures": 0
+      },
+      {
+        "channel": "video_keyframe_extract",
+        "provider": "FixtureMediaProcessor",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      },
+      {
+        "channel": "video_probe",
+        "provider": "FixtureMediaProcessor",
+        "calls": 1,
+        "successes": 1,
+        "failures": 0
+      }
+    ],
+    "evidence_node_count": 15,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "quality_scores": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.736,
+      "overall_score": 0.956,
+      "diagnostics": {
+        "step_count": 3.0,
+        "evidence_node_count": 15.0,
+        "publication_count": 2.0
+      }
+    },
+    "review_policy": {
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.736,
+        "overall_score": 0.956
+      }
+    },
+    "review_task": {
+      "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.736,
+        "overall_score": 0.956
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "review_notes": "",
+      "status": "review_pending",
+      "created_at": "2026-05-25T10:17:08Z",
+      "review_task_id": "0521af47-2967-4ce9-a747-db22cb5019c9"
+    },
+    "review_feedback": {
+      "review_task_id": "0521af47-2967-4ce9-a747-db22cb5019c9",
+      "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+      "decision": "review_required",
+      "status": "review_pending",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "categories": [
+        "manual_review"
+      ],
+      "atom_actions": [],
+      "graph_actions": [],
+      "policy_actions": [
+        {
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.736,
+        "overall_score": 0.956
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      }
+    },
+    "reviewer_packet": {
+      "schema_version": "reviewer_packet.v1",
+      "created_at": "2026-05-25T10:17:08Z",
+      "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+      "skill_name": "video rerun for operation checklist skill",
+      "review_task_id": "0521af47-2967-4ce9-a747-db22cb5019c9",
+      "review_status": "review_pending",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "input_summary": {
+        "title": "video rerun for operation checklist skill",
+        "goal": "Distill controlled_trial material into a build_skill for self. Seed: Open release dashboard and verify gate status is GO.",
+        "summary": "Open release dashboard and verify gate status is GO.",
+        "modalities": [
+          "video"
+        ],
+        "evidence_unit_count": 13,
+        "evidence_node_count": 15,
+        "asset_count": 1,
+        "asset_refs": []
+      },
+      "evidence_links": [
+        {
+          "evidence_id": "80482f82-f9d2-4226-8b5c-8326ff972b7c",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "video:timestamp:segment:0001-3.00",
+          "content_type": "speech",
+          "modality": "video",
+          "confidence": 0.82,
+          "summary": "Open release dashboard and verify gate status is GO.",
+          "tags": [
+            "utterance_act:context",
+            "speaker_role:unknown",
+            "source:audio_track"
+          ]
+        },
+        {
+          "evidence_id": "5cde1a3f-8741-45d9-bd22-ce455c75da36",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "video:timestamp:3.00-6.00",
+          "content_type": "speech",
+          "modality": "video",
+          "confidence": 0.82,
+          "summary": "Compare latency and error-rate after rollout.",
+          "tags": [
+            "utterance_act:context",
+            "speaker_role:unknown",
+            "source:audio_track"
+          ]
+        },
+        {
+          "evidence_id": "0ba37050-d971-4bcd-b613-b37984e7d2d7",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "video:timestamp:6.00-9.00",
+          "content_type": "speech",
+          "modality": "video",
+          "confidence": 0.82,
+          "summary": "If regression persists, roll back and attach evidence pack.",
+          "tags": [
+            "utterance_act:context",
+            "speaker_role:unknown",
+            "source:audio_track"
+          ]
+        },
+        {
+          "evidence_id": "051e4bb3-362f-4544-a8d8-89245f5dcf7b",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0001@2.00s:ocr",
+          "content_type": "ocr",
+          "modality": "video",
+          "confidence": 0.75,
+          "summary": "Fixture OCR: frame_001 status: degraded",
+          "tags": [
+            "engine:fixture-ocr",
+            "source:scene"
+          ]
+        },
+        {
+          "evidence_id": "01c77b53-d615-40b6-988b-f956ece8aae6",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0001@2.00s:scene",
+          "content_type": "scene",
+          "modality": "video",
+          "confidence": 0.7,
+          "summary": "Fixture scene summary for frame_001.",
+          "tags": [
+            "fixture",
+            "scene",
+            "png",
+            "source:scene"
+          ]
+        },
+        {
+          "evidence_id": "fd24b07d-87e8-4ea7-bd70-797c59103d1c",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0002@4.00s:ocr",
+          "content_type": "ocr",
+          "modality": "video",
+          "confidence": 0.75,
+          "summary": "Fixture OCR: frame_002 status: degraded",
+          "tags": [
+            "engine:fixture-ocr",
+            "source:timeline"
+          ]
+        },
+        {
+          "evidence_id": "9be9d794-a8c7-4a28-989a-d8b0c4425a89",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0002@4.00s:scene",
+          "content_type": "scene",
+          "modality": "video",
+          "confidence": 0.7,
+          "summary": "Fixture scene summary for frame_002.",
+          "tags": [
+            "fixture",
+            "scene",
+            "png",
+            "source:timeline"
+          ]
+        },
+        {
+          "evidence_id": "571b09c1-1641-43af-9a61-e15c704015eb",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "video:scene_cluster:0001@2.00s-4.00s",
+          "content_type": "scene",
+          "modality": "video",
+          "confidence": 0.77,
+          "summary": "Scene cluster 1 covers 2 keyframes from 2.00s to 4.00s. Sources: scene, timeline.",
+          "tags": [
+            "block:scene_cluster",
+            "timeline:scene",
+            "cluster_size:2",
+            "source_mix:scene,timeline"
+          ]
+        },
+        {
+          "evidence_id": "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0001@2.00s:event",
+          "content_type": "event",
+          "modality": "video",
+          "confidence": 0.81,
+          "summary": "Fixture scene summary for frame_001. | OCR: Fixture OCR: frame_001 status: degraded",
+          "tags": [
+            "block:frame_event",
+            "event_type:incident_signal",
+            "timeline:frame_event",
+            "frame_anchor:frame:0001@2.00s",
+            "frame_source:scene"
+          ]
+        },
+        {
+          "evidence_id": "0f4568cb-adee-48d3-ab1e-7ddf51785523",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0002@4.00s:event",
+          "content_type": "event",
+          "modality": "video",
+          "confidence": 0.77,
+          "summary": "Fixture scene summary for frame_002. | OCR: Fixture OCR: frame_002 status: degraded",
+          "tags": [
+            "block:frame_event",
+            "event_type:incident_signal",
+            "timeline:frame_event",
+            "frame_anchor:frame:0002@4.00s",
+            "frame_source:timeline"
+          ]
+        },
+        {
+          "evidence_id": "c353f498-a515-430d-9381-34f28e3632a3",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0001@2.00s:subtitle:0001",
+          "content_type": "speech",
+          "modality": "video",
+          "confidence": 0.82,
+          "summary": "Open release dashboard and verify gate status is GO.",
+          "tags": [
+            "block:subtitle_alignment",
+            "timeline:subtitle",
+            "aligned_frame:frame:0001@2.00s",
+            "alignment_mode:nearest_time",
+            "source_span:video:timestamp:segment:0001-3.00",
+            "utterance_act:context",
+            "speaker_role:unknown"
+          ]
+        },
+        {
+          "evidence_id": "022e2cd6-1018-4d4c-b6df-73216f08ab5c",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0002@4.00s:subtitle:0002",
+          "content_type": "speech",
+          "modality": "video",
+          "confidence": 0.82,
+          "summary": "Compare latency and error-rate after rollout.",
+          "tags": [
+            "block:subtitle_alignment",
+            "timeline:subtitle",
+            "aligned_frame:frame:0002@4.00s",
+            "alignment_mode:time_window",
+            "source_span:video:timestamp:3.00-6.00",
+            "utterance_act:context",
+            "speaker_role:unknown"
+          ]
+        },
+        {
+          "evidence_id": "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6",
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "span_ref": "frame:0002@4.00s:subtitle:0003",
+          "content_type": "speech",
+          "modality": "video",
+          "confidence": 0.82,
+          "summary": "If regression persists, roll back and attach evidence pack.",
+          "tags": [
+            "block:subtitle_alignment",
+            "timeline:subtitle",
+            "aligned_frame:frame:0002@4.00s",
+            "alignment_mode:nearest_time",
+            "source_span:video:timestamp:6.00-9.00",
+            "utterance_act:context",
+            "speaker_role:unknown"
+          ]
+        }
+      ],
+      "generated_skill": {
+        "skill": {
+          "name": "video rerun for operation checklist skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: Open release dashboard and verify gate status is GO.",
+          "source_modality": "video",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert video evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Video source",
+            "Distillation goal",
+            "Keyframe/OCR evidence"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Open release dashboard and verify gate status is GO.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Compare latency and error-rate after rollout.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "If regression persists, roll back and attach evidence pack.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [
+            "If regression persists, roll back and attach evidence pack."
+          ],
+          "anti_patterns": [],
+          "verification": [
+            "Open release dashboard and verify gate status is GO."
+          ],
+          "evidence_refs": [
+            "80482f82-f9d2-4226-8b5c-8326ff972b7c@video:timestamp:segment:0001-3.00",
+            "5cde1a3f-8741-45d9-bd22-ce455c75da36@video:timestamp:3.00-6.00",
+            "0ba37050-d971-4bcd-b613-b37984e7d2d7@video:timestamp:6.00-9.00",
+            "051e4bb3-362f-4544-a8d8-89245f5dcf7b@frame:0001@2.00s:ocr",
+            "01c77b53-d615-40b6-988b-f956ece8aae6@frame:0001@2.00s:scene",
+            "fd24b07d-87e8-4ea7-bd70-797c59103d1c@frame:0002@4.00s:ocr",
+            "9be9d794-a8c7-4a28-989a-d8b0c4425a89@frame:0002@4.00s:scene",
+            "571b09c1-1641-43af-9a61-e15c704015eb@video:scene_cluster:0001@2.00s-4.00s",
+            "51c6ced6-77b8-4d55-9dd6-0d1e5cf37e61@frame:0001@2.00s:event",
+            "0f4568cb-adee-48d3-ab1e-7ddf51785523@frame:0002@4.00s:event",
+            "c353f498-a515-430d-9381-34f28e3632a3@frame:0001@2.00s:subtitle:0001",
+            "022e2cd6-1018-4d4c-b6df-73216f08ab5c@frame:0002@4.00s:subtitle:0002",
+            "cef9f57f-5eaf-4f6a-b483-6f6e006bf0c6@frame:0002@4.00s:subtitle:0003"
+          ],
+          "confidence": 0.95,
+          "version": "0.1.0",
+          "summary": "Open release dashboard and verify gate status is GO.",
+          "tags": [
+            "controlled_trial",
+            "video",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb"
+        },
+        "skill_markdown_preview": "--- name: \"video rerun for operation checklist skill\" description: \"Use when Use when converting video evidence into build_skill.. Open release dashboard and verify gate status is GO.\" --- # video rerun for operation checklist skill ## Workflow 1. Evaluate rule: If regression persists, roll back and attach evidence pack. (Why: Derived from rule atom fallback because no procedure atoms were found.) 2. Evaluate rule: If regression persists, roll back and attach evidence pack. (Why: Derived from rule atom fallback because no procedure atoms were found.) ## Decision Rules - If regression persists, roll back and attach evidence pack. -> Apply the matching action. ## Validation - Open release dashboard and verify gate status is GO. ## Failure Modes - Do not auto-publish trial output before human review approval. ## References - [Evidence](references/evidence.md) - [Examples](references/examples.md)",
+        "step_count": 3,
+        "decision_rule_count": 1,
+        "verification_count": 1,
+        "publication_types": [
+          "skill_markdown",
+          "skill_json"
+        ],
+        "graph_id": "256f6eae-bdc6-4916-8e1b-c7d1defaed88"
+      },
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.736,
+        "overall_score": 0.956,
+        "diagnostics": {
+          "step_count": 3.0,
+          "evidence_node_count": 15.0,
+          "publication_count": 2.0
+        }
+      },
+      "review_policy": {
+        "decision": "review_required",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        },
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.736,
+          "overall_score": 0.956
+        }
+      },
+      "review_feedback": {
+        "review_task_id": "0521af47-2967-4ce9-a747-db22cb5019c9",
+        "skill_id": "199afaba-5061-42a2-83d8-c631bf283bdb",
+        "decision": "review_required",
+        "status": "review_pending",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "categories": [
+          "manual_review"
+        ],
+        "atom_actions": [],
+        "graph_actions": [],
+        "policy_actions": [
+          {
+            "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+            "target": "policy",
+            "intent": "escalate_manual_review",
+            "reason_code": "MANUAL_REVIEW_FALLBACK",
+            "params": {
+              "priority": "medium"
+            }
+          }
+        ],
+        "revision_suggestions": [
+          "S_MANUAL_REVIEW_REQUIRED"
+        ],
+        "follow_up_checks": [
+          "CHECK_MANUAL_REVIEW_OUTCOME"
+        ],
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.736,
+          "overall_score": 0.956
+        },
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        }
+      },
+      "risk_flags": [
+        {
+          "code": "controlled_trial_requires_review",
+          "severity": "medium",
+          "source": "review_policy"
+        },
+        {
+          "code": "video_requires_keyframe_review",
+          "severity": "medium",
+          "source": "modality"
+        }
+      ],
+      "approval_checklist": [
+        {
+          "check_id": "factual_accuracy",
+          "label": "Confirm generated skill facts match evidence.",
+          "required": true
+        },
+        {
+          "check_id": "actionability",
+          "label": "Confirm steps are concrete and executable by the target agent.",
+          "required": true
+        },
+        {
+          "check_id": "dangerous_operations",
+          "label": "Confirm dangerous commands or production changes are clearly guarded.",
+          "required": true
+        },
+        {
+          "check_id": "description_trigger",
+          "label": "Confirm description would trigger only for the intended scenario.",
+          "required": true
+        },
+        {
+          "check_id": "keyframe_sequence_check",
+          "label": "Inspect keyframes, transcript, OCR, and procedure order.",
+          "required": true
+        }
+      ]
+    },
+    "provider_footprint": {
+      "corpus_id": "",
+      "asset_breakdown": [
+        {
+          "asset_id": "6f7f0424-5d62-470b-9029-b41bff0965d5",
+          "role": "primary",
+          "modality": "video",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\video\\feature-release-walkthrough.mp4",
+          "call_total": 8,
+          "provider_calls": [
+            {
+              "channel": "video_audio_extract",
+              "provider": "FixtureMediaProcessor",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            },
+            {
+              "channel": "video_audio_parse",
+              "provider": "AudioAdapter",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            },
+            {
+              "channel": "video_frame_analysis",
+              "provider": "FixtureImageAnalyzer",
+              "calls": 2,
+              "successes": 2,
+              "failures": 0
+            },
+            {
+              "channel": "video_frame_ocr",
+              "provider": "fixture-ocr",
+              "calls": 2,
+              "successes": 2,
+              "failures": 0
+            },
+            {
+              "channel": "video_keyframe_extract",
+              "provider": "FixtureMediaProcessor",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            },
+            {
+              "channel": "video_probe",
+              "provider": "FixtureMediaProcessor",
+              "calls": 1,
+              "successes": 1,
+              "failures": 0
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "total_calls": 8,
+        "total_successes": 8,
+        "total_failures": 0,
+        "providers": {
+          "AudioAdapter": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "FixtureImageAnalyzer": {
+            "calls": 2,
+            "successes": 2,
+            "failures": 0
+          },
+          "FixtureMediaProcessor": {
+            "calls": 3,
+            "successes": 3,
+            "failures": 0
+          },
+          "fixture-ocr": {
+            "calls": 2,
+            "successes": 2,
+            "failures": 0
+          }
+        },
+        "channels": {
+          "video_audio_extract": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "video_audio_parse": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "video_frame_analysis": {
+            "calls": 2,
+            "successes": 2,
+            "failures": 0
+          },
+          "video_frame_ocr": {
+            "calls": 2,
+            "successes": 2,
+            "failures": 0
+          },
+          "video_keyframe_extract": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          },
+          "video_probe": {
+            "calls": 1,
+            "successes": 1,
+            "failures": 0
+          }
+        }
+      },
+      "runtime_provider_audits": [],
+      "runtime_summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      }
+    }
+  },
+  "simulated_review": {
+    "approved_at_utc": "2026-05-25T10:17:08Z",
+    "approved_by": "controlled-trial-runner",
+    "mode": "simulated"
+  }
+}

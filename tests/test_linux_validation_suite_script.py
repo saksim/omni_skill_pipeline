@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_linux_validation_suite.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'linux_validate.py'
 
 
 class LinuxValidationSuiteScriptTests(unittest.TestCase):
@@ -45,20 +45,20 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
                 completed.stdout,
             )
             self.assertIn('Skipping Postgres stages without DSN: postgres_soak, postgres_ga', completed.stdout)
-            self.assertIn('scripts/run_ci.py', completed.stdout)
+            self.assertIn('scripts/ci.py', completed.stdout)
             self.assertIn('--isolate-test-files', completed.stdout)
             self.assertIn('--python python3', completed.stdout)
-            self.assertIn('scripts/run_container_smoke.py', completed.stdout)
-            self.assertIn('scripts/run_doc_sync_check.py', completed.stdout)
-            self.assertIn('scripts/run_quality_regression.py', completed.stdout)
-            self.assertIn('scripts/run_perf_cost_baseline.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_soak_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertIn('scripts/run_worker_ga_validation.py', completed.stdout)
-            self.assertIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
-            self.assertIn('scripts/run_provider_ga_validation.py', completed.stdout)
-            self.assertIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-            self.assertIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertIn('scripts/container_smoke.py', completed.stdout)
+            self.assertIn('scripts/doc_sync.py', completed.stdout)
+            self.assertIn('scripts/quality_regression.py', completed.stdout)
+            self.assertIn('scripts/perf_baseline.py', completed.stdout)
+            self.assertNotIn('scripts/pg_soak.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertIn('scripts/worker_ga.py', completed.stdout)
+            self.assertIn('scripts/ga_review_queue.py', completed.stdout)
+            self.assertIn('scripts/provider_ga.py', completed.stdout)
+            self.assertIn('scripts/ga_calibration.py', completed.stdout)
+            self.assertIn('scripts/roadmap_ext.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
             self.assertEqual(report.get('stage_count'), 10)
@@ -100,23 +100,23 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn('Selected stages: doc_sync, quality_regression', completed.stdout)
-        self.assertNotIn('scripts/run_ci.py', completed.stdout)
-        self.assertNotIn('scripts/run_container_smoke.py', completed.stdout)
-        self.assertNotIn('scripts/run_perf_cost_baseline.py', completed.stdout)
-        self.assertNotIn('scripts/run_postgres_soak_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_worker_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
-        self.assertIn('scripts/run_doc_sync_check.py', completed.stdout)
-        self.assertIn('scripts/run_quality_regression.py', completed.stdout)
+        self.assertNotIn('scripts/ci.py', completed.stdout)
+        self.assertNotIn('scripts/container_smoke.py', completed.stdout)
+        self.assertNotIn('scripts/perf_baseline.py', completed.stdout)
+        self.assertNotIn('scripts/pg_soak.py', completed.stdout)
+        self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+        self.assertNotIn('scripts/worker_ga.py', completed.stdout)
+        self.assertNotIn('scripts/ga_review_queue.py', completed.stdout)
+        self.assertNotIn('scripts/provider_ga.py', completed.stdout)
+        self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+        self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
+        self.assertIn('scripts/doc_sync.py', completed.stdout)
+        self.assertIn('scripts/quality_regression.py', completed.stdout)
 
         quality_command_lines = [
             line
             for line in completed.stdout.splitlines()
-            if 'scripts/run_quality_regression.py' in line
+            if 'scripts/quality_regression.py' in line
         ]
         self.assertTrue(quality_command_lines)
         for line in quality_command_lines:
@@ -155,7 +155,7 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn('Selected stages: container_smoke', completed.stdout)
-        self.assertIn('scripts/run_container_smoke.py', completed.stdout)
+        self.assertIn('scripts/container_smoke.py', completed.stdout)
         self.assertIn('--image-tag omni-skill-pipeline:test', completed.stdout)
         self.assertIn('--container-name omni-linux-suite-smoke', completed.stdout)
         self.assertIn('--host 0.0.0.0', completed.stdout)
@@ -163,14 +163,14 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
         self.assertIn('--timeout-seconds 45.0', completed.stdout)
         self.assertIn('--interval-seconds 2.0', completed.stdout)
         self.assertIn('--skip-build', completed.stdout)
-        self.assertNotIn('scripts/run_ci.py', completed.stdout)
-        self.assertNotIn('scripts/run_doc_sync_check.py', completed.stdout)
-        self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_worker_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-        self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+        self.assertNotIn('scripts/ci.py', completed.stdout)
+        self.assertNotIn('scripts/doc_sync.py', completed.stdout)
+        self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+        self.assertNotIn('scripts/worker_ga.py', completed.stdout)
+        self.assertNotIn('scripts/ga_review_queue.py', completed.stdout)
+        self.assertNotIn('scripts/provider_ga.py', completed.stdout)
+        self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+        self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_postgres_soak_stage_forwards_postgres_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -205,16 +205,16 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: postgres_soak', completed.stdout)
-            self.assertNotIn('scripts/run_ci.py', completed.stdout)
-            self.assertIn('scripts/run_postgres_soak_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ci.py', completed.stdout)
+            self.assertIn('scripts/pg_soak.py', completed.stdout)
             self.assertIn('--postgres-dsn postgresql://validator', completed.stdout)
             self.assertIn('--benchmark-iterations 77', completed.stdout)
             self.assertIn('--allow-secondary-failures', completed.stdout)
             self.assertIn('--output %s' % str(soak_plan_path.resolve()), completed.stdout)
             self.assertIn('--benchmark-output %s' % str(benchmark_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_env_postgres_dsn_selects_postgres_stages_without_printing_secret(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -267,16 +267,16 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: worker_ga', completed.stdout)
-            self.assertIn('scripts/run_worker_ga_validation.py', completed.stdout)
+            self.assertIn('scripts/worker_ga.py', completed.stdout)
             self.assertIn('--python python3', completed.stdout)
             self.assertIn('--output %s' % str(worker_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_ci.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_soak_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ci.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertNotIn('scripts/pg_soak.py', completed.stdout)
+            self.assertNotIn('scripts/ga_review_queue.py', completed.stdout)
+            self.assertNotIn('scripts/provider_ga.py', completed.stdout)
+            self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+            self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_postgres_ga_stage_forwards_postgres_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -311,7 +311,7 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: postgres_ga', completed.stdout)
-            self.assertIn('scripts/run_postgres_ga_validation.py', completed.stdout)
+            self.assertIn('scripts/pg_ga.py', completed.stdout)
             self.assertIn('--postgres-dsn postgresql://validator', completed.stdout)
             self.assertIn('--benchmark-iterations 91', completed.stdout)
             self.assertIn(
@@ -320,12 +320,12 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertIn('--allow-secondary-failures', completed.stdout)
             self.assertIn('--output %s' % str(postgres_ga_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_postgres_soak_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_worker_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertNotIn('scripts/pg_soak.py', completed.stdout)
+            self.assertNotIn('scripts/worker_ga.py', completed.stdout)
+            self.assertNotIn('scripts/ga_review_queue.py', completed.stdout)
+            self.assertNotIn('scripts/provider_ga.py', completed.stdout)
+            self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+            self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_review_queue_ga_stage_forwards_review_queue_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -351,15 +351,15 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: review_queue_ga', completed.stdout)
-            self.assertIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
+            self.assertIn('scripts/ga_review_queue.py', completed.stdout)
             self.assertIn('--python python3', completed.stdout)
             self.assertIn('--output %s' % str(review_queue_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_ci.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_worker_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ci.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertNotIn('scripts/worker_ga.py', completed.stdout)
+            self.assertNotIn('scripts/provider_ga.py', completed.stdout)
+            self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+            self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_provider_ga_stage_forwards_provider_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -385,16 +385,16 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: provider_ga', completed.stdout)
-            self.assertIn('scripts/run_provider_ga_validation.py', completed.stdout)
+            self.assertIn('scripts/provider_ga.py', completed.stdout)
             self.assertIn('--python python3', completed.stdout)
             self.assertIn('--output %s' % str(provider_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_ci.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_worker_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_review_queue_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_soak_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_calibration_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ci.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertNotIn('scripts/worker_ga.py', completed.stdout)
+            self.assertNotIn('scripts/ga_review_queue.py', completed.stdout)
+            self.assertNotIn('scripts/pg_soak.py', completed.stdout)
+            self.assertNotIn('scripts/ga_calibration.py', completed.stdout)
+            self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_calibration_ga_stage_forwards_calibration_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -430,7 +430,7 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: calibration_ga', completed.stdout)
-            self.assertIn('scripts/run_calibration_ga_validation.py', completed.stdout)
+            self.assertIn('scripts/ga_calibration.py', completed.stdout)
             self.assertIn('--manifest %s' % str(manifest_path.resolve()), completed.stdout)
             self.assertIn(
                 '--calibration-report-output %s' % str(calibration_report_path.resolve()),
@@ -439,10 +439,10 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             self.assertIn('--margin 0.08', completed.stdout)
             self.assertIn('--fail-on-mismatch', completed.stdout)
             self.assertIn('--output %s' % str(calibration_ga_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_ci.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ci.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertNotIn('scripts/provider_ga.py', completed.stdout)
+            self.assertNotIn('scripts/roadmap_ext.py', completed.stdout)
 
     def test_roadmap_extension_stage_forwards_output_options(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -468,12 +468,12 @@ class LinuxValidationSuiteScriptTests(unittest.TestCase):
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn('Selected stages: roadmap_extension', completed.stdout)
-            self.assertIn('scripts/run_roadmap_extension_validation.py', completed.stdout)
+            self.assertIn('scripts/roadmap_ext.py', completed.stdout)
             self.assertIn('--python python3', completed.stdout)
             self.assertIn('--output %s' % str(roadmap_output_path.resolve()), completed.stdout)
-            self.assertNotIn('scripts/run_ci.py', completed.stdout)
-            self.assertNotIn('scripts/run_postgres_ga_validation.py', completed.stdout)
-            self.assertNotIn('scripts/run_provider_ga_validation.py', completed.stdout)
+            self.assertNotIn('scripts/ci.py', completed.stdout)
+            self.assertNotIn('scripts/pg_ga.py', completed.stdout)
+            self.assertNotIn('scripts/provider_ga.py', completed.stdout)
 
     def test_keep_going_runs_later_stages_after_failure_and_summarizes_failures(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

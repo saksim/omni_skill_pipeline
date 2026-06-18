@@ -61,6 +61,7 @@ class ReviewQueueRepository(Protocol):
         *,
         queue_status: str | None = 'pending',
         limit: int = 100,
+        tenant_scope: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         ...
 
@@ -69,6 +70,7 @@ class ReviewQueueRepository(Protocol):
         review_task_id: str | None = None,
         *,
         consumer: str = 'review-consumer',
+        tenant_scope: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         ...
 
@@ -79,10 +81,19 @@ class ReviewQueueRepository(Protocol):
         status: str = 'published',
         closed_by: str = 'review-operator',
         review_notes: str = '',
+        decision: str | None = None,
+        reason_codes: Sequence[str] | None = None,
+        reviewer_edits: dict[str, Any] | None = None,
+        tenant_scope: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         ...
 
-    def consume_review_task(self, *, consumer: str = 'review-consumer') -> dict[str, Any] | None:
+    def consume_review_task(
+        self,
+        *,
+        consumer: str = 'review-consumer',
+        tenant_scope: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
         ...
 
 

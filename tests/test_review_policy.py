@@ -65,6 +65,22 @@ class ReviewPolicyTests(unittest.TestCase):
         self.assertIn("thresholds", decision)
         self.assertIn("score_snapshot", decision)
 
+    def test_controlled_trial_review_mode_forces_review_required_on_high_scores(self) -> None:
+        policy = ReviewPolicy(force_review_mode=True, force_review_reason_code="controlled_trial_requires_review")
+        decision = policy.decide(
+            {
+                "traceability_score": 0.95,
+                "actionability_score": 0.93,
+                "coverage_score": 0.9,
+                "consistency_score": 0.94,
+                "noise_score": 0.91,
+                "novelty_score": 0.89,
+                "overall_score": 0.92,
+            }
+        ).to_dict()
+        self.assertEqual(decision["decision"], "review_required")
+        self.assertEqual(decision["reason_codes"], ["controlled_trial_requires_review"])
+
 
 if __name__ == "__main__":
     unittest.main()

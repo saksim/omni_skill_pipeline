@@ -4,6 +4,7 @@ import importlib
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -41,9 +42,26 @@ class _StubService(object):
     def distill_corpus(self, request):  # pragma: no cover - request shape handled by app validation
         return _StubBundle()
 
+    repository = object()
+
+
+def _build_settings():
+    return SimpleNamespace(
+        api_key='',
+        rate_limit_requests=0,
+        rate_limit_window_seconds=60,
+        tenant_access_json='',
+        tenant_access_file='',
+        template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
+        draft_dir=REPO_ROOT / 'skills' / 'drafts',
+    )
+
 
 def _build_client():
-    with patch('omni_skill_pipeline.service.build_service', return_value=_StubService()):
+    with (
+        patch('omni_skill_pipeline.service.build_service', return_value=_StubService()),
+        patch('omni_skill_pipeline.config.load_settings', return_value=_build_settings()),
+    ):
         module = importlib.import_module('omni_skill_pipeline.api_app')
         module = importlib.reload(module)
         app = module.create_app()

@@ -30,5 +30,5 @@
 ## Pending Risks
 
 - Linux full-batch execution is still pending, so no final pass/fail seal can be issued.
-- Postgres long-run soak for publication/review lineage has not been closed (runner ready: `scripts/run_release_switch_validation.py`).
+- Postgres long-run soak for publication/review lineage has not been closed (runner ready: `scripts/release_switch.py`).
 - Production cutover rehearsal and rollback drill are not yet complete.

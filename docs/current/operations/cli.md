@@ -3,10 +3,10 @@
 ## Entry
 
 - CLI module: `src/omni_skill_pipeline/cli.py`
-- 推荐前置：先执行 `python -m pip install -r requirements-dev.txt`
-- 运行方式：安装后直接使用 `python -m omni_skill_pipeline.cli ...`
+- Install dependencies first: `python -m pip install -r requirements-dev.txt`
+- Invoke commands through: `python -m omni_skill_pipeline.cli ...`
 
-如果你选择不安装 editable package，而是直接从源码树运行，再显式设置 `PYTHONPATH=src`。
+If running directly from source tree without editable install, set `PYTHONPATH=src`.
 
 ## Base Pattern
 
@@ -88,8 +88,55 @@ python -m omni_skill_pipeline.cli distill-corpus \
 
 ```bash
 python -m omni_skill_pipeline.cli distill-corpus \
-  --payload-file examples/corpus_payload.json
+  --payload-file examples/beta/corpus_payload.example.json
 ```
+
+Official GL-03 sample payload:
+
+- `examples/beta/corpus_payload.example.json`
+
+### export-skill
+
+```bash
+python -m omni_skill_pipeline.cli export-skill \
+  --bundle skills/drafts/sample-skill-12345678/bundle.json \
+  --target codex \
+  --output-root .
+```
+
+Supported targets:
+
+- `codex` -> `.codex/skills/<skill-name>/SKILL.md`
+- `claude-code` -> `.claude/skills/<skill-name>/SKILL.md`
+- `opencode` -> `.opencode/skill/<skill-name>/SKILL.md`
+- `portable` -> `skills/portable/<skill-name>/SKILL.md`
+- `all` -> export every target above in one command
+
+### validate-skill
+
+```bash
+python -m omni_skill_pipeline.cli validate-skill \
+  --package skills/portable/sample-skill \
+  --max-lines 500
+```
+
+Exit code contract:
+
+- `0`: package passed usability/safety validation.
+- `2`: package failed with explicit `failure_codes` and issue lines.
+
+### trial_security.py
+
+```bash
+python scripts/trial_security.py \
+  --bundle skills/drafts/sample-skill-12345678/bundle.json \
+  --output docs/current/status/baselines/controlled-trial/trial-security-gate-report.json
+```
+
+Exit code contract:
+
+- `0`: trial security gate passed.
+- `2`: trial security gate failed with explicit `failure_codes`.
 
 ### show-template
 
@@ -97,13 +144,73 @@ python -m omni_skill_pipeline.cli distill-corpus \
 python -m omni_skill_pipeline.cli show-template
 ```
 
+### review-queue
+
+```bash
+python -m omni_skill_pipeline.cli review-queue \
+  --action list \
+  --queue-status pending \
+  --limit 20
+```
+
+```bash
+python -m omni_skill_pipeline.cli review-queue \
+  --action approve \
+  --review-task-id <review-task-id> \
+  --reviewer qa-lead \
+  --reason-code SAFE \
+  --review-notes "manual review passed" \
+  --reviewer-edits-json '{"skill_markdown_patch":"none"}'
+```
+
+### governance-report
+
+```bash
+python -m omni_skill_pipeline.cli governance-report \
+  --organization-id beta-org \
+  --project-id ops-team \
+  --include-cost-entries \
+  --include-audit-events \
+  --include-deletion-records \
+  --limit 200
+```
+
+### record-deletion
+
+```bash
+python -m omni_skill_pipeline.cli record-deletion \
+  --organization-id beta-org \
+  --project-id ops-team \
+  --resource-type skill_package \
+  --resource-id pkg-20260526-001 \
+  --actor governance-operator \
+  --reason "customer offboarding data purge"
+```
+
+### upsert-retention-policy
+
+```bash
+python -m omni_skill_pipeline.cli upsert-retention-policy \
+  --organization-id beta-org \
+  --project-id ops-team \
+  --policy-type artifact_retention \
+  --retention-days 30 \
+  --deletion-mode soft_delete \
+  --updated-by governance-operator
+```
+
 ## Notes
 
-- `distill-corpus` 默认打印所选 publication 路径（默认 `skill_markdown`，可通过 `--publication` 选择）。
-- `distill-corpus` 会打印 `review_status`、`decision`、`review_task_id` 与 `reason_codes`，便于接 review queue。
-- 使用 `--show-publications` 可额外打印 `selected_publication` 与 `available_publications`。
-- 默认输出目录由 `Settings.draft_dir` 决定，当前默认指向 `skills/drafts/`。
-- 目标与受众可通过 `--goal-type`、`--audience`、`--rigor`、`--granularity`、`--domain` 调整。
-- `distill-corpus` 支持两种输入：
-  - 多次 `--asset`（格式：`modality=source_uri`）
-  - `--payload-file` 或 `--payload-json`（完整 `CorpusDistillRequest` JSON）
+- `export-skill` exports an existing `bundle.json` to the selected target layout and writes `agent_skill_package.json`.
+- `export-skill` enforces CBT-13 trial security gate before writing any target layout.
+- `distill-corpus` prints `review_status`, `decision`, `review_task_id`, and `reason_codes` for review-queue routing.
+- `review-queue` supports `list`, `claim`, `close`, `approve`, `reject`, and `needs-rework` operational actions.
+- `review-queue approve|reject|needs-rework` persists reviewer, decision, reason codes, notes, and reviewer edits without manual artifact editing.
+- `governance-report` returns scoped cost/audit/deletion/retention evidence for launch governance reviews.
+- `record-deletion` appends tenant/project deletion records and matching audit trail evidence.
+- `upsert-retention-policy` manages tenant/project retention policy records for governance checks.
+- Use `--show-publications` to print `selected_publication` and `available_publications`.
+- Default draft output root is controlled by `Settings.draft_dir` (currently `skills/drafts/`).
+- Goal tuning is available via `--goal-type`, `--audience`, `--rigor`, `--granularity`, and `--domain`.
+- `distill-corpus` supports both `--asset modality=source_uri` and `--payload-file` / `--payload-json`.
+- Controlled external Beta onboarding flow: `docs/current/operations/runbooks/controlled-external-beta-onboarding.md`.

@@ -693,9 +693,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：将 beta/ga/roadmap 三个 gate 的 Linux 验证入口聚合为单命令编排，统一 dry-run 计划与参数透传。
 - 主要文件：
-  - `scripts/run_release_gate_validation.py`
+  - `scripts/release_gate.py`
   - `tests/test_release_gate_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -707,9 +707,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：将 release gate、TP 合同校验、doc-sync 与证据判定收敛成 Linux 单命令入口，输出 `GO/HOLD` 判定报告。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -721,9 +721,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：将 release switch 的判定门槛升级为必须包含 release-gate 顶层计划与 beta/ga/roadmap 子计划的完整证据包，避免缺包误判 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -735,9 +735,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 evidence freshness 守门，避免复用陈旧报告误判 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -749,9 +749,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 future timestamp skew 守门，防止证据文件时间被调到未来导致 freshness 绕过。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -763,9 +763,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 evidence cohort skew 守门，避免混用跨批次报告导致 `GO` 误判。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -777,9 +777,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 证据绑定守门，确保 `release-gate-output` 内部 beta/ga/roadmap stage 的 `--output` 指向与本次判定传入证据路径一致，避免混包误判 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -789,15 +789,15 @@ E12 建议从 E7 后开始持续补
 
 #### TP-E13-19 Release switch stage 合同一致性门禁
 
-- 目标：在 release switch 判定中加入 release-gate stage 合同守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令持续指向 `scripts/run_linux_validation_suite.py` 且 `--stages` 组合保持约定，防止“路径一致但执行计划漂移”误判 `GO`。
+- 目标：在 release switch 判定中加入 release-gate stage 合同守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令持续指向 `scripts/linux_validate.py` 且 `--stages` 组合保持约定，防止“路径一致但执行计划漂移”误判 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
-  - 默认校验 release-gate stage 命令必须匹配 `scripts/run_linux_validation_suite.py + --stages` 合同
+  - 默认校验 release-gate stage 命令必须匹配 `scripts/linux_validate.py + --stages` 合同
   - 任一 stage 命令或 `--stages` 漂移时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-stage-contract-check` 显式关闭 stage 合同门禁
 
@@ -805,9 +805,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 参数覆盖歧义守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令中的 `--stages` 与 `--output` 仅出现一次，防止重复参数覆盖绕过合同校验误判 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -819,9 +819,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 宽松开关守门，阻断通过 `--allow-regression/--no-coverage/--container-skip-build/--container-skip-run/--allow-secondary-failures` 等降级参数“带病放行”的 `GO` 误判。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -833,9 +833,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate dry-run 守门，阻断通过 `--dry-run` 伪执行 stage 命令导致“证据看似完整但未真实执行”的 `GO` 误判。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -845,15 +845,15 @@ E12 建议从 E7 后开始持续补
 
 #### TP-E13-23 Release switch 脚本定位伪装门禁
 
-- 目标：在 release switch 判定中加入 release-gate 脚本定位守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令真正执行的是 `scripts/run_linux_validation_suite.py`，而不是“命令中仅携带同名 token”的伪装路径。
+- 目标：在 release switch 判定中加入 release-gate 脚本定位守门，确保 `beta_gate/ga_gate/roadmap_gate` 命令真正执行的是 `scripts/linux_validate.py`，而不是“命令中仅携带同名 token”的伪装路径。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
-  - 默认校验 release-gate stage 命令中第一个 script token 必须是 `scripts/run_linux_validation_suite.py`
+  - 默认校验 release-gate stage 命令中第一个 script token 必须是 `scripts/linux_validate.py`
   - 若预期脚本仅作为附带 token 出现（未实际执行）时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-script-position-check` 显式关闭脚本定位门禁
 
@@ -861,27 +861,27 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate inline-dispatch 守门，阻断通过 `-c/-m/-` 让 python 在预期 linux-suite script token 前切换执行模式的绕过路径。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
-  - 默认校验 release-gate stage 命令在 `scripts/run_linux_validation_suite.py` token 之前不得出现 `-c/-m/-`
+  - 默认校验 release-gate stage 命令在 `scripts/linux_validate.py` token 之前不得出现 `-c/-m/-`
   - 任一 stage 命中 inline-dispatch 绕过模式时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-inline-exec-check` 显式关闭 inline-dispatch 门禁
 
 #### TP-E13-25 Release switch 脚本路径锚定门禁
 
-- 目标：在 release switch 判定中加入 release-gate script anchor 守门，确保 stage 命令解析后的执行脚本必须锚定仓库内 canonical `scripts/run_linux_validation_suite.py`，阻断同名外部路径伪装绕过。
+- 目标：在 release switch 判定中加入 release-gate script anchor 守门，确保 stage 命令解析后的执行脚本必须锚定仓库内 canonical `scripts/linux_validate.py`，阻断同名外部路径伪装绕过。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
-  - 默认校验 release-gate stage 首个 script token 解析后的 canonical path 必须等于仓库内 `scripts/run_linux_validation_suite.py`
+  - 默认校验 release-gate stage 首个 script token 解析后的 canonical path 必须等于仓库内 `scripts/linux_validate.py`
   - 任一 stage 命中同名外部路径伪装时，判定强制 `HOLD`
   - 支持 `--skip-release-gate-script-anchor-check` 显式关闭 script-anchor 门禁
 
@@ -889,9 +889,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate python-binding 守门，确保 stage 命令的 `--python` 与实际 launcher 前缀、以及 release-switch 输入值三方一致，阻断执行器覆盖或漂移导致的伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -904,9 +904,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate coverage-floor 守门，确保 beta stage 的 `--coverage-fail-under` 既与 release-switch 输入绑定一致，也不低于最低发布阈值，阻断“降阈值放行”导致的伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -919,9 +919,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate python-optimization 守门，禁止 stage launcher 使用 `-O/-OO` 优化旗标，避免 assert 校验被跳过导致伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -933,9 +933,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `--python` 传递链 optimization 守门，禁止 stage `--python` 值携带 `-O/-OO`，避免下游执行链被隐式优化导致 assert 合同被绕过。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -948,9 +948,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONOPTIMIZE` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 env 赋值绕过 assert 合同校验。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -963,9 +963,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `--python` 传递链 inline-dispatch 守门，禁止 stage `--python` 值携带 `-c/-m/-`，避免下游执行链切换成 inline 模式绕过脚本合同。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -978,9 +978,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONPATH` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 path 注入重定向模块解析，避免绕过预期 runtime 合同。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -993,9 +993,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONHOME` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 home 注入重定向解释器运行时根路径，避免绕过预期 runtime 合同。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1008,9 +1008,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONUSERBASE` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 user-base 注入重定向 user-site 包解析路径，避免绕过预期 runtime 合同。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1023,9 +1023,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONBREAKPOINT` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 breakpoint hook 注入改变调试分发行为，避免绕过预期 runtime 合同。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1038,9 +1038,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONSTARTUP` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 startup hook 注入启动脚本，避免绕过预期 runtime 合同。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1053,9 +1053,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONINSPECT` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 inspect hook 切入交互模式，避免执行链漂移误判 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1068,9 +1068,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PYTHONWARNINGS` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 warning filter 注入掩盖发布期间的告警契约漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1083,9 +1083,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 未登记 `PYTHON*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `PYTHON*` 赋值漂移运行时契约。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1098,9 +1098,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `PATH` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `PATH=*` 赋值重定向解释器解析路径，避免命中非预期 Python runtime 导致伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1113,9 +1113,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `LD_PRELOAD` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `LD_PRELOAD=*` 注入动态加载器 hook，避免运行时被旁路导致伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1128,9 +1128,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `LD_LIBRARY_PATH` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `LD_LIBRARY_PATH=*` 重定向动态链接器查找路径，避免运行时库解析漂移导致伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1143,9 +1143,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `LD_AUDIT` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `LD_AUDIT=*` 注入动态链接器审计 hook，避免运行时旁路导致伪 `GO`。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1158,9 +1158,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 未登记 `LD_*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `LD_*` 赋值漂移动态链接器运行时契约。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1173,9 +1173,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `GLIBC_TUNABLES` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `GLIBC_TUNABLES=*` 漂移 glibc 动态链接器 tunables 契约。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1188,9 +1188,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 未登记 `GLIBC_*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `GLIBC_*` 赋值漂移 glibc 运行时契约。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1203,9 +1203,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate 未登记 `MALLOC_*` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过未纳入显式门禁名单的 `MALLOC_*` 赋值漂移内存分配器运行时契约。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1218,9 +1218,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_TRACE` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_TRACE=*` 注入分配器追踪输出与侧信道痕迹。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1233,9 +1233,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_CHECK_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_CHECK_=*` 改写 glibc 分配器检查策略。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1248,9 +1248,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_PERTURB_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_PERTURB_=*` 注入内存扰动策略，避免运行时行为与基线判定出现漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1263,9 +1263,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_ARENA_MAX` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_ARENA_MAX=*` 改写 allocator arena 并发扩展策略，避免运行时资源行为与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1278,9 +1278,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_MMAP_THRESHOLD_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_MMAP_THRESHOLD_=*` 改写 allocator mmap 阈值策略，避免运行时内存分配路径与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1293,9 +1293,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_MMAP_MAX_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_MMAP_MAX_=*` 改写 allocator mmap 数量阈值策略，避免运行时分配形态与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1308,9 +1308,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_TOP_PAD_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_TOP_PAD_=*` 改写 allocator top chunk padding 策略，避免运行时堆增长行为与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1323,9 +1323,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_TRIM_THRESHOLD_` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_TRIM_THRESHOLD_=*` 改写 allocator trim threshold 策略，避免运行时内存回收行为与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1338,9 +1338,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_ARENA_TEST` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_ARENA_TEST=*` 改写 allocator arena probing 策略，避免运行时 arena 扩展行为与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1353,9 +1353,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 release switch 判定中加入 release-gate `MALLOC_PER_THREAD` 环境变量守门，禁止 stage launcher 与 `--python` 传递链通过 `MALLOC_PER_THREAD=*` 改写 allocator per-thread arena pooling 策略，避免运行时线程内存分配行为与基线判定漂移。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1368,9 +1368,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在保持现有 `decision/evidence_summary/gates` 兼容前提下，新增 `bulk_strategy_view` 结构化视图，避免每次新增 gate 都要求下游测算器改 schema，支持海量批处理的稳定解析。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1383,9 +1383,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上增加 domain 级聚合与签名字段，支持海量测算直接按域统计、按 hold 签名分桶，而无需二次遍历长 gate 明细。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1398,9 +1398,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐固定宽度哈希签名字段，支撑海量聚合作业在不依赖长字符串索引的情况下完成分桶与去重，同时保持 `decision/gates/evidence_summary` 兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1413,9 +1413,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐 domain 聚合轮廓的固定宽度签名字段，支撑海量策略作业按域聚合画像做快速索引与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1428,9 +1428,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐 evidence 轮廓的固定宽度签名字段，支撑海量策略作业按证据状态画像快速分桶、去重与回放，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1443,9 +1443,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐 gate 状态索引轮廓的固定宽度签名字段，支撑海量策略作业按门阵状态向量快速分桶、去重与回放，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1458,9 +1458,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐跨维度组合轮廓的固定宽度签名字段，把现有多维哈希收敛为单一主索引，支撑海量策略作业快速分桶、去重与回放，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1473,9 +1473,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐策略包络级固定宽度签名字段，将决策码、门阵计数、证据计数与既有多维哈希绑定为统一索引，支撑跨批次快速对账、分桶与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1488,9 +1488,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐合同级固定宽度签名字段，将 schema 版本、门阵域索引、门禁启停键与策略包络哈希绑定为统一合同签名，支撑跨批次合同漂移检测与快速对账，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1503,9 +1503,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐合同包络级固定宽度签名字段，将合同签名与批次门阵/证据计数绑定为统一包络索引，支撑跨批次合同+姿态快速对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1518,9 +1518,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布级固定宽度指纹字段，将合同签名、合同包络、姿态轮廓与门禁启停键绑定为统一发布指纹，支撑跨批次一键发布对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1533,9 +1533,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布清单级固定宽度哈希字段，将发布指纹与门阵状态、域索引、证据轮廓绑定为统一发布清单索引，支撑跨批次发布面快速回放、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1548,9 +1548,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布根级固定宽度哈希字段，将发布清单哈希与核心姿态签名绑定统一根索引，支撑跨批次快速对账、去重与回放，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1563,9 +1563,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布见证级固定宽度哈希字段，将发布根签名与发布清单、发布指纹及核心姿态索引绑定为统一见证键，支撑跨批次发布产物快速验签、对账与追踪，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1578,9 +1578,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布裁决级固定宽度哈希字段，将发布见证、发布根、发布清单、发布指纹与合同姿态包络绑定为统一裁决键，支撑跨批次一键发布对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1593,9 +1593,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布谱系级固定宽度哈希字段，将发布裁决、发布见证、发布根签名、发布清单与核心姿态签名索引绑定为统一谱系键，支撑跨批次发布链路回放、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1608,9 +1608,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布胶囊级固定宽度哈希字段，将发布谱系签名与核心判定计数收敛为紧凑统一索引，支撑跨批次快速对账、分桶与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1623,9 +1623,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布锚点级固定宽度哈希字段，将发布胶囊签名与发布清单/发布指纹以及合同策略包络收敛为统一锚点索引，支撑跨批次极速对账、分桶与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1638,9 +1638,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布信标级固定宽度哈希字段，将发布锚点与门阵索引/组合轮廓及合同策略包络收敛为统一信标索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1653,9 +1653,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布星图级固定宽度哈希字段，将发布信标与谱系姿态签名收敛为统一星图索引，支撑跨批次极速路由、对账与回放，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1668,9 +1668,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布星系级固定宽度哈希字段，将发布星图与双签姿态收敛为统一星系索引，支撑跨批次极速路由、对账与回放，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1683,9 +1683,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布宇宙级固定宽度哈希字段，将发布星系哈希与多维姿态签名收敛为统一宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1698,9 +1698,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布多元宇宙级固定宽度哈希字段，将发布宇宙哈希与多维姿态签名收敛为统一多元宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1713,9 +1713,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布超宇宙级固定宽度哈希字段，将发布多元宇宙哈希与多维姿态签名收敛为统一超宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1728,9 +1728,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布极宇宙级固定宽度哈希字段，将发布超宇宙哈希与多维姿态签名收敛为统一极宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1743,9 +1743,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布巨宇宙级固定宽度哈希字段，将发布极宇宙哈希与多维姿态签名收敛为统一巨宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1758,9 +1758,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布十亿宇宙级固定宽度哈希字段，将发布巨宇宙哈希与多维姿态签名收敛为统一十亿宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1773,9 +1773,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布万亿宇宙级固定宽度哈希字段，将发布十亿宇宙哈希与多维姿态签名收敛为统一万亿宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1788,9 +1788,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布千万亿宇宙级固定宽度哈希字段，将发布万亿宇宙哈希与多维姿态签名收敛为统一千万亿宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1803,9 +1803,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布百京宇宙级固定宽度哈希字段，将发布千万亿宇宙哈希与多维姿态签名收敛为统一百京宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1818,9 +1818,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布十垓宇宙级固定宽度哈希字段，将发布百京宇宙哈希与多维姿态签名收敛为统一十垓宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1833,9 +1833,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布尧它宇宙级固定宽度哈希字段，将发布十垓宇宙哈希与多维姿态签名收敛为统一尧它宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1848,9 +1848,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布罗纳宇宙级固定宽度哈希字段，将发布秭宇宙哈希与多维姿态签名收敛为统一罗纳宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1863,9 +1863,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布昆塔宇宙级固定宽度哈希字段，将发布罗纳宇宙哈希与多维姿态签名收敛为统一昆塔宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1878,9 +1878,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布极巅宇宙级固定宽度哈希字段，将发布昆塔宇宙哈希与多维姿态签名收敛为统一极巅宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1893,9 +1893,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布终极宇宙级固定宽度哈希字段，将发布极巅宇宙哈希与多维姿态签名收敛为统一终极宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1908,9 +1908,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布超越宇宙级固定宽度哈希字段，将发布终极宇宙哈希与多维姿态签名收敛为统一超越宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1923,9 +1923,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布无限宇宙级固定宽度哈希字段，将发布超越宇宙哈希与多维姿态签名收敛为统一无限宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1938,9 +1938,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布永恒宇宙级固定宽度哈希字段，将发布无限宇宙哈希与多维姿态签名收敛为统一永恒宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1953,9 +1953,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布永序宇宙级固定宽度哈希字段，将发布永恒宇宙哈希与多维姿态签名收敛为统一永序宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1968,9 +1968,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布纪元宇宙级固定宽度哈希字段，将发布永序宇宙哈希与多维姿态签名收敛为统一纪元宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1983,9 +1983,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布世代宇宙级固定宽度哈希字段，将发布纪元宇宙哈希与多维姿态签名收敛为统一世代宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -1998,9 +1998,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布元宇宇宙级固定宽度哈希字段，将发布世代宇宙哈希与多维姿态签名收敛为统一元宇宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2013,9 +2013,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布超元宇宙级固定宽度哈希字段，将发布元宇宇宙哈希与多维姿态签名收敛为统一超元宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2028,9 +2028,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布平行宇宙级固定宽度哈希字段，将发布超元宇宙哈希与多维姿态签名收敛为统一平行宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2043,9 +2043,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布多维宇宙级固定宽度哈希字段，将发布平行宇宙哈希与多维姿态签名收敛为统一多维宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2058,9 +2058,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布泛宇宙级固定宽度哈希字段，将发布多维宇宙哈希与多维姿态签名收敛为统一泛宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2073,9 +2073,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布全息宇宙级固定宽度哈希字段，将发布泛宇宙哈希与多维姿态签名收敛为统一全息宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2088,9 +2088,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布新宇宙级固定宽度哈希字段，将发布全息宇宙哈希与多维姿态签名收敛为统一新宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2103,9 +2103,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布新星宇宙级固定宽度哈希字段，将发布新宇宙哈希与多维姿态签名收敛为统一新星宇宙索引，支撑跨批次极速路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/baselines/README.md`
 - 验收：
@@ -2118,9 +2118,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布超新星宇宙级固定宽度哈希字段，将发布新星宇宙哈希与前序发布签名收敛为统一超新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2134,9 +2134,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布超极新星宇宙级固定宽度哈希字段，将发布超新星宇宙哈希与前序发布签名收敛为统一超极新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2150,9 +2150,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布极耀新星宇宙级固定宽度哈希字段，将发布超极新星宇宙哈希与前序发布签名收敛为统一极耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2166,9 +2166,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布终耀新星宇宙级固定宽度哈希字段，将发布极耀新星宇宙哈希与前序发布签名收敛为统一终耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2182,9 +2182,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布始耀新星宇宙级固定宽度哈希字段，将发布终耀新星宇宙哈希与前序发布签名收敛为统一始耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2198,9 +2198,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布次耀新星宇宙级固定宽度哈希字段，将发布始耀新星宇宙哈希与前序发布签名收敛为统一次耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2214,9 +2214,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布叁耀新星宇宙级固定宽度哈希字段，将发布次耀新星宇宙哈希与前序发布签名收敛为统一叁耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2230,9 +2230,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布肆耀新星宇宙级固定宽度哈希字段，将发布叁耀新星宇宙哈希与前序发布签名收敛为统一肆耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2246,9 +2246,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布伍耀新星宇宙级固定宽度哈希字段，将发布肆耀新星宇宙哈希与前序发布签名收敛为统一伍耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2262,9 +2262,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布陆耀新星宇宙级固定宽度哈希字段，将发布伍耀新星宇宙哈希与前序发布签名收敛为统一陆耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2278,9 +2278,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布柒耀新星宇宙级固定宽度哈希字段，将发布陆耀新星宇宙哈希与前序发布签名收敛为统一柒耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2294,9 +2294,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布捌耀新星宇宙级固定宽度哈希字段，将发布柒耀新星宇宙哈希与前序发布签名收敛为统一捌耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2310,9 +2310,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布玖耀新星宇宙级固定宽度哈希字段，将发布捌耀新星宇宙哈希与前序发布签名收敛为统一玖耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2326,9 +2326,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾耀新星宇宙级固定宽度哈希字段，将发布玖耀新星宇宙哈希与前序发布签名收敛为统一拾耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2342,9 +2342,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾壹耀新星宇宙级固定宽度哈希字段，将发布拾耀新星宇宙哈希与前序发布签名收敛为统一拾壹耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2358,9 +2358,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾贰耀新星宇宙级固定宽度哈希字段，将发布拾壹耀新星宇宙哈希与前序发布签名收敛为统一拾贰耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2374,9 +2374,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾叁耀新星宇宙级固定宽度哈希字段，将发布拾贰耀新星宇宙哈希与前序发布签名收敛为统一拾叁耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2390,9 +2390,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾肆耀新星宇宙级固定宽度哈希字段，将发布拾叁耀新星宇宙哈希与前序发布签名收敛为统一拾肆耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2406,9 +2406,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾伍耀新星宇宙级固定宽度哈希字段，将发布拾肆耀新星宇宙哈希与前序发布签名收敛为统一拾伍耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2422,9 +2422,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾陆耀新星宇宙级固定宽度哈希字段，将发布拾伍耀新星宇宙哈希与前序发布签名收敛为统一拾陆耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2438,9 +2438,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾柒耀新星宇宙级固定宽度哈希字段，将发布拾陆耀新星宇宙哈希与前序发布签名收敛为统一拾柒耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2454,9 +2454,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾捌耀新星宇宙级固定宽度哈希字段，将发布拾柒耀新星宇宙哈希与前序发布签名收敛为统一拾捌耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2470,9 +2470,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布拾玖耀新星宇宙级固定宽度哈希字段，将发布拾捌耀新星宇宙哈希与前序发布签名收敛为统一拾玖耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2486,9 +2486,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布贰拾耀新星宇宙级固定宽度哈希字段，将发布拾玖耀新星宇宙哈希与前序发布签名收敛为统一贰拾耀新星宇宙索引，支撑更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2502,9 +2502,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布斐耀新星宇宙级固定宽度哈希字段，将发布贰拾耀新星宇宙哈希与前序发布签名收敛为统一斐耀新星宇宙索引，支持更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`
@@ -2518,9 +2518,9 @@ E12 建议从 E7 后开始持续补
 
 - 目标：在 `bulk_strategy_view` 上补齐发布志耀新星宇宙级固定宽度哈希字段，将发布斐耀新星宇宙哈希与前序发布签名收敛为统一志耀新星宇宙索引，支持更高一层跨批次路由、对账与去重，同时保持既有判定字段兼容不变。
 - 主要文件：
-  - `scripts/run_release_switch_validation.py`
+  - `scripts/release_switch.py`
   - `tests/test_release_switch_validation_script.py`
-  - `scripts/run_tp_tests.py`
+  - `scripts/tp_tests.py`
   - `docs/current/operations/testing.md`
   - `docs/current/status/CURRENT_STATUS.md`
   - `docs/current/status/baselines/README.md`

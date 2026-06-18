@@ -1,0 +1,313 @@
+{
+  "generated_at_utc": "2026-05-25T14:12:11.016358+00:00",
+  "check_count": 13,
+  "pass_count": 13,
+  "failed_count": 0,
+  "status": "pass",
+  "failed_checks": [],
+  "checks": [
+    {
+      "name": "required_files_exist",
+      "status": "pass",
+      "details": {
+        "missing": [],
+        "checked": {
+          "readme": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\README.md",
+          "cli_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\cli.py",
+          "api_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\api_app.py",
+          "worker_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\worker.py",
+          "tp_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\scripts\\tp_tests.py",
+          "cli_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\cli.md",
+          "api_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\api.md",
+          "worker_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\worker.md",
+          "testing_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\testing.md",
+          "arch_migration_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\architecture\\v1-to-v2-migration-guide.md",
+          "ops_migration_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\v1-to-v2-migration-runbook.md",
+          "release_standard_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\v2-release-switch-standard.md",
+          "release_history_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\history\\status\\2026-04-26-v2-release-switch-standard.md",
+          "launch_beta_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\launch-beta.md",
+          "docker_zero_to_release_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\docker-zero-to-release.md",
+          "production_ops_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\operations\\runbooks\\production-operations-baseline.md"
+        }
+      }
+    },
+    {
+      "name": "readme_markdown_links",
+      "status": "pass",
+      "details": {
+        "checked_count": 18,
+        "broken": []
+      }
+    },
+    {
+      "name": "cli_command_docs",
+      "status": "pass",
+      "details": {
+        "commands": [
+          "distill-audio",
+          "distill-corpus",
+          "distill-image",
+          "distill-tabular",
+          "distill-text",
+          "distill-video",
+          "export-skill",
+          "review-queue",
+          "show-template"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "name": "api_route_docs",
+      "status": "pass",
+      "details": {
+        "routes": [
+          "GET /healthz",
+          "GET /v1/review/queue",
+          "POST /v1/distill/audio",
+          "POST /v1/distill/corpus",
+          "POST /v1/distill/image",
+          "POST /v1/distill/tabular",
+          "POST /v1/distill/text",
+          "POST /v1/distill/video",
+          "POST /v1/review/queue/claim",
+          "POST /v1/review/queue/{review_task_id}/close",
+          "POST /v1/review/queue/{review_task_id}/decision"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "name": "api_ops_contract_completeness",
+      "status": "pass",
+      "details": {
+        "missing_required_sections": [],
+        "missing_required_markers": []
+      }
+    },
+    {
+      "name": "worker_kind_docs",
+      "status": "pass",
+      "details": {
+        "kinds": [
+          "audio",
+          "corpus",
+          "image",
+          "rebuild_publication",
+          "review_queue",
+          "revise_skill",
+          "tabular",
+          "text",
+          "video"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "name": "testing_doc_recent_tp_mentions",
+      "status": "pass",
+      "details": {
+        "recent_tp_ids": [
+          "TP-E10-01",
+          "TP-E10-02",
+          "TP-E10-03",
+          "TP-E11-01",
+          "TP-E11-02",
+          "TP-E11-03",
+          "TP-E11-04",
+          "TP-E12-01",
+          "TP-E12-02",
+          "TP-E12-03",
+          "TP-E12-04",
+          "TP-E13-01",
+          "TP-E13-02",
+          "TP-E13-03",
+          "TP-E13-04",
+          "TP-E13-05",
+          "TP-E13-06",
+          "TP-E13-07",
+          "TP-E13-08",
+          "TP-E13-09",
+          "TP-E13-10",
+          "TP-E13-100",
+          "TP-E13-101",
+          "TP-E13-102",
+          "TP-E13-103",
+          "TP-E13-104",
+          "TP-E13-105",
+          "TP-E13-106",
+          "TP-E13-107",
+          "TP-E13-108",
+          "TP-E13-109",
+          "TP-E13-11",
+          "TP-E13-110",
+          "TP-E13-111",
+          "TP-E13-112",
+          "TP-E13-113",
+          "TP-E13-114",
+          "TP-E13-115",
+          "TP-E13-116",
+          "TP-E13-117",
+          "TP-E13-118",
+          "TP-E13-119",
+          "TP-E13-12",
+          "TP-E13-120",
+          "TP-E13-121",
+          "TP-E13-122",
+          "TP-E13-123",
+          "TP-E13-124",
+          "TP-E13-125",
+          "TP-E13-126",
+          "TP-E13-127",
+          "TP-E13-128",
+          "TP-E13-129",
+          "TP-E13-13",
+          "TP-E13-130",
+          "TP-E13-131",
+          "TP-E13-132",
+          "TP-E13-133",
+          "TP-E13-14",
+          "TP-E13-15",
+          "TP-E13-16",
+          "TP-E13-17",
+          "TP-E13-18",
+          "TP-E13-19",
+          "TP-E13-20",
+          "TP-E13-21",
+          "TP-E13-22",
+          "TP-E13-23",
+          "TP-E13-24",
+          "TP-E13-25",
+          "TP-E13-26",
+          "TP-E13-27",
+          "TP-E13-28",
+          "TP-E13-29",
+          "TP-E13-30",
+          "TP-E13-31",
+          "TP-E13-32",
+          "TP-E13-33",
+          "TP-E13-34",
+          "TP-E13-35",
+          "TP-E13-36",
+          "TP-E13-37",
+          "TP-E13-38",
+          "TP-E13-39",
+          "TP-E13-40",
+          "TP-E13-41",
+          "TP-E13-42",
+          "TP-E13-43",
+          "TP-E13-44",
+          "TP-E13-45",
+          "TP-E13-46",
+          "TP-E13-47",
+          "TP-E13-48",
+          "TP-E13-49",
+          "TP-E13-50",
+          "TP-E13-51",
+          "TP-E13-52",
+          "TP-E13-53",
+          "TP-E13-54",
+          "TP-E13-55",
+          "TP-E13-56",
+          "TP-E13-57",
+          "TP-E13-58",
+          "TP-E13-59",
+          "TP-E13-60",
+          "TP-E13-61",
+          "TP-E13-62",
+          "TP-E13-63",
+          "TP-E13-64",
+          "TP-E13-65",
+          "TP-E13-66",
+          "TP-E13-67",
+          "TP-E13-68",
+          "TP-E13-69",
+          "TP-E13-70",
+          "TP-E13-71",
+          "TP-E13-72",
+          "TP-E13-73",
+          "TP-E13-74",
+          "TP-E13-75",
+          "TP-E13-76",
+          "TP-E13-77",
+          "TP-E13-78",
+          "TP-E13-79",
+          "TP-E13-80",
+          "TP-E13-81",
+          "TP-E13-82",
+          "TP-E13-83",
+          "TP-E13-84",
+          "TP-E13-85",
+          "TP-E13-86",
+          "TP-E13-87",
+          "TP-E13-88",
+          "TP-E13-89",
+          "TP-E13-90",
+          "TP-E13-91",
+          "TP-E13-92",
+          "TP-E13-93",
+          "TP-E13-94",
+          "TP-E13-95",
+          "TP-E13-96",
+          "TP-E13-97",
+          "TP-E13-98",
+          "TP-E13-99"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "name": "migration_guide_completeness",
+      "status": "pass",
+      "details": {
+        "missing_arch_headings": [],
+        "missing_ops_headings": [],
+        "missing_refs": [],
+        "missing_ops_commands": []
+      }
+    },
+    {
+      "name": "release_switch_standard_completeness",
+      "status": "pass",
+      "details": {
+        "missing_standard_headings": [],
+        "missing_history_headings": [],
+        "missing_gate_markers": [],
+        "missing_refs": [],
+        "missing_standard_commands": [],
+        "missing_history_refs": []
+      }
+    },
+    {
+      "name": "launch_beta_runbook_completeness",
+      "status": "pass",
+      "details": {
+        "missing_required_headings": [],
+        "missing_required_markers": []
+      }
+    },
+    {
+      "name": "docker_zero_to_release_runbook_completeness",
+      "status": "pass",
+      "details": {
+        "missing_required_headings": [],
+        "missing_required_markers": []
+      }
+    },
+    {
+      "name": "production_ops_runbook_completeness",
+      "status": "pass",
+      "details": {
+        "missing_required_headings": [],
+        "missing_required_markers": []
+      }
+    },
+    {
+      "name": "stale_pending_tp_marker",
+      "status": "pass",
+      "details": {
+        "stale_hits": []
+      }
+    }
+  ]
+}

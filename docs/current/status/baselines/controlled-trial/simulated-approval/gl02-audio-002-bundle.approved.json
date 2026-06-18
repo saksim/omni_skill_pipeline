@@ -1,0 +1,1053 @@
+{
+  "asset": {
+    "modality": "audio",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+    "metadata": {
+      "transcript_source": "incident-review-call.transcript.md",
+      "language": null
+    },
+    "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "span_ref": "timestamp:segment:0001",
+      "content_type": "speech",
+      "content": "# Incident Review Call Transcript (Sanitized)",
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "evidence_id": "5a251fe9-7240-4777-9cf3-35feaf7cdb25"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "span_ref": "timestamp:4.00",
+      "content_type": "speech",
+      "content": "Reconstruct the timeline from first alert to mitigation.",
+      "speaker": "Lead",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:Lead",
+        "utterance_act:context",
+        "speaker_role:participant"
+      ],
+      "evidence_id": "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "span_ref": "timestamp:80.00",
+      "content_type": "speech",
+      "content": "Duplicate alerts came from two monitors sharing one backend symptom.",
+      "speaker": "Ops",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:Ops",
+        "utterance_act:context",
+        "speaker_role:oncall"
+      ],
+      "evidence_id": "37fd0814-98b5-4487-8f3f-bd9d3207e807"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "span_ref": "timestamp:131.00",
+      "content_type": "speech",
+      "content": "Merge those monitors into one incident stream before next shift.",
+      "speaker": "SRE",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:SRE",
+        "utterance_act:context",
+        "speaker_role:oncall"
+      ],
+      "evidence_id": "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "span_ref": "timestamp:185.00",
+      "content_type": "speech",
+      "content": "Validate recovery with error-rate and latency over 30 minutes.",
+      "speaker": "Lead",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:Lead",
+        "utterance_act:context",
+        "speaker_role:participant"
+      ],
+      "evidence_id": "ff13df5c-e667-4a31-8fb7-bfee237f6f2f"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "precondition",
+      "summary": "Merge those monitors into one incident stream before next shift.",
+      "evidence_refs": [
+        "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13"
+      ],
+      "confidence": 0.72,
+      "insight_id": "245af746-b312-4836-bc56-ce9b539f23db"
+    }
+  ],
+  "skill": {
+    "name": "audio follow-up call to runbook revision skill",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: # Incident Review Call Transcript (Sanitized)",
+    "source_modality": "audio",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert audio evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Audio source or transcript",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Merge those monitors into one incident stream before next shift."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "# Incident Review Call Transcript (Sanitized)",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Reconstruct the timeline from first alert to mitigation.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "Duplicate alerts came from two monitors sharing one backend symptom.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "5a251fe9-7240-4777-9cf3-35feaf7cdb25@timestamp:segment:0001",
+      "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5@timestamp:4.00",
+      "37fd0814-98b5-4487-8f3f-bd9d3207e807@timestamp:80.00",
+      "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13@timestamp:131.00",
+      "ff13df5c-e667-4a31-8fb7-bfee237f6f2f@timestamp:185.00"
+    ],
+    "confidence": 0.8,
+    "version": "0.1.0",
+    "summary": "# Incident Review Call Transcript (Sanitized)",
+    "tags": [
+      "controlled_trial",
+      "audio",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a"
+  },
+  "skill_markdown": "---\nname: \"audio follow-up call to runbook revision skill\"\ndescription: \"Use when Use when converting audio evidence into build_skill.. Merge those monitors into one incident stream before next shift.\"\n---\n\n# audio follow-up call to runbook revision skill\n\n## Workflow\n1. Evaluate rule: Merge those monitors into one incident stream before next shift. (Why: Derived from rule atom fallback because no procedure atoms were found.)\n\n## Decision Rules\n- When rule conditions are met. -> Merge those monitors into one incident stream before next shift.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+  "skill_graph": {
+    "name": "audio follow-up call to runbook revision skill",
+    "goal": "Distill controlled_trial material into build_skill for self.",
+    "source_modalities": [
+      "audio"
+    ],
+    "audience": "self",
+    "summary": "Merge those monitors into one incident stream before next shift.",
+    "tags": [
+      "controlled_trial",
+      "skill_graph"
+    ],
+    "domain": "controlled_trial",
+    "trigger": [
+      "Use when converting audio evidence into build_skill."
+    ],
+    "inputs": [
+      "Audio transcript or source"
+    ],
+    "preconditions": [
+      "Confirm source evidence is complete and correctly scoped to the goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Evaluate rule: Merge those monitors into one incident stream before next shift.",
+        "why": "Derived from rule atom fallback because no procedure atoms were found.",
+        "atom_refs": [
+          "23c2c438-d316-42ad-8f90-b9a78a1f35fe"
+        ],
+        "evidence_refs": [
+          "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13"
+        ],
+        "metadata": {
+          "fallback_from_atom_type": "rule"
+        },
+        "node_type": "step",
+        "node_id": "462cf7d0-9504-4983-b075-7b7a71a0692e"
+      }
+    ],
+    "decisions": [
+      {
+        "condition": "When rule conditions are met.",
+        "decision": "Merge those monitors into one incident stream before next shift.",
+        "rationale": "",
+        "atom_refs": [
+          "23c2c438-d316-42ad-8f90-b9a78a1f35fe"
+        ],
+        "evidence_refs": [
+          "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13"
+        ],
+        "metadata": {},
+        "node_type": "decision",
+        "node_id": "d8250d27-f6e8-49dc-9264-e84fe31a246d"
+      }
+    ],
+    "verifications": [],
+    "risks": [],
+    "examples": [],
+    "variables": [],
+    "edges": [
+      {
+        "edge_type": "justified_by",
+        "source_node_id": "462cf7d0-9504-4983-b075-7b7a71a0692e",
+        "target_node_id": "d8250d27-f6e8-49dc-9264-e84fe31a246d",
+        "rationale": "Decision informs initial execution branch.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "ffb235b0-af20-4f59-a182-ee6c108e5295"
+      }
+    ],
+    "evidence_refs": [
+      "5a251fe9-7240-4777-9cf3-35feaf7cdb25",
+      "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5",
+      "37fd0814-98b5-4487-8f3f-bd9d3207e807",
+      "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13",
+      "ff13df5c-e667-4a31-8fb7-bfee237f6f2f"
+    ],
+    "atom_refs": [
+      "23c2c438-d316-42ad-8f90-b9a78a1f35fe"
+    ],
+    "confidence": 0.56,
+    "version": "0.1.0",
+    "review_status": "draft",
+    "created_at": "2026-05-25T10:17:08Z",
+    "graph_id": "943e4824-cff2-45d6-848e-170d06bcbf6c"
+  },
+  "publications": [
+    {
+      "publication_type": "skill_markdown",
+      "content": {
+        "filename": "SKILL.md",
+        "text": "---\nname: \"audio follow-up call to runbook revision skill\"\ndescription: \"Use when Use when converting audio evidence into build_skill.. Merge those monitors into one incident stream before next shift.\"\n---\n\n# audio follow-up call to runbook revision skill\n\n## Workflow\n1. Evaluate rule: Merge those monitors into one incident stream before next shift. (Why: Derived from rule atom fallback because no procedure atoms were found.)\n\n## Decision Rules\n- When rule conditions are met. -> Merge those monitors into one incident stream before next shift.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "description": "Use when Use when converting audio evidence into build_skill.. Merge those monitors into one incident stream before next shift.",
+        "line_count": 22,
+        "line_limit": 220,
+        "references": {
+          "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `audio`\n- evidence_ref_count: `5`\n\n## Evidence References\n- `5a251fe9-7240-4777-9cf3-35feaf7cdb25`\n- `0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5`\n- `37fd0814-98b5-4487-8f3f-bd9d3207e807`\n- `b2589e5c-019a-4f5e-9a45-6aa53c3bfb13`\n- `ff13df5c-e667-4a31-8fb7-bfee237f6f2f`\n\n## Transcript Notes\n- Keep long transcript excerpts in this references file, not in main `SKILL.md`.\n",
+          "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+        },
+        "graph_id": "943e4824-cff2-45d6-848e-170d06bcbf6c",
+        "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a"
+      },
+      "path": "SKILL.md",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "943e4824-cff2-45d6-848e-170d06bcbf6c",
+        "skill_id": "943e4824-cff2-45d6-848e-170d06bcbf6c",
+        "version": "0.1.0",
+        "renderer": "portable_skill_markdown_v1",
+        "evidence_refs": [
+          "5a251fe9-7240-4777-9cf3-35feaf7cdb25",
+          "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5",
+          "37fd0814-98b5-4487-8f3f-bd9d3207e807",
+          "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13",
+          "ff13df5c-e667-4a31-8fb7-bfee237f6f2f"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "a98615d9-0ec9-4e4c-9204-41ba85444fe9"
+    },
+    {
+      "publication_type": "skill_json",
+      "content": {
+        "filename": "skill.json",
+        "skill": {
+          "name": "audio follow-up call to runbook revision skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: # Incident Review Call Transcript (Sanitized)",
+          "source_modality": "audio",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert audio evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Audio source or transcript",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Merge those monitors into one incident stream before next shift."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "# Incident Review Call Transcript (Sanitized)",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Reconstruct the timeline from first alert to mitigation.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "Duplicate alerts came from two monitors sharing one backend symptom.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "5a251fe9-7240-4777-9cf3-35feaf7cdb25@timestamp:segment:0001",
+            "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5@timestamp:4.00",
+            "37fd0814-98b5-4487-8f3f-bd9d3207e807@timestamp:80.00",
+            "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13@timestamp:131.00",
+            "ff13df5c-e667-4a31-8fb7-bfee237f6f2f@timestamp:185.00"
+          ],
+          "confidence": 0.8,
+          "version": "0.1.0",
+          "summary": "# Incident Review Call Transcript (Sanitized)",
+          "tags": [
+            "controlled_trial",
+            "audio",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a"
+        },
+        "graph_id": "943e4824-cff2-45d6-848e-170d06bcbf6c",
+        "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a"
+      },
+      "path": "skill.json",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "943e4824-cff2-45d6-848e-170d06bcbf6c",
+        "skill_id": "943e4824-cff2-45d6-848e-170d06bcbf6c",
+        "version": "0.1.0",
+        "renderer": "skill_json_v1_compat",
+        "evidence_refs": [
+          "5a251fe9-7240-4777-9cf3-35feaf7cdb25",
+          "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5",
+          "37fd0814-98b5-4487-8f3f-bd9d3207e807",
+          "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13",
+          "ff13df5c-e667-4a31-8fb7-bfee237f6f2f"
+        ]
+      },
+      "created_at": "2026-05-25T10:17:08Z",
+      "publication_id": "e78b9183-2fbd-402b-a823-21facb62b46a"
+    }
+  ],
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 0.9153,
+    "overall_score": 0.9859,
+    "diagnostics": {
+      "step_count": 3.0,
+      "evidence_node_count": 5.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_task": {
+    "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a",
+    "decision": "auto_publish",
+    "reason_codes": [
+      "controlled_trial_requires_review",
+      "simulated_human_approval"
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.9153,
+      "overall_score": 0.9859
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "review_notes": "Simulated human approval in controlled-trial runner.",
+    "status": "published",
+    "created_at": "2026-05-25T10:17:08Z",
+    "review_task_id": "73d9197e-dd2f-4b75-81e1-dd95b50aa6c7"
+  },
+  "corpus": null,
+  "evidence_nodes": [
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:segment:0001",
+      "text_content": "# Incident Review Call Transcript (Sanitized)",
+      "payload": {
+        "legacy_content": "# Incident Review Call Transcript (Sanitized)"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.82,
+      "tags": [
+        "utterance_act:context",
+        "speaker_role:unknown"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "5a251fe9-7240-4777-9cf3-35feaf7cdb25"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:4.00",
+      "text_content": "Reconstruct the timeline from first alert to mitigation.",
+      "payload": {
+        "legacy_content": "Reconstruct the timeline from first alert to mitigation."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": "Lead",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:Lead",
+        "utterance_act:context",
+        "speaker_role:participant"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:80.00",
+      "text_content": "Duplicate alerts came from two monitors sharing one backend symptom.",
+      "payload": {
+        "legacy_content": "Duplicate alerts came from two monitors sharing one backend symptom."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": "Ops",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:Ops",
+        "utterance_act:context",
+        "speaker_role:oncall"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "37fd0814-98b5-4487-8f3f-bd9d3207e807"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:131.00",
+      "text_content": "Merge those monitors into one incident stream before next shift.",
+      "payload": {
+        "legacy_content": "Merge those monitors into one incident stream before next shift."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": "SRE",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:SRE",
+        "utterance_act:context",
+        "speaker_role:oncall"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13"
+    },
+    {
+      "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+      "modality": "audio",
+      "content_type": "speech",
+      "span_ref": "timestamp:185.00",
+      "text_content": "Validate recovery with error-rate and latency over 30 minutes.",
+      "payload": {
+        "legacy_content": "Validate recovery with error-rate and latency over 30 minutes."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": "Lead",
+      "confidence": 0.82,
+      "tags": [
+        "speaker:Lead",
+        "utterance_act:context",
+        "speaker_role:participant"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "ff13df5c-e667-4a31-8fb7-bfee237f6f2f"
+    }
+  ],
+  "request_payload": {
+    "title": "audio follow-up call to runbook revision skill",
+    "audio_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.wav",
+    "transcript": null,
+    "transcript_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+    "language": null,
+    "prompt": null,
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "controlled_trial"
+    }
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\bundle.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\evidence_nodes.json",
+    "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\publications",
+    "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\publications\\manifest.json",
+    "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\quality_score.json",
+    "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\review_task.json",
+    "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\review_feedback.json",
+    "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\reviewer_packet.json",
+    "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\review_policy.json",
+    "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\publications\\SKILL.md",
+    "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\audio-follow-up-call-to-runbook-revision-skill-3b29e39a\\publications\\skill.json",
+    "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\review_queue\\pending\\73d9197e-dd2f-4b75-81e1-dd95b50aa6c7.json"
+  },
+  "adapter_metadata": {
+    "transcript_source": "incident-review-call.transcript.md",
+    "utterance_act_counts": {
+      "context": 5
+    },
+    "provider_calls": [],
+    "evidence_node_count": 5,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "quality_scores": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 0.9153,
+      "overall_score": 0.9859,
+      "diagnostics": {
+        "step_count": 3.0,
+        "evidence_node_count": 5.0,
+        "publication_count": 2.0
+      }
+    },
+    "review_policy": {
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9153,
+        "overall_score": 0.9859
+      }
+    },
+    "review_task": {
+      "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9153,
+        "overall_score": 0.9859
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "review_notes": "",
+      "status": "review_pending",
+      "created_at": "2026-05-25T10:17:08Z",
+      "review_task_id": "73d9197e-dd2f-4b75-81e1-dd95b50aa6c7"
+    },
+    "review_feedback": {
+      "review_task_id": "73d9197e-dd2f-4b75-81e1-dd95b50aa6c7",
+      "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a",
+      "decision": "review_required",
+      "status": "review_pending",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "categories": [
+        "manual_review"
+      ],
+      "atom_actions": [],
+      "graph_actions": [],
+      "policy_actions": [
+        {
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9153,
+        "overall_score": 0.9859
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      }
+    },
+    "reviewer_packet": {
+      "schema_version": "reviewer_packet.v1",
+      "created_at": "2026-05-25T10:17:08Z",
+      "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a",
+      "skill_name": "audio follow-up call to runbook revision skill",
+      "review_task_id": "73d9197e-dd2f-4b75-81e1-dd95b50aa6c7",
+      "review_status": "review_pending",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "input_summary": {
+        "title": "audio follow-up call to runbook revision skill",
+        "goal": "Distill controlled_trial material into a build_skill for self. Seed: # Incident Review Call Transcript (Sanitized)",
+        "summary": "# Incident Review Call Transcript (Sanitized)",
+        "modalities": [
+          "audio"
+        ],
+        "evidence_unit_count": 5,
+        "evidence_node_count": 5,
+        "asset_count": 1,
+        "asset_refs": []
+      },
+      "evidence_links": [
+        {
+          "evidence_id": "5a251fe9-7240-4777-9cf3-35feaf7cdb25",
+          "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+          "span_ref": "timestamp:segment:0001",
+          "content_type": "speech",
+          "modality": "audio",
+          "confidence": 0.82,
+          "summary": "# Incident Review Call Transcript (Sanitized)",
+          "tags": [
+            "utterance_act:context",
+            "speaker_role:unknown"
+          ]
+        },
+        {
+          "evidence_id": "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5",
+          "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+          "span_ref": "timestamp:4.00",
+          "content_type": "speech",
+          "modality": "audio",
+          "confidence": 0.82,
+          "summary": "Reconstruct the timeline from first alert to mitigation.",
+          "tags": [
+            "speaker:Lead",
+            "utterance_act:context",
+            "speaker_role:participant"
+          ]
+        },
+        {
+          "evidence_id": "37fd0814-98b5-4487-8f3f-bd9d3207e807",
+          "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+          "span_ref": "timestamp:80.00",
+          "content_type": "speech",
+          "modality": "audio",
+          "confidence": 0.82,
+          "summary": "Duplicate alerts came from two monitors sharing one backend symptom.",
+          "tags": [
+            "speaker:Ops",
+            "utterance_act:context",
+            "speaker_role:oncall"
+          ]
+        },
+        {
+          "evidence_id": "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13",
+          "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+          "span_ref": "timestamp:131.00",
+          "content_type": "speech",
+          "modality": "audio",
+          "confidence": 0.82,
+          "summary": "Merge those monitors into one incident stream before next shift.",
+          "tags": [
+            "speaker:SRE",
+            "utterance_act:context",
+            "speaker_role:oncall"
+          ]
+        },
+        {
+          "evidence_id": "ff13df5c-e667-4a31-8fb7-bfee237f6f2f",
+          "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+          "span_ref": "timestamp:185.00",
+          "content_type": "speech",
+          "modality": "audio",
+          "confidence": 0.82,
+          "summary": "Validate recovery with error-rate and latency over 30 minutes.",
+          "tags": [
+            "speaker:Lead",
+            "utterance_act:context",
+            "speaker_role:participant"
+          ]
+        }
+      ],
+      "generated_skill": {
+        "skill": {
+          "name": "audio follow-up call to runbook revision skill",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: # Incident Review Call Transcript (Sanitized)",
+          "source_modality": "audio",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert audio evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Audio source or transcript",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Merge those monitors into one incident stream before next shift."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "# Incident Review Call Transcript (Sanitized)",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Reconstruct the timeline from first alert to mitigation.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "Duplicate alerts came from two monitors sharing one backend symptom.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "5a251fe9-7240-4777-9cf3-35feaf7cdb25@timestamp:segment:0001",
+            "0ffd8c0e-fb6a-4f72-b62a-388314ccb9d5@timestamp:4.00",
+            "37fd0814-98b5-4487-8f3f-bd9d3207e807@timestamp:80.00",
+            "b2589e5c-019a-4f5e-9a45-6aa53c3bfb13@timestamp:131.00",
+            "ff13df5c-e667-4a31-8fb7-bfee237f6f2f@timestamp:185.00"
+          ],
+          "confidence": 0.8,
+          "version": "0.1.0",
+          "summary": "# Incident Review Call Transcript (Sanitized)",
+          "tags": [
+            "controlled_trial",
+            "audio",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-05-25T10:17:08Z",
+          "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a"
+        },
+        "skill_markdown_preview": "--- name: \"audio follow-up call to runbook revision skill\" description: \"Use when Use when converting audio evidence into build_skill.. Merge those monitors into one incident stream before next shift.\" --- # audio follow-up call to runbook revision skill ## Workflow 1. Evaluate rule: Merge those monitors into one incident stream before next shift. (Why: Derived from rule atom fallback because no procedure atoms were found.) ## Decision Rules - When rule conditions are met. -> Merge those monitors into one incident stream before next shift. ## Validation - Confirm each key conclusion can be traced back to evidence_refs. ## Failure Modes - Do not auto-publish trial output before human review approval. ## References - [Evidence](references/evidence.md) - [Examples](references/examples.md)",
+        "step_count": 3,
+        "decision_rule_count": 0,
+        "verification_count": 2,
+        "publication_types": [
+          "skill_markdown",
+          "skill_json"
+        ],
+        "graph_id": "943e4824-cff2-45d6-848e-170d06bcbf6c"
+      },
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9153,
+        "overall_score": 0.9859,
+        "diagnostics": {
+          "step_count": 3.0,
+          "evidence_node_count": 5.0,
+          "publication_count": 2.0
+        }
+      },
+      "review_policy": {
+        "decision": "review_required",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        },
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9153,
+          "overall_score": 0.9859
+        }
+      },
+      "review_feedback": {
+        "review_task_id": "73d9197e-dd2f-4b75-81e1-dd95b50aa6c7",
+        "skill_id": "3b29e39a-7f54-4412-b2d0-99288e31538a",
+        "decision": "review_required",
+        "status": "review_pending",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "categories": [
+          "manual_review"
+        ],
+        "atom_actions": [],
+        "graph_actions": [],
+        "policy_actions": [
+          {
+            "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+            "target": "policy",
+            "intent": "escalate_manual_review",
+            "reason_code": "MANUAL_REVIEW_FALLBACK",
+            "params": {
+              "priority": "medium"
+            }
+          }
+        ],
+        "revision_suggestions": [
+          "S_MANUAL_REVIEW_REQUIRED"
+        ],
+        "follow_up_checks": [
+          "CHECK_MANUAL_REVIEW_OUTCOME"
+        ],
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.9153,
+          "overall_score": 0.9859
+        },
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        }
+      },
+      "risk_flags": [
+        {
+          "code": "controlled_trial_requires_review",
+          "severity": "medium",
+          "source": "review_policy"
+        },
+        {
+          "code": "audio_requires_transcript_review",
+          "severity": "medium",
+          "source": "modality"
+        }
+      ],
+      "approval_checklist": [
+        {
+          "check_id": "factual_accuracy",
+          "label": "Confirm generated skill facts match evidence.",
+          "required": true
+        },
+        {
+          "check_id": "actionability",
+          "label": "Confirm steps are concrete and executable by the target agent.",
+          "required": true
+        },
+        {
+          "check_id": "dangerous_operations",
+          "label": "Confirm dangerous commands or production changes are clearly guarded.",
+          "required": true
+        },
+        {
+          "check_id": "description_trigger",
+          "label": "Confirm description would trigger only for the intended scenario.",
+          "required": true
+        },
+        {
+          "check_id": "transcript_check",
+          "label": "Compare decisions against transcript excerpts.",
+          "required": true
+        }
+      ]
+    },
+    "provider_footprint": {
+      "corpus_id": "",
+      "asset_breakdown": [
+        {
+          "asset_id": "0ffa5107-6761-47ff-ad74-1292054ef928",
+          "role": "primary",
+          "modality": "audio",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\audio\\incident-review-call.transcript.md",
+          "call_total": 0,
+          "provider_calls": []
+        }
+      ],
+      "summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      },
+      "runtime_provider_audits": [],
+      "runtime_summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      }
+    }
+  },
+  "simulated_review": {
+    "approved_at_utc": "2026-05-25T10:17:08Z",
+    "approved_by": "controlled-trial-runner",
+    "mode": "simulated"
+  }
+}

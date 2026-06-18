@@ -1,0 +1,24 @@
+{
+  "schema_version": "real_trial_submission_queue_followup.v1",
+  "generated_at_utc": "2026-06-01T05:05:56Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_commitment_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-commitment-closure-report.json"
+  },
+  "commitment_closure_status_gl40": "CLOSURE_NOT_REQUIRED",
+  "cadence_run_closure_status_gl40": "CLOSURE_RUN_NOT_REQUIRED",
+  "followup_status": "FOLLOWUP_NOT_REQUIRED",
+  "warning_codes": [],
+  "closure_warning_codes_gl40": [],
+  "followup_counts": {
+    "total_action_count": 0,
+    "open_action_count": 0,
+    "closed_action_count": 0,
+    "stale_rollover_action_count": 0,
+    "acknowledgement_completion_action_count": 0,
+    "acknowledgement_closed_action_count": 0,
+    "blocked_action_count": 0
+  },
+  "owner_followup_counts": {},
+  "followup_action_rows": []
+}

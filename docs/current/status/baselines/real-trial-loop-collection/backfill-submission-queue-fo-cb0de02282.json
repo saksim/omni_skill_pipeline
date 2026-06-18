@@ -1,0 +1,65 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.v1",
+  "generated_at_utc": "2026-06-01T04:31:07Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-b054897de9.json",
+    "previous_escalation_closure_cadence_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-cb0de02282.json"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ON_SCHEDULE",
+  "warning_codes": [
+    "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_items_present",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_items_present",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_items_present",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_items_present",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_items_present",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_items_present",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_closure_cadence_items_present",
+    "acknowledgement_ingestion_closure_stalled",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_closure_items_present",
+    "no_net_new_closed_acknowledgement_ingestion_items",
+    "no_net_new_launch_gate_eligible_real_loops",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_items_present",
+    "escalation_rows_acknowledgement_loop_mismatch",
+    "open_action_plan_closure_cadence_escalation_items_present",
+    "open_followup_resolution_escalation_action_plan_closure_items_present",
+    "open_followup_resolution_escalation_action_plan_items_present",
+    "loop_volume_gap_persists",
+    "open_acknowledgement_items_present",
+    "escalation_ack_pending_operator_acknowledgement",
+    "open_escalation_acknowledgement_items_present"
+  ],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_counts": {
+    "total_item_count": 1,
+    "open_item_count": 1,
+    "stale_open_item_count": 0,
+    "net_new_closed_item_count_gl57": 0,
+    "net_new_closed_backed_by_gl54_net_new_closed_item_count": 0,
+    "stall_cycle_count": 0,
+    "overdue_stalled_cycles_threshold": 2
+  },
+  "refresh_cadence": {
+    "refresh_interval_hours": 24.0,
+    "cadence_status": "CADENCE_ON_SCHEDULE",
+    "previous_generated_at_utc": "2026-06-01T04:31:02Z",
+    "next_refresh_due_utc": "2026-06-02T04:31:02Z",
+    "due_in_hours": 23.998,
+    "evaluated_at_utc": "2026-06-01T04:31:07Z"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows": [
+    {
+      "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-001-text",
+      "closure_progress_state_gl57": "net_new_open",
+      "closure_item_status_gl57": "open",
+      "owner_gl57": "controlled-beta-ops",
+      "required_modality_gl47": "text",
+      "action_id_gl48": "gl46-slot-001-text",
+      "escalation_item_id_gl56": "gl56-escalation-closure-cadence-escalation-gl46-slot-001-text",
+      "acknowledgement_ingestion_item_id_gl55": "",
+      "escalation_severity_gl56": "on_schedule",
+      "cadence_item_status": "on_schedule",
+      "next_refresh_due_utc_gl58": "2026-06-02T04:31:02Z"
+    }
+  ]
+}

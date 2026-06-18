@@ -1,0 +1,188 @@
+{
+  "manifest_id": "quality-feedback-loop-calibration",
+  "manifest_version": "1.0",
+  "generated_at_utc": "2026-05-25T17:24:32Z",
+  "description": "Calibration dataset generated from controlled-trial feedback loop outputs.",
+  "samples": [
+    {
+      "sample_id": "gl02-text-001",
+      "modality": "text",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 1.0,
+        "overall_score": 1.0
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-text-002",
+      "modality": "text",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9923,
+        "overall_score": 0.9987
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-audio-001",
+      "modality": "audio",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.8958,
+        "overall_score": 0.9826
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-audio-002",
+      "modality": "audio",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9153,
+        "overall_score": 0.9859
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-image-001",
+      "modality": "image",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.8333,
+        "overall_score": 0.9722
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-image-002",
+      "modality": "image",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.9017,
+        "overall_score": 0.9836
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-video-001",
+      "modality": "video",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.7453,
+        "overall_score": 0.9576
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-video-002",
+      "modality": "video",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.736,
+        "overall_score": 0.956
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-tabular-001",
+      "modality": "tabular",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.7473,
+        "overall_score": 0.9579
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    },
+    {
+      "sample_id": "gl02-mixed-001",
+      "modality": "mixed_corpus",
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 0.988,
+        "overall_score": 0.998
+      },
+      "reviewer_judgement": {
+        "decision": "auto_publish",
+        "confidence": 0.85,
+        "notes": "Derived from loop review_outcome=approved"
+      }
+    }
+  ]
+}

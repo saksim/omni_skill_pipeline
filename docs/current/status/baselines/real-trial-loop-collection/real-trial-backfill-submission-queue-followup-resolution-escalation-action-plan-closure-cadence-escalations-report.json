@@ -1,0 +1,26 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations.v1",
+  "generated_at_utc": "2026-06-01T05:05:57Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-report.json"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_status_gl48": "ACTION_PLAN_CLOSURE_CADENCE_NOT_REQUIRED",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED",
+  "warning_codes": [
+    "no_net_new_closed_action_plan_items",
+    "no_net_new_resolved_acknowledgements"
+  ],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_counts": {
+    "total_item_count": 0,
+    "open_item_count": 0,
+    "blocked_overdue_stalled_item_count": 0,
+    "due_item_count": 0,
+    "monitor_item_count": 0,
+    "cadence_stall_cycle_count_gl48": 0,
+    "cadence_overdue_stalled_cycles_threshold_gl48": 2,
+    "escalate_after_due_hours": 24.0
+  },
+  "owner_followup_resolution_escalation_action_plan_closure_cadence_escalation_counts": {},
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_rows": []
+}

@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / 'scripts' / 'run_postgres_ga_validation.py'
+SCRIPT_PATH = REPO_ROOT / 'scripts' / 'pg_ga.py'
 
 
 class PostgresGaValidationScriptTests(unittest.TestCase):
@@ -57,7 +57,7 @@ class PostgresGaValidationScriptTests(unittest.TestCase):
                 'tests.test_dual_write_repository_integration.DualWriteRepositoryIntegrationTests',
                 completed.stdout,
             )
-            self.assertIn('scripts/benchmark_dual_write.py', completed.stdout)
+            self.assertIn('scripts/bench_dual_write.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
             self.assertEqual(report.get('stage_count'), 5)
@@ -104,7 +104,7 @@ class PostgresGaValidationScriptTests(unittest.TestCase):
             self.assertIn('Selected stages: dual_write_contract, dual_write_benchmark', completed.stdout)
             self.assertNotIn('PostgresRepositoryIntegrationTests', completed.stdout)
             self.assertIn('DualWriteRepositoryTests', completed.stdout)
-            self.assertIn('scripts/benchmark_dual_write.py', completed.stdout)
+            self.assertIn('scripts/bench_dual_write.py', completed.stdout)
             self.assertIn('--iterations 33', completed.stdout)
             self.assertIn('--postgres-dsn postgresql://validator', completed.stdout)
             self.assertIn('--output %s' % str(benchmark_output.resolve()), completed.stdout)

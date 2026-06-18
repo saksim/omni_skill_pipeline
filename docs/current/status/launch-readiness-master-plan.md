@@ -4,6 +4,8 @@
 > Scope: launch-target assessment, GLM5.1 comparison, feature inventory, gap decomposition, Codex task cards
 > Sources: `src/`, `tests/`, `.github/workflows/ci.yml`, `docs/glm-5.1-project-assessment.md`
 
+> 2026-05-18 status update: this document is now a historical baseline. Many L1/L2 gaps listed below have since been closed by later TP-E13 work and the latest Linux release run reached `GO`. Use [CURRENT_STATUS.md](CURRENT_STATUS.md) and [2026-05-18-controlled-business-trial-iteration.md](2026-05-18-controlled-business-trial-iteration.md) as the current execution entry.
+
 ## 判词
 
 项目当前不是“功能没做出来”，而是“核心蒸馏链已成、生产外壳未成”。  
@@ -311,7 +313,7 @@
 - 目标：新增 API happy-path integration tests
 - 文件：`tests/test_api_app.py`
 - 完成标准：覆盖 text/audio/image/tabular/video endpoint
-- 验证：加入 `scripts/run_ci.py` 回归
+- 验证：加入 `scripts/ci.py` 回归
 
 ### LC-L1-12
 
@@ -359,7 +361,7 @@
 
 - 关联功能点：F41
 - 目标：新增 coverage report 与 fail-under gate
-- 文件：`scripts/run_ci.py`, `.github/workflows/ci.yml`, `pyproject.toml` 或 coverage config
+- 文件：`scripts/ci.py`, `.github/workflows/ci.yml`, `pyproject.toml` 或 coverage config
 - 完成标准：CI 可输出 coverage，并设置最低阈值
 - 验证：CI dry-run / local run
 

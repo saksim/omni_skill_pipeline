@@ -43,6 +43,8 @@ class _StubService(object):
 def _build_settings(api_key: str | None):
     return SimpleNamespace(
         api_key=api_key,
+        tenant_access_json='',
+        tenant_access_file='',
         template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
     )
 

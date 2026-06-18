@@ -1,0 +1,112 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure.v1",
+  "generated_at_utc": "2026-06-01T04:31:06Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-324b9b8860.json",
+    "collection_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmp430v50tv\\collection-report.json",
+    "previous_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\current\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-59f12fc290.json"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_ACTION_REQUIRED",
+  "collection_program_status_gl12": "COLLECTION_INCOMPLETE",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_STALLED",
+  "warning_codes": [
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_closure_items_present",
+    "no_net_new_closed_acknowledgement_ingestion_items",
+    "no_net_new_launch_gate_eligible_real_loops",
+    "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_items_present",
+    "escalation_rows_acknowledgement_loop_mismatch",
+    "open_action_plan_closure_cadence_escalation_items_present",
+    "open_followup_resolution_escalation_action_plan_closure_items_present",
+    "open_followup_resolution_escalation_action_plan_items_present",
+    "loop_volume_gap_persists",
+    "open_acknowledgement_items_present",
+    "escalation_ack_pending_operator_acknowledgement",
+    "open_escalation_acknowledgement_items_present"
+  ],
+  "acknowledgement_ingestion_snapshot": {
+    "status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_ACTION_REQUIRED",
+    "warning_codes": [
+      "open_action_plan_closure_cadence_escalation_acknowledgement_ingestion_items_present",
+      "escalation_rows_acknowledgement_loop_mismatch",
+      "open_action_plan_closure_cadence_escalation_items_present",
+      "open_followup_resolution_escalation_action_plan_closure_items_present",
+      "open_followup_resolution_escalation_action_plan_items_present",
+      "loop_volume_gap_persists",
+      "open_acknowledgement_items_present",
+      "escalation_ack_pending_operator_acknowledgement",
+      "open_escalation_acknowledgement_items_present"
+    ],
+    "rows": [
+      {
+        "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-001-text",
+        "acknowledgement_ingestion_item_status": "open",
+        "acknowledgement_ingestion_state": "ack_loop_mismatch",
+        "owner": "controlled-beta-ops",
+        "action_id_gl48": "gl46-slot-001-text",
+        "required_modality_gl47": "text",
+        "handoff_queue_item_id_gl24": "gl24-queue-gl23-slot-001-text",
+        "linked_submission_loop_id_gl24": "real-text-001",
+        "acknowledged_submitted_loop_id_gl25": "real-text-999",
+        "acknowledgement_loop_matches_linked_submission": false
+      }
+    ],
+    "total_item_count": 1,
+    "open_item_count": 1,
+    "closed_item_count": 0,
+    "ack_loop_mismatch_item_count": 1,
+    "missing_ack_record_item_count": 0,
+    "missing_handoff_queue_item_count": 0,
+    "open_item_ids": [
+      "gl50-ack-ingestion-gl46-slot-001-text"
+    ]
+  },
+  "collection_snapshot": {
+    "program_status": "COLLECTION_INCOMPLETE",
+    "launch_gate_eligible_complete_loop_count": 1,
+    "missing_complete_loops_to_threshold": 1,
+    "missing_modalities_to_threshold": 0,
+    "launch_gate_eligible_loop_ids": [
+      "real-text-001"
+    ]
+  },
+  "snapshot_delta": {
+    "open_item_count_delta": 1,
+    "net_new_closed_item_count": 0,
+    "net_new_launch_gate_eligible_loop_count": 0,
+    "carried_open_item_count": 0,
+    "stale_open_item_count": 0
+  },
+  "carried_open_acknowledgement_ingestion_item_ids": [],
+  "net_new_closed_acknowledgement_ingestion_item_ids": [],
+  "net_new_launch_gate_eligible_loop_ids": [],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_counts": {
+    "total_item_count": 1,
+    "open_item_count": 1,
+    "closed_item_count": 0,
+    "previous_open_item_count_gl50": 0,
+    "carried_open_item_count": 0,
+    "stale_open_item_count": 0,
+    "net_new_closed_item_count": 0,
+    "ack_loop_mismatch_open_item_count": 1,
+    "ack_missing_open_item_count": 0,
+    "missing_handoff_open_item_count": 0,
+    "net_new_launch_gate_eligible_loop_count": 0,
+    "open_item_count_delta": 1
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_rows": [
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-001-text",
+      "closure_state": "open_new",
+      "acknowledgement_ingestion_item_status_gl50": "open",
+      "acknowledgement_ingestion_state_gl50": "ack_loop_mismatch",
+      "owner_gl50": "controlled-beta-ops",
+      "action_id_gl48": "gl46-slot-001-text",
+      "required_modality_gl47": "text",
+      "handoff_queue_item_id_gl24": "gl24-queue-gl23-slot-001-text",
+      "linked_submission_loop_id_gl24": "real-text-001",
+      "acknowledged_submitted_loop_id_gl25": "real-text-999",
+      "acknowledgement_loop_matches_linked_submission_gl50": false
+    }
+  ]
+}
