@@ -70,6 +70,20 @@ def get_repo_root() -> Path:
     return package_root
 
 
+def _packaged_contract_path(filename: str) -> Path:
+    return Path(__file__).resolve().parent / 'resources' / 'contracts' / filename
+
+
+def _resolve_contract_path(root: Path, filename: str) -> Path:
+    repo_contract_path = root / 'docs' / 'latest' / 'contracts' / filename
+    if repo_contract_path.is_file():
+        return repo_contract_path
+    packaged_contract_path = _packaged_contract_path(filename)
+    if packaged_contract_path.is_file():
+        return packaged_contract_path
+    return repo_contract_path
+
+
 def _env_flag(name: str, default: bool) -> bool:
     raw = os.getenv(name)
     if raw is None:
@@ -90,8 +104,8 @@ def load_settings(repo_root: Path = None) -> Settings:
         repo_root=root,
         draft_dir=root / 'skills' / 'drafts',
         published_dir=root / 'skills' / 'published',
-        template_path=root / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md',
-        schema_path=root / 'docs' / 'latest' / 'contracts' / 'skill.schema.json',
+        template_path=_resolve_contract_path(root, 'SKILL.template.md'),
+        schema_path=_resolve_contract_path(root, 'skill.schema.json'),
         api_key=os.getenv('OMNI_API_KEY'),
         rate_limit_requests=int(os.getenv('OMNI_RATE_LIMIT_REQUESTS', '0')),
         rate_limit_window_seconds=int(os.getenv('OMNI_RATE_LIMIT_WINDOW_SECONDS', '60')),
