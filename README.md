@@ -60,6 +60,15 @@ python scripts/ci.py
 - Template contract: `docs/latest/contracts/SKILL.template.md`
 - Skill schema: `docs/latest/contracts/skill.schema.json`
 
+## Release
+
+- CI gate: `.github/workflows/ci.yml`
+- Release workflow: `.github/workflows/release.yml`
+- Main push: upload a release candidate pack with source archive, wheel, coverage XML, manifest, summary, and checksums.
+- Formal GitHub Release: push a `v*` tag, or run the `Release` workflow manually with `publish_github_release=true` and `release_tag`.
+- Runtime/container validation: `bash scripts/linux_release.sh`
+- Runbook: [docs/latest/operations/runbooks/github-release-workflow.md](docs/latest/operations/runbooks/github-release-workflow.md)
+
 ## 文档导航
 
 ### Layers

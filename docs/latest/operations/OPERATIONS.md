@@ -8,12 +8,14 @@
 - [Environment](env.md)
 - [Testing](testing.md)
 - [Script Name Map](script-name-map.md)
+- GitHub release workflow: `.github/workflows/release.yml`
 - Standard Linux release test script: `bash scripts/linux_release.sh`
 - [V1 -> V2 Migration Runbook](v1-to-v2-migration-runbook.md)
 
 ## Expansion Zones
 
 - [Runbooks](runbooks/README.md)
+- [GitHub Release Workflow](runbooks/github-release-workflow.md)
 - [Docker Zero-to-Release Runbook](runbooks/docker-zero-to-release.md)
 - [Launch Beta Runbook](runbooks/launch-beta.md)
 - [Production Operations Baseline](runbooks/production-operations-baseline.md)

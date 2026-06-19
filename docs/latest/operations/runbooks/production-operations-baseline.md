@@ -16,9 +16,22 @@ It is not a GA declaration. It is an evidence-producing operations workflow boun
 - Runtime image is buildable and launchable (`omni-skill-pipeline:beta` or equivalent pinned tag).
 - Required secrets are managed outside image layers (`OPENAI_API_KEY`, optional `OMNI_API_KEY`).
 - Baseline docs are present:
+  - `docs/latest/operations/runbooks/github-release-workflow.md`
   - `docs/latest/operations/runbooks/docker-zero-to-release.md`
   - `docs/latest/operations/runbooks/launch-beta.md`
   - this document
+
+## Publication Workflow
+
+The GitHub Actions `Release` workflow is the publication layer:
+
+- push to `main`: produces a release candidate artifact pack
+- push a `v*` tag: publishes a GitHub Release
+- manual `workflow_dispatch`: can publish a GitHub Release when `publish_github_release=true` and `release_tag` is supplied
+
+The release pack contains source archive, Python wheel, coverage XML, manifest, summary, and checksums.
+
+This is not a replacement for runtime validation. Use it to hand off an immutable build candidate, then run the deploy workflow below for container/API acceptance.
 
 ## Deploy Workflow
 
