@@ -2,6 +2,14 @@
 
 ## 2026-06-19
 
+### v0.2.2-internal.1
+
+- Fixed internal dogfood API smoke payload schema compatibility.
+- Added JSON and Markdown output support for `scripts/internal_dogfood_smoke.py`.
+- Added live API dogfood smoke evidence for health, template, text distill, and review queue trace.
+- Aligned FastAPI OpenAPI version metadata with the package version.
+- Refreshed broad launch readiness and internal dogfood readiness evidence.
+
 ### v0.2.1-internal.1
 
 - Fixed installed-wheel `show-template` by packaging `SKILL.template.md` and `skill.schema.json` inside the Python wheel.

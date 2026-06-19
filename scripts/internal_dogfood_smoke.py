@@ -7,6 +7,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
@@ -41,6 +43,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--title", default=DEFAULT_TEXT_TITLE)
     parser.add_argument("--content", default=DEFAULT_TEXT_CONTENT)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--output", default="", help='Optional JSON report output path. Use "-" to print only.')
+    parser.add_argument("--summary-output", default="", help='Optional Markdown summary output path.')
     return parser
 
 
@@ -128,7 +132,7 @@ def _distill_text(config: SmokeConfig) -> tuple[int, Any]:
             "content": config.content,
             "goal": {
                 "goal_type": "build_skill",
-                "audience": "internal",
+                "audience": "self",
                 "rigor": "draft",
                 "granularity": "task",
                 "domain": "internal-dogfood",
@@ -238,6 +242,7 @@ def _build_report(config: SmokeConfig) -> dict[str, Any]:
     ok = all(bool(check.get("ok")) for check in checks)
     return {
         "schema_version": "internal_dogfood_smoke.v1",
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "scope": "internal_dogfood_only",
         "base_url": config.base_url,
         "decision": "PASS" if ok else "FAIL",
@@ -249,6 +254,62 @@ def _build_report(config: SmokeConfig) -> dict[str, Any]:
     }
 
 
+def _build_unreachable_report(config: SmokeConfig, exc: BaseException) -> dict[str, Any]:
+    return {
+        "schema_version": "internal_dogfood_smoke.v1",
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "scope": "internal_dogfood_only",
+        "base_url": config.base_url,
+        "decision": "FAIL",
+        "failure_category": "api_unreachable",
+        "failure_message": str(exc),
+        "check_count": 1,
+        "pass_count": 0,
+        "fail_count": 1,
+        "review_task_id": "",
+        "checks": [
+            {
+                "name": "api_reachable",
+                "ok": False,
+                "status_code": 0,
+                "detail": "API was not reachable.",
+                "error": str(exc),
+            }
+        ],
+    }
+
+
+def _render_markdown(report: dict[str, Any]) -> str:
+    failed_checks = [
+        str(check.get("name", "")).strip()
+        for check in report.get("checks", [])
+        if isinstance(check, dict) and not check.get("ok")
+    ]
+    failed_text = ", ".join(item for item in failed_checks if item) or "none"
+    return "\n".join(
+        [
+            "# Internal Dogfood API Smoke Summary",
+            "",
+            "- Decision: `%s`" % report.get("decision", "FAIL"),
+            "- Scope: `%s`" % report.get("scope", "internal_dogfood_only"),
+            "- Base URL: `%s`" % report.get("base_url", ""),
+            "- Checks: `%s` pass / `%s` fail / `%s` total"
+            % (report.get("pass_count", 0), report.get("fail_count", 0), report.get("check_count", 0)),
+            "- Review task: `%s`" % (report.get("review_task_id") or "none"),
+            "- Failed checks: `%s`" % failed_text,
+            "",
+            "This smoke result is internal-dogfood evidence only; it is not an external Beta, GA, or SaaS launch claim.",
+            "",
+        ]
+    )
+
+
+def _write_text(path_value: str, content: str) -> None:
+    path = Path(path_value).resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+
+
 def _print_plan(config: SmokeConfig) -> None:
     print("Plan: GET %s" % _url(config, "/healthz"))
     print("Plan: GET %s" % _url(config, "/v1/templates/skill"))
@@ -257,7 +318,8 @@ def _print_plan(config: SmokeConfig) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    config = _to_config(_build_parser().parse_args(argv))
+    args = _build_parser().parse_args(argv)
+    config = _to_config(args)
     _print_plan(config)
     if config.dry_run:
         return 0
@@ -265,7 +327,14 @@ def main(argv: list[str] | None = None) -> int:
         report = _build_report(config)
     except urllib.error.URLError as exc:
         print("Internal dogfood smoke failed to reach API: %s" % exc, file=sys.stderr)
-        return 1
+        report = _build_unreachable_report(config, exc)
+    summary = _render_markdown(report)
+    if str(args.output or "").strip() and str(args.output).strip() != "-":
+        _write_text(str(args.output).strip(), json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+        print("Internal dogfood smoke report written: %s" % Path(str(args.output).strip()).resolve())
+    if str(args.summary_output or "").strip() and str(args.summary_output).strip() != "-":
+        _write_text(str(args.summary_output).strip(), summary)
+        print("Internal dogfood smoke summary written: %s" % Path(str(args.summary_output).strip()).resolve())
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["decision"] == "PASS" else 1
 
