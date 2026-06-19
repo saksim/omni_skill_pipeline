@@ -1,6 +1,6 @@
 {
   "schema_version": "internal_dogfood_readiness.v1",
-  "generated_at_utc": "2026-06-19T14:22:03.724015+00:00",
+  "generated_at_utc": "2026-06-19T15:29:20.619497+00:00",
   "decision": "READY_FOR_INTERNAL_DOGFOOD",
   "decision_code": 0,
   "scope": "internal_dogfood_only",
@@ -43,7 +43,7 @@
       "blocking": true,
       "actual": {
         "ci_result": "passed",
-        "note": "Full local CI passed on 2026-06-19 for non-infrastructure launch verification."
+        "note": "Full local CI passed on 2026-06-19 for artifact encryption hardening launch verification."
       },
       "expected": "passed or explicitly exempted non-blocking item",
       "details": "The internal gate consumes the CI result; it does not lower coverage or skip the CI command."

@@ -126,6 +126,25 @@ Mode semantics:
 - `postgres`: Postgres-first repository.
 - `dual_write`: Postgres as primary and file artifacts as secondary debug sidecar for diagnostics and replay.
 
+## GL-06A Local Artifact Encryption
+
+- `OMNI_ARTIFACT_ENCRYPTION_MODE`: empty/off by default. Set to `fernet` to encrypt file-backed artifacts.
+- `OMNI_ARTIFACT_ENCRYPTION_KEY`: required when encryption mode is `fernet`; must be a Fernet key.
+- `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`: optional key identifier stored in encrypted envelopes, default `default`.
+
+Generate a local key:
+
+```bash
+python -c "from omni_skill_pipeline.artifact_crypto import generate_fernet_key; print(generate_fernet_key())"
+```
+
+Scope:
+
+- Applies to the local `FileArtifactRepository` artifacts and review queue files.
+- Keeps old plaintext artifacts readable when encryption is disabled.
+- Requires the same configured key to read encrypted review queue entries.
+- Does not provide Vault/KMS integration or automated key rotation.
+
 ## Scratch Root Prune Variables
 
 - `OMNI_TMP_MEDIA_ROOT`: scratch-root path for temporary media artifacts, default `.tmp_omni_media`.

@@ -2,6 +2,14 @@
 
 ## 2026-06-19
 
+### v0.2.3-internal.1
+
+- Added optional Fernet-based encrypted artifact envelopes for file-backed artifacts.
+- Added artifact encryption environment settings and service factory wiring.
+- Preserved default plaintext compatibility unless encryption is explicitly enabled.
+- Added encrypted review queue continuity tests and missing-key failure coverage.
+- Documented local dogfood artifact encryption enablement and release boundary.
+
 ### v0.2.2-internal.1
 
 - Fixed internal dogfood API smoke payload schema compatibility.

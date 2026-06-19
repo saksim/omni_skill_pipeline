@@ -80,6 +80,21 @@ class OpenAIProviderConfigTests(unittest.TestCase):
         self.assertFalse(settings.dual_write_continue_on_secondary_error)
         self.assertEqual(settings.dual_write_secondary_prefix, 'mirror_')
 
+    def test_load_settings_reads_artifact_encryption_settings(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                'OMNI_ARTIFACT_ENCRYPTION_MODE': 'fernet',
+                'OMNI_ARTIFACT_ENCRYPTION_KEY': 'test-fernet-key',
+                'OMNI_ARTIFACT_ENCRYPTION_KEY_ID': 'internal-dogfood-key',
+            },
+            clear=False,
+        ):
+            settings = load_settings(repo_root=REPO_ROOT)
+        self.assertEqual(settings.artifact_encryption_mode, 'fernet')
+        self.assertEqual(settings.artifact_encryption_key, 'test-fernet-key')
+        self.assertEqual(settings.artifact_encryption_key_id, 'internal-dogfood-key')
+
     def test_load_settings_reads_governance_ledger_dir_setting(self) -> None:
         with patch.dict(
             os.environ,
