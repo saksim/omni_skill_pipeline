@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST_PATH = (
     REPO_ROOT
     / 'docs'
-    / 'current'
+    / 'working'
     / 'status'
     / 'baselines'
     / 'trial-manifests'
@@ -20,7 +20,7 @@ DEFAULT_MANIFEST_PATH = (
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT
     / 'docs'
-    / 'current'
+    / 'working'
     / 'status'
     / 'baselines'
     / 'trial-manifests'

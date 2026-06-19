@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUN_REPORT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -20,7 +20,7 @@ DEFAULT_RUN_REPORT_PATH = (
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -29,7 +29,7 @@ DEFAULT_OUTPUT_PATH = (
 DEFAULT_SUMMARY_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -38,7 +38,7 @@ DEFAULT_SUMMARY_PATH = (
 DEFAULT_MANIFEST_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -47,7 +47,7 @@ DEFAULT_MANIFEST_PATH = (
 DEFAULT_BACKFILL_PLAN_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "real-trial-loop-collection"
@@ -803,7 +803,7 @@ def _build_trial_metrics_manifest(
         "generated_at_utc": _utc_now_iso(),
         "release_gate": {
             "latest_release_decision": str(release_decision).strip().upper(),
-            "evidence_ref": "docs/current/status/baselines/e13-release-switch-decision-report.json",
+            "evidence_ref": "docs/working/status/baselines/e13-release-switch-decision-report.json",
         },
         "operator_signoff": {
             "cost_per_accepted_skill_accepted": bool(operator_cost_accepted),

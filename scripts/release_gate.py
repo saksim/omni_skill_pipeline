@@ -13,22 +13,22 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CALIBRATION_MANIFEST = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-manifest.json'
 )
 DEFAULT_CALIBRATION_REPORT_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e7-calibration-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e7-calibration-report.json'
 )
 DEFAULT_BETA_SUITE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-beta-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-beta-suite-plan.json'
 )
 DEFAULT_GA_SUITE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-ga-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-ga-suite-plan.json'
 )
 DEFAULT_ROADMAP_SUITE_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-roadmap-suite-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-roadmap-suite-plan.json'
 )
 DEFAULT_PLAN_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-release-gate-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-release-gate-validation-plan.json'
 )
 DEFAULT_CONTAINER_IMAGE_TAG = 'omni-skill-pipeline:beta'
 DEFAULT_CONTAINER_NAME = 'omni-skill-pipeline-smoke'

@@ -184,7 +184,7 @@ def _prepare_repo_fixtures(repo_root: Path) -> None:
     _write_json(
         repo_root
         / 'docs'
-        / 'current'
+        / 'working'
         / 'status'
         / 'baselines'
         / 'controlled-trial'
@@ -194,7 +194,7 @@ def _prepare_repo_fixtures(repo_root: Path) -> None:
     _write_json(
         repo_root
         / 'docs'
-        / 'current'
+        / 'working'
         / 'status'
         / 'baselines'
         / 'controlled-trial'
@@ -202,11 +202,11 @@ def _prepare_repo_fixtures(repo_root: Path) -> None:
         trial_metrics,
     )
     _write_json(
-        repo_root / 'docs' / 'current' / 'status' / 'baselines' / 'broad-launch-readiness-report.json',
+        repo_root / 'docs' / 'working' / 'status' / 'baselines' / 'broad-launch-readiness-report.json',
         launch_readiness,
     )
     _write_json(
-        repo_root / 'docs' / 'current' / 'status' / 'baselines' / 'operations-readiness-report.json',
+        repo_root / 'docs' / 'working' / 'status' / 'baselines' / 'operations-readiness-report.json',
         ops_readiness,
     )
 
@@ -233,7 +233,7 @@ def _build_settings(*, repo_root: Path, ledger_dir: Path) -> SimpleNamespace:
         rate_limit_window_seconds=60,
         tenant_access_json=_tenant_access_payload(),
         tenant_access_file='',
-        template_path=repo_root / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
+        template_path=repo_root / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md',
         draft_dir=repo_root / 'skills' / 'drafts',
         repo_root=repo_root,
         governance_ledger_dir=ledger_dir,

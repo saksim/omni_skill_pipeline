@@ -10,28 +10,28 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RELEASE_GATE_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e13-release-gate-validation-plan.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e13-release-gate-validation-plan.json"
 )
 DEFAULT_LAUNCH_READINESS_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "broad-launch-readiness-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "broad-launch-readiness-report.json"
 )
 DEFAULT_DOC_SYNC_REPORT = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e13-doc-sync-check-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e13-doc-sync-check-report.json"
 )
 DEFAULT_LAUNCH_BETA_RUNBOOK = (
-    REPO_ROOT / "docs" / "current" / "operations" / "runbooks" / "launch-beta.md"
+    REPO_ROOT / "docs" / "latest" / "operations" / "runbooks" / "launch-beta.md"
 )
 DEFAULT_DOCKER_ZERO_TO_RELEASE_RUNBOOK = (
-    REPO_ROOT / "docs" / "current" / "operations" / "runbooks" / "docker-zero-to-release.md"
+    REPO_ROOT / "docs" / "latest" / "operations" / "runbooks" / "docker-zero-to-release.md"
 )
 DEFAULT_PRODUCTION_OPS_RUNBOOK = (
-    REPO_ROOT / "docs" / "current" / "operations" / "runbooks" / "production-operations-baseline.md"
+    REPO_ROOT / "docs" / "latest" / "operations" / "runbooks" / "production-operations-baseline.md"
 )
 DEFAULT_OUTPUT_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "operations-readiness-report.json"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-report.json"
 )
 DEFAULT_SUMMARY_OUTPUT_PATH = (
-    REPO_ROOT / "docs" / "current" / "status" / "baselines" / "operations-readiness-summary.md"
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-summary.md"
 )
 
 EXPECTED_RELEASE_GATE_STAGES = {"beta_gate", "ga_gate", "roadmap_gate"}

@@ -1,0 +1,186 @@
+{
+  "schema_version": "real_trial_backfill_execution.v1",
+  "generated_at_utc": "2026-06-18T09:46:50Z",
+  "input_paths": {
+    "backfill_plan": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-backfill-plan.json",
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json"
+  },
+  "plan_status": "ACTION_REQUIRED",
+  "execution_status": "BACKFILL_IN_PROGRESS",
+  "target_launch_modalities": [
+    "text",
+    "audio",
+    "image",
+    "video"
+  ],
+  "slot_counts": {
+    "total_slots": 10,
+    "fulfilled_slot_count": 0,
+    "remaining_slot_count": 10
+  },
+  "submission_backed_execution_status": "SUBMISSION_BACKED_IN_PROGRESS",
+  "submission_backed_slot_counts": {
+    "total_slots": 10,
+    "submission_backed_fulfilled_slot_count": 0,
+    "submission_backed_remaining_slot_count": 10,
+    "fulfilled_without_submission_linkage_count": 0,
+    "submission_linked_without_modality_delta_count": 0
+  },
+  "submission_linkage_counts": {
+    "slot_linked_count": 0,
+    "action_linked_count": 0,
+    "submission_linked_slot_count": 0,
+    "unmatched_submission_linkage_count": 0
+  },
+  "coverage_delta": {
+    "baseline_target_launch_modality_loop_counts": {
+      "text": 0,
+      "audio": 0,
+      "image": 0,
+      "video": 0
+    },
+    "current_target_launch_modality_loop_counts": {
+      "text": 0,
+      "audio": 0,
+      "image": 0,
+      "video": 0
+    },
+    "gained_target_launch_modality_loop_counts": {
+      "audio": 0,
+      "image": 0,
+      "text": 0,
+      "video": 0
+    },
+    "unconsumed_gained_target_launch_modality_loop_counts": {
+      "audio": 0,
+      "image": 0,
+      "text": 0,
+      "video": 0
+    }
+  },
+  "slot_execution_records": [
+    {
+      "slot_index": 1,
+      "required_modality": "text",
+      "reason": "missing_target_launch_modality",
+      "expected_action_id": "gl23-slot-001-text",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 2,
+      "required_modality": "audio",
+      "reason": "missing_target_launch_modality",
+      "expected_action_id": "gl23-slot-002-audio",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 3,
+      "required_modality": "image",
+      "reason": "missing_target_launch_modality",
+      "expected_action_id": "gl23-slot-003-image",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 4,
+      "required_modality": "video",
+      "reason": "missing_target_launch_modality",
+      "expected_action_id": "gl23-slot-004-video",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 5,
+      "required_modality": "text",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "expected_action_id": "gl23-slot-005-text",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 6,
+      "required_modality": "audio",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "expected_action_id": "gl23-slot-006-audio",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 7,
+      "required_modality": "image",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "expected_action_id": "gl23-slot-007-image",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 8,
+      "required_modality": "video",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "expected_action_id": "gl23-slot-008-video",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 9,
+      "required_modality": "text",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "expected_action_id": "gl23-slot-009-text",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    },
+    {
+      "slot_index": 10,
+      "required_modality": "audio",
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "expected_action_id": "gl23-slot-010-audio",
+      "execution_status": "pending",
+      "available_modality_delta_before_assignment": 0,
+      "consumed_modality_delta": 0,
+      "submission_linked": false,
+      "submission_linkage_resolution": "none"
+    }
+  ],
+  "submission_linkage_records": [],
+  "unmatched_submission_linkages": [],
+  "launch_gate_alignment_snapshot": {
+    "program_status": "COLLECTION_INCOMPLETE",
+    "launch_gate_eligible_complete_loop_count": 0,
+    "launch_gate_eligible_modality_count": 0,
+    "missing_complete_loops_to_threshold": 10,
+    "missing_modalities_to_threshold": 4,
+    "blockers": [
+      "real_loop_volume_below_threshold",
+      "real_loop_modality_coverage_below_threshold"
+    ]
+  }
+}

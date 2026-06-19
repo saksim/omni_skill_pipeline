@@ -10,10 +10,10 @@ WORKDIR /app
 COPY pyproject.toml README.md requirements-dev.txt ./
 COPY src ./src
 COPY apps ./apps
-COPY docs/current/contracts/SKILL.template.md \
-    docs/current/contracts/skill.schema.json \
-    docs/current/contracts/skill-graph.schema.json \
-    ./docs/current/contracts/
+COPY docs/latest/contracts/SKILL.template.md \
+    docs/latest/contracts/skill.schema.json \
+    docs/latest/contracts/skill-graph.schema.json \
+    ./docs/latest/contracts/
 
 RUN python -m pip install --upgrade pip \
     && python -m pip install .[api] -i https://pypi.tuna.tsinghua.edu.cn/simple \

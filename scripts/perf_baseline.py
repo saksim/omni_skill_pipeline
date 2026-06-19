@@ -8,8 +8,8 @@ from statistics import mean
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MANIFEST_PATH = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-perf-cost-baseline-manifest.json'
-DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e11-perf-cost-baseline-report.json'
+DEFAULT_MANIFEST_PATH = REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-perf-cost-baseline-manifest.json'
+DEFAULT_OUTPUT_PATH = REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e11-perf-cost-baseline-report.json'
 
 
 def _to_float(value: Any) -> float:

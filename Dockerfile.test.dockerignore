@@ -10,9 +10,9 @@ __pycache__/
 coverage.xml
 data/
 !docs/
-!docs/current/
-!docs/current/contracts/
-!docs/current/contracts/**
+!docs/latest/
+!docs/latest/contracts/
+!docs/latest/contracts/**
 examples/
 infra/
 !infra/

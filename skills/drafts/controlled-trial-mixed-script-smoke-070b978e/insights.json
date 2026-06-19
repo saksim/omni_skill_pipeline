@@ -1,0 +1,65 @@
+[
+  {
+    "insight_type": "procedure",
+    "summary": "08:10 UTC: latency alert fired.",
+    "evidence_refs": [
+      "6b27bbcd-3965-42c4-bd6e-f9b910d2f9f7"
+    ],
+    "confidence": 0.82,
+    "insight_id": "d96085cb-7091-475a-b8ef-ef86ee88b6bb"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "08:16 UTC: oncall confirmed row estimate mismatch.",
+    "evidence_refs": [
+      "6b27bbcd-3965-42c4-bd6e-f9b910d2f9f7"
+    ],
+    "confidence": 0.82,
+    "insight_id": "a455a831-8647-4d34-8466-a4f3364e2594"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "08:28 UTC: mitigated by rollback + stats refresh.",
+    "evidence_refs": [
+      "6b27bbcd-3965-42c4-bd6e-f9b910d2f9f7"
+    ],
+    "confidence": 0.82,
+    "insight_id": "edcb930f-15e5-426f-964b-ff45aabe49ae"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Validate estimator accuracy before index decisions.",
+    "evidence_refs": [
+      "d1f128d6-756a-4b3d-ac7e-05de95765e73"
+    ],
+    "confidence": 0.82,
+    "insight_id": "d7df48aa-be13-40bc-a933-4c621c4362a7"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Keep rollout guardrails tied to latency and error-rate together.",
+    "evidence_refs": [
+      "d1f128d6-756a-4b3d-ac7e-05de95765e73"
+    ],
+    "confidence": 0.82,
+    "insight_id": "a3325277-7962-4839-8df8-9379130b8e8f"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback.",
+    "evidence_refs": [
+      "1ab01b7e-77d1-4e38-8368-625227e91a44"
+    ],
+    "confidence": 0.75,
+    "insight_id": "43bbe829-4bb1-49c8-8568-7a6babba3f74"
+  },
+  {
+    "insight_type": "verification",
+    "summary": "[00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints.",
+    "evidence_refs": [
+      "1ab01b7e-77d1-4e38-8368-625227e91a44"
+    ],
+    "confidence": 0.75,
+    "insight_id": "4c901e17-a363-4092-802f-fcbca5c89bcf"
+  }
+]

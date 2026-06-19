@@ -6,7 +6,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNBOOK_PATH = (
-    REPO_ROOT / "docs" / "current" / "operations" / "runbooks" / "production-operations-baseline.md"
+    REPO_ROOT / "docs" / "latest" / "operations" / "runbooks" / "production-operations-baseline.md"
 )
 
 

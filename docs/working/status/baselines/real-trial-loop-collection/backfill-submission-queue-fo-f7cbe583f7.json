@@ -1,0 +1,141 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence.v1",
+  "generated_at_utc": "2026-06-19T05:10:17Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-a99b10763e.json",
+    "previous_acknowledgement_closure_cadence_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-f7cbe583f7.json"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_status_gl51": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_NOT_REQUIRED",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_NOT_REQUIRED",
+  "warning_codes": [],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_counts": {
+    "total_item_count": 0,
+    "open_item_count": 0,
+    "stale_open_item_count": 0,
+    "net_new_closed_item_count_gl51": 10,
+    "net_new_launch_gate_eligible_loop_count_gl51": 1,
+    "stall_cycle_count": 0,
+    "overdue_stalled_cycles_threshold": 2
+  },
+  "refresh_cadence": {
+    "refresh_interval_hours": 24.0,
+    "cadence_status": "CADENCE_NOT_REQUIRED",
+    "previous_generated_at_utc": "2026-06-19T05:10:07Z",
+    "next_refresh_due_utc": "",
+    "due_in_hours": 0.0,
+    "evaluated_at_utc": "2026-06-19T05:10:17Z"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_rows": [
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-001-text",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-002-audio",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-003-image",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-004-video",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-005-text",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-006-audio",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-007-image",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-008-video",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-009-text",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    },
+    {
+      "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-010-audio",
+      "closure_state_gl51": "closed_since_previous_cycle",
+      "acknowledgement_ingestion_state_gl50": "",
+      "cadence_item_status": "closed_since_previous_cycle",
+      "required_modality_gl47": "",
+      "owner_gl51": "",
+      "action_id_gl48": "",
+      "linked_submission_loop_id_gl24": "",
+      "next_refresh_due_utc_gl52": ""
+    }
+  ]
+}

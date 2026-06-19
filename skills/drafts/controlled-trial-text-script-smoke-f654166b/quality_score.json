@@ -1,0 +1,14 @@
+{
+  "traceability_score": 1.0,
+  "actionability_score": 1.0,
+  "coverage_score": 1.0,
+  "consistency_score": 1.0,
+  "noise_score": 1.0,
+  "novelty_score": 1.0,
+  "overall_score": 1.0,
+  "diagnostics": {
+    "step_count": 8.0,
+    "evidence_node_count": 9.0,
+    "publication_count": 2.0
+  }
+}

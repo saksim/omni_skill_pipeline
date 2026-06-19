@@ -13,7 +13,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLAN_OUTPUT = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'e13-provider-ga-validation-plan.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'e13-provider-ga-validation-plan.json'
 )
 DEFAULT_STAGES = (
     'provider_retry',

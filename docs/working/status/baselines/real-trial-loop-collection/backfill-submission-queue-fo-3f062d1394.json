@@ -1,0 +1,35 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion.v1",
+  "generated_at_utc": "2026-06-19T05:10:17Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpr4hipjhx\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalations-report.json",
+    "handoff_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpr4hipjhx\\real-trial-backfill-handoff-report.json",
+    "acknowledgements_report": ""
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_status_gl49": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_NOT_REQUIRED",
+  "warning_codes": [],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_counts": {
+    "total_item_count": 0,
+    "open_item_count": 0,
+    "closed_item_count": 0,
+    "escalation_rows_with_acknowledgement_record_count": 0,
+    "escalation_rows_with_matching_ack_loop_count": 0,
+    "escalation_rows_with_mismatched_ack_loop_count": 0,
+    "escalation_rows_missing_acknowledgement_record_count": 0,
+    "escalation_rows_without_handoff_queue_item_count": 0,
+    "unreferenced_acknowledgement_record_count": 0
+  },
+  "owner_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_counts": {},
+  "acknowledgement_input_snapshot": {
+    "input_present": false,
+    "input_path": "",
+    "input_acknowledgement_count": 0,
+    "valid_acknowledgement_count": 0,
+    "invalid_acknowledgement_count": 0,
+    "invalid_acknowledgement_records": [],
+    "unreferenced_acknowledgement_records": []
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_rows": []
+}

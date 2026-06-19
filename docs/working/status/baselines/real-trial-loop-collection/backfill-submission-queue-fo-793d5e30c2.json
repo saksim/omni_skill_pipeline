@@ -1,0 +1,58 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure.v1",
+  "generated_at_utc": "2026-06-19T05:10:17Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-20fd6864ce.json",
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-3f062d1394.json",
+    "previous_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-793d5e30c2.json"
+  },
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_status_gl53": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_NOT_REQUIRED",
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_NOT_REQUIRED",
+  "warning_codes": [
+    "net_new_closed_escalation_items_without_ack_ingestion_closure_evidence"
+  ],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_counts": {
+    "total_item_count": 0,
+    "open_item_count": 0,
+    "previous_open_item_count": 10,
+    "carried_open_item_count": 0,
+    "stale_open_item_count": 0,
+    "net_new_open_item_count": 0,
+    "net_new_closed_item_count": 10,
+    "net_new_closed_backed_by_ack_ingestion_item_count_gl50": 0,
+    "net_new_closed_without_ack_ingestion_item_count_gl50": 10,
+    "ack_ingestion_closed_item_count_gl50": 0,
+    "ack_ingestion_open_item_count_gl50": 0
+  },
+  "owner_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_counts": {},
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_carried_open_item_ids": [],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_open_item_ids": [],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_item_ids": [
+    "gl53-ack-closure-cadence-escalation-gl46-slot-001-text",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-002-audio",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-003-image",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-004-video",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-005-text",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-006-audio",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-007-image",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-008-video",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-009-text",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-010-audio"
+  ],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_backed_by_ack_ingestion_item_ids_gl50": [],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_without_ack_ingestion_item_ids_gl50": [
+    "gl53-ack-closure-cadence-escalation-gl46-slot-001-text",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-002-audio",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-003-image",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-004-video",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-005-text",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-006-audio",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-007-image",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-008-video",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-009-text",
+    "gl53-ack-closure-cadence-escalation-gl46-slot-010-audio"
+  ],
+  "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_rows": []
+}

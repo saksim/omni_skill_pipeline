@@ -1,0 +1,37 @@
+[
+  {
+    "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+    "role": "primary",
+    "title_hint": "document",
+    "metadata": {
+      "filename": "incident-postmortem.md",
+      "language": "mixed"
+    }
+  },
+  {
+    "asset_id": "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+    "modality": "image",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png",
+    "role": "supporting",
+    "title_hint": "screenshot",
+    "metadata": {
+      "filename": "incident-dashboard.png",
+      "width": 640,
+      "height": 360,
+      "format": "PNG"
+    }
+  },
+  {
+    "asset_id": "36f1a0b2-c591-4f58-bcb1-64fb0b25d0e8",
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md",
+    "role": "supporting",
+    "title_hint": "transcript",
+    "metadata": {
+      "filename": "incident-review-transcript.md",
+      "language": "mixed"
+    }
+  }
+]

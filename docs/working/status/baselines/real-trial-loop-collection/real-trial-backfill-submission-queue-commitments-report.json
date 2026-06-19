@@ -1,0 +1,201 @@
+{
+  "schema_version": "real_trial_submission_queue_commitments.v1",
+  "generated_at_utc": "2026-06-18T09:46:51Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-report.json",
+    "submission_queue_completion_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-completion-report.json",
+    "handoff_escalations_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-handoff-escalations-report.json",
+    "submission_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-throughput-report.json"
+  },
+  "commitment_status": "COMMITMENTS_ACTIVE",
+  "cadence_run_obligation_status": "RUN_ON_SCHEDULE_WITH_OPEN_COMMITMENTS",
+  "commitment_counts": {
+    "total_commitment_count": 10,
+    "pending_submission_count": 10,
+    "pending_acknowledgement_count": 0,
+    "blocked_submission_errors_count": 0,
+    "escalation_required_count": 0,
+    "rebuild_required_count": 0
+  },
+  "owner_commitment_counts": {
+    "controlled-beta-ops": {
+      "total_commitment_count": 10,
+      "pending_submission_count": 10,
+      "pending_acknowledgement_count": 0,
+      "blocked_submission_errors_count": 0,
+      "escalation_required_count": 0,
+      "rebuild_required_count": 0
+    }
+  },
+  "unresolved_execution_blockers": [
+    "pending_submission_actions_remain",
+    "submission_action_plan_waiting_for_submissions"
+  ],
+  "cycle_snapshot": {
+    "queue_status": "QUEUE_ACTIVE",
+    "queue_cadence_status": "CADENCE_ON_SCHEDULE",
+    "queue_next_refresh_due_utc": "2026-06-19T09:24:09Z",
+    "queue_due_in_hours": 23.622,
+    "completion_status": "COMPLETION_IN_PROGRESS",
+    "completion_progress_status": "COMPLETION_STALLED",
+    "completion_cycle_verification_status": "CYCLE_NO_NET_NEW_MOVEMENT",
+    "completion_submitted_item_delta_from_previous_cycle": 0,
+    "completion_closed_item_delta_from_previous_cycle": 0,
+    "completion_open_item_delta_from_previous_cycle": 0,
+    "throughput_status": "THROUGHPUT_STALLED",
+    "throughput_threshold_met": false,
+    "throughput_net_new_loop_count": 0,
+    "throughput_net_new_loop_ids": [],
+    "submission_action_plan_status": "ACTION_PLAN_WAITING_FOR_SUBMISSIONS",
+    "submission_action_plan_blockers": [
+      "real_loop_volume_below_threshold",
+      "real_loop_modality_coverage_below_threshold",
+      "throughput_not_progressing",
+      "no_real_submissions_provided"
+    ],
+    "escalation_status": "ESCALATION_NOT_REQUIRED"
+  },
+  "commitment_rows": [
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-002-audio",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-002-audio",
+      "backfill_action_id": "gl23-slot-002-audio",
+      "required_modality": "audio",
+      "priority_rank": 1,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-006-audio",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-006-audio",
+      "backfill_action_id": "gl23-slot-006-audio",
+      "required_modality": "audio",
+      "priority_rank": 1,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-010-audio",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-010-audio",
+      "backfill_action_id": "gl23-slot-010-audio",
+      "required_modality": "audio",
+      "priority_rank": 1,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-001-text",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-001-text",
+      "backfill_action_id": "gl23-slot-001-text",
+      "required_modality": "text",
+      "priority_rank": 2,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-005-text",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-005-text",
+      "backfill_action_id": "gl23-slot-005-text",
+      "required_modality": "text",
+      "priority_rank": 2,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-009-text",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-009-text",
+      "backfill_action_id": "gl23-slot-009-text",
+      "required_modality": "text",
+      "priority_rank": 2,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-003-image",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-003-image",
+      "backfill_action_id": "gl23-slot-003-image",
+      "required_modality": "image",
+      "priority_rank": 3,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-007-image",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-007-image",
+      "backfill_action_id": "gl23-slot-007-image",
+      "required_modality": "image",
+      "priority_rank": 3,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-004-video",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-004-video",
+      "backfill_action_id": "gl23-slot-004-video",
+      "required_modality": "video",
+      "priority_rank": 4,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    },
+    {
+      "commitment_id": "gl39-gl37-submission-queue-gl23-slot-008-video",
+      "owner": "controlled-beta-ops",
+      "queue_item_id": "gl37-submission-queue-gl23-slot-008-video",
+      "backfill_action_id": "gl23-slot-008-video",
+      "required_modality": "video",
+      "priority_rank": 4,
+      "commitment_type": "submit_real_loop_evidence",
+      "commitment_status": "pending_submission",
+      "reason": "pending_template_submission_required",
+      "source_transition_state": "pending_submission",
+      "escalation_severity": "",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
+    }
+  ]
+}
