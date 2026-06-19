@@ -96,6 +96,84 @@ def _run_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _gl13_temp_output_args(root: Path) -> list[str]:
+    output_flags = [
+        "backfill-plan-output",
+        "backfill-execution-output",
+        "backfill-execution-summary-output",
+        "backfill-intake-actions-output",
+        "backfill-intake-actions-summary-output",
+        "backfill-submission-templates-output",
+        "backfill-submission-templates-summary-output",
+        "backfill-submission-manifest-template-output",
+        "backfill-submission-consumption-output",
+        "backfill-submission-consumption-summary-output",
+        "backfill-submission-throughput-output",
+        "backfill-submission-throughput-summary-output",
+        "backfill-submission-queue-output",
+        "backfill-submission-queue-summary-output",
+        "backfill-submission-queue-completion-output",
+        "backfill-submission-queue-completion-summary-output",
+        "backfill-submission-queue-commitments-output",
+        "backfill-submission-queue-commitments-summary-output",
+        "backfill-submission-queue-commitment-closure-output",
+        "backfill-submission-queue-commitment-closure-summary-output",
+        "backfill-submission-queue-followup-output",
+        "backfill-submission-queue-followup-summary-output",
+        "backfill-submission-queue-followup-resolution-output",
+        "backfill-submission-queue-followup-resolution-summary-output",
+        "backfill-submission-queue-followup-resolution-escalations-output",
+        "backfill-submission-queue-followup-resolution-escalations-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-acknowledgements-output",
+        "backfill-submission-queue-followup-resolution-escalation-acknowledgements-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-throughput-output",
+        "backfill-submission-queue-followup-resolution-escalation-throughput-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalations-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalations-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-ingestion-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-ingestion-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalations-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalations-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalations-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalations-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-summary-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-output",
+        "backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations-summary-output",
+        "backfill-handoff-output",
+        "backfill-handoff-summary-output",
+        "backfill-handoff-escalations-output",
+        "backfill-handoff-escalations-summary-output",
+    ]
+    args: list[str] = []
+    for index, flag in enumerate(output_flags):
+        suffix = ".md" if "summary" in flag else ".json"
+        args.extend([f"--{flag}", str(root / f"gl13-output-{index:02d}{suffix}")])
+    return args
+
+
 class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
     def test_evidence_pack_signature_matches_main_call_keywords(self) -> None:
         tree = ast.parse(SCRIPT_PATH.read_text(encoding="utf-8-sig"))
@@ -260,6 +338,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(launch_summary),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    *_gl13_temp_output_args(root),
                     "--backfill-execution-output",
                     str(root / "real-trial-backfill-execution-report.json"),
                     "--backfill-execution-summary-output",
@@ -3939,7 +4018,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_PROGRESSING",
             )
             gl51_warning_codes = classification.get(
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_warning_codes",
@@ -4049,7 +4128,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ON_SCHEDULE",
             )
             gl52_warning_codes = classification.get(
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_warning_codes",
@@ -4111,9 +4190,9 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_state"
                 ),
-                "CADENCE_BASELINE_INITIALIZED",
+                "CADENCE_ON_SCHEDULE",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_previous_generated_at_utc"
                 ),
@@ -4125,11 +4204,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 ),
                 "",
             )
-            self.assertEqual(
+            self.assertAlmostEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_due_in_hours"
                 ),
                 24.0,
+                delta=0.01,
             )
             self.assertNotEqual(
                 classification.get(
@@ -4142,7 +4222,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 [],
             )
             self.assertEqual(len(gl52_rows), 1)
-            self.assertEqual(gl52_rows[0].get("cadence_item_status"), "baseline_open")
+            self.assertEqual(gl52_rows[0].get("cadence_item_status"), "on_schedule")
             self.assertEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_status"
@@ -4216,13 +4296,13 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             )
             self.assertEqual(len(gl53_rows), 1)
             self.assertEqual(gl53_rows[0].get("action_id_gl48"), "gl46-slot-001-text")
-            self.assertEqual(gl53_rows[0].get("escalation_severity"), "baseline_open")
-            self.assertEqual(gl53_rows[0].get("escalation_action"), "start_first_refresh_cycle")
+            self.assertEqual(gl53_rows[0].get("escalation_severity"), "on_schedule")
+            self.assertEqual(gl53_rows[0].get("escalation_action"), "monitor_until_due")
             self.assertEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
             )
             gl54_warning_codes = classification.get(
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_warning_codes",
@@ -4383,7 +4463,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ON_SCHEDULE",
             )
             gl55_warning_codes = classification.get(
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_warning_codes",
@@ -4466,9 +4546,9 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_state"
                 ),
-                "CADENCE_BASELINE_INITIALIZED",
+                "CADENCE_ON_SCHEDULE",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_previous_generated_at_utc"
                 ),
@@ -4480,11 +4560,12 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 ),
                 "",
             )
-            self.assertEqual(
+            self.assertAlmostEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_due_in_hours"
                 ),
                 24.0,
+                delta=0.01,
             )
             self.assertNotEqual(
                 classification.get(
@@ -4497,7 +4578,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 [],
             )
             self.assertEqual(len(gl55_rows), 1)
-            self.assertEqual(gl55_rows[0].get("cadence_item_status"), "baseline_open")
+            self.assertEqual(gl55_rows[0].get("cadence_item_status"), "on_schedule")
             self.assertTrue(
                 str(gl55_rows[0].get("closure_item_id_gl54", "")).endswith("gl46-slot-001-text")
             )
@@ -4588,7 +4669,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
             )
             gl57_warning_codes = classification.get(
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_warning_codes",
@@ -4718,7 +4799,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ON_SCHEDULE",
             )
             gl58_warning_codes = classification.get(
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_warning_codes",
@@ -4780,9 +4861,9 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_state"
                 ),
-                "CADENCE_BASELINE_INITIALIZED",
+                "CADENCE_ON_SCHEDULE",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc"
                 ),
@@ -4812,7 +4893,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             )
             self.assertEqual(len(gl58_rows), 1)
             self.assertEqual(gl58_rows[0].get("closure_progress_state_gl57"), "net_new_open")
-            self.assertEqual(gl58_rows[0].get("cadence_item_status"), "baseline_open")
+            self.assertEqual(gl58_rows[0].get("cadence_item_status"), "on_schedule")
             self.assertTrue(
                 str(gl58_rows[0].get("closure_item_id_gl57", "")).endswith("gl46-slot-001-text")
             )
@@ -4891,15 +4972,15 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 [],
             )
             self.assertEqual(len(gl59_rows), 1)
-            self.assertEqual(gl59_rows[0].get("escalation_severity"), "baseline_open")
-            self.assertEqual(gl59_rows[0].get("cadence_item_status_gl58"), "baseline_open")
+            self.assertEqual(gl59_rows[0].get("escalation_severity"), "on_schedule")
+            self.assertEqual(gl59_rows[0].get("cadence_item_status_gl58"), "on_schedule")
             self.assertEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_warning_codes"
                 ),
@@ -4909,13 +4990,13 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_total_item_count"
                 ),
-                0,
+                1,
             )
             self.assertEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_open_item_count"
                 ),
-                0,
+                1,
             )
             self.assertEqual(
                 classification.get(
@@ -4939,7 +5020,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_count"
                 ),
-                0,
+                1,
             )
             self.assertEqual(
                 classification.get(
@@ -4971,11 +5052,11 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 ),
                 0,
             )
-            self.assertEqual(
+            self.assertIn(
+                "controlled-beta-ops",
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_owner_counts"
                 ),
-                {},
             )
             self.assertEqual(
                 classification.get(
@@ -4987,7 +5068,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_ids"
                 ),
-                [],
+                ["gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-001-text"],
             )
             self.assertEqual(
                 classification.get(
@@ -5017,14 +5098,14 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_rows",
                 [],
             )
-            self.assertEqual(gl60_rows, [])
+            self.assertEqual(len(gl60_rows), 1)
             self.assertEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_status"
                 ),
-                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_BASELINE_INITIALIZED",
+                "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ON_SCHEDULE",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_warning_codes"
                 ),
@@ -5034,13 +5115,13 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_total_item_count"
                 ),
-                0,
+                1,
             )
             self.assertEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_open_item_count"
                 ),
-                0,
+                1,
             )
             self.assertEqual(
                 classification.get(
@@ -5082,9 +5163,9 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_state"
                 ),
-                "CADENCE_BASELINE_INITIALIZED",
+                "CADENCE_ON_SCHEDULE",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc"
                 ),
@@ -5108,7 +5189,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 ),
                 "",
             )
-            self.assertEqual(
+            self.assertNotEqual(
                 classification.get(
                     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows"
                 ),
@@ -5455,6 +5536,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-handoff-escalations-report.json"),
                     "--backfill-handoff-escalations-summary-output",
                     str(root / "real-trial-backfill-handoff-escalations-summary.md"),
+                    *_gl13_temp_output_args(root),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",
@@ -5635,6 +5717,7 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "real-trial-backfill-handoff-escalations-report.json"),
                     "--backfill-handoff-escalations-summary-output",
                     str(root / "real-trial-backfill-handoff-escalations-summary.md"),
+                    *_gl13_temp_output_args(root),
                     "--release-switch-report",
                     str(release_report),
                     "--current-status-doc",

@@ -3260,6 +3260,139 @@ Strengthening path:
     - `python scripts/doc_sync.py --output -`
     - `python scripts/launch_gate.py --output - --summary-output -` (decision remains `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`)
 
+### GL-62 Submission Queue Follow-Up Resolution Escalation Action Plan Closure Cadence Escalation Acknowledgement Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Escalation Closure Cadence Escalations Bridge
+
+- Status: Complete
+- Goal: convert GL-61 escalation-closure-cadence snapshots into explicit escalation rows so operators can distinguish monitor-only open GL-61 rows from due and overdue-stalled GL-61 rows requiring action, without changing launch-gate decision ownership.
+- Files:
+  - `scripts/gl62_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.py`
+  - `scripts/gl13_launch_evidence.py`
+  - `tests/test_gl62_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.py`
+  - `tests/test_gl13_launch_evidence.py`
+  - `docs/working/status/2026-05-25-broad-product-launch-plan.md`
+  - `docs/working/status/CURRENT_STATUS.md`
+- Work:
+  - Add GL-62 escalation-closure-cadence-escalation-closure-cadence-escalation-closure-cadence-escalations runner:
+    - input: GL-61 escalation-closure-cadence report.
+    - output: `real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.v1` report + markdown summary.
+    - escalation surfaces:
+      - top-level status: `followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status`
+      - warning set: `warning_codes`
+      - counts: total/open/blocked-overdue-stalled/due/monitor
+      - owner rollup and explicit escalation row exports.
+  - Integrate GL-62 stage into GL-13 bridge:
+    - run after GL-61 escalation-closure-cadence stage in base and replay paths.
+    - expose GL-62 report/summary paths and diagnostics in the GL-16 evidence pack.
+    - preserve Windows short-alias output behavior for long generated evidence paths.
+  - Keep launch policy strictness unchanged:
+    - launch decision remains owned by `launch_gate.py`.
+    - GL-62 only adds operator escalation diagnostics for GL-61 cadence execution gaps.
+- Acceptance:
+  - Every GL-13 bridge run emits GL-62 escalation report/summary and publishes GL-62 diagnostics in the GL-16 evidence pack.
+  - GL-62 diagnostics distinguish `..._ESCALATION_NOT_REQUIRED`, `..._ESCALATION_MONITORING`, `..._ESCALATION_DUE`, and `..._ESCALATION_OVERDUE_STALLED`.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-06-18: confirmed `scripts/gl62_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.py` is wired into `scripts/gl13_launch_evidence.py` and GL-16 evidence pack output paths.
+  - 2026-06-18: added focused GL-62 tests:
+    - `tests/test_gl62_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations.py`
+      - not-required path
+      - due escalation path
+      - overdue-stalled fail path
+  - 2026-06-18: focused verification passed:
+    - `python -B -m unittest tests.test_gl62_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations`
+  - 2026-06-18: current GL-13 evidence pack exposes GL-62 diagnostics with `10` open monitor rows and keeps launch decision `HOLD`; blocker remains `trial_loop_volume_and_modality_coverage`.
+
+### GL-63 Real Loop Intake Workpack Bridge
+
+- Status: Complete
+- Goal: convert the current launch-gate-eligible real loop/modality coverage gap into an explicit operator intake workpack without creating, simulating, or counting real evidence.
+- Files:
+  - `scripts/gl63_real_loop_intake_workpack.py`
+  - `tests/test_gl63_real_loop_intake_workpack.py`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md`
+  - `docs/working/status/baselines/real-trial-gl63-intake-workpack-20260619T0312Z.md`
+  - `docs/working/status/2026-05-25-broad-product-launch-plan.md`
+  - `docs/working/status/CURRENT_STATUS.md`
+- Work:
+  - Add GL-63 real-loop intake workpack runner:
+    - input: current GL-13 real-trial launch evidence pack.
+    - optional input: GL-62 escalation report for linking operator work items back to existing GL-62 open escalation rows.
+    - output: `real_trial_loop_intake_workpack.v1` report plus Markdown summary.
+    - work item surfaces:
+      - `intake_item_id`
+      - `required_modality`
+      - `manifest_drop_path`
+      - required real evidence trace fields
+      - required review/quality fields
+      - linked GL-62 escalation item/action where available.
+  - Preserve launch policy strictness:
+    - GL-63 does not write real loop manifests.
+    - GL-63 does not change `scripts/launch_gate.py`.
+    - fixture or simulated rows remain non-launch-gate-eligible.
+- Acceptance:
+  - GL-63 emits explicit intake work items for every current recommended real-loop backfill slot.
+  - GL-63 output uses repo-relative project paths for default repository artifacts.
+  - GL-63 status remains action-required until actual real manifests are collected and accepted by GL-13/GL-12 evidence processing.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-06-19: added `scripts/gl63_real_loop_intake_workpack.py` with statuses:
+    - `REAL_LOOP_INTAKE_NOT_REQUIRED`
+    - `REAL_LOOP_INTAKE_ACTION_REQUIRED`
+    - `REAL_LOOP_INTAKE_ESCALATION_DUE`
+    - `REAL_LOOP_INTAKE_ESCALATION_OVERDUE_STALLED`
+  - 2026-06-19: added focused GL-63 tests:
+    - not-required path
+    - action-required work-item generation path
+    - fail-on-action-required path
+  - 2026-06-19: current GL-63 workpack generated `10` open intake items across `text=3`, `audio=3`, `image=2`, and `video=2`; launch decision remains `HOLD`.
+
+### GL-64 Real Loop Manifest Preflight
+
+- Status: Complete
+- Goal: consume the GL-63 operator intake workpack and preflight submitted real-loop manifest files before GL-13/GL-12 evidence ingestion, without creating, simulating, or counting real launch evidence.
+- Files:
+  - `scripts/gl64_real_loop_manifest_preflight.py`
+  - `tests/test_gl64_real_loop_manifest_preflight.py`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-summary.md`
+  - `docs/working/status/baselines/real-trial-gl64-manifest-preflight-20260619T0322Z.md`
+  - `docs/working/status/2026-05-25-broad-product-launch-plan.md`
+  - `docs/working/status/CURRENT_STATUS.md`
+- Work:
+  - Add GL-64 manifest preflight runner:
+    - input: GL-63 `real_trial_loop_intake_workpack.v1` report.
+    - optional input: operator manifest directory override.
+    - output: `real_trial_loop_manifest_preflight.v1` report plus Markdown summary.
+    - status surfaces:
+      - `REAL_LOOP_MANIFEST_PREFLIGHT_NOT_REQUIRED`
+      - `REAL_LOOP_MANIFEST_PREFLIGHT_READY`
+      - `REAL_LOOP_MANIFEST_PREFLIGHT_PENDING`
+      - `REAL_LOOP_MANIFEST_PREFLIGHT_INVALID`
+    - item diagnostics surface:
+      - expected manifest path
+      - required modality
+      - accepted loop ids
+      - missing/invalid failure codes
+      - fixture or simulated loop rejection.
+  - Preserve launch policy strictness:
+    - GL-64 does not write real loop manifests.
+    - GL-64 does not change `scripts/launch_gate.py`.
+    - GL-64 does not mark fixture or simulated data as launch-gate-eligible.
+- Acceptance:
+  - GL-64 reports every GL-63 intake slot as `valid`, `missing`, or `invalid`.
+  - GL-64 rejects missing required trace/review/quality fields before GL-13 ingestion.
+  - GL-64 rejects fixture/simulated rows and placeholder trace values.
+  - Baseline launch decision remains `HOLD` until launch-gate-eligible real loop/modality thresholds are truly met.
+- Evidence:
+  - 2026-06-19: added focused GL-64 tests:
+    - not-required path
+    - pending manifest path
+    - valid real manifest path
+    - fixture/simulated rejection path
+  - 2026-06-19: `python -B -m unittest tests.test_gl63_real_loop_intake_workpack tests.test_gl64_real_loop_manifest_preflight` passed.
+  - 2026-06-19: current GL-64 preflight status is `REAL_LOOP_MANIFEST_PREFLIGHT_PENDING`; `0/10` intake items are valid, `10/10` expected manifest files are missing, and launch decision remains `HOLD`.
+
 ## Execution Rules For GL Work
 
 - Execute `GL-*` in numeric order unless a later card is explicitly marked as independent.
@@ -3272,9 +3405,9 @@ Strengthening path:
 
 ## Recommended Next Step
 
-Proceed with `GL-62` (or next newly-defined GL card) to continue driving net-new launch-gate-eligible real loop/modality expansion while keeping GL-24/GL-33/GL-41/GL-42/GL-43/GL-44/GL-45/GL-46/GL-47/GL-48/GL-49/GL-50/GL-51/GL-52/GL-53/GL-54/GL-55/GL-56/GL-57/GL-58/GL-59/GL-60/GL-61 operator-execution evidence fresh.
+Proceed with `GL-65` (or next newly-defined GL card) to collect or attach the first operator-provided real-loop manifests required by GL-63, run GL-64 preflight until submitted manifests are `READY`, then refresh GL-13/GL-12 evidence while keeping GL-24/GL-33/GL-41/GL-42/GL-43/GL-44/GL-45/GL-46/GL-47/GL-48/GL-49/GL-50/GL-51/GL-52/GL-53/GL-54/GL-55/GL-56/GL-57/GL-58/GL-59/GL-60/GL-61/GL-62/GL-63/GL-64 operator-execution evidence fresh.
 
 Reason:
 
-- `GL-01` through `GL-61` are complete; baseline bridge now includes GL-61 escalation-closure-cadence diagnostics on top of GL-60 escalation-closure diagnostics.
+- `GL-01` through `GL-64` are complete; baseline bridge now includes GL-64 real-loop manifest preflight diagnostics on top of GL-63 intake workpack diagnostics and GL-62 escalation diagnostics.
 - The remaining blocker is still real launch-gate-eligible loop/modality volume in baseline evidence, not release-gate/doc-sync/security contract coverage.

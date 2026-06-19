@@ -1,0 +1,178 @@
+[
+  {
+    "reference_type": "skill",
+    "reference_id": "a981fe16-82c4-4758-8f13-c5df5cc21e53",
+    "summary": "controlled trial mixed script smoke",
+    "asset_ids": [
+      "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+      "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+      "36f1a0b2-c591-4f58-bcb1-64fb0b25d0e8"
+    ],
+    "modalities": [
+      "text",
+      "image"
+    ],
+    "roles": [
+      "primary",
+      "supporting"
+    ],
+    "evidence_refs": [
+      "0d1f1200-6f6d-400d-b365-1b8cc7ba12a7",
+      "05c28e41-3d28-492a-a4d1-ec8ac34ffbe2",
+      "b931cbd1-38ce-436f-a83a-b8a029c90ab9",
+      "8897f690-4092-4a9b-a00a-338a681a5f98",
+      "046d9b5d-7a89-4859-a2fe-c41f0349e9f5",
+      "fcef2151-bbbe-4b7a-ba16-c41ba642a0bf",
+      "0185aa86-fada-488e-8337-9fc041804bbb",
+      "9eba85f2-7c14-42b5-9ef2-c52c045ccbb6",
+      "2cd922ff-2728-4af8-905f-6196ce0126d3",
+      "8facd960-6a38-47b3-bb6f-62cb8473d592",
+      "887980df-08c1-478f-b592-7ca3e8643fd8",
+      "c3043f45-b243-41ae-9a35-69eb247b6f15",
+      "5f3c8085-0b24-4a41-b74a-f706b41b84bc",
+      "685b3f63-dbe8-4c0a-8a90-796ae83d9a83"
+    ],
+    "evidence": [
+      {
+        "evidence_ref": "0d1f1200-6f6d-400d-b365-1b8cc7ba12a7@section:1",
+        "evidence_id": "0d1f1200-6f6d-400d-b365-1b8cc7ba12a7",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "05c28e41-3d28-492a-a4d1-ec8ac34ffbe2@section:1.1",
+        "evidence_id": "05c28e41-3d28-492a-a4d1-ec8ac34ffbe2",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1.1",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "b931cbd1-38ce-436f-a83a-b8a029c90ab9@section:1.1:paragraph:0001",
+        "evidence_id": "b931cbd1-38ce-436f-a83a-b8a029c90ab9",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1.1:paragraph:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "8897f690-4092-4a9b-a00a-338a681a5f98@section:1.2",
+        "evidence_id": "8897f690-4092-4a9b-a00a-338a681a5f98",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1.2",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "046d9b5d-7a89-4859-a2fe-c41f0349e9f5@section:1.2:paragraph:0002",
+        "evidence_id": "046d9b5d-7a89-4859-a2fe-c41f0349e9f5",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1.2:paragraph:0002",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "fcef2151-bbbe-4b7a-ba16-c41ba642a0bf@section:1.3",
+        "evidence_id": "fcef2151-bbbe-4b7a-ba16-c41ba642a0bf",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1.3",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "0185aa86-fada-488e-8337-9fc041804bbb@section:1.3:paragraph:0003",
+        "evidence_id": "0185aa86-fada-488e-8337-9fc041804bbb",
+        "asset_id": "8260080c-d5a1-44d6-8fd6-29d2853d9f00",
+        "modality": "text",
+        "role": "primary",
+        "content_type": "text",
+        "span_ref": "section:1.3:paragraph:0003",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+      },
+      {
+        "evidence_ref": "9eba85f2-7c14-42b5-9ef2-c52c045ccbb6@image:ocr:0001",
+        "evidence_id": "9eba85f2-7c14-42b5-9ef2-c52c045ccbb6",
+        "asset_id": "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+        "modality": "image",
+        "role": "supporting",
+        "content_type": "ocr",
+        "span_ref": "image:ocr:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+      },
+      {
+        "evidence_ref": "2cd922ff-2728-4af8-905f-6196ce0126d3@image:region:0001",
+        "evidence_id": "2cd922ff-2728-4af8-905f-6196ce0126d3",
+        "asset_id": "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+        "modality": "image",
+        "role": "supporting",
+        "content_type": "ocr",
+        "span_ref": "image:region:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+      },
+      {
+        "evidence_ref": "8facd960-6a38-47b3-bb6f-62cb8473d592@image:region:0002",
+        "evidence_id": "8facd960-6a38-47b3-bb6f-62cb8473d592",
+        "asset_id": "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+        "modality": "image",
+        "role": "supporting",
+        "content_type": "ocr",
+        "span_ref": "image:region:0002",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+      },
+      {
+        "evidence_ref": "887980df-08c1-478f-b592-7ca3e8643fd8@image:scene:0001",
+        "evidence_id": "887980df-08c1-478f-b592-7ca3e8643fd8",
+        "asset_id": "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+        "modality": "image",
+        "role": "supporting",
+        "content_type": "scene",
+        "span_ref": "image:scene:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+      },
+      {
+        "evidence_ref": "c3043f45-b243-41ae-9a35-69eb247b6f15@image:layout:0001",
+        "evidence_id": "c3043f45-b243-41ae-9a35-69eb247b6f15",
+        "asset_id": "9a3f8c12-534c-4d2d-a2c0-c1de2f0da223",
+        "modality": "image",
+        "role": "supporting",
+        "content_type": "scene",
+        "span_ref": "image:layout:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+      },
+      {
+        "evidence_ref": "5f3c8085-0b24-4a41-b74a-f706b41b84bc@section:1",
+        "evidence_id": "5f3c8085-0b24-4a41-b74a-f706b41b84bc",
+        "asset_id": "36f1a0b2-c591-4f58-bcb1-64fb0b25d0e8",
+        "modality": "text",
+        "role": "supporting",
+        "content_type": "text",
+        "span_ref": "section:1",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md"
+      },
+      {
+        "evidence_ref": "685b3f63-dbe8-4c0a-8a90-796ae83d9a83@section:1:paragraph:0001",
+        "evidence_id": "685b3f63-dbe8-4c0a-8a90-796ae83d9a83",
+        "asset_id": "36f1a0b2-c591-4f58-bcb1-64fb0b25d0e8",
+        "modality": "text",
+        "role": "supporting",
+        "content_type": "text",
+        "span_ref": "section:1:paragraph:0001",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md"
+      }
+    ]
+  }
+]

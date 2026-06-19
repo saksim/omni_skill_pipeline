@@ -1,7 +1,7 @@
 {
   "manifest_id": "gl33-real-backfill-submission-manifest-consumed",
   "manifest_version": "1.0",
-  "generated_at_utc": "2026-06-18T09:24:09Z",
+  "generated_at_utc": "2026-06-18T09:46:51Z",
   "description": "GL-33 consumed real submission manifest generated from GL-31 templates with placeholder fields fully replaced.",
   "owner": "controlled-beta-ops",
   "source_template_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-manifest.template.json",

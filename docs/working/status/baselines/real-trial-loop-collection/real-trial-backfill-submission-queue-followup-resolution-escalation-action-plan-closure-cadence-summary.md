@@ -5,9 +5,9 @@
 - Cadence status: `CADENCE_ON_SCHEDULE`
 - Open action items: `10`
 - Stale open action items: `10`
-- Stall cycle count: `2`
-- Next refresh due UTC: `2026-06-19T09:21:35Z`
-- Due in hours: `23.957`
+- Stall cycle count: `3`
+- Next refresh due UTC: `2026-06-19T09:24:11Z`
+- Due in hours: `23.622`
 
 ## Warning Codes
 - `open_followup_resolution_escalation_action_plan_closure_items_present`

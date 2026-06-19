@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_submission_queue_followup_resolution_escalation_acknowledgements.v1",
-  "generated_at_utc": "2026-06-18T09:24:10Z",
+  "generated_at_utc": "2026-06-18T09:46:52Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
     "submission_queue_followup_resolution_escalations_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalations-report.json",
@@ -55,7 +55,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-006-audio",
@@ -82,7 +82,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-010-audio",
@@ -109,7 +109,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-001-text",
@@ -136,7 +136,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-005-text",
@@ -163,7 +163,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-009-text",
@@ -190,7 +190,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-003-image",
@@ -217,7 +217,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-007-image",
@@ -244,7 +244,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-004-video",
@@ -271,7 +271,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-008-video",
@@ -298,7 +298,7 @@
       "operator_acknowledged_by_gl24": "",
       "operator_acknowledged_at_utc_gl24": "",
       "operator_acknowledged_loop_id_gl24": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     }
   ]
 }

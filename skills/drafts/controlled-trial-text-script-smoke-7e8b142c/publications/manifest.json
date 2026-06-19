@@ -1,0 +1,72 @@
+[
+  {
+    "publication_id": "f2df43d9-b3f2-41ce-9f66-f0b402d8e60e",
+    "publication_type": "skill_markdown",
+    "path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-7e8b142c\\publications\\SKILL.md",
+    "relative_path": "SKILL.md",
+    "metadata": {
+      "source": "skill_graph",
+      "graph_id": "6e76e6ff-a7aa-45a0-9db2-a9aef033aae7",
+      "skill_id": "6e76e6ff-a7aa-45a0-9db2-a9aef033aae7",
+      "version": "0.1.0",
+      "renderer": "portable_skill_markdown_v1",
+      "evidence_refs": [
+        "f5aee077-db3b-4154-9139-818e597d084b",
+        "c03185ad-f4e8-4ed2-be0a-754f8fd47e0f",
+        "973ed883-9d16-488e-a2e1-cc1bdf7d95ca",
+        "0741da30-4a0c-4d8f-902f-648b9f1dea9f",
+        "64cea1cc-96fc-405d-8c60-3f8abc8b9b36",
+        "5d43bba0-a1b5-4761-ae7f-5bbf3c05a036",
+        "6adc6dd7-53b1-4591-b86c-01fdb09d4631",
+        "047384b7-5a5b-4c98-b1c9-157c2150badb",
+        "6b6dc55a-6122-4b89-9c6a-d9dd5f4daabd"
+      ]
+    },
+    "evidence_refs": [
+      "f5aee077-db3b-4154-9139-818e597d084b",
+      "c03185ad-f4e8-4ed2-be0a-754f8fd47e0f",
+      "973ed883-9d16-488e-a2e1-cc1bdf7d95ca",
+      "0741da30-4a0c-4d8f-902f-648b9f1dea9f",
+      "64cea1cc-96fc-405d-8c60-3f8abc8b9b36",
+      "5d43bba0-a1b5-4761-ae7f-5bbf3c05a036",
+      "6adc6dd7-53b1-4591-b86c-01fdb09d4631",
+      "047384b7-5a5b-4c98-b1c9-157c2150badb",
+      "6b6dc55a-6122-4b89-9c6a-d9dd5f4daabd"
+    ]
+  },
+  {
+    "publication_id": "75349565-f4db-4fa5-aaba-520f2957e6c0",
+    "publication_type": "skill_json",
+    "path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-7e8b142c\\publications\\skill.json",
+    "relative_path": "skill.json",
+    "metadata": {
+      "source": "skill_graph",
+      "graph_id": "6e76e6ff-a7aa-45a0-9db2-a9aef033aae7",
+      "skill_id": "6e76e6ff-a7aa-45a0-9db2-a9aef033aae7",
+      "version": "0.1.0",
+      "renderer": "skill_json_v1_compat",
+      "evidence_refs": [
+        "f5aee077-db3b-4154-9139-818e597d084b",
+        "c03185ad-f4e8-4ed2-be0a-754f8fd47e0f",
+        "973ed883-9d16-488e-a2e1-cc1bdf7d95ca",
+        "0741da30-4a0c-4d8f-902f-648b9f1dea9f",
+        "64cea1cc-96fc-405d-8c60-3f8abc8b9b36",
+        "5d43bba0-a1b5-4761-ae7f-5bbf3c05a036",
+        "6adc6dd7-53b1-4591-b86c-01fdb09d4631",
+        "047384b7-5a5b-4c98-b1c9-157c2150badb",
+        "6b6dc55a-6122-4b89-9c6a-d9dd5f4daabd"
+      ]
+    },
+    "evidence_refs": [
+      "f5aee077-db3b-4154-9139-818e597d084b",
+      "c03185ad-f4e8-4ed2-be0a-754f8fd47e0f",
+      "973ed883-9d16-488e-a2e1-cc1bdf7d95ca",
+      "0741da30-4a0c-4d8f-902f-648b9f1dea9f",
+      "64cea1cc-96fc-405d-8c60-3f8abc8b9b36",
+      "5d43bba0-a1b5-4761-ae7f-5bbf3c05a036",
+      "6adc6dd7-53b1-4591-b86c-01fdb09d4631",
+      "047384b7-5a5b-4c98-b1c9-157c2150badb",
+      "6b6dc55a-6122-4b89-9c6a-d9dd5f4daabd"
+    ]
+  }
+]

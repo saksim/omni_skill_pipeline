@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_backfill_handoff.v1",
-  "generated_at_utc": "2026-06-18T09:24:09Z",
+  "generated_at_utc": "2026-06-18T09:46:51Z",
   "input_paths": {
     "intake_actions_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-intake-actions-report.json",
     "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
@@ -21,7 +21,7 @@
     "invalid_acknowledgement_records": []
   },
   "acknowledgement_sla_snapshot": {
-    "evaluation_timestamp_utc": "2026-06-18T09:24:09Z",
+    "evaluation_timestamp_utc": "2026-06-18T09:46:51Z",
     "pending_ack_sla_hours": 24.0,
     "pending_ack_overdue_hours": 72.0,
     "acknowledgement_sla_status": "ACK_SLA_NOT_REQUIRED",

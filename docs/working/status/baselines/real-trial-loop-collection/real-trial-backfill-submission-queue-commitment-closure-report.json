@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_submission_queue_commitment_closure.v1",
-  "generated_at_utc": "2026-06-18T09:24:10Z",
+  "generated_at_utc": "2026-06-18T09:46:51Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
     "submission_queue_commitments_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-commitments-report.json",
@@ -35,7 +35,7 @@
   },
   "previous_cycle_snapshot": {
     "available": true,
-    "generated_at_utc": "2026-06-18T09:21:34Z",
+    "generated_at_utc": "2026-06-18T09:24:10Z",
     "closed_with_acknowledgement_count": 0
   },
   "commitment_closure_rows": [
@@ -62,7 +62,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -89,7 +89,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -116,7 +116,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -143,7 +143,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -170,7 +170,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -197,7 +197,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -224,7 +224,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -251,7 +251,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -278,7 +278,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     },
@@ -305,7 +305,7 @@
       "linked_submission_loop_id": "",
       "linked_submission_review_task_id": "",
       "linked_submission_reviewed_at_utc": "",
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z",
       "reason": "pending_template_submission_required",
       "escalation_severity": ""
     }
@@ -324,7 +324,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-006-audio",
@@ -338,7 +338,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-010-audio",
@@ -352,7 +352,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-001-text",
@@ -366,7 +366,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-005-text",
@@ -380,7 +380,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-009-text",
@@ -394,7 +394,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-003-image",
@@ -408,7 +408,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-007-image",
@@ -422,7 +422,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-004-video",
@@ -436,7 +436,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     },
     {
       "commitment_id": "gl39-gl37-submission-queue-gl23-slot-008-video",
@@ -450,7 +450,7 @@
       "stale_reason_codes": [
         "unchanged_open_commitment_across_cycles"
       ],
-      "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+      "cycle_due_at_utc": "2026-06-19T09:24:09Z"
     }
   ]
 }

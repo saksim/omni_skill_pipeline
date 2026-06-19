@@ -1,0 +1,129 @@
+[
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1",
+    "content_type": "text",
+    "content": "PostgreSQL Slow Query Notes",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "evidence_id": "27ebfc14-0c08-4a33-83d6-3ceed5f672f2"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.1",
+    "content_type": "text",
+    "content": "Incident Context",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.1",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "9ee8c362-887d-4391-848c-60194a82ced2"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.1:paragraph:0001",
+    "content_type": "text",
+    "content": "- Service: order-api\n- Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z\n- Primary symptom: p95 latency moved from 120ms to 680ms",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.1",
+      "block:paragraph"
+    ],
+    "evidence_id": "b6621ff1-3be0-4c75-9fc0-e9c9bb2c4343"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.2",
+    "content_type": "text",
+    "content": "Observations",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.2",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "de6a7c7a-e71d-4e74-9fbf-544964341f4f"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.2:paragraph:0002",
+    "content_type": "text",
+    "content": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.\n2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.\n3. Buffer reads spike during replay windows after deploy.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.2",
+      "block:paragraph"
+    ],
+    "evidence_id": "25c7512b-102a-4f49-a30c-7b91b1ffc9cf"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.3",
+    "content_type": "text",
+    "content": "Current Guidance",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.3",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "2c8c3892-762c-4056-be36-ba42795baf5e"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.3:paragraph:0003",
+    "content_type": "text",
+    "content": "1. Refresh table statistics before adding indexes.\n2. Add one composite index only if estimate mismatch remains after stats refresh.\n3. Verify p95 latency and buffer hit ratio before and after change.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.3",
+      "block:paragraph"
+    ],
+    "evidence_id": "4b15c616-f557-4c33-ae42-801f17bfc75f"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.4",
+    "content_type": "text",
+    "content": "Failure Modes",
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.4",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "evidence_id": "17c29ed6-1532-4852-867d-cfe952812739"
+  },
+  {
+    "asset_id": "993b93a9-85c3-42a6-8ab7-da4879ebe4ae",
+    "span_ref": "section:1.4:paragraph:0004",
+    "content_type": "text",
+    "content": "- Do not ship query rewrite and index change in one release.\n- Do not create overlapping indexes without write-amplification checks.",
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.4",
+      "block:paragraph"
+    ],
+    "evidence_id": "547197c2-cae4-40f9-9c3a-d02e6dc3b06a"
+  }
+]

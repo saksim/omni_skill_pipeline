@@ -37,6 +37,8 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md`
   - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
   - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md`
   - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json`
   - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
   - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
@@ -651,10 +653,28 @@ This directory preserves comparable baseline evidence packs for controlled-trial
   - `real_evidence_missing_review_trace_count`
 - Missing reviewer trace keeps evidence status `COLLECTION_INCOMPLETE` and launch decision at `HOLD`.
 
+## GL-63 Real Loop Intake Workpack
+
+- Runner script: `scripts/gl63_real_loop_intake_workpack.py`
+- Baseline evidence note: `docs/working/status/baselines/real-trial-gl63-intake-workpack-20260619T0312Z.md`
+- Default outputs:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md`
+- Current status: `REAL_LOOP_INTAKE_ACTION_REQUIRED` with `10` open intake items across `text`, `audio`, `image`, and `video`.
+- Policy note: GL-63 does not create real evidence and does not change `launch_gate.py`; fixture or simulated rows must remain non-launch-gate-eligible.
+
+## GL-64 Real Loop Manifest Preflight
+
+- Runner script: `scripts/gl64_real_loop_manifest_preflight.py`
+- Baseline evidence note: `docs/working/status/baselines/real-trial-gl64-manifest-preflight-20260619T0322Z.md`
+- Default outputs:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-summary.md`
+- Current status: `REAL_LOOP_MANIFEST_PREFLIGHT_PENDING` with `0/10` valid intake items and `10/10` expected manifest files missing.
+- Policy note: GL-64 preflights operator-provided manifest files only; it does not create real evidence, does not change `launch_gate.py`, and rejects fixture/simulated/placeholder rows.
+
 ## Notes
 
 - GL-12 outputs classify evidence; they do not bypass launch readiness gate.
 - Final launch decision must still be evaluated by `scripts/launch_gate.py`.
-
-
 

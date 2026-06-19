@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_launch_evidence_pack.v1",
-  "generated_at_utc": "2026-06-18T09:24:12Z",
+  "generated_at_utc": "2026-06-18T09:46:54Z",
   "stage": "controlled_external_beta",
   "launch_decision": "HOLD",
   "ready_for_controlled_beta": false,
@@ -563,10 +563,10 @@
     ],
     "backfill_submission_queue_refresh_interval_hours": 24.0,
     "backfill_submission_queue_refresh_cadence_status": "CADENCE_ON_SCHEDULE",
-    "backfill_submission_queue_refresh_previous_generated_at_utc": "2026-06-18T09:21:34Z",
-    "backfill_submission_queue_refresh_next_due_utc": "2026-06-19T09:21:34Z",
-    "backfill_submission_queue_refresh_due_in_hours": 23.957,
-    "backfill_submission_queue_refresh_evaluated_at_utc": "2026-06-18T09:24:09Z",
+    "backfill_submission_queue_refresh_previous_generated_at_utc": "2026-06-18T09:24:09Z",
+    "backfill_submission_queue_refresh_next_due_utc": "2026-06-19T09:24:09Z",
+    "backfill_submission_queue_refresh_due_in_hours": 23.622,
+    "backfill_submission_queue_refresh_evaluated_at_utc": "2026-06-18T09:46:51Z",
     "backfill_submission_queue_completion_status": "COMPLETION_IN_PROGRESS",
     "backfill_submission_queue_completion_progress_status": "COMPLETION_STALLED",
     "backfill_submission_queue_cycle_verification_status": "CYCLE_NO_NET_NEW_MOVEMENT",
@@ -774,7 +774,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-006-audio",
@@ -788,7 +788,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-010-audio",
@@ -802,7 +802,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-001-text",
@@ -816,7 +816,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-005-text",
@@ -830,7 +830,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-009-text",
@@ -844,7 +844,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-003-image",
@@ -858,7 +858,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-007-image",
@@ -872,7 +872,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-004-video",
@@ -886,7 +886,7 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-008-video",
@@ -900,14 +900,14 @@
         "reason": "pending_template_submission_required",
         "source_transition_state": "pending_submission",
         "escalation_severity": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       }
     ],
     "backfill_submission_queue_commitment_cycle_snapshot": {
       "queue_status": "QUEUE_ACTIVE",
       "queue_cadence_status": "CADENCE_ON_SCHEDULE",
-      "queue_next_refresh_due_utc": "2026-06-19T09:21:34Z",
-      "queue_due_in_hours": 23.957,
+      "queue_next_refresh_due_utc": "2026-06-19T09:24:09Z",
+      "queue_due_in_hours": 23.622,
       "completion_status": "COMPLETION_IN_PROGRESS",
       "completion_progress_status": "COMPLETION_STALLED",
       "completion_cycle_verification_status": "CYCLE_NO_NET_NEW_MOVEMENT",
@@ -961,7 +961,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -988,7 +988,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1015,7 +1015,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1042,7 +1042,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1069,7 +1069,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1096,7 +1096,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1123,7 +1123,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1150,7 +1150,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1177,7 +1177,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       },
@@ -1204,7 +1204,7 @@
         "linked_submission_loop_id": "",
         "linked_submission_review_task_id": "",
         "linked_submission_reviewed_at_utc": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required",
         "escalation_severity": ""
       }
@@ -1223,7 +1223,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-006-audio",
@@ -1237,7 +1237,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-010-audio",
@@ -1251,7 +1251,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-001-text",
@@ -1265,7 +1265,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-005-text",
@@ -1279,7 +1279,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-009-text",
@@ -1293,7 +1293,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-003-image",
@@ -1307,7 +1307,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-007-image",
@@ -1321,7 +1321,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-004-video",
@@ -1335,7 +1335,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "commitment_id": "gl39-gl37-submission-queue-gl23-slot-008-video",
@@ -1349,7 +1349,7 @@
         "stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       }
     ],
     "backfill_submission_queue_followup_status": "FOLLOWUP_STALE_ROLLOVER_ACTION_REQUIRED",
@@ -1398,7 +1398,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1419,7 +1419,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1440,7 +1440,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1461,7 +1461,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1482,7 +1482,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1503,7 +1503,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1524,7 +1524,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1545,7 +1545,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1566,7 +1566,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       },
       {
@@ -1587,7 +1587,7 @@
         "source_stale_reason_codes": [
           "unchanged_open_commitment_across_cycles"
         ],
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "reason": "pending_template_submission_required"
       }
     ],
@@ -1632,7 +1632,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-006-audio",
@@ -1649,7 +1649,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-010-audio",
@@ -1666,7 +1666,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-001-text",
@@ -1683,7 +1683,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-005-text",
@@ -1700,7 +1700,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-009-text",
@@ -1717,7 +1717,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-003-image",
@@ -1734,7 +1734,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-007-image",
@@ -1751,7 +1751,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-004-video",
@@ -1768,7 +1768,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "followup_action_id": "gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-008-video",
@@ -1785,7 +1785,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_status": "FOLLOWUP_RESOLUTION_ESCALATION_BLOCKED_ACTION_REQUIRED",
@@ -1827,7 +1827,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -1855,7 +1855,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -1883,7 +1883,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -1911,7 +1911,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -1939,7 +1939,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -1967,7 +1967,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -1995,7 +1995,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -2023,7 +2023,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -2051,7 +2051,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -2079,7 +2079,7 @@
         "handoff_queue_status_gl24": "open",
         "submission_consumed_loop_id_gl33": "",
         "handoff_linked_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z",
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z",
         "source_stale_rollover_gl41": true,
         "source_closure_state_gl40": "open_commitment",
         "source_commitment_status_gl39": "pending_submission",
@@ -2134,7 +2134,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-006-audio",
@@ -2161,7 +2161,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-010-audio",
@@ -2188,7 +2188,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-001-text",
@@ -2215,7 +2215,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-005-text",
@@ -2242,7 +2242,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-009-text",
@@ -2269,7 +2269,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-003-image",
@@ -2296,7 +2296,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-007-image",
@@ -2323,7 +2323,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-004-video",
@@ -2350,7 +2350,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       },
       {
         "acknowledgement_item_id": "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-008-video",
@@ -2377,7 +2377,7 @@
         "operator_acknowledged_by_gl24": "",
         "operator_acknowledged_at_utc_gl24": "",
         "operator_acknowledged_loop_id_gl24": "",
-        "cycle_due_at_utc": "2026-06-19T09:21:34Z"
+        "cycle_due_at_utc": "2026-06-19T09:24:09Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_throughput_status": "ESCALATION_ACK_THROUGHPUT_STALLED",
@@ -2700,14 +2700,14 @@
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_total_action_count": 10,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_open_action_count": 10,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_stale_open_action_count": 10,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_stall_cycle_count": 2,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_stall_cycle_count": 3,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_overdue_stalled_cycles_threshold": 2,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_refresh_interval_hours": 24.0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_state": "CADENCE_ON_SCHEDULE",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_previous_generated_at_utc": "2026-06-18T09:21:35Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_next_refresh_due_utc": "2026-06-19T09:21:35Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_due_in_hours": 23.957,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_evaluated_at_utc": "2026-06-18T09:24:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_previous_generated_at_utc": "2026-06-18T09:24:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_next_refresh_due_utc": "2026-06-19T09:24:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_due_in_hours": 23.622,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_evaluated_at_utc": "2026-06-18T09:46:52Z",
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_rows": [
       {
         "action_id": "gl46-slot-002-audio",
@@ -2811,7 +2811,7 @@
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_blocked_overdue_stalled_item_count": 0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_due_item_count": 0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_monitor_item_count": 10,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_cadence_stall_cycle_count_gl48": 2,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_cadence_stall_cycle_count_gl48": 3,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_cadence_overdue_stalled_cycles_threshold_gl48": 2,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_escalate_after_due_hours": 24.0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_owner_counts": {
@@ -2836,8 +2836,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "audio",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-006-audio",
@@ -2851,8 +2851,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "audio",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-010-audio",
@@ -2866,8 +2866,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "audio",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-003-image",
@@ -2881,8 +2881,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "image",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-007-image",
@@ -2896,8 +2896,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "image",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-001-text",
@@ -2911,8 +2911,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "text",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-005-text",
@@ -2926,8 +2926,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "text",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-009-text",
@@ -2941,8 +2941,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "text",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-004-video",
@@ -2956,8 +2956,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "video",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       },
       {
         "escalation_item_id": "gl49-cadence-escalation-gl46-slot-008-video",
@@ -2971,8 +2971,8 @@
         "cadence_item_status_gl48": "on_schedule",
         "required_modality_gl47": "video",
         "linked_submission_loop_id_gl47": "",
-        "next_refresh_due_utc_gl48": "2026-06-19T09:21:35Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl48": "2026-06-19T09:24:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:52Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
@@ -3449,10 +3449,10 @@
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_overdue_stalled_cycles_threshold": 2,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_refresh_interval_hours": 24.0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_state": "CADENCE_ON_SCHEDULE",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_previous_generated_at_utc": "2026-06-18T09:23:47Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_next_refresh_due_utc": "2026-06-19T09:23:47Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_due_in_hours": 23.993,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_evaluated_at_utc": "2026-06-18T09:24:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_previous_generated_at_utc": "2026-06-18T09:42:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_next_refresh_due_utc": "2026-06-19T09:42:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_due_in_hours": 23.922,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_evaluated_at_utc": "2026-06-18T09:46:53Z",
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_rows": [
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-002-audio",
@@ -3463,7 +3463,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-002-audio",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-006-audio",
@@ -3474,7 +3474,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-006-audio",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-010-audio",
@@ -3485,7 +3485,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-010-audio",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-003-image",
@@ -3496,7 +3496,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-003-image",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-007-image",
@@ -3507,7 +3507,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-007-image",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-001-text",
@@ -3518,7 +3518,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-001-text",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-005-text",
@@ -3529,7 +3529,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-005-text",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-009-text",
@@ -3540,7 +3540,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-009-text",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-004-video",
@@ -3551,7 +3551,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-004-video",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       },
       {
         "acknowledgement_ingestion_item_id": "gl50-ack-ingestion-gl46-slot-008-video",
@@ -3562,7 +3562,7 @@
         "owner_gl51": "controlled-beta-ops",
         "action_id_gl48": "gl46-slot-008-video",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_MONITORING",
@@ -3620,8 +3620,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-006-audio",
@@ -3637,8 +3637,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-010-audio",
@@ -3654,8 +3654,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-003-image",
@@ -3671,8 +3671,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-007-image",
@@ -3688,8 +3688,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-001-text",
@@ -3705,8 +3705,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-005-text",
@@ -3722,8 +3722,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-009-text",
@@ -3739,8 +3739,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-004-video",
@@ -3756,8 +3756,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl53-ack-closure-cadence-escalation-gl46-slot-008-video",
@@ -3773,8 +3773,8 @@
         "closure_state_gl51": "open_new",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:11Z"
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
@@ -3850,7 +3850,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3868,7 +3868,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3886,7 +3886,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3904,7 +3904,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3922,7 +3922,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3940,7 +3940,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3958,7 +3958,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3976,7 +3976,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -3994,7 +3994,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -4012,7 +4012,7 @@
         "escalation_item_status_gl53": "open",
         "escalation_action_gl53": "monitor_until_due",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl52": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl52": "2026-06-19T09:42:11Z",
         "acknowledgement_ingestion_status_gl50": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_INPUT_MISSING",
         "acknowledgement_ingestion_item_status_gl50": "open",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing"
@@ -4052,10 +4052,10 @@
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_overdue_stalled_cycles_threshold": 2,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_refresh_interval_hours": 24.0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_state": "CADENCE_ON_SCHEDULE",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": "2026-06-18T09:23:47Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": "2026-06-19T09:23:47Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_due_in_hours": 23.993,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_evaluated_at_utc": "2026-06-18T09:24:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": "2026-06-18T09:42:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": "2026-06-19T09:42:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_due_in_hours": 23.922,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_evaluated_at_utc": "2026-06-18T09:46:53Z",
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_rows": [
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-002-audio",
@@ -4068,7 +4068,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-002-audio",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-006-audio",
@@ -4081,7 +4081,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-006-audio",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-010-audio",
@@ -4094,7 +4094,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-010-audio",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-003-image",
@@ -4107,7 +4107,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-003-image",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-007-image",
@@ -4120,7 +4120,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-007-image",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-001-text",
@@ -4133,7 +4133,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-001-text",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-005-text",
@@ -4146,7 +4146,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-005-text",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-009-text",
@@ -4159,7 +4159,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-009-text",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-004-video",
@@ -4172,7 +4172,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-004-video",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl54": "gl54-ack-closure-cadence-escalation-closure-gl53-ack-closure-cadence-escalation-gl46-slot-008-video",
@@ -4185,7 +4185,7 @@
         "acknowledgement_ingestion_item_id_gl52": "gl50-ack-ingestion-gl46-slot-008-video",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_MONITORING",
@@ -4246,8 +4246,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-006-audio",
@@ -4263,8 +4263,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-010-audio",
@@ -4280,8 +4280,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-003-image",
@@ -4297,8 +4297,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-007-image",
@@ -4314,8 +4314,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-001-text",
@@ -4331,8 +4331,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-005-text",
@@ -4348,8 +4348,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-009-text",
@@ -4365,8 +4365,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-004-video",
@@ -4382,8 +4382,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl56-escalation-closure-cadence-escalation-gl46-slot-008-video",
@@ -4399,8 +4399,8 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
@@ -4483,7 +4483,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4502,7 +4502,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4521,7 +4521,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4540,7 +4540,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4559,7 +4559,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4578,7 +4578,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4597,7 +4597,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4616,7 +4616,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4635,7 +4635,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -4654,7 +4654,7 @@
         "closure_state_gl54": "",
         "acknowledgement_ingestion_state_gl50": "ack_input_missing",
         "linked_submission_loop_id_gl24": "",
-        "next_refresh_due_utc_gl55": "2026-06-19T09:23:47Z",
+        "next_refresh_due_utc_gl55": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl54": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       }
     ],
@@ -4695,10 +4695,10 @@
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled_cycles_threshold": 2,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh_interval_hours": 24.0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_state": "CADENCE_ON_SCHEDULE",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": "2026-06-18T09:23:48Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": "2026-06-19T09:23:48Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_in_hours": 23.993,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_evaluated_at_utc": "2026-06-18T09:24:12Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": "2026-06-18T09:42:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": "2026-06-19T09:42:11Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_in_hours": 23.921,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_evaluated_at_utc": "2026-06-18T09:46:53Z",
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows": [
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-002-audio",
@@ -4711,7 +4711,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-006-audio",
@@ -4724,7 +4724,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-010-audio",
@@ -4737,7 +4737,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-003-image",
@@ -4750,7 +4750,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-007-image",
@@ -4763,7 +4763,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-001-text",
@@ -4776,7 +4776,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-005-text",
@@ -4789,7 +4789,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-009-text",
@@ -4802,7 +4802,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-004-video",
@@ -4815,7 +4815,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       },
       {
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-008-video",
@@ -4828,7 +4828,7 @@
         "acknowledgement_ingestion_item_id_gl55": "",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_MONITORING",
@@ -4894,8 +4894,8 @@
         "required_modality_gl47": "audio",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-006-audio",
@@ -4913,8 +4913,8 @@
         "required_modality_gl47": "audio",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-010-audio",
@@ -4932,8 +4932,8 @@
         "required_modality_gl47": "audio",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-003-image",
@@ -4951,8 +4951,8 @@
         "required_modality_gl47": "image",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-007-image",
@@ -4970,8 +4970,8 @@
         "required_modality_gl47": "image",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-001-text",
@@ -4989,8 +4989,8 @@
         "required_modality_gl47": "text",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-005-text",
@@ -5008,8 +5008,8 @@
         "required_modality_gl47": "text",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-009-text",
@@ -5027,8 +5027,8 @@
         "required_modality_gl47": "text",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-004-video",
@@ -5046,8 +5046,8 @@
         "required_modality_gl47": "video",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       },
       {
         "escalation_item_id": "gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-008-video",
@@ -5065,8 +5065,8 @@
         "required_modality_gl47": "video",
         "escalation_severity_gl56": "on_schedule",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:53Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING",
@@ -5153,7 +5153,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5173,7 +5173,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5193,7 +5193,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5213,7 +5213,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5233,7 +5233,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5253,7 +5253,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5273,7 +5273,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5293,7 +5293,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5313,7 +5313,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       },
       {
@@ -5333,7 +5333,7 @@
         "escalation_item_status_gl59": "open",
         "escalation_action_gl59": "monitor_until_due",
         "cadence_item_status_gl58": "on_schedule",
-        "next_refresh_due_utc_gl58": "2026-06-19T09:23:48Z",
+        "next_refresh_due_utc_gl58": "2026-06-19T09:42:11Z",
         "escalation_closure_status_gl57": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_PROGRESSING"
       }
     ],
@@ -5377,10 +5377,10 @@
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_overdue_stalled_cycles_threshold": 2,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_refresh_interval_hours": 24.0,
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_state": "CADENCE_ON_SCHEDULE",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": "2026-06-18T09:23:48Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": "2026-06-19T09:23:48Z",
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_in_hours": 23.993,
-    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_evaluated_at_utc": "2026-06-18T09:24:12Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_previous_generated_at_utc": "2026-06-18T09:42:12Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_next_refresh_due_utc": "2026-06-19T09:42:12Z",
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_due_in_hours": 23.922,
+    "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_evaluated_at_utc": "2026-06-18T09:46:54Z",
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows": [
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-002-audio",
@@ -5393,7 +5393,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-002-audio",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-006-audio",
@@ -5406,7 +5406,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-006-audio",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-010-audio",
@@ -5419,7 +5419,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-010-audio",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-003-image",
@@ -5432,7 +5432,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-003-image",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-007-image",
@@ -5445,7 +5445,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-007-image",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-001-text",
@@ -5458,7 +5458,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-001-text",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-005-text",
@@ -5471,7 +5471,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-005-text",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-009-text",
@@ -5484,7 +5484,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-009-text",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-004-video",
@@ -5497,7 +5497,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-004-video",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       },
       {
         "closure_item_id_gl60": "gl60-closure-cadence-escalation-closure-cadence-escalation-closure-gl59-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-008-video",
@@ -5510,7 +5510,7 @@
         "closure_item_id_gl57": "gl57-closure-cadence-escalation-closure-gl56-escalation-closure-cadence-escalation-gl46-slot-008-video",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z"
       }
     ],
     "backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_status": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_ACK_INGESTION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_CLOSURE_CADENCE_ESCALATION_MONITORING",
@@ -5579,8 +5579,8 @@
         "required_modality_gl47": "audio",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-006-audio",
@@ -5598,8 +5598,8 @@
         "required_modality_gl47": "audio",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-010-audio",
@@ -5617,8 +5617,8 @@
         "required_modality_gl47": "audio",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-003-image",
@@ -5636,8 +5636,8 @@
         "required_modality_gl47": "image",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-007-image",
@@ -5655,8 +5655,8 @@
         "required_modality_gl47": "image",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-001-text",
@@ -5674,8 +5674,8 @@
         "required_modality_gl47": "text",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-005-text",
@@ -5693,8 +5693,8 @@
         "required_modality_gl47": "text",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-009-text",
@@ -5712,8 +5712,8 @@
         "required_modality_gl47": "text",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-004-video",
@@ -5731,8 +5731,8 @@
         "required_modality_gl47": "video",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       },
       {
         "escalation_item_id": "gl62-escalation-closure-cadence-escalation-closure-cadence-escalation-gl46-slot-008-video",
@@ -5750,8 +5750,8 @@
         "required_modality_gl47": "video",
         "escalation_severity_gl59": "on_schedule",
         "cadence_item_status_gl61": "on_schedule",
-        "next_refresh_due_utc_gl61": "2026-06-19T09:23:48Z",
-        "escalation_evaluated_at_utc": "2026-06-18T09:24:12Z"
+        "next_refresh_due_utc_gl61": "2026-06-19T09:42:12Z",
+        "escalation_evaluated_at_utc": "2026-06-18T09:46:54Z"
       }
     ],
     "backfill_submission_ingestion_replay_applied": false,
@@ -5779,7 +5779,7 @@
     "backfill_handoff_acknowledgement_sla_status": "ACK_SLA_NOT_REQUIRED",
     "backfill_handoff_acknowledgement_sla_hours": 24.0,
     "backfill_handoff_acknowledgement_overdue_hours": 72.0,
-    "backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc": "2026-06-18T09:24:09Z",
+    "backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc": "2026-06-18T09:46:51Z",
     "backfill_handoff_acknowledgement_within_sla_count": 0,
     "backfill_handoff_acknowledgement_sla_breached_count": 0,
     "backfill_handoff_acknowledgement_overdue_count": 0,

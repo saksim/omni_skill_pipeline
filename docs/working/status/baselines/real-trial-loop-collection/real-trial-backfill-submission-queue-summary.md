@@ -8,8 +8,8 @@
 - Blocked queue items: `0`
 - Cadence status: `CADENCE_ON_SCHEDULE`
 - Refresh interval hours: `24.0`
-- Next refresh due UTC: `2026-06-19T09:21:34Z`
-- Due in hours: `23.957`
+- Next refresh due UTC: `2026-06-19T09:24:09Z`
+- Due in hours: `23.622`
 
 ## Warning Codes
 - `no_net_new_launch_gate_eligible_real_loops`

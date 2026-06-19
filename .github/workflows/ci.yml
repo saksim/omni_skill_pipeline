@@ -33,10 +33,13 @@ jobs:
       - name: Verify dependency graph
         run: python -m pip check
 
+      - name: Verify coverage dependency
+        run: python -m coverage --version
+
       - name: Run CI test suite with coverage gate
         env:
           PYTHONPATH: src
-        run: python scripts/ci.py --coverage-fail-under 50 --coverage-xml coverage.xml
+        run: python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
 
       - name: Upload coverage XML
         if: always()

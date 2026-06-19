@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_submission_queue.v1",
-  "generated_at_utc": "2026-06-18T09:24:09Z",
+  "generated_at_utc": "2026-06-18T09:46:51Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
     "throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-throughput-report.json",
@@ -66,10 +66,10 @@
   "refresh_cadence": {
     "refresh_interval_hours": 24.0,
     "cadence_status": "CADENCE_ON_SCHEDULE",
-    "previous_queue_generated_at_utc": "2026-06-18T09:21:34Z",
-    "next_refresh_due_utc": "2026-06-19T09:21:34Z",
-    "due_in_hours": 23.957,
-    "evaluated_at_utc": "2026-06-18T09:24:09Z"
+    "previous_queue_generated_at_utc": "2026-06-18T09:24:09Z",
+    "next_refresh_due_utc": "2026-06-19T09:24:09Z",
+    "due_in_hours": 23.622,
+    "evaluated_at_utc": "2026-06-18T09:46:51Z"
   },
   "queue_items": [
     {
