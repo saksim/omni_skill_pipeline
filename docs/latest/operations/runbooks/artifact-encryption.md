@@ -1,50 +1,45 @@
-# Artifact Encryption Runbook
+# Artifact 加密 Runbook
 
-## Purpose
+## 目的
 
-Use this runbook to enable optional local encryption for file-backed artifacts
-and review queue files in the internal dogfood path.
+本手册用于在内部 dogfood 路径中，为 file-backed artifact 和 review queue 文件启用可选本地加密。
 
-This runbook applies to `v0.2.3-internal.1` and later. It does not provide
-Vault/KMS integration, automated key rotation, K8s secret management, or
-Postgres encryption.
+本手册适用于 `v0.2.3-internal.1` 及后续版本。它不提供 Vault/KMS 集成、自动 key rotation、K8s secret 管理或 Postgres 加密。
 
-## Scope
+## 范围
 
-Covered:
+覆盖：
 
-- `FileArtifactRepository` artifacts under `skills/drafts/`
-- review queue files under `skills/drafts/review_queue/`
-- local developer or internal dogfood environments using repository mode `file`
+- `skills/drafts/` 下由 `FileArtifactRepository` 写出的 artifact。
+- `skills/drafts/review_queue/` 下的 review queue 文件。
+- 使用 repository mode `file` 的本地开发环境或内部 dogfood 环境。
 
-Not covered:
+不覆盖：
 
-- Postgres repository encryption
-- dual-write primary database encryption
-- cloud secret manager integration
-- production key escrow or rotation automation
-- retroactive bulk migration of old plaintext artifacts
+- Postgres repository 加密。
+- dual-write primary database 加密。
+- 云 secret manager 集成。
+- 生产 key escrow 或自动轮换。
+- 旧 plaintext artifact 的批量回溯迁移。
 
-## Preconditions
+## 前置条件
 
-- Python 3.11 environment is active.
-- Dependencies are installed with `python -m pip install -r requirements-dev.txt`
-  or from an installed release wheel.
-- `cryptography` is installed. It is a runtime dependency in `pyproject.toml`.
-- The operator has decided where to store the Fernet key outside the repository.
+- 已激活 Python 3.11 环境。
+- 已通过 `python -m pip install -r requirements-dev.txt` 安装依赖，或已安装 release wheel。
+- 已安装 `cryptography`。它是 `pyproject.toml` 中的 runtime dependency。
+- 操作人员已经决定 Fernet key 存放在哪里，且该位置在仓库外。
 
-Never commit `OMNI_ARTIFACT_ENCRYPTION_KEY` or generated keys.
+不要提交 `OMNI_ARTIFACT_ENCRYPTION_KEY` 或任何生成 key。
 
-## Generate A Key
+## 生成 Key
 
 ```bash
 python -c "from omni_skill_pipeline.artifact_crypto import generate_fernet_key; print(generate_fernet_key())"
 ```
 
-Store the output in a local secret store, password manager, or CI secret. The
-same key is required to read encrypted artifacts later.
+把输出保存到本地 secret store、密码管理器或 CI secret。后续读取加密 artifact 时必须使用同一个 key。
 
-## Enable Encryption
+## 启用加密
 
 PowerShell:
 
@@ -64,9 +59,9 @@ export OMNI_ARTIFACT_ENCRYPTION_KEY="<generated-key>"
 export OMNI_ARTIFACT_ENCRYPTION_KEY_ID="internal-dogfood-local"
 ```
 
-## Smoke Test
+## 冒烟验证
 
-Run a small text distillation:
+跑一次小型 text distillation：
 
 ```bash
 python -m omni_skill_pipeline.cli distill-text \
@@ -75,32 +70,29 @@ python -m omni_skill_pipeline.cli distill-text \
   --domain operations
 ```
 
-Then inspect one generated JSON artifact under `skills/drafts/`. It should be a
-JSON encryption envelope with:
+然后检查 `skills/drafts/` 下任意一个新生成 JSON artifact。文件内容应是 JSON encryption envelope，并包含：
 
 - `schema_version`: `omni_artifact_encryption.v1`
 - `algorithm`: `fernet`
-- `key_id`: the configured key id
-- `ciphertext`: encrypted payload
+- `key_id`: 当前配置的 key id
+- `ciphertext`: 加密后的 payload
 
-The original plaintext should not be readable in the stored file.
+原始 plaintext 不应在落盘文件中直接可读。
 
-## Review Queue Smoke
+## Review Queue 冒烟验证
 
-When review-required output is generated, the pending queue item is also
-encrypted. The configured repository can still list and claim it:
+当生成需要 review 的输出时，pending queue item 也会被加密。配置了正确 key 的 repository 仍然可以 list 和 claim：
 
 ```bash
 python -m omni_skill_pipeline.cli review-queue --action list --queue-status pending --limit 5
 python -m omni_skill_pipeline.cli review-queue --action claim --consumer encryption-smoke
 ```
 
-If the key is missing or wrong, encrypted queue entries are not readable. Restore
-the correct key before retrying.
+如果 key 缺失或错误，加密 queue entry 将无法读取。恢复正确 key 后再重试。
 
-## Disable Encryption
+## 关闭加密
 
-Unset the encryption variables or set mode to `off`:
+清空加密变量，或把 mode 设为 `off`。
 
 PowerShell:
 
@@ -116,48 +108,40 @@ export OMNI_ARTIFACT_ENCRYPTION_MODE=off
 unset OMNI_ARTIFACT_ENCRYPTION_KEY
 ```
 
-Important behavior:
+重要行为：
 
-- New artifacts are plaintext when encryption is off.
-- Old plaintext artifacts remain readable while encryption is off.
-- Existing encrypted artifacts require the original key; encryption-off mode
-  does not silently decrypt them.
+- 加密关闭时，新 artifact 会以 plaintext 写入。
+- 加密关闭时，旧 plaintext artifact 仍可读取。
+- 既有加密 artifact 仍需要原 key；`off` 模式不会静默解密它们。
 
-## Manual Key Rotation
+## 手动 Key Rotation
 
-Automated key rotation is not implemented. To rotate manually:
+当前未实现自动 key rotation。如需手动轮换：
 
-1. Stop writers that use `FileArtifactRepository`.
-2. Preserve the old key until all required encrypted artifacts are migrated or
-   intentionally expired.
-3. Generate a new Fernet key.
-4. Set `OMNI_ARTIFACT_ENCRYPTION_KEY` to the new key and update
-   `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`.
-5. Run the smoke test above.
-6. Record the rotation date, old key id, new key id, and operator in the
-   operations log.
+1. 停止所有使用 `FileArtifactRepository` 的写入进程。
+2. 在所有必要加密 artifact 完成迁移或到期前，保留旧 key。
+3. 生成新的 Fernet key。
+4. 将 `OMNI_ARTIFACT_ENCRYPTION_KEY` 设为新 key，并更新 `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`。
+5. 执行上面的冒烟验证。
+6. 在操作记录中写下 rotation 日期、旧 key id、新 key id 和 operator。
 
-Do not delete the old key while old encrypted artifacts may still need to be
-read.
+只要旧加密 artifact 仍可能需要读取，就不要删除旧 key。
 
-## Troubleshooting
+## 排障
 
-| Symptom | Likely Cause | Action |
+| 现象 | 可能原因 | 处理 |
 | --- | --- | --- |
-| `OMNI_ARTIFACT_ENCRYPTION_KEY is required` | `fernet` mode is enabled without a key. | Set `OMNI_ARTIFACT_ENCRYPTION_KEY` or turn mode `off`. |
-| `must be a urlsafe base64-encoded 32-byte Fernet key` | Key is malformed. | Regenerate using `generate_fernet_key`. |
-| Review queue list is empty after enabling encryption | Existing encrypted entries cannot be decrypted by the current key. | Restore the original key or inspect queue files with the correct environment. |
-| Plaintext appears in new artifacts | Encryption mode is unset/off or process was started before env changes. | Restart the process and verify environment variables. |
-| Encrypted artifacts unreadable after disabling encryption | Encrypted files still require the key. | Re-enable `fernet` with the original key for read operations. |
+| `OMNI_ARTIFACT_ENCRYPTION_KEY is required` | 启用了 `fernet` 但未设置 key。 | 设置 `OMNI_ARTIFACT_ENCRYPTION_KEY`，或把 mode 改为 `off`。 |
+| `must be a urlsafe base64-encoded 32-byte Fernet key` | key 格式错误。 | 使用 `generate_fernet_key` 重新生成。 |
+| 启用加密后 review queue list 为空 | 现有加密 entry 无法用当前 key 解密。 | 恢复原 key，或在正确环境中检查 queue 文件。 |
+| 新 artifact 仍出现 plaintext | 加密 mode 未设置/已关闭，或进程启动早于环境变量更新。 | 重启进程并确认环境变量。 |
+| 关闭加密后无法读取加密 artifact | 加密文件仍需要 key。 | 使用原 key 重新启用 `fernet` 后读取。 |
 
-## Verification Commands
+## 验证命令
 
 ```bash
 python -m unittest tests.test_artifact_encryption tests.test_openai_provider_config tests.test_service_factory_split
 python scripts/doc_sync.py --output -
 ```
 
-For full release packaging, use
-[GitHub Release Workflow](github-release-workflow.md). For Docker/Postgres
-production claims, continue to the stricter infrastructure runbooks instead of
-treating this local encryption runbook as sufficient evidence.
+完整 release 打包请使用 [GitHub Release Workflow](github-release-workflow.md)。如果目标是 Docker/Postgres 生产声明，请继续使用更严格的基础设施 runbook，不要把本地加密 runbook 当作充分证据。

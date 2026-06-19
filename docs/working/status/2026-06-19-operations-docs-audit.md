@@ -1,15 +1,12 @@
-# Operations Docs Audit 2026-06-19
+# 操作文档审计 2026-06-19
 
-## Purpose
+## 目的
 
-This audit records the documentation refresh performed after
-`v0.2.3-internal.1`. It keeps the current operations manuals aligned with the
-latest internal dogfood release and records which historical capabilities were
-archived.
+本审计记录 `v0.2.3-internal.1` 之后完成的文档刷新。目标是让当前操作手册与最新内部 dogfood release 保持一致，并记录哪些历史能力已经归档。
 
-## Scope
+## 范围
 
-Checked and updated:
+已检查并更新：
 
 - `README.md`
 - `docs/INDEX.md`
@@ -27,65 +24,63 @@ Checked and updated:
 - `docs/working/status/internal-dogfood-launch/README.md`
 - `.env.example`
 
-Read but not rewritten in full:
+已阅读但未全文重写：
 
-- Large historical working construction logs that contain old context and
-  generated evidence. Their completed facts are now represented by the archive
-  record instead of being treated as the current operation source.
+- 大体量 historical working 施工日志。它们包含旧上下文和生成证据；已完成事实现在由 archive record 表达，不再作为当前操作源。
 
-## Completed Archive
+## 已完成归档
 
-The completed capability archive is:
+完成态归档文件：
 
 ```text
 docs/archive/status/2026-06-19-completed-capabilities-archive.md
 ```
 
-Archived as complete:
+已归档完成：
 
-- formal GitHub Release workflow and artifact pack
-- packaged contract resources and installed-wheel fallback
-- release consumer smoke
-- internal dogfood API smoke evidence
-- API version metadata alignment
-- local file artifact encryption
-- encrypted review queue continuity
-- current documentation lifecycle split
+- 正式 GitHub Release 工作流和 artifact pack。
+- packaged contract resources 与 installed-wheel fallback。
+- release consumer smoke。
+- 内部 dogfood API smoke 证据。
+- API version metadata 对齐。
+- 本地 file artifact 加密。
+- 加密 review queue 连续性。
+- 当前文档生命周期分层。
 
-Not archived as complete:
+未归档为完成：
 
-- external Beta readiness
-- GA/SaaS readiness
-- real launch-gate-eligible business loop volume
-- OCR hardening
-- Docker real-run closure
-- Postgres production validation
-- K8s/Kubernetes operations
-- Vault/KMS integration
-- automated key rotation
+- 外部 Beta readiness。
+- GA/SaaS readiness。
+- 真实 launch-gate-eligible 业务闭环数量。
+- OCR hardening。
+- Docker real-run closure。
+- Postgres 生产验证。
+- K8s/Kubernetes 操作。
+- Vault/KMS 集成。
+- 自动 key rotation。
 
-## Operation Manual Updates
+## 操作手册更新
 
-Current operator path is now explicit in:
+当前操作路径已经在以下文件中明确：
 
 - `docs/latest/operations/OPERATIONS.md`
 - `docs/latest/operations/testing.md`
 - `docs/latest/operations/runbooks/README.md`
 
-Artifact encryption has an executable runbook:
+Artifact 加密已有可执行 runbook：
 
 ```text
 docs/latest/operations/runbooks/artifact-encryption.md
 ```
 
-Environment and interface placeholders were replaced with actionable notes:
+环境与接口占位文档已替换为可操作说明：
 
 - `docs/latest/operations/environments/README.md`
 - `docs/latest/operations/interfaces/README.md`
 
-## Verification Plan
+## 验证计划
 
-Run:
+执行：
 
 ```bash
 python scripts/doc_sync.py --output -
@@ -93,14 +88,12 @@ python -m unittest tests.test_artifact_encryption tests.test_openai_provider_con
 git diff --check
 ```
 
-Expected result:
+预期结果：
 
-- doc sync passes
-- targeted encryption/config/service factory tests pass
-- no whitespace errors
+- doc sync 通过。
+- 加密/config/service factory 定向测试通过。
+- 无 whitespace 错误。
 
-## One-Line Summary
+## 一句话总结
 
-Archived completed internal dogfood capabilities through `v0.2.3-internal.1`
-and refreshed the operation manuals so engineers can run, verify, release, and
-enable local artifact encryption from current docs.
+已归档截至 `v0.2.3-internal.1` 的内部 dogfood 完成能力，并刷新操作手册，让工程师能从当前文档直接运行、验证、发布和启用本地 artifact 加密。

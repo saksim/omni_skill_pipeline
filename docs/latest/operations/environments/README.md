@@ -1,14 +1,12 @@
-# Operation Environments
+# 操作环境
 
-This document maps current operating environments to the correct commands and
-release claims.
+本文档说明不同运行环境应该使用哪些命令，以及每种环境可以声明什么 release claim。
 
-## Local Developer
+## 本地开发环境
 
-Purpose: edit, run unit tests, debug CLI/API behavior, and generate local
-artifacts.
+用途：编辑代码、运行单测、调试 CLI/API 行为、生成本地 artifact。
 
-Use:
+使用：
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -16,28 +14,27 @@ python -m omni_skill_pipeline.cli show-template
 python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
 ```
 
-Optional local artifact encryption:
+可选本地 artifact 加密：
 
 ```bash
 export OMNI_ARTIFACT_ENCRYPTION_MODE=fernet
 export OMNI_ARTIFACT_ENCRYPTION_KEY="<generated-key>"
 ```
 
-See `docs/latest/operations/runbooks/artifact-encryption.md`.
+详见 `docs/latest/operations/runbooks/artifact-encryption.md`。
 
-## Internal Dogfood
+## 内部 Dogfood 环境
 
-Purpose: let internal operators run the current package and collect internal
-API/CLI/review queue evidence.
+用途：让内部操作人员运行当前 package，并采集内部 API/CLI/review queue 证据。
 
-Expected posture:
+预期口径：
 
 - `internal_dogfood_only=true`
-- manual review remains the safe default for generated skills
-- external launch gate may remain `HOLD`
-- generated evidence belongs in `docs/working/status/baselines/`
+- 生成 skill 的安全默认值仍是人工 review。
+- 外部 launch gate 可以继续保持 `HOLD`。
+- 生成证据应写入 `docs/working/status/baselines/`。
 
-Recommended checks:
+推荐检查：
 
 ```bash
 python scripts/internal_launch_gate.py --output - --summary-output - --print-json
@@ -45,12 +42,11 @@ python -m uvicorn apps.api.main:app --reload
 python scripts/internal_dogfood_smoke.py --base-url http://127.0.0.1:8000 --output - --summary-output -
 ```
 
-## Release Packaging
+## Release 打包环境
 
-Purpose: produce a verifiable GitHub Release artifact pack from `main` or a
-`v*` tag.
+用途：从 `main` 或 `v*` tag 生成可验证的 GitHub Release artifact pack。
 
-Use:
+使用：
 
 ```bash
 python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
@@ -59,33 +55,28 @@ python scripts/release_artifacts.py --release-id "$RELEASE_ID" --output-dir "rel
 python scripts/release_consumer_smoke.py --release-dir "release-artifacts/$RELEASE_ID" --expected-release-id "$RELEASE_ID"
 ```
 
-See `docs/latest/operations/runbooks/github-release-workflow.md`.
+详见 `docs/latest/operations/runbooks/github-release-workflow.md`。
 
-## Infrastructure Validation
+## 基础设施验证环境
 
-Purpose: Docker/Postgres/runtime deployment validation.
+用途：Docker/Postgres/runtime deployment 验证。
 
-Current status:
+当前状态：
 
-- Docker real-run closure is not part of the archived completed
-  `v0.2.3-internal.1` scope.
-- Postgres production validation is not part of the archived completed
-  `v0.2.3-internal.1` scope.
-- K8s/Helm/Kubernetes operation is not a current completed release claim.
+- Docker real-run closure 不属于 `v0.2.3-internal.1` 已归档完成范围。
+- Postgres 生产验证不属于 `v0.2.3-internal.1` 已归档完成范围。
+- K8s/Helm/Kubernetes 操作不是当前已完成 release claim。
 
-Use the stricter infrastructure runbooks only when the environment has those
-services available:
+只有当环境具备对应服务时，才使用更严格的基础设施 runbook：
 
 ```bash
 bash scripts/linux_release.sh
 ```
 
-See `docs/latest/operations/runbooks/docker-zero-to-release.md` and
-`docs/latest/operations/runbooks/production-operations-baseline.md`.
+详见 `docs/latest/operations/runbooks/docker-zero-to-release.md` 和 `docs/latest/operations/runbooks/production-operations-baseline.md`。
 
-## External Beta / GA
+## 外部 Beta / GA
 
-The external launch gate is still expected to remain `HOLD` until
-launch-gate-eligible real business loops meet the documented threshold.
+外部 launch gate 在 launch-gate-eligible 的真实业务闭环达到阈值前，仍应保持 `HOLD`。
 
-Do not present internal dogfood evidence as external Beta, GA, or SaaS evidence.
+不要把内部 dogfood 证据包装成外部 Beta、GA 或 SaaS 证据。

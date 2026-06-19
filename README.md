@@ -1,33 +1,22 @@
 # Omni Skill Pipeline
 
-Omni Skill Pipeline distills text, audio, image, video, tabular, and mixed
-corpus evidence into reusable, traceable, reviewable skill artifacts:
-`SKILL.md`, `skill.json`, `SkillGraph`, publication manifests, and portable
-agent skill packages.
+Omni Skill Pipeline 用于把文本、音频、图像、视频、表格和混合语料证据，蒸馏成可复用、可追溯、可审核的技能工件：`SKILL.md`、`skill.json`、`SkillGraph`、publication manifest，以及可移植的 agent skill package。
 
-The current published release is `v0.2.3-internal.1`. It is an internal
-dogfood release, not an external Beta, GA, SaaS, or production deployment
-claim.
+当前已发布版本是 `v0.2.3-internal.1`。这是内部 dogfood 版本，不是外部 Beta、GA、SaaS 或生产部署承诺。
 
-## Current Capabilities
+## 当前能力
 
-- Text: `txt`, `md`, `markdown`, `rst`, `log`, `json`, `html`, `doc`, `docx`,
-  and `pdf` inputs.
-- Audio: transcript-first and optional OpenAI ASR path.
-- Image: OCR and scene-summary evidence extraction, still requiring human
-  review for uncertain visual/OCR output.
-- Video: transcript, keyframe, OCR, scene summary, and timeline evidence.
-- Tabular/time-series: `TABLE`, `METRIC`, and `EVENT` evidence generation.
-- V2 semantics: `Corpus`, `EvidenceNode`, `SemanticAtom`, `SkillGraph`, and
-  `Publication`.
-- Review controls: quality scoring, review policy, review task, review
-  feedback, reviewer packet, and review queue operations.
-- Release handoff: GitHub Release artifact pack, checksums, installable wheel,
-  release notes, and release consumer smoke.
-- Internal dogfood hardening: live API smoke evidence and optional Fernet
-  encryption for file-backed local artifacts.
+- 文本：支持 `txt`、`md`、`markdown`、`rst`、`log`、`json`、`html`、`doc`、`docx`、`pdf`。
+- 音频：支持 transcript-first 流程，可选接入 OpenAI ASR。
+- 图像：支持 OCR 与场景摘要证据抽取；视觉/OCR 不确定内容仍需人工审核。
+- 视频：支持 transcript、keyframe、OCR、场景摘要和时间线证据。
+- 表格/时序：支持生成 `TABLE`、`METRIC`、`EVENT` 证据。
+- V2 语义层：已包含 `Corpus`、`EvidenceNode`、`SemanticAtom`、`SkillGraph`、`Publication`。
+- 审核控制：已包含质量评分、review policy、review task、review feedback、reviewer packet 和 review queue 操作。
+- 发布交付：已包含 GitHub Release 工件包、校验和、可安装 wheel、发布说明和 release consumer smoke（发布消费者冒烟验证）。
+- 内部 dogfood 加固：已包含 live API smoke 证据，以及本地 file-backed artifact 的可选 Fernet 加密。
 
-## Quick Start
+## 快速开始
 
 PowerShell:
 
@@ -49,53 +38,42 @@ python -m pip install -r requirements-dev.txt
 python -m omni_skill_pipeline.cli show-template
 ```
 
-Run the normal local regression gate:
+执行本地回归门禁：
 
 ```bash
 python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
 ```
 
-## Main Entry Points
+## 主要入口
 
-- Package root: `src/omni_skill_pipeline/`
-- CLI entry: `src/omni_skill_pipeline/cli.py`
-- API app: `apps/api/main.py`
-- Worker app: `apps/worker/main.py`
-- Template contract: `docs/latest/contracts/SKILL.template.md`
-- Skill schema: `docs/latest/contracts/skill.schema.json`
-- Operations index: `docs/latest/operations/OPERATIONS.md`
+- 包根目录：`src/omni_skill_pipeline/`
+- CLI 入口：`src/omni_skill_pipeline/cli.py`
+- API 应用：`apps/api/main.py`
+- Worker 应用：`apps/worker/main.py`
+- 模板契约：`docs/latest/contracts/SKILL.template.md`
+- Skill schema：`docs/latest/contracts/skill.schema.json`
+- 操作手册入口：`docs/latest/operations/OPERATIONS.md`
 
-## Release
+## 发布
 
-- Current internal release: `v0.2.3-internal.1`
-- CI gate: `.github/workflows/ci.yml`
-- Release workflow: `.github/workflows/release.yml`
-- Release notes: `docs/releases/notes/v0.2.3-internal.1.md`
-- GitHub Release runbook:
-  `docs/latest/operations/runbooks/github-release-workflow.md`
-- Local artifact encryption runbook:
-  `docs/latest/operations/runbooks/artifact-encryption.md`
+- 当前内部版本：`v0.2.3-internal.1`
+- CI 门禁：`.github/workflows/ci.yml`
+- Release 工作流：`.github/workflows/release.yml`
+- 发布说明：`docs/releases/notes/v0.2.3-internal.1.md`
+- GitHub Release 手册：`docs/latest/operations/runbooks/github-release-workflow.md`
+- 本地 artifact 加密手册：`docs/latest/operations/runbooks/artifact-encryption.md`
 
-Formal GitHub Releases are created from `v*` tags or by manually dispatching
-the `Release` workflow with `publish_github_release=true` and `release_tag`.
-The release workflow builds a source archive, wheel, `coverage.xml`,
-`release-manifest.json`, `release-summary.md`, `SHA256SUMS`, and runs the
-release consumer smoke before upload/publication.
+正式 GitHub Release 通过推送 `v*` tag 创建，也可以手动触发 `Release` workflow，并设置 `publish_github_release=true` 与 `release_tag`。Release workflow 会生成源码包、wheel、`coverage.xml`、`release-manifest.json`、`release-summary.md`、`SHA256SUMS`，并在上传/发布前执行 release consumer smoke（发布消费者冒烟验证）。
 
-## Documentation Layers
+## 文档分层
 
-- `docs/latest/`: latest published manuals and current operating references.
-- `docs/working/`: current iteration plans, status, baselines, and evidence.
-- `docs/releases/`: changelog, release notes, and release decision standards.
-- `docs/archive/`: historical assessments, superseded status snapshots, and
-  archived completed capability records.
+- `docs/latest/`：最新已发布手册和当前操作参考。
+- `docs/working/`：当前迭代计划、状态、baseline 和证据。
+- `docs/releases/`：changelog、发布说明和发布决策标准。
+- `docs/archive/`：历史评估、已替代状态快照和已完成能力归档。
 
-Start from `docs/INDEX.md` when deciding which document to use.
+选择文档时先从 `docs/INDEX.md` 开始。
 
-## Current Engineering Position
+## 当前工程判断
 
-The internal dogfood path is ready for internal use. The broad external launch
-gate remains `HOLD` because launch-gate-eligible real business loops are still
-insufficient. Docker, Postgres, K8s, Vault/KMS, production key rotation, OCR
-hardening, and external real-loop collection remain outside the completed
-internal release boundary unless a future release explicitly closes them.
+内部 dogfood 路径已经可供内部使用。广义外部上线 gate 仍保持 `HOLD`，原因是 launch-gate-eligible 的真实业务闭环证据仍不足。Docker、Postgres、K8s、Vault/KMS、生产 key rotation、OCR hardening 和外部真实闭环采集，仍不属于当前内部版本已完成边界，除非后续 release 明确关闭这些能力。
