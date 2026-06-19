@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "omni-skill-pipeline"
-version = "0.2.0"
+version = "0.2.1"
 description = "Distill text, audio, video, and image evidence into reusable SKILL artifacts."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -45,6 +45,12 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+omni_skill_pipeline = [
+  "resources/contracts/*.json",
+  "resources/contracts/*.md"
+]
 
 [tool.coverage.run]
 branch = true

@@ -87,6 +87,15 @@ python -m pip install omni_skill_pipeline-*.whl
 python -m omni_skill_pipeline.cli show-template
 ```
 
+The automated consumer smoke is:
+
+```bash
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id <release_tag>
+```
+
+The `Release` workflow runs the same smoke against the generated artifact pack
+before upload/publication.
+
 For container/API deployment, continue with:
 
 ```bash
