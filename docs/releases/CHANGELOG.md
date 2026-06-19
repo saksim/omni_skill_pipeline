@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-06-19
+
+### v0.2.1-internal.1
+
+- Fixed installed-wheel `show-template` by packaging `SKILL.template.md` and `skill.schema.json` inside the Python wheel.
+- Added packaged-contract fallback in runtime settings for non-repository installs.
+- Added `scripts/release_consumer_smoke.py` to verify release checksums, manifest contract, wheel installation, and installed CLI template access.
+- Added the consumer smoke to the `Release` workflow before artifact upload and publication.
+- Added release notes for `v0.2.1-internal.1`.
+
 ## 2026-04-19
 
 ### Documentation

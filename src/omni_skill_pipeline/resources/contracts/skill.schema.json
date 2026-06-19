@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://omni-skill-pipeline.local/schemas/skill.schema.json",
+  "title": "SkillDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "skill_id",
+    "name",
+    "skill_type",
+    "goal",
+    "audience",
+    "trigger",
+    "inputs",
+    "preconditions",
+    "steps",
+    "decision_rules",
+    "anti_patterns",
+    "verification",
+    "evidence_refs",
+    "confidence",
+    "version",
+    "summary",
+    "tags",
+    "source_modality",
+    "review_status",
+    "created_at"
+  ],
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill_type": {
+      "type": "string",
+      "enum": [
+        "procedure",
+        "decision",
+        "diagnostic",
+        "analysis",
+        "communication",
+        "automation"
+      ]
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "self",
+        "junior",
+        "expert"
+      ]
+    },
+    "trigger": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skillStep"
+      }
+    },
+    "decision_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "anti_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_modality": {
+      "type": "string",
+      "enum": [
+        "text",
+        "audio",
+        "video",
+        "image",
+        "tabular"
+      ]
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "review_pending",
+        "published",
+        "rejected"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "skillStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step",
+        "action",
+        "why"
+      ],
+      "properties": {
+        "step": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -35,6 +35,8 @@ class ReleaseWorkflowTests(unittest.TestCase):
             "python -m pip wheel . --no-deps --wheel-dir dist",
             "python scripts/release_artifacts.py",
             "--coverage-xml coverage.xml",
+            "python scripts/release_consumer_smoke.py",
+            "--expected-release-id \"${RELEASE_ID}\"",
             "actions/upload-artifact@v4",
             "if-no-files-found: error",
         ]
