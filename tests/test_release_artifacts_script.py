@@ -23,6 +23,10 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
         (self.dist_dir / "omni_skill_pipeline-0.2.0-py3-none-any.whl").write_bytes(b"wheel-bytes")
         (self.dist_dir / "coverage.xml").write_text("not a distribution\n", encoding="utf-8")
         (self.workspace / "coverage.xml").write_text("<coverage></coverage>\n", encoding="utf-8")
+        (self.workspace / "notes.md").write_text(
+            "## What Changed\n\n- Added release notes coverage.\n",
+            encoding="utf-8",
+        )
 
     def tearDown(self) -> None:
         shutil.rmtree(self.workspace, ignore_errors=True)
@@ -47,6 +51,8 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
             str(self.dist_dir),
             "--coverage-xml",
             str(self.workspace / "coverage.xml"),
+            "--release-notes",
+            str(self.workspace / "notes.md"),
         )
 
         self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -74,6 +80,11 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
         self.assertTrue(any(line.endswith("  release-manifest.json") for line in sha_lines))
         self.assertTrue(any(line.endswith("  release-summary.md") for line in sha_lines))
 
+        summary = (self.output_dir / "release-summary.md").read_text(encoding="utf-8")
+        self.assertIn("## What Changed", summary)
+        self.assertIn("Added release notes coverage.", summary)
+        self.assertIn("## Release Metadata", summary)
+
     def test_rejects_release_ids_that_are_not_filesystem_safe(self) -> None:
         completed = self._run_script(
             "--release-id",
@@ -86,6 +97,21 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
 
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn("release_id may contain only", completed.stderr)
+
+    def test_rejects_explicit_missing_release_notes_file(self) -> None:
+        completed = self._run_script(
+            "--release-id",
+            "test-release-002",
+            "--output-dir",
+            str(self.output_dir),
+            "--dist-dir",
+            str(self.dist_dir),
+            "--release-notes",
+            str(self.workspace / "missing.md"),
+        )
+
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("release notes file is missing", completed.stderr)
 
 
 if __name__ == "__main__":

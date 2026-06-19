@@ -48,6 +48,14 @@ def _parse_args() -> argparse.Namespace:
         default="HEAD",
         help="Git ref archived into the source tarball. Defaults to HEAD.",
     )
+    parser.add_argument(
+        "--release-notes",
+        default="",
+        help=(
+            "Optional Markdown notes file to include near the top of release-summary.md. "
+            "Defaults to docs/releases/notes/<release_id>.md when present."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -176,6 +184,21 @@ def _copy_optional_coverage(coverage_xml: str, output_dir: Path) -> Path | None:
     return target
 
 
+def _read_release_notes(release_id: str, release_notes: str) -> str:
+    if release_notes:
+        path = Path(release_notes)
+        if not path.is_absolute():
+            path = REPO_ROOT / path
+        if not path.exists():
+            raise FileNotFoundError("release notes file is missing: %s" % path)
+    else:
+        path = REPO_ROOT / "docs" / "releases" / "notes" / ("%s.md" % release_id)
+        if not path.exists():
+            return ""
+
+    return path.read_text(encoding="utf-8").strip()
+
+
 def _write_manifest(
     output_dir: Path,
     *,
@@ -222,22 +245,37 @@ def _write_summary(
     *,
     release_id: str,
     artifact_records: list[dict[str, Any]],
+    release_notes: str,
 ) -> Path:
     metadata = _project_metadata()
     commit = _git_stdout(["rev-parse", "HEAD"], default="")
     lines = [
         "# Omni Skill Pipeline Release %s" % release_id,
         "",
-        "- Project: `%s`" % metadata["name"],
-        "- Version: `%s`" % metadata["version"],
-        "- Commit: `%s`" % commit,
-        "- Artifact count: `%s`" % len(artifact_records),
-        "",
-        "## Artifacts",
-        "",
-        "| File | Role | Bytes | SHA256 |",
-        "| --- | --- | ---: | --- |",
     ]
+    if release_notes:
+        lines.extend(release_notes.splitlines())
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Release Metadata",
+            "",
+            "- Project: `%s`" % metadata["name"],
+            "- Version: `%s`" % metadata["version"],
+            "- Commit: `%s`" % commit,
+            "- Artifact count: `%s`" % len(artifact_records),
+            "",
+        ]
+    )
+    lines.extend(
+        [
+            "## Artifacts",
+            "",
+            "| File | Role | Bytes | SHA256 |",
+            "| --- | --- | ---: | --- |",
+        ]
+    )
     for record in artifact_records:
         lines.append(
             "| `%s` | `%s` | %s | `%s` |"
@@ -270,6 +308,7 @@ def _write_sha256sums(output_dir: Path) -> Path:
 
 def build_release_pack(args: argparse.Namespace) -> Path:
     release_id = _validate_release_id(str(args.release_id or ""))
+    release_notes = _read_release_notes(release_id, str(args.release_notes or ""))
     output_dir = Path(args.output_dir or (REPO_ROOT / "release-artifacts" / release_id))
     if not output_dir.is_absolute():
         output_dir = REPO_ROOT / output_dir
@@ -297,7 +336,12 @@ def build_release_pack(args: argparse.Namespace) -> Path:
         source_ref=str(args.source_ref),
         artifact_records=artifact_records,
     )
-    _write_summary(output_dir, release_id=release_id, artifact_records=artifact_records)
+    _write_summary(
+        output_dir,
+        release_id=release_id,
+        artifact_records=artifact_records,
+        release_notes=release_notes,
+    )
     _write_sha256sums(output_dir)
     return output_dir
 
