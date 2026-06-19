@@ -1,0 +1,913 @@
+{
+  "schema_version": "internal_dogfood_smoke.v1",
+  "generated_at_utc": "2026-06-19T14:25:23.641900+00:00",
+  "scope": "internal_dogfood_only",
+  "base_url": "http://127.0.0.1:18081",
+  "decision": "PASS",
+  "check_count": 5,
+  "pass_count": 5,
+  "fail_count": 0,
+  "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c",
+  "checks": [
+    {
+      "name": "healthz",
+      "ok": true,
+      "status_code": 200,
+      "detail": "ok",
+      "payload": {
+        "status": "ready",
+        "checks": [
+          {
+            "name": "template_path",
+            "ok": true,
+            "detail": "template file is readable."
+          },
+          {
+            "name": "draft_dir",
+            "ok": true,
+            "detail": "draft directory is available."
+          },
+          {
+            "name": "app_assembly",
+            "ok": true,
+            "detail": "required routes are assembled.",
+            "missing_routes": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "template",
+      "ok": true,
+      "status_code": 200,
+      "detail": "ok",
+      "payload": "# {{name}}\n\n## 判词\n{{summary}}\n\n## 元信息\n- skill_id: {{skill_id}}\n- version: {{version}}\n- skill_type: {{skill_type}}\n- audience: {{audience}}\n- source_modality: {{source_modality}}\n- review_status: {{review_status}}\n- confidence: {{confidence}}\n- created_at: {{created_at}}\n\n## 目标\n{{goal}}\n\n## 触发条件\n{{trigger}}\n\n## 输入\n{{inputs}}\n\n## 前置条件\n{{preconditions}}\n\n## 操作步骤\n{{steps}}\n\n## 决策规则\n{{decision_rules}}\n\n## 反模式\n{{anti_patterns}}\n\n## 验证方式\n{{verification}}\n\n## 证据链\n{{evidence_refs}}\n\n## 标签\n{{tags}}\n\n"
+    },
+    {
+      "name": "distill_text",
+      "ok": true,
+      "status_code": 200,
+      "detail": "ok",
+      "payload": {
+        "asset": {
+          "modality": "text",
+          "source_uri": "inline://text",
+          "metadata": {
+            "filename": "inline.txt",
+            "language": "mixed"
+          },
+          "asset_id": "dccd33ec-61bc-4fcb-a565-020608ba7a6d"
+        },
+        "evidence_units": [
+          {
+            "asset_id": "dccd33ec-61bc-4fcb-a565-020608ba7a6d",
+            "span_ref": "section:root:paragraph:0001",
+            "content_type": "text",
+            "content": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+            "speaker": null,
+            "confidence": 0.86,
+            "tags": [
+              "section_path:root",
+              "block:paragraph"
+            ],
+            "evidence_id": "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+          }
+        ],
+        "insights": [
+          {
+            "insight_type": "verification",
+            "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+            "evidence_refs": [
+              "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+            ],
+            "confidence": 0.75,
+            "insight_id": "d4eec1be-9739-4fae-b0b5-25cf73268d3b"
+          }
+        ],
+        "skill": {
+          "name": "Internal dogfood text smoke",
+          "goal": "Distill internal-dogfood material into a build_skill for self. Seed: Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill befo",
+          "source_modality": "text",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert text evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Source document",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication."
+          ],
+          "evidence_refs": [
+            "ce4c1350-03e6-4b12-a4c3-493428afd5b4@section:root:paragraph:0001"
+          ],
+          "confidence": 0.54,
+          "version": "0.1.0",
+          "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+          "tags": [
+            "internal-dogfood",
+            "text",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-06-19T14:25:23Z",
+          "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c"
+        },
+        "skill_markdown": "---\nname: \"Internal dogfood text smoke\"\ndescription: \"Use when Use when converting text evidence into build_skill.. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.\"\n---\n\n# Internal dogfood text smoke\n\n## Workflow\n1. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication. (Why: Derived from evidence fallback because no procedure atoms were found.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "skill_graph": {
+          "name": "Internal dogfood text smoke",
+          "goal": "Distill internal-dogfood material into build_skill for self.",
+          "source_modalities": [
+            "text"
+          ],
+          "audience": "self",
+          "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+          "tags": [
+            "internal-dogfood",
+            "skill_graph"
+          ],
+          "domain": "internal-dogfood",
+          "trigger": [
+            "Use when converting text evidence into build_skill."
+          ],
+          "inputs": [
+            "Source document"
+          ],
+          "preconditions": [
+            "Confirm source evidence is complete and correctly scoped to the goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+              "why": "Derived from evidence fallback because no procedure atoms were found.",
+              "atom_refs": [],
+              "evidence_refs": [
+                "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+              ],
+              "metadata": {
+                "fallback_source": "evidence",
+                "source_span_ref": "section:root:paragraph:0001"
+              },
+              "node_type": "step",
+              "node_id": "b8e99a0b-f9fd-4600-b263-7b1e61fdc1ba"
+            }
+          ],
+          "decisions": [],
+          "verifications": [
+            {
+              "check": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+              "expected": "",
+              "atom_refs": [
+                "aa25dc22-cdad-43fd-acfc-57c7371d6d03"
+              ],
+              "evidence_refs": [
+                "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+              ],
+              "metadata": {},
+              "node_type": "verification",
+              "node_id": "20353b34-993c-49c8-89b4-685edf17b2c6"
+            }
+          ],
+          "risks": [],
+          "examples": [],
+          "variables": [],
+          "edges": [
+            {
+              "edge_type": "verified_by",
+              "source_node_id": "b8e99a0b-f9fd-4600-b263-7b1e61fdc1ba",
+              "target_node_id": "20353b34-993c-49c8-89b4-685edf17b2c6",
+              "rationale": "Final step should be validated explicitly.",
+              "weight": 1.0,
+              "metadata": {},
+              "edge_id": "175c2b39-fdf7-4d01-95c3-ed159b074f3e"
+            }
+          ],
+          "evidence_refs": [
+            "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+          ],
+          "atom_refs": [
+            "aa25dc22-cdad-43fd-acfc-57c7371d6d03"
+          ],
+          "confidence": 0.44,
+          "version": "0.1.0",
+          "review_status": "draft",
+          "created_at": "2026-06-19T14:25:23Z",
+          "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8"
+        },
+        "publications": [
+          {
+            "publication_type": "skill_markdown",
+            "content": {
+              "filename": "SKILL.md",
+              "text": "---\nname: \"Internal dogfood text smoke\"\ndescription: \"Use when Use when converting text evidence into build_skill.. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.\"\n---\n\n# Internal dogfood text smoke\n\n## Workflow\n1. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication. (Why: Derived from evidence fallback because no procedure atoms were found.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+              "description": "Use when Use when converting text evidence into build_skill.. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+              "line_count": 22,
+              "line_limit": 220,
+              "references": {
+                "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `text`\n- evidence_ref_count: `1`\n\n## Evidence References\n- `ce4c1350-03e6-4b12-a4c3-493428afd5b4`\n",
+                "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+              },
+              "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+              "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c"
+            },
+            "path": "SKILL.md",
+            "metadata": {
+              "source": "skill_graph",
+              "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+              "skill_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+              "version": "0.1.0",
+              "renderer": "portable_skill_markdown_v1",
+              "evidence_refs": [
+                "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+              ]
+            },
+            "created_at": "2026-06-19T14:25:23Z",
+            "publication_id": "191e88c7-2062-4711-9cb8-8b036093daef"
+          },
+          {
+            "publication_type": "skill_json",
+            "content": {
+              "filename": "skill.json",
+              "skill": {
+                "name": "Internal dogfood text smoke",
+                "goal": "Distill internal-dogfood material into a build_skill for self. Seed: Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill befo",
+                "source_modality": "text",
+                "skill_type": "procedure",
+                "audience": "self",
+                "trigger": [
+                  "Use when you need to convert text evidence into a reusable build_skill."
+                ],
+                "inputs": [
+                  "Source document",
+                  "Distillation goal"
+                ],
+                "preconditions": [
+                  "Confirm the source material matches the declared distillation goal."
+                ],
+                "steps": [
+                  {
+                    "step": 1,
+                    "action": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+                    "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+                  }
+                ],
+                "decision_rules": [],
+                "anti_patterns": [],
+                "verification": [
+                  "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication."
+                ],
+                "evidence_refs": [
+                  "ce4c1350-03e6-4b12-a4c3-493428afd5b4@section:root:paragraph:0001"
+                ],
+                "confidence": 0.54,
+                "version": "0.1.0",
+                "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+                "tags": [
+                  "internal-dogfood",
+                  "text",
+                  "build_skill",
+                  "heuristic"
+                ],
+                "review_status": "draft",
+                "created_at": "2026-06-19T14:25:23Z",
+                "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c"
+              },
+              "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+              "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c"
+            },
+            "path": "skill.json",
+            "metadata": {
+              "source": "skill_graph",
+              "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+              "skill_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+              "version": "0.1.0",
+              "renderer": "skill_json_v1_compat",
+              "evidence_refs": [
+                "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+              ]
+            },
+            "created_at": "2026-06-19T14:25:23Z",
+            "publication_id": "e45608f7-d9fb-4548-b425-24b23201fed2"
+          }
+        ],
+        "quality_scores": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 0.6545,
+          "overall_score": 0.9424,
+          "diagnostics": {
+            "step_count": 1.0,
+            "evidence_node_count": 1.0,
+            "publication_count": 2.0
+          }
+        },
+        "review_task": {
+          "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c",
+          "decision": "review_required",
+          "reason_codes": [
+            "controlled_trial_requires_review"
+          ],
+          "revision_suggestions": [
+            "S_MANUAL_REVIEW_REQUIRED"
+          ],
+          "score_snapshot": {
+            "traceability_score": 1.0,
+            "actionability_score": 1.0,
+            "coverage_score": 1.0,
+            "consistency_score": 1.0,
+            "noise_score": 1.0,
+            "novelty_score": 0.6545,
+            "overall_score": 0.9424
+          },
+          "thresholds": {
+            "auto_publish_min_overall": 0.82,
+            "auto_publish_min_traceability": 0.78,
+            "auto_publish_min_actionability": 0.72,
+            "auto_publish_min_coverage": 0.7,
+            "auto_publish_min_consistency": 0.78,
+            "auto_publish_min_noise": 0.68,
+            "auto_publish_min_novelty": 0.55,
+            "reject_max_overall": 0.35,
+            "reject_max_traceability": 0.2,
+            "reject_max_actionability": 0.22,
+            "reject_max_coverage": 0.18,
+            "reject_max_consistency": 0.3,
+            "reject_max_noise": 0.22
+          },
+          "review_notes": "",
+          "status": "review_pending",
+          "created_at": "2026-06-19T14:25:23Z",
+          "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c"
+        },
+        "corpus": null,
+        "evidence_nodes": [
+          {
+            "asset_id": "dccd33ec-61bc-4fcb-a565-020608ba7a6d",
+            "modality": "text",
+            "content_type": "text",
+            "span_ref": "section:root:paragraph:0001",
+            "text_content": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+            "payload": {
+              "legacy_content": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication."
+            },
+            "time_range": null,
+            "spatial_ref": null,
+            "structural_ref": null,
+            "speaker": null,
+            "confidence": 0.86,
+            "tags": [
+              "section_path:root",
+              "block:paragraph"
+            ],
+            "parents": [],
+            "children": [],
+            "derived_from": [],
+            "evidence_id": "ce4c1350-03e6-4b12-a4c3-493428afd5b4"
+          }
+        ],
+        "request_payload": {
+          "title": "Internal dogfood text smoke",
+          "content": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+          "file_path": null,
+          "goal": {
+            "goal_type": "build_skill",
+            "audience": "self",
+            "rigor": "draft",
+            "granularity": "task",
+            "domain": "internal-dogfood"
+          },
+          "metadata": {
+            "internal_dogfood_only": true,
+            "source": "scripts/internal_dogfood_smoke.py"
+          }
+        },
+        "artifacts": {
+          "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\asset.json",
+          "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\evidence.json",
+          "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\insights.json",
+          "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\skill.json",
+          "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\SKILL.md",
+          "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\bundle.json",
+          "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\evidence_nodes.json",
+          "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\publications",
+          "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\publications\\manifest.json",
+          "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\quality_score.json",
+          "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\review_task.json",
+          "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\review_feedback.json",
+          "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\reviewer_packet.json",
+          "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\review_policy.json",
+          "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\publications\\SKILL.md",
+          "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\publications\\skill.json",
+          "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\review_queue\\pending\\908a2198-3190-40e7-8f25-8a9d4b34824c.json"
+        },
+        "adapter_metadata": {
+          "format": ".txt",
+          "evidence_node_count": 1,
+          "publication_types": [
+            "skill_markdown",
+            "skill_json"
+          ],
+          "quality_scores": {
+            "traceability_score": 1.0,
+            "actionability_score": 1.0,
+            "coverage_score": 1.0,
+            "consistency_score": 1.0,
+            "noise_score": 1.0,
+            "novelty_score": 0.6545,
+            "overall_score": 0.9424,
+            "diagnostics": {
+              "step_count": 1.0,
+              "evidence_node_count": 1.0,
+              "publication_count": 2.0
+            }
+          },
+          "review_policy": {
+            "decision": "review_required",
+            "reason_codes": [
+              "controlled_trial_requires_review"
+            ],
+            "thresholds": {
+              "auto_publish_min_overall": 0.82,
+              "auto_publish_min_traceability": 0.78,
+              "auto_publish_min_actionability": 0.72,
+              "auto_publish_min_coverage": 0.7,
+              "auto_publish_min_consistency": 0.78,
+              "auto_publish_min_noise": 0.68,
+              "auto_publish_min_novelty": 0.55,
+              "reject_max_overall": 0.35,
+              "reject_max_traceability": 0.2,
+              "reject_max_actionability": 0.22,
+              "reject_max_coverage": 0.18,
+              "reject_max_consistency": 0.3,
+              "reject_max_noise": 0.22
+            },
+            "score_snapshot": {
+              "traceability_score": 1.0,
+              "actionability_score": 1.0,
+              "coverage_score": 1.0,
+              "consistency_score": 1.0,
+              "noise_score": 1.0,
+              "novelty_score": 0.6545,
+              "overall_score": 0.9424
+            }
+          },
+          "review_task": {
+            "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c",
+            "decision": "review_required",
+            "reason_codes": [
+              "controlled_trial_requires_review"
+            ],
+            "revision_suggestions": [
+              "S_MANUAL_REVIEW_REQUIRED"
+            ],
+            "score_snapshot": {
+              "traceability_score": 1.0,
+              "actionability_score": 1.0,
+              "coverage_score": 1.0,
+              "consistency_score": 1.0,
+              "noise_score": 1.0,
+              "novelty_score": 0.6545,
+              "overall_score": 0.9424
+            },
+            "thresholds": {
+              "auto_publish_min_overall": 0.82,
+              "auto_publish_min_traceability": 0.78,
+              "auto_publish_min_actionability": 0.72,
+              "auto_publish_min_coverage": 0.7,
+              "auto_publish_min_consistency": 0.78,
+              "auto_publish_min_noise": 0.68,
+              "auto_publish_min_novelty": 0.55,
+              "reject_max_overall": 0.35,
+              "reject_max_traceability": 0.2,
+              "reject_max_actionability": 0.22,
+              "reject_max_coverage": 0.18,
+              "reject_max_consistency": 0.3,
+              "reject_max_noise": 0.22
+            },
+            "review_notes": "",
+            "status": "review_pending",
+            "created_at": "2026-06-19T14:25:23Z",
+            "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c"
+          },
+          "review_feedback": {
+            "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c",
+            "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c",
+            "decision": "review_required",
+            "status": "review_pending",
+            "reason_codes": [
+              "controlled_trial_requires_review"
+            ],
+            "categories": [
+              "manual_review"
+            ],
+            "atom_actions": [],
+            "graph_actions": [],
+            "policy_actions": [
+              {
+                "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+                "target": "policy",
+                "intent": "escalate_manual_review",
+                "reason_code": "MANUAL_REVIEW_FALLBACK",
+                "params": {
+                  "priority": "medium"
+                }
+              }
+            ],
+            "revision_suggestions": [
+              "S_MANUAL_REVIEW_REQUIRED"
+            ],
+            "follow_up_checks": [
+              "CHECK_MANUAL_REVIEW_OUTCOME"
+            ],
+            "score_snapshot": {
+              "traceability_score": 1.0,
+              "actionability_score": 1.0,
+              "coverage_score": 1.0,
+              "consistency_score": 1.0,
+              "noise_score": 1.0,
+              "novelty_score": 0.6545,
+              "overall_score": 0.9424
+            },
+            "thresholds": {
+              "auto_publish_min_overall": 0.82,
+              "auto_publish_min_traceability": 0.78,
+              "auto_publish_min_actionability": 0.72,
+              "auto_publish_min_coverage": 0.7,
+              "auto_publish_min_consistency": 0.78,
+              "auto_publish_min_noise": 0.68,
+              "auto_publish_min_novelty": 0.55,
+              "reject_max_overall": 0.35,
+              "reject_max_traceability": 0.2,
+              "reject_max_actionability": 0.22,
+              "reject_max_coverage": 0.18,
+              "reject_max_consistency": 0.3,
+              "reject_max_noise": 0.22
+            }
+          },
+          "reviewer_packet": {
+            "schema_version": "reviewer_packet.v1",
+            "created_at": "2026-06-19T14:25:23Z",
+            "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c",
+            "skill_name": "Internal dogfood text smoke",
+            "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c",
+            "review_status": "review_pending",
+            "decision": "review_required",
+            "reason_codes": [
+              "controlled_trial_requires_review"
+            ],
+            "input_summary": {
+              "title": "Internal dogfood text smoke",
+              "goal": "Distill internal-dogfood material into a build_skill for self. Seed: Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill befo",
+              "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+              "modalities": [
+                "text"
+              ],
+              "evidence_unit_count": 1,
+              "evidence_node_count": 1,
+              "asset_count": 1,
+              "asset_refs": []
+            },
+            "evidence_links": [
+              {
+                "evidence_id": "ce4c1350-03e6-4b12-a4c3-493428afd5b4",
+                "asset_id": "dccd33ec-61bc-4fcb-a565-020608ba7a6d",
+                "span_ref": "section:root:paragraph:0001",
+                "content_type": "text",
+                "modality": "text",
+                "confidence": 0.86,
+                "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+                "tags": [
+                  "section_path:root",
+                  "block:paragraph"
+                ]
+              }
+            ],
+            "generated_skill": {
+              "skill": {
+                "name": "Internal dogfood text smoke",
+                "goal": "Distill internal-dogfood material into a build_skill for self. Seed: Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill befo",
+                "source_modality": "text",
+                "skill_type": "procedure",
+                "audience": "self",
+                "trigger": [
+                  "Use when you need to convert text evidence into a reusable build_skill."
+                ],
+                "inputs": [
+                  "Source document",
+                  "Distillation goal"
+                ],
+                "preconditions": [
+                  "Confirm the source material matches the declared distillation goal."
+                ],
+                "steps": [
+                  {
+                    "step": 1,
+                    "action": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+                    "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+                  }
+                ],
+                "decision_rules": [],
+                "anti_patterns": [],
+                "verification": [
+                  "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication."
+                ],
+                "evidence_refs": [
+                  "ce4c1350-03e6-4b12-a4c3-493428afd5b4@section:root:paragraph:0001"
+                ],
+                "confidence": 0.54,
+                "version": "0.1.0",
+                "summary": "Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.",
+                "tags": [
+                  "internal-dogfood",
+                  "text",
+                  "build_skill",
+                  "heuristic"
+                ],
+                "review_status": "draft",
+                "created_at": "2026-06-19T14:25:23Z",
+                "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c"
+              },
+              "skill_markdown_preview": "--- name: \"Internal dogfood text smoke\" description: \"Use when Use when converting text evidence into build_skill.. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication.\" --- # Internal dogfood text smoke ## Workflow 1. Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication. (Why: Derived from evidence fallback because no procedure atoms were found.) ## Decision Rules - No explicit branch rule was extracted; execute workflow order first. ## Validation - Incident note: API health was checked, template retrieval worked, and the reviewer must confirm the generated skill before publication. ## Failure Modes - Do not auto-publish trial output before human review approval. ## References - [Evidence](references/evidence.md) - [Examples](references/examples.md)",
+              "step_count": 1,
+              "decision_rule_count": 0,
+              "verification_count": 1,
+              "publication_types": [
+                "skill_markdown",
+                "skill_json"
+              ],
+              "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8"
+            },
+            "quality_scores": {
+              "traceability_score": 1.0,
+              "actionability_score": 1.0,
+              "coverage_score": 1.0,
+              "consistency_score": 1.0,
+              "noise_score": 1.0,
+              "novelty_score": 0.6545,
+              "overall_score": 0.9424,
+              "diagnostics": {
+                "step_count": 1.0,
+                "evidence_node_count": 1.0,
+                "publication_count": 2.0
+              }
+            },
+            "review_policy": {
+              "decision": "review_required",
+              "reason_codes": [
+                "controlled_trial_requires_review"
+              ],
+              "thresholds": {
+                "auto_publish_min_overall": 0.82,
+                "auto_publish_min_traceability": 0.78,
+                "auto_publish_min_actionability": 0.72,
+                "auto_publish_min_coverage": 0.7,
+                "auto_publish_min_consistency": 0.78,
+                "auto_publish_min_noise": 0.68,
+                "auto_publish_min_novelty": 0.55,
+                "reject_max_overall": 0.35,
+                "reject_max_traceability": 0.2,
+                "reject_max_actionability": 0.22,
+                "reject_max_coverage": 0.18,
+                "reject_max_consistency": 0.3,
+                "reject_max_noise": 0.22
+              },
+              "score_snapshot": {
+                "traceability_score": 1.0,
+                "actionability_score": 1.0,
+                "coverage_score": 1.0,
+                "consistency_score": 1.0,
+                "noise_score": 1.0,
+                "novelty_score": 0.6545,
+                "overall_score": 0.9424
+              }
+            },
+            "review_feedback": {
+              "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c",
+              "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c",
+              "decision": "review_required",
+              "status": "review_pending",
+              "reason_codes": [
+                "controlled_trial_requires_review"
+              ],
+              "categories": [
+                "manual_review"
+              ],
+              "atom_actions": [],
+              "graph_actions": [],
+              "policy_actions": [
+                {
+                  "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+                  "target": "policy",
+                  "intent": "escalate_manual_review",
+                  "reason_code": "MANUAL_REVIEW_FALLBACK",
+                  "params": {
+                    "priority": "medium"
+                  }
+                }
+              ],
+              "revision_suggestions": [
+                "S_MANUAL_REVIEW_REQUIRED"
+              ],
+              "follow_up_checks": [
+                "CHECK_MANUAL_REVIEW_OUTCOME"
+              ],
+              "score_snapshot": {
+                "traceability_score": 1.0,
+                "actionability_score": 1.0,
+                "coverage_score": 1.0,
+                "consistency_score": 1.0,
+                "noise_score": 1.0,
+                "novelty_score": 0.6545,
+                "overall_score": 0.9424
+              },
+              "thresholds": {
+                "auto_publish_min_overall": 0.82,
+                "auto_publish_min_traceability": 0.78,
+                "auto_publish_min_actionability": 0.72,
+                "auto_publish_min_coverage": 0.7,
+                "auto_publish_min_consistency": 0.78,
+                "auto_publish_min_noise": 0.68,
+                "auto_publish_min_novelty": 0.55,
+                "reject_max_overall": 0.35,
+                "reject_max_traceability": 0.2,
+                "reject_max_actionability": 0.22,
+                "reject_max_coverage": 0.18,
+                "reject_max_consistency": 0.3,
+                "reject_max_noise": 0.22
+              }
+            },
+            "risk_flags": [
+              {
+                "code": "controlled_trial_requires_review",
+                "severity": "medium",
+                "source": "review_policy"
+              }
+            ],
+            "approval_checklist": [
+              {
+                "check_id": "factual_accuracy",
+                "label": "Confirm generated skill facts match evidence.",
+                "required": true
+              },
+              {
+                "check_id": "actionability",
+                "label": "Confirm steps are concrete and executable by the target agent.",
+                "required": true
+              },
+              {
+                "check_id": "dangerous_operations",
+                "label": "Confirm dangerous commands or production changes are clearly guarded.",
+                "required": true
+              },
+              {
+                "check_id": "description_trigger",
+                "label": "Confirm description would trigger only for the intended scenario.",
+                "required": true
+              }
+            ]
+          },
+          "provider_footprint": {
+            "corpus_id": "",
+            "asset_breakdown": [
+              {
+                "asset_id": "dccd33ec-61bc-4fcb-a565-020608ba7a6d",
+                "role": "primary",
+                "modality": "text",
+                "source_uri": "inline://text",
+                "call_total": 0,
+                "provider_calls": []
+              }
+            ],
+            "summary": {
+              "total_calls": 0,
+              "total_successes": 0,
+              "total_failures": 0,
+              "providers": {},
+              "channels": {}
+            },
+            "runtime_provider_audits": [],
+            "runtime_summary": {
+              "total_calls": 0,
+              "total_successes": 0,
+              "total_failures": 0,
+              "providers": {},
+              "channels": {}
+            }
+          },
+          "tenant_scope": {}
+        },
+        "graph_metadata": {
+          "graph_id": "fd271523-1704-43fb-8c3c-4405af93f4a8",
+          "name": "Internal dogfood text smoke",
+          "version": "0.1.0",
+          "review_status": "draft",
+          "node_counts": {
+            "steps": 1,
+            "decisions": 0,
+            "verifications": 1,
+            "risks": 0,
+            "examples": 0,
+            "variables": 0,
+            "edges": 1
+          }
+        },
+        "available_publications": [
+          {
+            "publication_type": "skill_markdown",
+            "path": "SKILL.md",
+            "publication_id": "191e88c7-2062-4711-9cb8-8b036093daef"
+          },
+          {
+            "publication_type": "skill_json",
+            "path": "skill.json",
+            "publication_id": "e45608f7-d9fb-4548-b425-24b23201fed2"
+          }
+        ],
+        "review_status": "review_pending",
+        "lifecycle_decision": null
+      }
+    },
+    {
+      "name": "review_queue",
+      "ok": true,
+      "status_code": 200,
+      "detail": "ok",
+      "payload": {
+        "items": [
+          {
+            "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c",
+            "skill_id": "40214920-3873-4e5b-94e7-a55cbf6a0d2c",
+            "decision": "review_required",
+            "status": "review_pending",
+            "reason_codes": [
+              "controlled_trial_requires_review"
+            ],
+            "revision_suggestions": [
+              "S_MANUAL_REVIEW_REQUIRED"
+            ],
+            "score_snapshot": {
+              "traceability_score": 1.0,
+              "actionability_score": 1.0,
+              "coverage_score": 1.0,
+              "consistency_score": 1.0,
+              "noise_score": 1.0,
+              "novelty_score": 0.6545,
+              "overall_score": 0.9424
+            },
+            "thresholds": {
+              "auto_publish_min_overall": 0.82,
+              "auto_publish_min_traceability": 0.78,
+              "auto_publish_min_actionability": 0.72,
+              "auto_publish_min_coverage": 0.7,
+              "auto_publish_min_consistency": 0.78,
+              "auto_publish_min_noise": 0.68,
+              "auto_publish_min_novelty": 0.55,
+              "reject_max_overall": 0.35,
+              "reject_max_traceability": 0.2,
+              "reject_max_actionability": 0.22,
+              "reject_max_coverage": 0.18,
+              "reject_max_consistency": 0.3,
+              "reject_max_noise": 0.22
+            },
+            "review_notes": "",
+            "queue_status": "pending",
+            "enqueued_at": "2026-06-19T14:25:23Z",
+            "organization_id": "",
+            "project_id": "",
+            "review_task_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\review_task.json",
+            "reviewer_packet_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\reviewer_packet.json",
+            "bundle_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\tests\\.tmp_runtime\\api-dogfood-live\\skills\\drafts\\internal-dogfood-text-smoke-40214920\\bundle.json",
+            "reviewer_edits": {}
+          }
+        ]
+      }
+    },
+    {
+      "name": "review_queue_trace",
+      "ok": true,
+      "status_code": 200,
+      "detail": "distilled review task is visible in pending queue",
+      "review_task_id": "908a2198-3190-40e7-8f25-8a9d4b34824c",
+      "review_status": "review_pending"
+    }
+  ]
+}

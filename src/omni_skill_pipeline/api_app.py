@@ -26,6 +26,7 @@ from omni_skill_pipeline.api_schemas import (
     TextDistillRequestSchema,
     VideoDistillRequestSchema,
 )
+from omni_skill_pipeline import __version__
 from omni_skill_pipeline.interfaces import ReviewQueueRepository
 from omni_skill_pipeline.exceptions import (
     MediaProcessingError,
@@ -359,7 +360,7 @@ def create_app():
         raise RuntimeError('FastAPI is not installed. Install with `pip install .[api]`.')
 
     configure_logging(service_name='api')
-    app = FastAPI(title='Omni Skill Pipeline', version='0.2.0')
+    app = FastAPI(title='Omni Skill Pipeline', version=__version__)
     settings = load_settings()
     expected_api_key = str(settings.api_key or '').strip()
     rate_limit_requests = int(getattr(settings, 'rate_limit_requests', 0) or 0)

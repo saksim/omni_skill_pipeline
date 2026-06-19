@@ -57,6 +57,8 @@ The documentation tree is split by lifecycle stage. Use the layer name as the fi
 - [Internal Dogfood Readiness Report](working/status/baselines/internal-dogfood-readiness-report.json)
 - [Internal Dogfood Readiness Summary](working/status/baselines/internal-dogfood-readiness-summary.md)
 - [Internal Dogfood API Health Report](working/status/baselines/internal-dogfood-api-health-report.json)
+- [Internal Dogfood API Smoke Report](working/status/baselines/internal-dogfood-api-smoke-report.json)
+- [Internal Dogfood API Smoke Summary](working/status/baselines/internal-dogfood-api-smoke-summary.md)
 - [Internal Dogfood Launch Record 20260618T0643Z](working/status/baselines/internal-dogfood-launch-20260618T0643Z-summary.md)
 - [Internal Dogfood Launch Record 20260618T0656Z](working/status/baselines/internal-dogfood-launch-20260618T0656Z-summary.md)
 - [Internal Dogfood Fail Queue Update 20260618T0806Z](working/status/baselines/internal-dogfood-fail-queue-20260618T0806Z.md)
@@ -78,6 +80,7 @@ The documentation tree is split by lifecycle stage. Use the layer name as the fi
 
 - [Changelog](releases/CHANGELOG.md)
 - [Release Notes](releases/notes/README.md)
+- [v0.2.2-internal.1 Release Notes](releases/notes/v0.2.2-internal.1.md)
 - [v0.2.1-internal.1 Release Notes](releases/notes/v0.2.1-internal.1.md)
 - [v0.2.0-internal.1 Release Notes](releases/notes/v0.2.0-internal.1.md)
 - [V2 Release Switch Standard](releases/standards/v2-release-switch-standard.md)

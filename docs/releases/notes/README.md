@@ -15,6 +15,8 @@ generated `release-summary.md`.
 
 ## Published Notes
 
+- [v0.2.2-internal.1](v0.2.2-internal.1.md): internal dogfood API smoke
+  evidence and API version metadata alignment.
 - [v0.2.1-internal.1](v0.2.1-internal.1.md): packaged contract resources and
   release consumer smoke verification.
 - [v0.2.0-internal.1](v0.2.0-internal.1.md): formal GitHub Release mechanism and

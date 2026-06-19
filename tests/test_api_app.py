@@ -13,6 +13,7 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from omni_skill_pipeline.exceptions import ProviderExecutionError
+from omni_skill_pipeline import __version__
 from omni_skill_pipeline.models import (
     AudioDistillRequest,
     CorpusDistillRequest,
@@ -196,6 +197,12 @@ class ApiAppHappyPathTests(unittest.TestCase):
         self.assertEqual(response.json(), {'ok': True, 'modality': modality})
         self.assertIn(modality, self.service.requests)
         return self.service.requests[modality]
+
+    def test_openapi_version_matches_package_version(self) -> None:
+        response = self.client.get('/openapi.json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['info']['version'], __version__)
 
     def test_text_endpoint_happy_path(self) -> None:
         request = self._post_and_get_request(
