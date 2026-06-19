@@ -110,7 +110,7 @@ python -m omni_skill_pipeline.cli show-template
 When the local API is running, execute the internal dogfood API smoke:
 
 ```powershell
-python scripts\internal_dogfood_smoke.py --base-url http://127.0.0.1:8000
+python scripts\internal_dogfood_smoke.py --base-url http://127.0.0.1:8000 --output docs\working\status\baselines\internal-dogfood-api-smoke-report.json --summary-output docs\working\status\baselines\internal-dogfood-api-smoke-summary.md
 ```
 
 Dry-run plan:
@@ -125,6 +125,7 @@ Pass conditions:
 - `/v1/distill/text` returns a skill payload.
 - `/v1/review/queue` returns an `items` list.
 - If text distillation creates a pending review task, that task is visible in the pending review queue.
+- The JSON and Markdown smoke evidence files are written for launch-record review.
 
 ## Step 7：Docker smoke
 

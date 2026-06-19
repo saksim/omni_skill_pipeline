@@ -1,6 +1,6 @@
 {
   "schema_version": "broad_launch_readiness.v1",
-  "generated_at_utc": "2026-06-18T09:46:54.594784+00:00",
+  "generated_at_utc": "2026-06-19T14:21:47.778298+00:00",
   "decision": "HOLD",
   "decision_code": 0,
   "launch_levels": {
@@ -171,7 +171,7 @@
       "actual": {
         "status": "pass",
         "failed_count": 0,
-        "source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\e13-doc-sync-check-report.json"
+        "source": "doc_sync.py"
       },
       "expected": {
         "status": "pass",

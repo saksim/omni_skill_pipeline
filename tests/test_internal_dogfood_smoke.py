@@ -4,6 +4,7 @@ import importlib
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -66,6 +67,8 @@ class InternalDogfoodSmokeScriptTests(unittest.TestCase):
             if url.endswith("/v1/templates/skill"):
                 return _FakeResponse(status=200, payload="# template")
             if url.endswith("/v1/distill/text"):
+                request_payload = json.loads(request.data.decode("utf-8"))
+                self.assertEqual(request_payload["goal"]["audience"], "self")
                 return _FakeResponse(
                     status=200,
                     payload={
@@ -119,6 +122,8 @@ class InternalDogfoodSmokeScriptTests(unittest.TestCase):
             if url.endswith("/v1/templates/skill"):
                 return _FakeResponse(status=200, payload="# template")
             if url.endswith("/v1/distill/text"):
+                request_payload = json.loads(request.data.decode("utf-8"))
+                self.assertEqual(request_payload["goal"]["audience"], "self")
                 return _FakeResponse(
                     status=200,
                     payload={
@@ -146,3 +151,48 @@ class InternalDogfoodSmokeScriptTests(unittest.TestCase):
         self.assertEqual(report["decision"], "FAIL")
         self.assertEqual(report["fail_count"], 1)
         self.assertIn("review_queue_trace", [check["name"] for check in report["checks"]])
+
+    def test_happy_path_can_write_json_and_markdown_evidence(self) -> None:
+        module = importlib.import_module("scripts.internal_dogfood_smoke")
+        module = importlib.reload(module)
+
+        def fake_urlopen(request, timeout):
+            url = request.full_url
+            if url.endswith("/healthz"):
+                return _FakeResponse(status=200, payload={"status": "ready"})
+            if url.endswith("/v1/templates/skill"):
+                return _FakeResponse(status=200, payload="# template")
+            if url.endswith("/v1/distill/text"):
+                return _FakeResponse(
+                    status=200,
+                    payload={
+                        "skill_markdown": "# Internal smoke skill\n",
+                        "review_status": "review_pending",
+                        "review_task": {"review_task_id": "task-smoke-1"},
+                    },
+                )
+            if "/v1/review/queue" in url:
+                return _FakeResponse(
+                    status=200,
+                    payload={"items": [{"review_task_id": "task-smoke-1", "queue_status": "pending"}]},
+                )
+            raise AssertionError("Unexpected URL: %s" % url)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "smoke-report.json"
+            summary_path = Path(tmp_dir) / "smoke-summary.md"
+            with patch.object(module.urllib.request, "urlopen", side_effect=fake_urlopen):
+                exit_code = module.main(
+                    [
+                        "--base-url",
+                        "http://127.0.0.1:8000",
+                        "--output",
+                        str(report_path),
+                        "--summary-output",
+                        str(summary_path),
+                    ]
+                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(json.loads(report_path.read_text(encoding="utf-8"))["decision"], "PASS")
+            self.assertIn("Internal Dogfood API Smoke Summary", summary_path.read_text(encoding="utf-8"))

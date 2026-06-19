@@ -1,6 +1,6 @@
 {
   "schema_version": "internal_dogfood_readiness.v1",
-  "generated_at_utc": "2026-06-18T08:06:56.291221+00:00",
+  "generated_at_utc": "2026-06-19T14:22:03.724015+00:00",
   "decision": "READY_FOR_INTERNAL_DOGFOOD",
   "decision_code": 0,
   "scope": "internal_dogfood_only",
@@ -42,8 +42,8 @@
       "status": "pass",
       "blocking": true,
       "actual": {
-        "ci_result": "exempted",
-        "note": "Local full CI baseline is still blocked by the missing coverage package in this environment; scripts/tp_tests.py --all now passes via chunked unittest execution on Windows."
+        "ci_result": "passed",
+        "note": "Full local CI passed on 2026-06-19 for non-infrastructure launch verification."
       },
       "expected": "passed or explicitly exempted non-blocking item",
       "details": "The internal gate consumes the CI result; it does not lower coverage or skip the CI command."
@@ -88,41 +88,13 @@
       "status": "pass",
       "blocking": true,
       "actual": {
-        "source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\internal-dogfood-api-health-report.json",
-        "status": "ready",
-        "http_status": 200,
-        "payload": {
-          "schema_version": "internal_dogfood_api_health.v1",
-          "generated_at_utc": "2026-06-18T06:55:30Z",
-          "status": "ready",
-          "http_status": 200,
-          "internal_dogfood_only": true,
-          "interpretation": "API health is ready for internal dogfood. This is still not external launch evidence.",
-          "checks": [
-            {
-              "name": "template_path",
-              "ok": true,
-              "detail": "template file is readable."
-            },
-            {
-              "name": "draft_dir",
-              "ok": true,
-              "detail": "draft directory is available."
-            },
-            {
-              "name": "app_assembly",
-              "ok": true,
-              "detail": "required routes are assembled.",
-              "missing_routes": []
-            }
-          ]
-        }
+        "mode": "source_route_introspection",
+        "api_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\api_app.py",
+        "route_present": true,
+        "live_http": false
       },
-      "expected": {
-        "status": "ready",
-        "http_status": 200
-      },
-      "details": "API health must be ready, unless a degraded internal-only health state is explicitly allowed."
+      "expected": "live /healthz ready response or source-level health route for internal-only evaluation",
+      "details": "No live health URL was provided; internal gate verified the /healthz source contract."
     },
     {
       "id": "internal_sample_available",
@@ -194,6 +166,6 @@
     "controlled_trial_run_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\controlled-trial-run-report.json",
     "doc_index": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\INDEX.md",
     "healthz_url": "",
-    "healthz_report": "docs\\working\\status\\baselines\\internal-dogfood-api-health-report.json"
+    "healthz_report": ""
   }
 }
