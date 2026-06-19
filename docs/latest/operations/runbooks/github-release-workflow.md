@@ -42,6 +42,16 @@ Use the candidate pack when you need a reproducible handoff before a formal tag.
 
 ## Formal GitHub Release
 
+Before cutting a tag, add human-readable release notes when the release changes
+operator or user behavior:
+
+```text
+docs/releases/notes/<release_tag>.md
+```
+
+When that file exists, `scripts/release_artifacts.py` includes it near the top of
+the generated `release-summary.md`, before the machine metadata and artifact table.
+
 Preferred path:
 
 ```bash
