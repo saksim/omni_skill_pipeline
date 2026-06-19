@@ -13,16 +13,16 @@ if str(SRC_ROOT) not in sys.path:
 from omni_skill_pipeline.quality.feedback_loop import QualityFeedbackLoopBuilder, QualityFeedbackLoopConfig
 
 DEFAULT_RUN_REPORT_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'controlled-trial' / 'controlled-trial-run-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'controlled-trial' / 'controlled-trial-run-report.json'
 )
 DEFAULT_OUTPUT_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'quality-feedback-loop-report.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'quality-feedback-loop-report.json'
 )
 DEFAULT_SUMMARY_OUTPUT_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'quality-feedback-loop-summary.md'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'quality-feedback-loop-summary.md'
 )
 DEFAULT_CALIBRATION_OUTPUT_PATH = (
-    REPO_ROOT / 'docs' / 'current' / 'status' / 'baselines' / 'quality-feedback-loop-calibration-manifest.json'
+    REPO_ROOT / 'docs' / 'working' / 'status' / 'baselines' / 'quality-feedback-loop-calibration-manifest.json'
 )
 
 

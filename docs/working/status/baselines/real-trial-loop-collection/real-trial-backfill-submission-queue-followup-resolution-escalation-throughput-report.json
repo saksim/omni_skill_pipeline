@@ -1,0 +1,70 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_throughput.v1",
+  "generated_at_utc": "2026-06-18T09:46:52Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_acknowledgements_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-acknowledgements-report.json",
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json",
+    "previous_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-throughput-report.json"
+  },
+  "followup_resolution_escalation_acknowledgement_status_gl44": "FOLLOWUP_RESOLUTION_ESCALATION_ACK_BLOCKED_ACTION_REQUIRED",
+  "collection_program_status_gl12": "COLLECTION_INCOMPLETE",
+  "followup_resolution_escalation_throughput_status": "ESCALATION_ACK_THROUGHPUT_STALLED",
+  "warning_codes": [
+    "no_net_new_resolved_acknowledgements",
+    "no_net_new_launch_gate_eligible_real_loops",
+    "modality_gap_persists",
+    "loop_volume_gap_persists",
+    "open_acknowledgement_items_present",
+    "escalation_ack_blocked",
+    "open_escalation_acknowledgement_items_present"
+  ],
+  "acknowledgement_snapshot": {
+    "acknowledgement_status": "FOLLOWUP_RESOLUTION_ESCALATION_ACK_BLOCKED_ACTION_REQUIRED",
+    "warning_codes": [
+      "escalation_ack_blocked",
+      "open_escalation_acknowledgement_items_present"
+    ],
+    "total_item_count": 10,
+    "open_item_count": 10,
+    "resolved_acknowledged_item_count": 0,
+    "pending_ack_item_count": 0,
+    "blocked_item_count": 10,
+    "resolved_acknowledged_item_ids": [],
+    "pending_or_blocked_item_ids": [
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-001-text",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-002-audio",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-003-image",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-004-video",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-005-text",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-006-audio",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-007-image",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-008-video",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-009-text",
+      "gl44-ack-gl43-escalation-gl41-resolve_stale_rollover-gl39-gl37-submission-queue-gl23-slot-010-audio"
+    ],
+    "resolved_submission_loop_ids": [],
+    "resolved_submission_modality_counts": {}
+  },
+  "collection_snapshot": {
+    "program_status": "COLLECTION_INCOMPLETE",
+    "launch_gate_eligible_complete_loop_count": 0,
+    "launch_gate_eligible_modality_count": 0,
+    "missing_complete_loops_to_threshold": 10,
+    "missing_modalities_to_threshold": 4,
+    "launch_gate_eligible_loop_ids": [],
+    "launch_gate_eligible_modality_counts": {}
+  },
+  "snapshot_delta": {
+    "resolved_acknowledged_item_count": 0,
+    "launch_gate_eligible_complete_loop_count": 0,
+    "net_new_resolved_acknowledged_item_count": 0,
+    "net_new_resolved_submission_loop_count": 0,
+    "net_new_launch_gate_eligible_loop_count": 0,
+    "unresolved_ack_closed_loop_count": 0
+  },
+  "net_new_resolved_acknowledged_item_ids": [],
+  "net_new_resolved_submission_loop_ids": [],
+  "net_new_launch_gate_eligible_loop_ids": [],
+  "unresolved_acknowledged_submission_loop_ids": []
+}

@@ -57,34 +57,42 @@ python scripts/ci.py
 - CLI entry: `src/omni_skill_pipeline/cli.py`
 - API app: `apps/api/main.py`
 - Worker app: `apps/worker/main.py`
-- Template contract: `docs/current/contracts/SKILL.template.md`
-- Skill schema: `docs/current/contracts/skill.schema.json`
+- Template contract: `docs/latest/contracts/SKILL.template.md`
+- Skill schema: `docs/latest/contracts/skill.schema.json`
 
 ## 文档导航
 
-### Current
+### Layers
 
 - 总索引: [docs/INDEX.md](docs/INDEX.md)
-- 架构入口: [docs/current/architecture/ARCHITECTURE.md](docs/current/architecture/ARCHITECTURE.md)
-- V2 设计: [docs/current/architecture/skill-distillation-v2.md](docs/current/architecture/skill-distillation-v2.md)
-- V2 路线图: [docs/current/architecture/skill-distillation-v2-roadmap.md](docs/current/architecture/skill-distillation-v2-roadmap.md)
-- V2 开发拆解: [docs/current/architecture/skill-distillation-v2-implementation-backlog.md](docs/current/architecture/skill-distillation-v2-implementation-backlog.md)
-- V2 施工任务单: [docs/current/architecture/skill-distillation-v2-work-orders.md](docs/current/architecture/skill-distillation-v2-work-orders.md)
-- 当前状态: [docs/current/status/CURRENT_STATUS.md](docs/current/status/CURRENT_STATUS.md)
-- 上线整合总卷（历史基线，2026-04-24）: [docs/current/status/launch-readiness-master-plan.md](docs/current/status/launch-readiness-master-plan.md)
-- 蒸馏平台战略评估: [docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md](docs/current/status/2026-05-17-distillation-platform-strategy-assessment.md)
-- 受控业务试运行下一迭代: [docs/current/status/2026-05-18-controlled-business-trial-iteration.md](docs/current/status/2026-05-18-controlled-business-trial-iteration.md)
-- 广义产品上线施工计划: [docs/current/status/2026-05-25-broad-product-launch-plan.md](docs/current/status/2026-05-25-broad-product-launch-plan.md)
-- 运行文档入口: [docs/current/operations/OPERATIONS.md](docs/current/operations/OPERATIONS.md)
-- API: [docs/current/operations/api.md](docs/current/operations/api.md)
-- CLI: [docs/current/operations/cli.md](docs/current/operations/cli.md)
-- Environment: [docs/current/operations/env.md](docs/current/operations/env.md)
-- Testing: [docs/current/operations/testing.md](docs/current/operations/testing.md)
-- 评估入口: [docs/glm-5.1-project-assessment.md](docs/glm-5.1-project-assessment.md)
+- 最新已发布手册: [docs/latest/README.md](docs/latest/README.md)
+- 当前迭代材料: [docs/working/README.md](docs/working/README.md)
+- 发布记录: [docs/releases/README.md](docs/releases/README.md)
+- 历史归档: [docs/archive/README.md](docs/archive/README.md)
 
-### History
+### Latest
 
-- Changelog: [docs/history/CHANGELOG.md](docs/history/CHANGELOG.md)
+- 架构入口: [docs/latest/architecture/ARCHITECTURE.md](docs/latest/architecture/ARCHITECTURE.md)
+- V2 设计: [docs/latest/architecture/skill-distillation-v2.md](docs/latest/architecture/skill-distillation-v2.md)
+- 运行文档入口: [docs/latest/operations/OPERATIONS.md](docs/latest/operations/OPERATIONS.md)
+- API: [docs/latest/operations/api.md](docs/latest/operations/api.md)
+- CLI: [docs/latest/operations/cli.md](docs/latest/operations/cli.md)
+- Environment: [docs/latest/operations/env.md](docs/latest/operations/env.md)
+- Testing: [docs/latest/operations/testing.md](docs/latest/operations/testing.md)
+
+### Working
+
+- 当前状态: [docs/working/status/CURRENT_STATUS.md](docs/working/status/CURRENT_STATUS.md)
+- V2 路线图: [docs/working/architecture/skill-distillation-v2-roadmap.md](docs/working/architecture/skill-distillation-v2-roadmap.md)
+- V2 开发拆解: [docs/working/architecture/skill-distillation-v2-implementation-backlog.md](docs/working/architecture/skill-distillation-v2-implementation-backlog.md)
+- V2 施工任务单: [docs/working/architecture/skill-distillation-v2-work-orders.md](docs/working/architecture/skill-distillation-v2-work-orders.md)
+- 试运行与发布基线: [docs/working/status/baselines/README.md](docs/working/status/baselines/README.md)
+
+### Releases And Archive
+
+- Changelog: [docs/releases/CHANGELOG.md](docs/releases/CHANGELOG.md)
+- V2 release switch standard: [docs/releases/standards/v2-release-switch-standard.md](docs/releases/standards/v2-release-switch-standard.md)
+- 评估归档入口: [docs/archive/assessments/glm-5.1-project-assessment.md](docs/archive/assessments/glm-5.1-project-assessment.md)
 
 ## 当前工程判断
 

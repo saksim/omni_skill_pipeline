@@ -10,7 +10,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "tune_review.py"
-MANIFEST_PATH = REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e7-calibration-manifest.json"
+MANIFEST_PATH = REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e7-calibration-manifest.json"
 
 
 class TuneReviewPolicyScriptTests(unittest.TestCase):

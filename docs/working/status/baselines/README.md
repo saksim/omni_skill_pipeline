@@ -1,0 +1,680 @@
+# E0 Baseline Pack
+
+## Verdict
+
+This directory preserves comparable baseline evidence packs for controlled-trial and broad-launch execution.
+
+## Included Packs
+
+- `trial-manifests/`: controlled-trial sample manifest contracts and modality examples.
+- `trial-metrics/`: trial metrics collector template/report/summary artifacts.
+- `controlled-trial/`: controlled-trial runner outputs.
+- `real-trial-loop-collection/`: GL-12 real-loop evidence collection outputs.
+
+## CBT-11 End-to-End Trial Runner
+
+- Runner script: `scripts/controlled_trial.py`
+- Operations runbook: `docs/latest/operations/runbooks/controlled-trial-loop.md`
+- Default output directory: `docs/working/status/baselines/controlled-trial/`
+- Key outputs:
+  - `controlled-trial-execution-plan.json`
+  - `controlled-trial-run-report.json`
+  - `trial-metrics-manifest.json`
+  - `trial-metrics-report.json`
+  - `trial-metrics-summary.md`
+
+## GL-12 Real Trial Loop Collection
+
+- Collector script: `scripts/gl12_collect_loops.py`
+- Operations runbook: `docs/latest/operations/runbooks/real-trial-loop-collection.md`
+- Template manifest:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.template.json`
+- Batch input directory:
+  - `docs/working/status/baselines/real-trial-loop-collection/manifests/`
+  - This directory is an operator drop zone for real-loop `.json` manifests. Release artifacts do not populate it.
+- Generated outputs:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-backfill-plan.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-manifest.template.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-real-inputs.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-consumption-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-consumption-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-throughput-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-throughput-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-completion-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-completion-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-commitments-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-commitments-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-commitment-closure-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-commitment-closure-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalations-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalation-acknowledgement-closure-cadence-escalations-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-summary.md`
+- Linux example:
+  - `python scripts/gl12_collect_loops.py --run-report docs/working/status/baselines/controlled-trial/controlled-trial-run-report.json --output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+- Batch real-loop manifest example (GL-17):
+  - Place at least one real-loop JSON manifest in `docs/working/status/baselines/real-trial-loop-collection/manifests/` before running this mode.
+  - `python scripts/gl12_collect_loops.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+- GL-18 manifest-contract behavior:
+  - default batch intake skips non-loop-manifest JSON files and reports:
+    - `ingested_loop_manifest_count`
+    - `skipped_non_loop_manifest_count`
+    - `skipped_non_loop_manifest_paths`
+    - `duplicate_resolution_count`
+    - `duplicate_resolution_records`
+    - `launch_gate_alignment.target_launch_modalities`
+    - `launch_gate_alignment.covered_target_launch_modalities`
+    - `launch_gate_alignment.missing_target_launch_modalities`
+    - `launch_gate_alignment.recommended_next_modalities`
+    - `launch_gate_alignment.launch_gate_eligible_complete_loop_count_by_modality`
+    - `launch_gate_alignment.target_launch_modality_loop_counts`
+    - `launch_gate_alignment.recommended_backfill_slot_count`
+    - `launch_gate_alignment.recommended_backfill_slots`
+  - strict mode example:
+    - `python scripts/gl12_collect_loops.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --strict-loop-manifest-contract --output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --summary-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --manifest-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+
+## GL-13 Real Trial Launch Evidence Bridge
+
+- Bridge script: `scripts/gl13_launch_evidence.py`
+- Purpose: chain GL-12 loop collection -> trial metrics collector -> launch readiness gate with one command.
+- Key outputs:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-execution-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-intake-actions-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-templates-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-submission-manifest.template.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-summary.md`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-backfill-handoff-escalations-summary.md`
+  - `docs/working/status/baselines/controlled-trial/trial-metrics-report.json`
+  - `docs/working/status/baselines/controlled-trial/trial-metrics-summary.md`
+  - `docs/working/status/baselines/broad-launch-readiness-report.json`
+  - `docs/working/status/baselines/broad-launch-readiness-summary.md`
+- Linux example:
+  - `python scripts/gl13_launch_evidence.py --run-report docs/working/status/baselines/controlled-trial/controlled-trial-run-report.json --collection-report-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --trial-metrics-report-output docs/working/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/working/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/working/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/working/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/working/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0`
+- Batch manifest directory mode (GL-17):
+  - Place at least one real-loop JSON manifest in `docs/working/status/baselines/real-trial-loop-collection/manifests/` before running this mode. An empty directory fails fast and does not fall back to fixture evidence.
+  - `python scripts/gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --loop-manifest-pattern "*.json" --collection-report-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json --collection-summary-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-summary.md --real-trial-manifest-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-metrics-manifest.json --trial-metrics-report-output docs/working/status/baselines/controlled-trial/trial-metrics-report.json --trial-metrics-summary-output docs/working/status/baselines/controlled-trial/trial-metrics-summary.md --launch-readiness-output docs/working/status/baselines/broad-launch-readiness-report.json --launch-readiness-summary-output docs/working/status/baselines/broad-launch-readiness-summary.md --evidence-pack-output docs/working/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json --max-evidence-age-hours 0`
+- GL-34 consumed-manifest ingestion replay:
+  - when GL-33 consumption status is `CONSUMED_MANIFEST_READY` and consumed loops exist, bridge automatically replays collection/metrics/backfill using `manifests/real-trial-backfill-submission-manifest.consumed.json` in the same run.
+  - GL-16 pack exposes replay diagnostics:
+    - `input_sources.backfill_submission_ingestion_replay_applied`
+    - `input_sources.backfill_submission_ingestion_replay_manifest_paths`
+    - `input_sources.backfill_submission_ingestion_consumed_loop_count`
+    - `input_sources.backfill_submission_ingestion_status`
+    - `evidence_classification.backfill_submission_ingestion_replay_applied`
+    - `evidence_classification.backfill_submission_ingestion_consumed_loop_count`
+    - `evidence_classification.backfill_submission_ingestion_status`
+
+## GL-16 Controlled External Beta Evidence Pack
+
+- Pack output:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-launch-evidence-pack.json`
+- Pack contract:
+  - machine-readable launch decision summary for controlled external Beta review handoff
+  - explicit classification of total loops/modalities vs launch-gate-eligible real loops/modalities
+  - real evidence source/reviewer trace missing counts and current launch blocker list
+  - GL-22 backfill execution progress fields:
+    - `backfill_execution_status`
+    - `backfill_execution_fulfilled_slot_count`
+    - `backfill_execution_remaining_slot_count`
+    - `backfill_execution_gained_target_launch_modality_loop_counts`
+  - GL-30 submission-backed execution fields:
+    - `backfill_execution_submission_backed_status`
+    - `backfill_execution_submission_backed_fulfilled_slot_count`
+    - `backfill_execution_submission_backed_remaining_slot_count`
+    - `backfill_execution_fulfilled_without_submission_linkage_count`
+    - `backfill_execution_submission_linked_without_modality_delta_count`
+  - GL-28 real submission linkage fields:
+    - `backfill_execution_submission_linked_slot_count`
+    - `backfill_execution_submission_slot_linked_count`
+    - `backfill_execution_submission_action_linked_count`
+    - `backfill_execution_unmatched_submission_linkage_count`
+    - `backfill_execution_submission_linkage_records`
+    - `backfill_execution_unmatched_submission_linkages`
+  - GL-23 intake action bridge fields:
+    - `backfill_intake_status`
+    - `backfill_intake_total_action_count`
+    - `backfill_intake_pending_action_count`
+    - `backfill_intake_closed_action_count`
+    - `backfill_intake_owner`
+- GL-31 submission template bridge fields:
+  - `evidence_paths.real_trial_backfill_submission_templates_report`
+  - `evidence_paths.real_trial_backfill_submission_templates_summary`
+  - `evidence_paths.real_trial_backfill_submission_manifest_template`
+    - `backfill_submission_template_status`
+    - `backfill_submission_template_total_action_count`
+    - `backfill_submission_template_pending_action_count`
+  - `backfill_submission_template_generated_count`
+  - `backfill_submission_template_missing_count`
+  - `backfill_submission_template_owner`
+  - `backfill_submission_template_missing_actions`
+  - GL-33 submission template consumption fields:
+    - `evidence_paths.real_trial_backfill_submission_real_inputs`
+    - `evidence_paths.real_trial_backfill_submission_consumption_report`
+    - `evidence_paths.real_trial_backfill_submission_consumption_summary`
+    - `evidence_paths.real_trial_backfill_submission_consumed_manifest`
+    - `backfill_submission_consumption_status`
+    - `backfill_submission_consumption_template_loop_count`
+    - `backfill_submission_consumption_submitted_row_count`
+    - `backfill_submission_consumption_consumed_loop_count`
+    - `backfill_submission_consumption_pending_template_loop_count`
+    - `backfill_submission_consumption_invalid_submission_count`
+    - `backfill_submission_consumption_unresolved_submission_count`
+    - `backfill_submission_consumption_pending_template_rows`
+    - `backfill_submission_consumption_invalid_submissions`
+    - `backfill_submission_consumption_unresolved_submissions`
+  - GL-32 template-consumption guard fields:
+    - `real_evidence_template_placeholder_loop_count`
+    - `real_evidence_template_placeholder_field_count`
+    - `real_evidence_template_placeholder_records`
+  - GL-35 sustained throughput diagnostics fields:
+    - `evidence_paths.real_trial_backfill_submission_throughput_report`
+    - `evidence_paths.real_trial_backfill_submission_throughput_summary`
+    - `backfill_submission_throughput_status`
+    - `backfill_submission_throughput_threshold_met`
+    - `backfill_submission_throughput_warning_codes`
+    - `backfill_submission_throughput_previous_snapshot_available`
+    - `backfill_submission_throughput_net_new_loop_count`
+    - `backfill_submission_throughput_dropped_loop_count`
+    - `backfill_submission_throughput_net_new_loop_ids`
+    - `backfill_submission_throughput_dropped_loop_ids`
+    - `backfill_submission_throughput_current_missing_loops_to_threshold`
+    - `backfill_submission_throughput_current_missing_modalities_to_threshold`
+    - `backfill_submission_throughput_current_remaining_slot_count`
+    - `backfill_submission_throughput_current_submission_backed_remaining_slot_count`
+    - GL-36 throughput execution-focus fields:
+      - `backfill_submission_throughput_action_plan_status`
+      - `backfill_submission_throughput_action_plan_blockers`
+      - `backfill_submission_throughput_pending_submission_action_count`
+      - `backfill_submission_throughput_recommended_submission_action_count`
+      - `backfill_submission_throughput_priority_modalities`
+      - `backfill_submission_throughput_recommended_submission_actions`
+      - `backfill_submission_throughput_submission_consumption_status`
+      - `backfill_submission_throughput_submission_template_loop_count`
+      - `backfill_submission_throughput_submission_pending_template_loop_count`
+      - `backfill_submission_throughput_submission_invalid_count`
+      - `backfill_submission_throughput_submission_unresolved_count`
+  - GL-37 submission queue and cadence fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_summary`
+    - `backfill_submission_queue_status`
+    - `backfill_submission_queue_warning_codes`
+    - `backfill_submission_queue_total_item_count`
+    - `backfill_submission_queue_pending_item_count`
+    - `backfill_submission_queue_blocked_item_count`
+    - `backfill_submission_queue_pending_item_count_by_modality`
+    - `backfill_submission_queue_blocked_item_count_by_modality`
+    - `backfill_submission_queue_item_action_plan_status`
+    - `backfill_submission_queue_item_action_plan_blockers`
+    - `backfill_submission_queue_item_priority_modalities`
+    - `backfill_submission_queue_item_pending_submission_action_count`
+    - `backfill_submission_queue_item_recommended_submission_action_count`
+    - `backfill_submission_queue_items`
+    - `backfill_submission_queue_refresh_interval_hours`
+    - `backfill_submission_queue_refresh_cadence_status`
+    - `backfill_submission_queue_refresh_previous_generated_at_utc`
+    - `backfill_submission_queue_refresh_next_due_utc`
+    - `backfill_submission_queue_refresh_due_in_hours`
+    - `backfill_submission_queue_refresh_evaluated_at_utc`
+  - GL-38 submission queue completion and cycle-verification fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_completion_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_completion_summary`
+    - `backfill_submission_queue_completion_status`
+    - `backfill_submission_queue_completion_progress_status`
+    - `backfill_submission_queue_cycle_verification_status`
+    - `backfill_submission_queue_completion_warning_codes`
+    - `backfill_submission_queue_completion_submitted_item_count`
+    - `backfill_submission_queue_completion_closed_item_count`
+    - `backfill_submission_queue_completion_open_item_count`
+    - `backfill_submission_queue_completion_missing_handoff_item_count`
+    - `backfill_submission_queue_completion_unknown_transition_item_count`
+    - `backfill_submission_queue_cycle_net_new_movement_verified`
+    - `backfill_submission_queue_cycle_throughput_net_new_loop_count`
+    - `backfill_submission_queue_cycle_throughput_net_new_loop_ids`
+    - `backfill_submission_queue_cycle_submitted_item_delta_from_previous_cycle`
+    - `backfill_submission_queue_cycle_closed_item_delta_from_previous_cycle`
+    - `backfill_submission_queue_cycle_open_item_delta_from_previous_cycle`
+    - `backfill_submission_queue_completion_transition_records`
+  - GL-39 submission queue cadence-run commitment fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_commitments_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_commitments_summary`
+    - `backfill_submission_queue_commitment_status`
+    - `backfill_submission_queue_cadence_run_obligation_status`
+    - `backfill_submission_queue_commitment_total_count`
+    - `backfill_submission_queue_commitment_pending_submission_count`
+    - `backfill_submission_queue_commitment_pending_acknowledgement_count`
+    - `backfill_submission_queue_commitment_blocked_submission_errors_count`
+    - `backfill_submission_queue_commitment_escalation_required_count`
+    - `backfill_submission_queue_commitment_rebuild_required_count`
+    - `backfill_submission_queue_owner_commitment_counts`
+    - `backfill_submission_queue_unresolved_execution_blockers`
+    - `backfill_submission_queue_commitment_rows`
+    - `backfill_submission_queue_commitment_cycle_snapshot`
+  - GL-40 submission queue commitment-closure fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_commitment_closure_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_commitment_closure_summary`
+    - `backfill_submission_queue_commitment_closure_status`
+    - `backfill_submission_queue_commitment_cadence_run_closure_status`
+    - `backfill_submission_queue_commitment_closure_warning_codes`
+    - `backfill_submission_queue_commitment_closure_total_count`
+    - `backfill_submission_queue_commitment_closure_closed_with_acknowledgement_count`
+    - `backfill_submission_queue_commitment_closure_active_count`
+    - `backfill_submission_queue_commitment_stale_rollover_count`
+    - `backfill_submission_queue_commitment_net_new_closed_with_acknowledgement_count`
+    - `backfill_submission_queue_commitment_closure_rows`
+    - `backfill_submission_queue_commitment_closure_acknowledgement_rows`
+    - `backfill_submission_queue_commitment_stale_rollover_rows`
+  - GL-41 submission queue follow-up fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_summary`
+    - `backfill_submission_queue_followup_status`
+    - `backfill_submission_queue_followup_warning_codes`
+    - `backfill_submission_queue_followup_commitment_closure_status_gl40`
+    - `backfill_submission_queue_followup_cadence_run_closure_status_gl40`
+    - `backfill_submission_queue_followup_closure_warning_codes_gl40`
+    - `backfill_submission_queue_followup_total_action_count`
+    - `backfill_submission_queue_followup_open_action_count`
+    - `backfill_submission_queue_followup_closed_action_count`
+    - `backfill_submission_queue_followup_stale_rollover_action_count`
+    - `backfill_submission_queue_followup_acknowledgement_completion_action_count`
+    - `backfill_submission_queue_followup_acknowledgement_closed_action_count`
+    - `backfill_submission_queue_followup_blocked_action_count`
+    - `backfill_submission_queue_followup_owner_counts`
+    - `backfill_submission_queue_followup_action_rows`
+  - GL-42 submission queue follow-up resolution fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_summary`
+    - `backfill_submission_queue_followup_resolution_status`
+    - `backfill_submission_queue_followup_resolution_warning_codes`
+    - `backfill_submission_queue_followup_resolution_total_action_count`
+    - `backfill_submission_queue_followup_resolution_open_action_count_gl41`
+    - `backfill_submission_queue_followup_resolution_closed_action_count_gl41`
+    - `backfill_submission_queue_followup_resolution_resolved_action_count`
+    - `backfill_submission_queue_followup_resolution_in_progress_action_count`
+    - `backfill_submission_queue_followup_resolution_unresolved_action_count`
+    - `backfill_submission_queue_followup_resolution_submission_linked_action_count`
+    - `backfill_submission_queue_followup_resolution_closure_acknowledged_action_count`
+    - `backfill_submission_queue_followup_resolution_consumed_submission_action_count`
+    - `backfill_submission_queue_followup_resolution_submission_invalid_count`
+    - `backfill_submission_queue_followup_resolution_submission_unresolved_count`
+    - `backfill_submission_queue_followup_resolution_owner_counts`
+    - `backfill_submission_queue_followup_resolution_rows`
+  - GL-43 submission queue follow-up resolution escalation fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalations_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalations_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_status`
+    - `backfill_submission_queue_followup_resolution_escalation_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_blocked_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_pending_ack_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_active_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_rows`
+  - GL-44 submission queue follow-up resolution escalation acknowledgement fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_acknowledgements_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_acknowledgements_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_status`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_resolved_acknowledged_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_pending_ack_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_blocked_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_acknowledgement_rows`
+  - GL-45 submission queue follow-up resolution escalation throughput fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_throughput_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_throughput_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_status`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_net_new_resolved_acknowledged_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_net_new_resolved_submission_loop_count`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_net_new_launch_gate_eligible_loop_count`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_unresolved_ack_closed_loop_count`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_unresolved_acknowledged_submission_loop_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_net_new_resolved_submission_loop_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_throughput_net_new_launch_gate_eligible_loop_ids`
+  - GL-46 submission queue follow-up resolution escalation action-plan fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_total_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_open_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closed_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_unresolved_ack_mapping_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_recommended_backfill_slot_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_rows`
+  - GL-47 submission queue follow-up resolution escalation action-plan closure fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_total_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_open_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_closed_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_carried_open_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_net_new_closed_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_stale_open_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_net_new_launch_gate_eligible_loop_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_open_action_count_delta`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_carried_open_action_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_net_new_closed_action_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_net_new_launch_gate_eligible_loop_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_rows`
+  - GL-48 submission queue follow-up resolution escalation action-plan closure cadence fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_total_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_open_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_stale_open_action_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_stall_cycle_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_overdue_stalled_cycles_threshold`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_refresh_interval_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_state`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_previous_generated_at_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_next_refresh_due_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_due_in_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_evaluated_at_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_rows`
+  - GL-49 submission queue follow-up resolution escalation action-plan closure cadence escalation fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_blocked_overdue_stalled_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_due_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_monitor_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_cadence_stall_cycle_count_gl48`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_cadence_overdue_stalled_cycles_threshold_gl48`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_escalate_after_due_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_rows`
+  - GL-50 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-ingestion fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_with_ack_record_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_with_matching_ack_loop_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_with_mismatched_ack_loop_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_missing_ack_record_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_without_handoff_queue_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_unreferenced_acknowledgement_record_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_rows`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_input_present`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_input_path`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_input_acknowledgement_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_valid_acknowledgement_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_invalid_acknowledgement_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_invalid_acknowledgement_records`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion_unreferenced_acknowledgement_records`
+  - GL-51 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_previous_open_item_count_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_carried_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_stale_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_ack_loop_mismatch_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_ack_missing_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_missing_handoff_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_net_new_launch_gate_eligible_loop_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_open_item_count_delta`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_carried_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_net_new_launch_gate_eligible_loop_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_rows`
+  - GL-52 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_stale_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_net_new_closed_item_count_gl51`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_net_new_launch_gate_eligible_loop_count_gl51`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_stall_cycle_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_overdue_stalled_cycles_threshold`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_refresh_interval_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_state`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_previous_generated_at_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_next_refresh_due_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_due_in_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_evaluated_at_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_rows`
+  - GL-53 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence escalation fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalations_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_blocked_overdue_stalled_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_due_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_monitor_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_cadence_stall_cycle_count_gl52`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_cadence_overdue_stalled_cycles_threshold_gl52`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_escalate_after_due_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_rows`
+  - GL-54 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence escalation closure fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_previous_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_carried_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_stale_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_backed_by_ack_ingestion_item_count_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_without_ack_ingestion_item_count_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_ack_ingestion_closed_item_count_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_ack_ingestion_open_item_count_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_carried_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_backed_by_ack_ingestion_item_ids_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_net_new_closed_without_ack_ingestion_item_ids_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_rows`
+  - GL-55 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence escalation closure cadence fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_stale_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_net_new_closed_item_count_gl54`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_net_new_closed_backed_by_ack_ingestion_item_count_gl50`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_stall_cycle_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_overdue_stalled_cycles_threshold`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_refresh_interval_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_state`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_previous_generated_at_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_next_refresh_due_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_due_in_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_evaluated_at_utc`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_rows`
+  - GL-56 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence escalation closure cadence escalations fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalations_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_blocked_overdue_stalled_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_due_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_monitor_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_cadence_stall_cycle_count_gl55`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_cadence_overdue_stalled_cycles_threshold_gl55`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_escalate_after_due_hours`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_rows`
+  - GL-57 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence escalation closure cadence escalation closure fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_previous_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_stale_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl54_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl54_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_gl54_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_gl54_net_new_closed_action_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl54_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl54_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_gl54_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_rows`
+  - GL-60 submission queue follow-up resolution escalation action-plan closure cadence escalation acknowledgement-closure cadence escalation closure cadence escalation closure cadence escalation closure fields:
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_report`
+    - `evidence_paths.real_trial_backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_summary`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_status`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_warning_codes`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_total_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_previous_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_stale_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl57_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl57_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_action_item_count`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_owner_counts`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_carried_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_open_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_backed_by_gl57_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_net_new_closed_without_gl57_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_gl57_net_new_closed_item_ids`
+    - `backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_rows`
+  - GL-24 handoff bridge fields:
+    - `backfill_handoff_status`
+    - `backfill_handoff_total_queue_item_count`
+    - `backfill_handoff_open_queue_item_count`
+    - `backfill_handoff_submission_linked_pending_ack_count`
+    - `backfill_handoff_closure_acknowledged_count`
+    - `backfill_handoff_owner`
+  - GL-29 linkage-aware handoff assignment fields:
+    - `backfill_handoff_submission_linkage_strategy_counts`
+    - `backfill_handoff_submission_unlinked_count`
+    - `backfill_handoff_submission_unlinked_records`
+  - GL-25 acknowledgement linkage fields:
+    - `evidence_paths.real_trial_backfill_handoff_acknowledgements_report`
+    - `backfill_handoff_acknowledgement_input_count`
+    - `backfill_handoff_acknowledgement_valid_count`
+    - `backfill_handoff_acknowledgement_invalid_count`
+    - `backfill_handoff_acknowledgement_invalid_records`
+  - GL-26 acknowledgement SLA tracking fields:
+    - `backfill_handoff_acknowledgement_sla_status`
+    - `backfill_handoff_acknowledgement_sla_hours`
+    - `backfill_handoff_acknowledgement_overdue_hours`
+    - `backfill_handoff_acknowledgement_sla_evaluation_timestamp_utc`
+    - `backfill_handoff_acknowledgement_within_sla_count`
+    - `backfill_handoff_acknowledgement_sla_breached_count`
+    - `backfill_handoff_acknowledgement_overdue_count`
+    - `backfill_handoff_acknowledgement_tracking_incomplete_count`
+    - `backfill_handoff_acknowledgement_sla_breached_queue_items`
+    - `backfill_handoff_acknowledgement_overdue_queue_items`
+    - `backfill_handoff_acknowledgement_tracking_incomplete_queue_items`
+  - GL-27 escalation export fields:
+    - `evidence_paths.real_trial_backfill_handoff_escalations_report`
+    - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
+    - `backfill_handoff_escalation_status`
+    - `backfill_handoff_escalation_owner`
+    - `backfill_handoff_escalation_total_item_count`
+    - `backfill_handoff_escalation_sla_breached_item_count`
+    - `backfill_handoff_escalation_overdue_item_count`
+    - `backfill_handoff_escalation_tracking_incomplete_item_count`
+    - `backfill_handoff_escalation_sla_breached_items`
+    - `backfill_handoff_escalation_overdue_items`
+    - `backfill_handoff_escalation_tracking_incomplete_items`
+
+## GL-14 Real Trial Reviewer Trace Contract
+
+- Real launch-gate-eligible loops now require reviewer trace fields:
+  - `review_task_id`
+  - `reviewed_by`
+  - `reviewed_at_utc`
+- Collector/trial-metrics/launch-gate now surface and block on:
+  - `real_evidence_missing_review_trace_count`
+- Missing reviewer trace keeps evidence status `COLLECTION_INCOMPLETE` and launch decision at `HOLD`.
+
+## GL-63 Real Loop Intake Workpack
+
+- Runner script: `scripts/gl63_real_loop_intake_workpack.py`
+- Baseline evidence note: `docs/working/status/baselines/real-trial-gl63-intake-workpack-20260619T0312Z.md`
+- Default outputs:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md`
+- Current status: `REAL_LOOP_INTAKE_ACTION_REQUIRED` with `10` open intake items across `text`, `audio`, `image`, and `video`.
+- Policy note: GL-63 does not create real evidence and does not change `launch_gate.py`; fixture or simulated rows must remain non-launch-gate-eligible.
+
+## GL-64 Real Loop Manifest Preflight
+
+- Runner script: `scripts/gl64_real_loop_manifest_preflight.py`
+- Baseline evidence note: `docs/working/status/baselines/real-trial-gl64-manifest-preflight-20260619T0322Z.md`
+- Default outputs:
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-report.json`
+  - `docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-summary.md`
+- Current status: `REAL_LOOP_MANIFEST_PREFLIGHT_PENDING` with `0/10` valid intake items and `10/10` expected manifest files missing.
+- Policy note: GL-64 preflights operator-provided manifest files only; it does not create real evidence, does not change `launch_gate.py`, and rejects fixture/simulated/placeholder rows.
+
+## Notes
+
+- GL-12 outputs classify evidence; they do not bypass launch readiness gate.
+- Final launch decision must still be evaluated by `scripts/launch_gate.py`.
+

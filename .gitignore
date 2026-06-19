@@ -83,8 +83,13 @@ config/models/*.yaml.example
 
 # 测试覆盖率
 .coverage
+coverage.xml
 htmlcov/
 .pytest_cache/
+
+# 本地 controlled-trial 试跑草稿
+skills/drafts/controlled-trial-*-script-smoke-*/
+skills/drafts/review_queue/pending/*.json
 
 # 类型检查
 .mypy_cache/
@@ -100,6 +105,10 @@ htmlcov/
 *.rar
 *.7z
 *.zip
+
+# Versioned controlled-trial fixtures referenced by docs/working manifests.
+!examples/trial/text/query-bottleneck-summary.pdf
+!examples/trial/tabular/latency-error-report.csv
 
 # 其他垃圾数据
 *.tmp_*

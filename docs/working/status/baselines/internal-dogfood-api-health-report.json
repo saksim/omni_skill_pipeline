@@ -1,0 +1,26 @@
+{
+  "schema_version": "internal_dogfood_api_health.v1",
+  "generated_at_utc": "2026-06-18T06:55:30Z",
+  "status": "ready",
+  "http_status": 200,
+  "internal_dogfood_only": true,
+  "interpretation": "API health is ready for internal dogfood. This is still not external launch evidence.",
+  "checks": [
+    {
+      "name": "template_path",
+      "ok": true,
+      "detail": "template file is readable."
+    },
+    {
+      "name": "draft_dir",
+      "ok": true,
+      "detail": "draft directory is available."
+    },
+    {
+      "name": "app_assembly",
+      "ok": true,
+      "detail": "required routes are assembled.",
+      "missing_routes": []
+    }
+  ]
+}

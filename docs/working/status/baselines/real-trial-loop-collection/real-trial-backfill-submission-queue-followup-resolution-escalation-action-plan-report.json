@@ -1,0 +1,145 @@
+{
+  "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan.v1",
+  "generated_at_utc": "2026-06-18T09:46:52Z",
+  "owner": "controlled-beta-ops",
+  "input_paths": {
+    "submission_queue_followup_resolution_escalation_throughput_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-backfill-submission-queue-followup-resolution-escalation-throughput-report.json",
+    "collection_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\real-trial-loop-collection-report.json"
+  },
+  "followup_resolution_escalation_throughput_status_gl45": "ESCALATION_ACK_THROUGHPUT_STALLED",
+  "followup_resolution_escalation_action_plan_status": "ACTION_PLAN_OPEN",
+  "warning_codes": [
+    "no_net_new_resolved_acknowledgements",
+    "no_net_new_launch_gate_eligible_real_loops",
+    "modality_gap_persists",
+    "loop_volume_gap_persists",
+    "open_acknowledgement_items_present",
+    "escalation_ack_blocked",
+    "open_escalation_acknowledgement_items_present",
+    "open_followup_resolution_escalation_action_plan_items_present"
+  ],
+  "followup_resolution_escalation_action_plan_counts": {
+    "total_action_count": 10,
+    "open_action_count": 10,
+    "closed_action_count": 0,
+    "unresolved_ack_mapping_action_count": 0,
+    "recommended_backfill_slot_action_count": 10,
+    "missing_complete_loops_to_threshold": 10,
+    "missing_modalities_to_threshold": 4,
+    "net_new_launch_gate_eligible_loop_count_gl45": 0,
+    "net_new_resolved_acknowledged_item_count_gl45": 0,
+    "open_acknowledgement_item_count_gl44": 10
+  },
+  "followup_resolution_escalation_action_plan_rows": [
+    {
+      "action_id": "gl46-slot-001-text",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "text",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 1,
+      "reason": "missing_target_launch_modality",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-002-audio",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "audio",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 2,
+      "reason": "missing_target_launch_modality",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-003-image",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "image",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 3,
+      "reason": "missing_target_launch_modality",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-004-video",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "video",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 4,
+      "reason": "missing_target_launch_modality",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-005-text",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "text",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 5,
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-006-audio",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "audio",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 6,
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-007-image",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "image",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 7,
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-008-video",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "video",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 8,
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-009-text",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "text",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 9,
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "source": "gl12.recommended_backfill_slots"
+    },
+    {
+      "action_id": "gl46-slot-010-audio",
+      "action_type": "collect_launch_gate_eligible_real_loop",
+      "action_status": "open",
+      "owner": "controlled-beta-ops",
+      "required_modality": "audio",
+      "linked_submission_loop_id": "",
+      "backfill_slot_index": 10,
+      "reason": "loop_volume_gap_after_modality_coverage",
+      "source": "gl12.recommended_backfill_slots"
+    }
+  ]
+}

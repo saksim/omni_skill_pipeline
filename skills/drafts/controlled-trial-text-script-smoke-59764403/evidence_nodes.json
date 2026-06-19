@@ -1,0 +1,219 @@
+[
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1",
+    "text_content": "PostgreSQL Slow Query Notes",
+    "payload": {
+      "legacy_content": "PostgreSQL Slow Query Notes"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1",
+      "block:section",
+      "section_level:1",
+      "section_parent:root"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "c5f7bfe6-899c-4920-ae1d-e052eb3192fc"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.1",
+    "text_content": "Incident Context",
+    "payload": {
+      "legacy_content": "Incident Context"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.1",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "b606748c-7689-479f-ab89-92391334d43a"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.1:paragraph:0001",
+    "text_content": "- Service: order-api\n- Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z\n- Primary symptom: p95 latency moved from 120ms to 680ms",
+    "payload": {
+      "legacy_content": "- Service: order-api\n- Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z\n- Primary symptom: p95 latency moved from 120ms to 680ms"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.1",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "fbbf6137-ed0a-4138-8ea4-350017c91dea"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.2",
+    "text_content": "Observations",
+    "payload": {
+      "legacy_content": "Observations"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.2",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "7794c74c-eb70-4d88-b858-2a91712723c2"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.2:paragraph:0002",
+    "text_content": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.\n2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.\n3. Buffer reads spike during replay windows after deploy.",
+    "payload": {
+      "legacy_content": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.\n2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.\n3. Buffer reads spike during replay windows after deploy."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.2",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "7f2f47de-5ce4-4f9a-a6b0-f654a7a2dd9c"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.3",
+    "text_content": "Current Guidance",
+    "payload": {
+      "legacy_content": "Current Guidance"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.3",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "db50e0cc-72fa-4f2b-bf37-7a87163865ca"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.3:paragraph:0003",
+    "text_content": "1. Refresh table statistics before adding indexes.\n2. Add one composite index only if estimate mismatch remains after stats refresh.\n3. Verify p95 latency and buffer hit ratio before and after change.",
+    "payload": {
+      "legacy_content": "1. Refresh table statistics before adding indexes.\n2. Add one composite index only if estimate mismatch remains after stats refresh.\n3. Verify p95 latency and buffer hit ratio before and after change."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.3",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "e6931a80-41b4-46fd-8902-d3f7122bed88"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.4",
+    "text_content": "Failure Modes",
+    "payload": {
+      "legacy_content": "Failure Modes"
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.9,
+    "tags": [
+      "section_path:1.4",
+      "block:section",
+      "section_level:2",
+      "section_parent:1"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "8b6e4bba-6f9d-4e79-8af1-90f9704706bd"
+  },
+  {
+    "asset_id": "19cb9bd2-c837-4ff7-930b-5143f7944ed4",
+    "modality": "text",
+    "content_type": "text",
+    "span_ref": "section:1.4:paragraph:0004",
+    "text_content": "- Do not ship query rewrite and index change in one release.\n- Do not create overlapping indexes without write-amplification checks.",
+    "payload": {
+      "legacy_content": "- Do not ship query rewrite and index change in one release.\n- Do not create overlapping indexes without write-amplification checks."
+    },
+    "time_range": null,
+    "spatial_ref": null,
+    "structural_ref": null,
+    "speaker": null,
+    "confidence": 0.86,
+    "tags": [
+      "section_path:1.4",
+      "block:paragraph"
+    ],
+    "parents": [],
+    "children": [],
+    "derived_from": [],
+    "evidence_id": "ab991127-15d0-43c7-b445-4e094af6f30e"
+  }
+]

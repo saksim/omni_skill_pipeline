@@ -23,7 +23,7 @@ def build_platform_console_views(
     trial_run_path = (
         repo_root
         / 'docs'
-        / 'current'
+        / 'working'
         / 'status'
         / 'baselines'
         / 'controlled-trial'
@@ -32,7 +32,7 @@ def build_platform_console_views(
     trial_metrics_path = (
         repo_root
         / 'docs'
-        / 'current'
+        / 'working'
         / 'status'
         / 'baselines'
         / 'controlled-trial'
@@ -41,7 +41,7 @@ def build_platform_console_views(
     launch_readiness_path = (
         repo_root
         / 'docs'
-        / 'current'
+        / 'working'
         / 'status'
         / 'baselines'
         / 'broad-launch-readiness-report.json'
@@ -49,7 +49,7 @@ def build_platform_console_views(
     operations_readiness_path = (
         repo_root
         / 'docs'
-        / 'current'
+        / 'working'
         / 'status'
         / 'baselines'
         / 'operations-readiness-report.json'

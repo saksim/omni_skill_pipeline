@@ -55,7 +55,7 @@ from omni_skill_pipeline.validation import evaluate_trial_security_from_bundle  
 DEFAULT_MANIFEST_PATH = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "trial-manifests"
@@ -64,7 +64,7 @@ DEFAULT_MANIFEST_PATH = (
 DEFAULT_OUTPUT_DIR = (
     REPO_ROOT
     / "docs"
-    / "current"
+    / "working"
     / "status"
     / "baselines"
     / "controlled-trial"
@@ -827,7 +827,7 @@ def main() -> int:
             "generated_at_utc": _utc_now_iso(),
             "release_gate": {
                 "latest_release_decision": str(args.release_decision).strip().upper(),
-                "evidence_ref": "docs/current/status/baselines/e13-release-switch-decision-report.json",
+                "evidence_ref": "docs/working/status/baselines/e13-release-switch-decision-report.json",
             },
             "operator_signoff": {
                 "cost_per_accepted_skill_accepted": True,

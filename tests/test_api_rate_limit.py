@@ -52,7 +52,7 @@ def _build_settings(
         rate_limit_window_seconds=rate_limit_window_seconds,
         tenant_access_json='',
         tenant_access_file='',
-        template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
+        template_path=REPO_ROOT / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md',
     )
 
 

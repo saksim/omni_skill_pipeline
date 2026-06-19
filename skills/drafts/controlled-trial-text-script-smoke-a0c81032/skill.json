@@ -1,0 +1,88 @@
+{
+  "name": "controlled trial text script smoke",
+  "goal": "Distill controlled_trial material into a build_skill for self. Seed: PostgreSQL Slow Query Notes",
+  "source_modality": "text",
+  "skill_type": "procedure",
+  "audience": "self",
+  "trigger": [
+    "Use when you need to convert text evidence into a reusable build_skill."
+  ],
+  "inputs": [
+    "Source document",
+    "Distillation goal"
+  ],
+  "preconditions": [
+    "Confirm the source material matches the declared distillation goal."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "action": "Service: order-api",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 2,
+      "action": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 3,
+      "action": "Primary symptom: p95 latency moved from 120ms to 680ms",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 4,
+      "action": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 5,
+      "action": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 6,
+      "action": "Buffer reads spike during replay windows after deploy.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 7,
+      "action": "Refresh table statistics before adding indexes.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    },
+    {
+      "step": 8,
+      "action": "Add one composite index only if estimate mismatch remains after stats refresh.",
+      "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+    }
+  ],
+  "decision_rules": [],
+  "anti_patterns": [],
+  "verification": [
+    "Confirm each key conclusion can be traced back to evidence_refs.",
+    "Run one manual rehearsal to verify the steps are executable."
+  ],
+  "evidence_refs": [
+    "125a902f-bfb8-4aad-b92a-44c5aff24760@section:1",
+    "9958d35e-e69e-4fd5-a426-50e1fecad4a6@section:1.1",
+    "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c@section:1.1:paragraph:0001",
+    "01c10d2d-bfb5-4df4-b198-1debbd65bc1c@section:1.2",
+    "f45d60a5-8021-4452-9359-3d3b0f475285@section:1.2:paragraph:0002",
+    "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8@section:1.3",
+    "94246e8d-648a-4f08-87dd-782dd241d1ae@section:1.3:paragraph:0003",
+    "955929b4-f201-400b-bf15-4df9ec5afcfb@section:1.4",
+    "07533987-73bb-4c38-bd58-cd860f368981@section:1.4:paragraph:0004"
+  ],
+  "confidence": 0.9,
+  "version": "0.1.0",
+  "summary": "PostgreSQL Slow Query Notes",
+  "tags": [
+    "controlled_trial",
+    "text",
+    "build_skill",
+    "heuristic"
+  ],
+  "review_status": "draft",
+  "created_at": "2026-06-19T05:09:33Z",
+  "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5"
+}

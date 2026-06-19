@@ -1,0 +1,101 @@
+[
+  {
+    "insight_type": "procedure",
+    "summary": "Service: order-api",
+    "evidence_refs": [
+      "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+    ],
+    "confidence": 0.82,
+    "insight_id": "da356d97-c98e-42a5-b22e-f047e693cb30"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+    "evidence_refs": [
+      "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+    ],
+    "confidence": 0.82,
+    "insight_id": "d4975805-6f8b-417b-8b48-221565bedf65"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Primary symptom: p95 latency moved from 120ms to 680ms",
+    "evidence_refs": [
+      "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+    ],
+    "confidence": 0.82,
+    "insight_id": "f05ee73f-ce05-4090-9b79-023353121647"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+    "evidence_refs": [
+      "f45d60a5-8021-4452-9359-3d3b0f475285"
+    ],
+    "confidence": 0.82,
+    "insight_id": "c67eae10-73a2-4b76-9787-e72aa27d37f0"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+    "evidence_refs": [
+      "f45d60a5-8021-4452-9359-3d3b0f475285"
+    ],
+    "confidence": 0.82,
+    "insight_id": "0c71a318-7dcd-47ab-b2a2-1a3cf1be7e84"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Buffer reads spike during replay windows after deploy.",
+    "evidence_refs": [
+      "f45d60a5-8021-4452-9359-3d3b0f475285"
+    ],
+    "confidence": 0.82,
+    "insight_id": "d518de50-3f3f-45cb-8fdc-c8d6727eeab0"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Refresh table statistics before adding indexes.",
+    "evidence_refs": [
+      "94246e8d-648a-4f08-87dd-782dd241d1ae"
+    ],
+    "confidence": 0.82,
+    "insight_id": "f4c8e69d-f23a-4eeb-91fc-d94a34fd1afc"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Add one composite index only if estimate mismatch remains after stats refresh.",
+    "evidence_refs": [
+      "94246e8d-648a-4f08-87dd-782dd241d1ae"
+    ],
+    "confidence": 0.82,
+    "insight_id": "8da9638c-6326-403d-8d2c-74994f1cff00"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Verify p95 latency and buffer hit ratio before and after change.",
+    "evidence_refs": [
+      "94246e8d-648a-4f08-87dd-782dd241d1ae"
+    ],
+    "confidence": 0.82,
+    "insight_id": "5164ffdc-4097-446e-a22e-82048a7d16f9"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Do not ship query rewrite and index change in one release.",
+    "evidence_refs": [
+      "07533987-73bb-4c38-bd58-cd860f368981"
+    ],
+    "confidence": 0.82,
+    "insight_id": "bbcee42c-d333-411a-a6f7-edd94f28c7b2"
+  },
+  {
+    "insight_type": "procedure",
+    "summary": "Do not create overlapping indexes without write-amplification checks.",
+    "evidence_refs": [
+      "07533987-73bb-4c38-bd58-cd860f368981"
+    ],
+    "confidence": 0.82,
+    "insight_id": "722fe885-ea9a-4a52-9caf-e6e2a4323177"
+  }
+]

@@ -8,6 +8,8 @@ import sys
 from dataclasses import dataclass
 from typing import Iterable
 
+DEFAULT_MAX_COMMAND_CHARS = 24000 if os.name == "nt" else 120000
+
 
 @dataclass(frozen=True, slots=True)
 class TestCaseSpec:
@@ -2079,6 +2081,47 @@ def _collect_case_ids(tp_ids: list[str]) -> list[str]:
     return _dedupe_preserve_order(case_ids)
 
 
+def _command_display(command: list[str]) -> str:
+    return " ".join(command)
+
+
+def _command_char_count(command: list[str]) -> int:
+    return len(_command_display(command))
+
+
+def _chunk_unittest_commands(
+    python_cmd: list[str],
+    case_ids: list[str],
+    *,
+    max_command_chars: int,
+) -> list[list[str]]:
+    prefix = [*python_cmd, "-m", "unittest"]
+    if max_command_chars <= _command_char_count(prefix) + 1:
+        raise ValueError(
+            "--max-command-chars is too small for the Python unittest command prefix."
+        )
+
+    commands: list[list[str]] = []
+    current_cases: list[str] = []
+    for case_id in case_ids:
+        single_case_command = [*prefix, case_id]
+        if _command_char_count(single_case_command) > max_command_chars:
+            raise ValueError(
+                "A single TP test case command exceeds --max-command-chars: %s" % case_id
+            )
+
+        candidate = [*prefix, *current_cases, case_id]
+        if current_cases and _command_char_count(candidate) > max_command_chars:
+            commands.append([*prefix, *current_cases])
+            current_cases = [case_id]
+        else:
+            current_cases.append(case_id)
+
+    if current_cases:
+        commands.append([*prefix, *current_cases])
+    return commands
+
+
 def _print_registry() -> None:
     for tp_id in sorted(TP_TEST_CASES.keys()):
         print(tp_id)
@@ -2099,6 +2142,15 @@ def _parse_args() -> argparse.Namespace:
         "--python",
         default=sys.executable,
         help='Python command used to run unittest. Supports args, e.g. --python "py -3.11".',
+    )
+    parser.add_argument(
+        "--max-command-chars",
+        type=int,
+        default=DEFAULT_MAX_COMMAND_CHARS,
+        help=(
+            "Maximum generated unittest command length before splitting into chunks "
+            "(default: %(default)s)."
+        ),
     )
     return parser.parse_args()
 
@@ -2139,13 +2191,29 @@ def main() -> int:
     if not python_cmd:
         print("Empty --python command.", file=sys.stderr)
         return 2
-    command = [*python_cmd, "-m", "unittest", *case_ids]
-    print("Command: %s" % " ".join(command))
+    try:
+        commands = _chunk_unittest_commands(
+            python_cmd,
+            case_ids,
+            max_command_chars=int(args.max_command_chars),
+        )
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    print("Command chunks: %s" % len(commands))
+    for index, command in enumerate(commands, start=1):
+        print("Command: %s" % _command_display(command))
+        if len(commands) > 1:
+            print("Command chunk: %s/%s" % (index, len(commands)))
     if args.dry_run:
         return 0
 
-    completed = subprocess.run(command, check=False)
-    return completed.returncode
+    for command in commands:
+        completed = subprocess.run(command, check=False)
+        if completed.returncode != 0:
+            return completed.returncode
+    return 0
 
 
 if __name__ == "__main__":

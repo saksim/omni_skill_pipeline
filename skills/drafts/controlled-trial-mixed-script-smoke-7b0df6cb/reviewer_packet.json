@@ -1,0 +1,656 @@
+{
+  "schema_version": "reviewer_packet.v1",
+  "created_at": "2026-06-19T04:36:58Z",
+  "skill_id": "7b0df6cb-36c0-45a4-b153-dd8b9090c7a8",
+  "skill_name": "controlled trial mixed script smoke",
+  "review_task_id": "e6410fce-4815-4673-974f-9b3dee502193",
+  "review_status": "review_pending",
+  "decision": "review_required",
+  "reason_codes": [
+    "controlled_trial_requires_review"
+  ],
+  "input_summary": {
+    "title": "controlled trial mixed script smoke",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: Incident Postmortem (Sanitized)",
+    "summary": "Incident Postmortem (Sanitized)",
+    "modalities": [
+      "text",
+      "image"
+    ],
+    "evidence_unit_count": 14,
+    "evidence_node_count": 14,
+    "asset_count": 3,
+    "asset_refs": [
+      {
+        "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+        "modality": "text",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md",
+        "role": "primary",
+        "title_hint": "document",
+        "metadata": {
+          "filename": "incident-postmortem.md",
+          "language": "mixed"
+        }
+      },
+      {
+        "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+        "modality": "image",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png",
+        "role": "supporting",
+        "title_hint": "screenshot",
+        "metadata": {
+          "filename": "incident-dashboard.png",
+          "width": 640,
+          "height": 360,
+          "format": "PNG"
+        }
+      },
+      {
+        "asset_id": "7306c78f-1a47-4b50-ad61-1fcea71fe4f0",
+        "modality": "text",
+        "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md",
+        "role": "supporting",
+        "title_hint": "transcript",
+        "metadata": {
+          "filename": "incident-review-transcript.md",
+          "language": "mixed"
+        }
+      }
+    ]
+  },
+  "evidence_links": [
+    {
+      "evidence_id": "2c6f4fb2-eea9-45cc-80f7-4e76c0f1be5a",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.9,
+      "summary": "Incident Postmortem (Sanitized)",
+      "tags": [
+        "section_path:1",
+        "block:section",
+        "section_level:1",
+        "section_parent:root"
+      ]
+    },
+    {
+      "evidence_id": "ea43aa3e-7541-4ad5-ae61-758d9dac3e88",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1.1",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.9,
+      "summary": "Summary",
+      "tags": [
+        "section_path:1.1",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ]
+    },
+    {
+      "evidence_id": "06ef25ab-4b59-45d6-ab94-be5949283f16",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1.1:paragraph:0001",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.86,
+      "summary": "An index regression and stale statistics amplified query latency during a controlled rollout.",
+      "tags": [
+        "section_path:1.1",
+        "block:paragraph"
+      ]
+    },
+    {
+      "evidence_id": "54e39cd0-6de3-46fd-b894-4e0e7592fd67",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1.2",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.9,
+      "summary": "Timeline",
+      "tags": [
+        "section_path:1.2",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ]
+    },
+    {
+      "evidence_id": "d4250cfa-bf13-4594-af5f-283e4f70014e",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1.2:paragraph:0002",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.86,
+      "summary": "- 08:10 UTC: latency alert fired. - 08:16 UTC: oncall confirmed row estimate mismatch. - 08:28 UTC: mitigated by rollback + stats refresh.",
+      "tags": [
+        "section_path:1.2",
+        "block:paragraph"
+      ]
+    },
+    {
+      "evidence_id": "a87cdcc9-5110-4ccb-9bb5-bdcbe2114300",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1.3",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.9,
+      "summary": "Lessons",
+      "tags": [
+        "section_path:1.3",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ]
+    },
+    {
+      "evidence_id": "61cc167c-68c2-497b-9ab9-fb8ccf25503c",
+      "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+      "span_ref": "section:1.3:paragraph:0003",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.86,
+      "summary": "1. Validate estimator accuracy before index decisions. 2. Keep rollout guardrails tied to latency and error-rate together.",
+      "tags": [
+        "section_path:1.3",
+        "block:paragraph"
+      ]
+    },
+    {
+      "evidence_id": "5e973d87-5197-4440-9177-9789eb09cf97",
+      "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+      "span_ref": "image:ocr:0001",
+      "content_type": "ocr",
+      "modality": "image",
+      "confidence": 0.78,
+      "summary": "Fixture OCR: incident dashboard status: degraded",
+      "tags": [
+        "engine:fixture-ocr",
+        "block:ocr_full"
+      ]
+    },
+    {
+      "evidence_id": "ee605fd2-2eb4-4d05-afdb-92b93d6fe528",
+      "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+      "span_ref": "image:region:0001",
+      "content_type": "ocr",
+      "modality": "image",
+      "confidence": 0.91,
+      "summary": "Fixture OCR: incident dashboard",
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:text",
+        "region_size:1"
+      ]
+    },
+    {
+      "evidence_id": "70b4d68f-2f8f-47ac-9597-72f5c8b5bded",
+      "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+      "span_ref": "image:region:0002",
+      "content_type": "ocr",
+      "modality": "image",
+      "confidence": 0.89,
+      "summary": "status: degraded",
+      "tags": [
+        "engine:fixture-ocr",
+        "block:region",
+        "source:ocr_group",
+        "layout_role:status",
+        "region_size:1"
+      ]
+    },
+    {
+      "evidence_id": "30db673a-ce8f-4050-a0f1-fe911fe9bc6a",
+      "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+      "span_ref": "image:scene:0001",
+      "content_type": "scene",
+      "modality": "image",
+      "confidence": 0.72,
+      "summary": "Fixture scene summary for incident-dashboard.",
+      "tags": [
+        "fixture",
+        "scene",
+        "png"
+      ]
+    },
+    {
+      "evidence_id": "49e216ca-40db-44b3-bb5d-68c11162afba",
+      "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+      "span_ref": "image:layout:0001",
+      "content_type": "scene",
+      "modality": "image",
+      "confidence": 0.74,
+      "summary": "Fixture scene summary for incident-dashboard.",
+      "tags": [
+        "block:layout",
+        "source:scene_summary",
+        "layout_role:dashboard",
+        "fixture",
+        "scene",
+        "png"
+      ]
+    },
+    {
+      "evidence_id": "59923658-c405-4537-86b7-32df2d274cf5",
+      "asset_id": "7306c78f-1a47-4b50-ad61-1fcea71fe4f0",
+      "span_ref": "section:1",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.9,
+      "summary": "Incident Review Transcript (Sanitized)",
+      "tags": [
+        "section_path:1",
+        "block:section",
+        "section_level:1",
+        "section_parent:root"
+      ]
+    },
+    {
+      "evidence_id": "daf21fc8-be4e-449a-b79b-48988ee3d14a",
+      "asset_id": "7306c78f-1a47-4b50-ad61-1fcea71fe4f0",
+      "span_ref": "section:1:paragraph:0001",
+      "content_type": "text",
+      "modality": "text",
+      "confidence": 0.86,
+      "summary": "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback. [00:01:02] Engineer: We merged duplicate alerts into one timeline and recovery signal stabilized. [00:02:10] Reviewer: Capture this as a runbook rule with verifi...",
+      "tags": [
+        "section_path:1",
+        "block:paragraph"
+      ]
+    }
+  ],
+  "generated_skill": {
+    "skill": {
+      "name": "controlled trial mixed script smoke",
+      "goal": "Distill controlled_trial material into a build_skill for self. Seed: Incident Postmortem (Sanitized)",
+      "source_modality": "text",
+      "skill_type": "procedure",
+      "audience": "self",
+      "trigger": [
+        "Use when you need to convert text evidence into a reusable build_skill."
+      ],
+      "inputs": [
+        "Source document",
+        "Distillation goal"
+      ],
+      "preconditions": [
+        "Confirm the source material matches the declared distillation goal."
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "08:10 UTC: latency alert fired.",
+          "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+        },
+        {
+          "step": 2,
+          "action": "08:16 UTC: oncall confirmed row estimate mismatch.",
+          "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+        },
+        {
+          "step": 3,
+          "action": "08:28 UTC: mitigated by rollback + stats refresh.",
+          "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+        },
+        {
+          "step": 4,
+          "action": "Validate estimator accuracy before index decisions.",
+          "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+        },
+        {
+          "step": 5,
+          "action": "Keep rollout guardrails tied to latency and error-rate together.",
+          "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+        }
+      ],
+      "decision_rules": [],
+      "anti_patterns": [],
+      "verification": [
+        "[00:00:20] Reviewer: Confirm whether alert deduping worked during rollback.",
+        "[00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints."
+      ],
+      "evidence_refs": [
+        "2c6f4fb2-eea9-45cc-80f7-4e76c0f1be5a@section:1",
+        "ea43aa3e-7541-4ad5-ae61-758d9dac3e88@section:1.1",
+        "06ef25ab-4b59-45d6-ab94-be5949283f16@section:1.1:paragraph:0001",
+        "54e39cd0-6de3-46fd-b894-4e0e7592fd67@section:1.2",
+        "d4250cfa-bf13-4594-af5f-283e4f70014e@section:1.2:paragraph:0002",
+        "a87cdcc9-5110-4ccb-9bb5-bdcbe2114300@section:1.3",
+        "61cc167c-68c2-497b-9ab9-fb8ccf25503c@section:1.3:paragraph:0003",
+        "5e973d87-5197-4440-9177-9789eb09cf97@image:ocr:0001",
+        "ee605fd2-2eb4-4d05-afdb-92b93d6fe528@image:region:0001",
+        "70b4d68f-2f8f-47ac-9597-72f5c8b5bded@image:region:0002",
+        "30db673a-ce8f-4050-a0f1-fe911fe9bc6a@image:scene:0001",
+        "49e216ca-40db-44b3-bb5d-68c11162afba@image:layout:0001",
+        "59923658-c405-4537-86b7-32df2d274cf5@section:1",
+        "daf21fc8-be4e-449a-b79b-48988ee3d14a@section:1:paragraph:0001"
+      ],
+      "confidence": 0.9,
+      "version": "0.1.0",
+      "summary": "Incident Postmortem (Sanitized)",
+      "tags": [
+        "controlled_trial",
+        "text",
+        "build_skill",
+        "heuristic"
+      ],
+      "review_status": "draft",
+      "created_at": "2026-06-19T04:36:58Z",
+      "skill_id": "7b0df6cb-36c0-45a4-b153-dd8b9090c7a8"
+    },
+    "skill_markdown_preview": "--- name: \"controlled trial mixed script smoke\" description: \"Use when Use when converting text/image evidence into build_skill.. 08:10 UTC: latency alert fired.\" --- # controlled trial mixed script smoke ## Workflow 1. 08:10 UTC: latency alert fired. (Why: Derived from semantic atom.) 2. 08:16 UTC: oncall confirmed row estimate mismatch. (Why: Derived from semantic atom.) 3. 08:28 UTC: mitigated by rollback + stats refresh. (Why: Derived from semantic atom.) 4. Validate estimator accuracy before index decisions. (Why: Derived from semantic atom.) 5. Keep rollout guardrails tied to latency and error-rate together. (Why: Derived from semantic atom.) ## Decision Rules - No explicit branch rule was extracted; execute workflow order first. ## Validation - [00:00:20] Reviewer: Confirm whether alert deduping worked during rollback. - [00:02:10] Reviewer: Capture this as a runbook rule with verification checkpoints. ## Failure Modes - Do not auto-publish trial output before human review approval. ## References - [Evidence](references/evidence.md) - [Examples](references/examples.md)",
+    "step_count": 5,
+    "decision_rule_count": 0,
+    "verification_count": 2,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "graph_id": "4717007a-a4fa-4905-bdac-df4d2254be45"
+  },
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 1.0,
+    "overall_score": 1.0,
+    "diagnostics": {
+      "step_count": 5.0,
+      "evidence_node_count": 14.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_policy": {
+    "decision": "review_required",
+    "reason_codes": [
+      "controlled_trial_requires_review"
+    ],
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 1.0,
+      "overall_score": 1.0
+    }
+  },
+  "review_feedback": {
+    "review_task_id": "e6410fce-4815-4673-974f-9b3dee502193",
+    "skill_id": "7b0df6cb-36c0-45a4-b153-dd8b9090c7a8",
+    "decision": "review_required",
+    "status": "review_pending",
+    "reason_codes": [
+      "controlled_trial_requires_review"
+    ],
+    "categories": [
+      "manual_review"
+    ],
+    "atom_actions": [],
+    "graph_actions": [],
+    "policy_actions": [
+      {
+        "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+        "target": "policy",
+        "intent": "escalate_manual_review",
+        "reason_code": "MANUAL_REVIEW_FALLBACK",
+        "params": {
+          "priority": "medium"
+        }
+      }
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "follow_up_checks": [
+      "CHECK_MANUAL_REVIEW_OUTCOME"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 1.0,
+      "overall_score": 1.0
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    }
+  },
+  "risk_flags": [
+    {
+      "code": "controlled_trial_requires_review",
+      "severity": "medium",
+      "source": "review_policy"
+    },
+    {
+      "code": "image_requires_ocr_review",
+      "severity": "medium",
+      "source": "modality"
+    },
+    {
+      "code": "cross_asset_consistency_required",
+      "severity": "medium",
+      "source": "corpus"
+    }
+  ],
+  "approval_checklist": [
+    {
+      "check_id": "factual_accuracy",
+      "label": "Confirm generated skill facts match evidence.",
+      "required": true
+    },
+    {
+      "check_id": "actionability",
+      "label": "Confirm steps are concrete and executable by the target agent.",
+      "required": true
+    },
+    {
+      "check_id": "dangerous_operations",
+      "label": "Confirm dangerous commands or production changes are clearly guarded.",
+      "required": true
+    },
+    {
+      "check_id": "description_trigger",
+      "label": "Confirm description would trigger only for the intended scenario.",
+      "required": true
+    },
+    {
+      "check_id": "ocr_visual_check",
+      "label": "Confirm OCR and visual interpretation.",
+      "required": true
+    },
+    {
+      "check_id": "cross_asset_consistency",
+      "label": "Confirm source priority, conflicts, and cross-asset consistency.",
+      "required": true
+    }
+  ],
+  "corpus": {
+    "corpus_id": "b240361e-880e-48de-9e45-c7b7cca9d62b",
+    "name": "controlled trial mixed script smoke",
+    "asset_count": 3,
+    "tags": [
+      "controlled_trial",
+      "fixture_manifest"
+    ]
+  },
+  "cross_asset_conflicts": [
+    {
+      "reference_type": "skill",
+      "reference_id": "7b0df6cb-36c0-45a4-b153-dd8b9090c7a8",
+      "summary": "controlled trial mixed script smoke",
+      "asset_ids": [
+        "f824c2d6-b709-4115-a214-5bf54a19675d",
+        "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+        "7306c78f-1a47-4b50-ad61-1fcea71fe4f0"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "evidence": [
+        {
+          "evidence_id": "2c6f4fb2-eea9-45cc-80f7-4e76c0f1be5a",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "ea43aa3e-7541-4ad5-ae61-758d9dac3e88",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1.1",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "06ef25ab-4b59-45d6-ab94-be5949283f16",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1.1:paragraph:0001",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "54e39cd0-6de3-46fd-b894-4e0e7592fd67",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1.2",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "d4250cfa-bf13-4594-af5f-283e4f70014e",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1.2:paragraph:0002",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "a87cdcc9-5110-4ccb-9bb5-bdcbe2114300",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1.3",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "61cc167c-68c2-497b-9ab9-fb8ccf25503c",
+          "asset_id": "f824c2d6-b709-4115-a214-5bf54a19675d",
+          "modality": "text",
+          "role": "primary",
+          "content_type": "text",
+          "span_ref": "section:1.3:paragraph:0003",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-postmortem.md"
+        },
+        {
+          "evidence_id": "5e973d87-5197-4440-9177-9789eb09cf97",
+          "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+          "modality": "image",
+          "role": "supporting",
+          "content_type": "ocr",
+          "span_ref": "image:ocr:0001",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+        },
+        {
+          "evidence_id": "ee605fd2-2eb4-4d05-afdb-92b93d6fe528",
+          "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+          "modality": "image",
+          "role": "supporting",
+          "content_type": "ocr",
+          "span_ref": "image:region:0001",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+        },
+        {
+          "evidence_id": "70b4d68f-2f8f-47ac-9597-72f5c8b5bded",
+          "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+          "modality": "image",
+          "role": "supporting",
+          "content_type": "ocr",
+          "span_ref": "image:region:0002",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+        },
+        {
+          "evidence_id": "30db673a-ce8f-4050-a0f1-fe911fe9bc6a",
+          "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+          "modality": "image",
+          "role": "supporting",
+          "content_type": "scene",
+          "span_ref": "image:scene:0001",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+        },
+        {
+          "evidence_id": "49e216ca-40db-44b3-bb5d-68c11162afba",
+          "asset_id": "394e34cb-d9b8-47cb-a0ea-d54df2325591",
+          "modality": "image",
+          "role": "supporting",
+          "content_type": "scene",
+          "span_ref": "image:layout:0001",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-dashboard.png"
+        },
+        {
+          "evidence_id": "59923658-c405-4537-86b7-32df2d274cf5",
+          "asset_id": "7306c78f-1a47-4b50-ad61-1fcea71fe4f0",
+          "modality": "text",
+          "role": "supporting",
+          "content_type": "text",
+          "span_ref": "section:1",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md"
+        },
+        {
+          "evidence_id": "daf21fc8-be4e-449a-b79b-48988ee3d14a",
+          "asset_id": "7306c78f-1a47-4b50-ad61-1fcea71fe4f0",
+          "modality": "text",
+          "role": "supporting",
+          "content_type": "text",
+          "span_ref": "section:1:paragraph:0001",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\mixed\\incident-review-transcript.md"
+        }
+      ]
+    }
+  ]
+}

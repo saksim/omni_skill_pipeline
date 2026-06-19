@@ -1,0 +1,40 @@
+{
+  "schema_version": "real_trial_loop_backfill_plan.v1",
+  "generated_at_utc": "2026-06-19T05:10:14Z",
+  "plan_status": "ALREADY_THRESHOLD_READY",
+  "thresholds": {
+    "minimum_complete_loops": 1,
+    "minimum_modalities": 1,
+    "target_launch_modalities": [
+      "text",
+      "audio",
+      "image",
+      "video"
+    ]
+  },
+  "current_coverage": {
+    "launch_gate_eligible_complete_loop_count": 1,
+    "launch_gate_eligible_modality_count": 1,
+    "launch_gate_eligible_modalities": [
+      "text"
+    ],
+    "target_launch_modality_loop_counts": {
+      "text": 1,
+      "audio": 0,
+      "image": 0,
+      "video": 0
+    }
+  },
+  "remaining_gap": {
+    "missing_complete_loops_to_threshold": 0,
+    "missing_modalities_to_threshold": 0,
+    "missing_target_launch_modalities": [
+      "audio",
+      "image",
+      "video"
+    ]
+  },
+  "recommended_backfill_slot_count": 0,
+  "recommended_backfill_slots": [],
+  "blockers": []
+}

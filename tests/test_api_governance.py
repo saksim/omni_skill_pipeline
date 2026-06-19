@@ -161,7 +161,7 @@ def _build_settings(*, ledger_dir: Path) -> SimpleNamespace:
         rate_limit_window_seconds=60,
         tenant_access_json=_tenant_access_payload(),
         tenant_access_file='',
-        template_path=REPO_ROOT / 'docs' / 'current' / 'contracts' / 'SKILL.template.md',
+        template_path=REPO_ROOT / 'docs' / 'latest' / 'contracts' / 'SKILL.template.md',
         draft_dir=REPO_ROOT / 'skills' / 'drafts',
         governance_ledger_dir=ledger_dir,
     )

@@ -45,7 +45,7 @@ VALID_OPS_MIGRATION_DOC = """# V1 -> V2 Migration Runbook
 
 ```bash
 python scripts/tp_tests.py TP-E8-03 TP-E10-02 TP-E13-02 --python python3
-python scripts/doc_sync.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 ```
 
 ## 回退操作序列
@@ -93,7 +93,7 @@ Define objective gates for promoting V2 as the default mainline.
 
 ```bash
 python scripts/tp_tests.py TP-E9-03 TP-E11-03 TP-E13-03 --python python3
-python scripts/doc_sync.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
+python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 ```
 """
 VALID_RELEASE_HISTORY_DOC = """# 2026-04-26 V2 Release Switch Snapshot
@@ -113,7 +113,7 @@ VALID_RELEASE_HISTORY_DOC = """# 2026-04-26 V2 Release Switch Snapshot
 
 ## Evidence Links
 
-- Standard: `docs/current/status/v2-release-switch-standard.md`
+- Standard: `docs/releases/standards/v2-release-switch-standard.md`
 - TP references: `TP-E9-03`, `TP-E11-03`
 
 ## Pending Risks
@@ -200,7 +200,7 @@ docker load -i omni-skill-pipeline-runtime-release.image.tar
 docker run --rm omni-skill-pipeline:test python scripts/ci.py --python python3 --keep-going --isolate-test-files
 docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/linux_validate.py --python python3 --keep-going
 docker run --rm --network host -v /var/run/docker.sock:/var/run/docker.sock omni-skill-pipeline:test python scripts/release_switch.py --python python3 --keep-going
-docker cp omni-release-gate:/app/docs/current/status/baselines ./baselines-from-container
+docker cp omni-release-gate:/app/docs/working/status/baselines ./baselines-from-container
 ```
 
 ## Release Decision
@@ -254,9 +254,9 @@ docker run --rm -d --name omni-skill-beta omni-skill-pipeline:beta
 
 ## Validation Workflow
 python scripts/release_gate.py --python python3
-python scripts/launch_gate.py --output docs/current/status/baselines/broad-launch-readiness-report.json --summary-output docs/current/status/baselines/broad-launch-readiness-summary.md
-python scripts/doc_sync.py --output docs/current/status/baselines/e13-doc-sync-check-report.json
-python scripts/ops_evidence.py --output docs/current/status/baselines/operations-readiness-report.json --summary-output docs/current/status/baselines/operations-readiness-summary.md
+python scripts/launch_gate.py --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
+python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
+python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
 
 ## Rollback Workflow
 docker logs --tail 300 omni-skill-beta

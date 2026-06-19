@@ -56,7 +56,7 @@ class _UnsupportedAdapter(object):
 
 class SkillGraphSchemaTests(unittest.TestCase):
     def test_skill_graph_contract_file_matches_runtime_schema(self) -> None:
-        contract_path = REPO_ROOT / 'docs' / 'current' / 'contracts' / 'skill-graph.schema.json'
+        contract_path = REPO_ROOT / 'docs' / 'latest' / 'contracts' / 'skill-graph.schema.json'
         file_payload = json.loads(contract_path.read_text(encoding='utf-8'))
         self.assertEqual(file_payload, SKILL_GRAPH_SCHEMA)
 

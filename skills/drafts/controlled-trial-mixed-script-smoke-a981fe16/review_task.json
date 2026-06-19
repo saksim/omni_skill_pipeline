@@ -1,0 +1,38 @@
+{
+  "skill_id": "a981fe16-82c4-4758-8f13-c5df5cc21e53",
+  "decision": "review_required",
+  "reason_codes": [
+    "controlled_trial_requires_review"
+  ],
+  "revision_suggestions": [
+    "S_MANUAL_REVIEW_REQUIRED"
+  ],
+  "score_snapshot": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 1.0,
+    "overall_score": 1.0
+  },
+  "thresholds": {
+    "auto_publish_min_overall": 0.82,
+    "auto_publish_min_traceability": 0.78,
+    "auto_publish_min_actionability": 0.72,
+    "auto_publish_min_coverage": 0.7,
+    "auto_publish_min_consistency": 0.78,
+    "auto_publish_min_noise": 0.68,
+    "auto_publish_min_novelty": 0.55,
+    "reject_max_overall": 0.35,
+    "reject_max_traceability": 0.2,
+    "reject_max_actionability": 0.22,
+    "reject_max_coverage": 0.18,
+    "reject_max_consistency": 0.3,
+    "reject_max_noise": 0.22
+  },
+  "review_notes": "",
+  "status": "review_pending",
+  "created_at": "2026-06-19T04:42:34Z",
+  "review_task_id": "5543ac2f-6e06-4cf9-834e-4ec01e5ffdcf"
+}

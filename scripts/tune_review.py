@@ -14,8 +14,8 @@ if str(SRC_ROOT) not in sys.path:
 
 from omni_skill_pipeline.quality.review_policy import ReviewPolicy, ReviewPolicyThresholds
 
-DEFAULT_MANIFEST_PATH = REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e7-calibration-manifest.json"
-DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "current" / "status" / "baselines" / "e7-calibration-report.json"
+DEFAULT_MANIFEST_PATH = REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e7-calibration-manifest.json"
+DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e7-calibration-report.json"
 DECISIONS = ("auto_publish", "review_required", "reject")
 SCORE_KEYS = (
     "traceability_score",

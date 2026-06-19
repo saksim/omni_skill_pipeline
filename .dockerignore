@@ -13,9 +13,9 @@ tests/
 !tests/**
 tests/.tmp_runtime/
 !docs/
-!docs/current/
-!docs/current/contracts/
-!docs/current/contracts/**
+!docs/latest/
+!docs/latest/contracts/
+!docs/latest/contracts/**
 examples/
 infra/
 !infra/

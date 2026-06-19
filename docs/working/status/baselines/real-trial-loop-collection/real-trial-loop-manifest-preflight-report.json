@@ -1,0 +1,173 @@
+{
+  "schema_version": "real_trial_loop_manifest_preflight.v1",
+  "generated_at_utc": "2026-06-19T03:22:55Z",
+  "status": "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING",
+  "internal_only": false,
+  "launch_gate_policy_unchanged": true,
+  "input_paths": {
+    "gl63_intake_workpack": "docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-report.json",
+    "operator_manifest_dir": "docs/working/status/baselines/real-trial-loop-collection/manifests"
+  },
+  "counts": {
+    "total_intake_item_count": 10,
+    "submitted_manifest_count": 0,
+    "valid_item_count": 0,
+    "invalid_item_count": 0,
+    "missing_item_count": 10,
+    "accepted_loop_count": 0,
+    "pending_item_count": 10
+  },
+  "warning_codes": [
+    "real_loop_manifests_missing",
+    "real_loop_manifest_preflight_not_ready"
+  ],
+  "manifest_acceptance_contract": {
+    "source": "GL-63 operator manifest contract",
+    "accepted_status": "valid",
+    "accepted_loop_requirements": [
+      "status=complete",
+      "modality matches GL-63 work item",
+      "evidence_origin=real",
+      "launch_gate_eligible=true",
+      "source_system/source_reference/collected_at_utc present",
+      "review_task_id/reviewed_by/reviewed_at_utc present",
+      "agent_smoke_result executed",
+      "published_without_review=false",
+      "critical_secret_or_pii_leak=false",
+      "high_severity_incident=false"
+    ],
+    "post_preflight_command": "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0"
+  },
+  "items": [
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-001-text",
+      "required_modality": "text",
+      "slot_index": 1,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-001-text.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-002-audio",
+      "required_modality": "audio",
+      "slot_index": 2,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-002-audio.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-003-image",
+      "required_modality": "image",
+      "slot_index": 3,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-003-image.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-004-video",
+      "required_modality": "video",
+      "slot_index": 4,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-004-video.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-005-text",
+      "required_modality": "text",
+      "slot_index": 5,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-005-text.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-006-audio",
+      "required_modality": "audio",
+      "slot_index": 6,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-006-audio.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-007-image",
+      "required_modality": "image",
+      "slot_index": 7,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-007-image.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-008-video",
+      "required_modality": "video",
+      "slot_index": 8,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-008-video.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-009-text",
+      "required_modality": "text",
+      "slot_index": 9,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-009-text.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    },
+    {
+      "intake_item_id": "gl63-real-loop-intake-slot-010-audio",
+      "required_modality": "audio",
+      "slot_index": 10,
+      "expected_manifest_path": "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-010-audio.json",
+      "accepted_loop_ids": [],
+      "ignored_loop_ids": [],
+      "failure_codes": [
+        "manifest_file_missing"
+      ],
+      "loop_failures": [],
+      "preflight_status": "missing"
+    }
+  ]
+}

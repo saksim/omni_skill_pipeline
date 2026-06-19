@@ -1,0 +1,1649 @@
+{
+  "asset": {
+    "modality": "text",
+    "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+    "metadata": {
+      "filename": "slow-query-notes.md",
+      "language": "mixed"
+    },
+    "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff"
+  },
+  "evidence_units": [
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1",
+      "content_type": "text",
+      "content": "PostgreSQL Slow Query Notes",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1",
+        "block:section",
+        "section_level:1",
+        "section_parent:root"
+      ],
+      "evidence_id": "125a902f-bfb8-4aad-b92a-44c5aff24760"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.1",
+      "content_type": "text",
+      "content": "Incident Context",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.1",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "evidence_id": "9958d35e-e69e-4fd5-a426-50e1fecad4a6"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.1:paragraph:0001",
+      "content_type": "text",
+      "content": "- Service: order-api\n- Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z\n- Primary symptom: p95 latency moved from 120ms to 680ms",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.1",
+        "block:paragraph"
+      ],
+      "evidence_id": "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.2",
+      "content_type": "text",
+      "content": "Observations",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.2",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "evidence_id": "01c10d2d-bfb5-4df4-b198-1debbd65bc1c"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.2:paragraph:0002",
+      "content_type": "text",
+      "content": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.\n2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.\n3. Buffer reads spike during replay windows after deploy.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.2",
+        "block:paragraph"
+      ],
+      "evidence_id": "f45d60a5-8021-4452-9359-3d3b0f475285"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.3",
+      "content_type": "text",
+      "content": "Current Guidance",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.3",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "evidence_id": "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.3:paragraph:0003",
+      "content_type": "text",
+      "content": "1. Refresh table statistics before adding indexes.\n2. Add one composite index only if estimate mismatch remains after stats refresh.\n3. Verify p95 latency and buffer hit ratio before and after change.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.3",
+        "block:paragraph"
+      ],
+      "evidence_id": "94246e8d-648a-4f08-87dd-782dd241d1ae"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.4",
+      "content_type": "text",
+      "content": "Failure Modes",
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.4",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "evidence_id": "955929b4-f201-400b-bf15-4df9ec5afcfb"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "span_ref": "section:1.4:paragraph:0004",
+      "content_type": "text",
+      "content": "- Do not ship query rewrite and index change in one release.\n- Do not create overlapping indexes without write-amplification checks.",
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.4",
+        "block:paragraph"
+      ],
+      "evidence_id": "07533987-73bb-4c38-bd58-cd860f368981"
+    }
+  ],
+  "insights": [
+    {
+      "insight_type": "procedure",
+      "summary": "Service: order-api",
+      "evidence_refs": [
+        "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+      ],
+      "confidence": 0.82,
+      "insight_id": "da356d97-c98e-42a5-b22e-f047e693cb30"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+      "evidence_refs": [
+        "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d4975805-6f8b-417b-8b48-221565bedf65"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Primary symptom: p95 latency moved from 120ms to 680ms",
+      "evidence_refs": [
+        "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f05ee73f-ce05-4090-9b79-023353121647"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+      "evidence_refs": [
+        "f45d60a5-8021-4452-9359-3d3b0f475285"
+      ],
+      "confidence": 0.82,
+      "insight_id": "c67eae10-73a2-4b76-9787-e72aa27d37f0"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+      "evidence_refs": [
+        "f45d60a5-8021-4452-9359-3d3b0f475285"
+      ],
+      "confidence": 0.82,
+      "insight_id": "0c71a318-7dcd-47ab-b2a2-1a3cf1be7e84"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Buffer reads spike during replay windows after deploy.",
+      "evidence_refs": [
+        "f45d60a5-8021-4452-9359-3d3b0f475285"
+      ],
+      "confidence": 0.82,
+      "insight_id": "d518de50-3f3f-45cb-8fdc-c8d6727eeab0"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Refresh table statistics before adding indexes.",
+      "evidence_refs": [
+        "94246e8d-648a-4f08-87dd-782dd241d1ae"
+      ],
+      "confidence": 0.82,
+      "insight_id": "f4c8e69d-f23a-4eeb-91fc-d94a34fd1afc"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Add one composite index only if estimate mismatch remains after stats refresh.",
+      "evidence_refs": [
+        "94246e8d-648a-4f08-87dd-782dd241d1ae"
+      ],
+      "confidence": 0.82,
+      "insight_id": "8da9638c-6326-403d-8d2c-74994f1cff00"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Verify p95 latency and buffer hit ratio before and after change.",
+      "evidence_refs": [
+        "94246e8d-648a-4f08-87dd-782dd241d1ae"
+      ],
+      "confidence": 0.82,
+      "insight_id": "5164ffdc-4097-446e-a22e-82048a7d16f9"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Do not ship query rewrite and index change in one release.",
+      "evidence_refs": [
+        "07533987-73bb-4c38-bd58-cd860f368981"
+      ],
+      "confidence": 0.82,
+      "insight_id": "bbcee42c-d333-411a-a6f7-edd94f28c7b2"
+    },
+    {
+      "insight_type": "procedure",
+      "summary": "Do not create overlapping indexes without write-amplification checks.",
+      "evidence_refs": [
+        "07533987-73bb-4c38-bd58-cd860f368981"
+      ],
+      "confidence": 0.82,
+      "insight_id": "722fe885-ea9a-4a52-9caf-e6e2a4323177"
+    }
+  ],
+  "skill": {
+    "name": "controlled trial text script smoke",
+    "goal": "Distill controlled_trial material into a build_skill for self. Seed: PostgreSQL Slow Query Notes",
+    "source_modality": "text",
+    "skill_type": "procedure",
+    "audience": "self",
+    "trigger": [
+      "Use when you need to convert text evidence into a reusable build_skill."
+    ],
+    "inputs": [
+      "Source document",
+      "Distillation goal"
+    ],
+    "preconditions": [
+      "Confirm the source material matches the declared distillation goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Service: order-api",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 2,
+        "action": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 3,
+        "action": "Primary symptom: p95 latency moved from 120ms to 680ms",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 4,
+        "action": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 5,
+        "action": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 6,
+        "action": "Buffer reads spike during replay windows after deploy.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 7,
+        "action": "Refresh table statistics before adding indexes.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      },
+      {
+        "step": 8,
+        "action": "Add one composite index only if estimate mismatch remains after stats refresh.",
+        "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+      }
+    ],
+    "decision_rules": [],
+    "anti_patterns": [],
+    "verification": [
+      "Confirm each key conclusion can be traced back to evidence_refs.",
+      "Run one manual rehearsal to verify the steps are executable."
+    ],
+    "evidence_refs": [
+      "125a902f-bfb8-4aad-b92a-44c5aff24760@section:1",
+      "9958d35e-e69e-4fd5-a426-50e1fecad4a6@section:1.1",
+      "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c@section:1.1:paragraph:0001",
+      "01c10d2d-bfb5-4df4-b198-1debbd65bc1c@section:1.2",
+      "f45d60a5-8021-4452-9359-3d3b0f475285@section:1.2:paragraph:0002",
+      "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8@section:1.3",
+      "94246e8d-648a-4f08-87dd-782dd241d1ae@section:1.3:paragraph:0003",
+      "955929b4-f201-400b-bf15-4df9ec5afcfb@section:1.4",
+      "07533987-73bb-4c38-bd58-cd860f368981@section:1.4:paragraph:0004"
+    ],
+    "confidence": 0.9,
+    "version": "0.1.0",
+    "summary": "PostgreSQL Slow Query Notes",
+    "tags": [
+      "controlled_trial",
+      "text",
+      "build_skill",
+      "heuristic"
+    ],
+    "review_status": "draft",
+    "created_at": "2026-06-19T05:09:33Z",
+    "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5"
+  },
+  "skill_markdown": "---\nname: \"controlled trial text script smoke\"\ndescription: \"Use when Use when converting text evidence into build_skill.. Service: order-api\"\n---\n\n# controlled trial text script smoke\n\n## Workflow\n1. Service: order-api (Why: Derived from semantic atom.)\n2. Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z (Why: Derived from semantic atom.)\n3. Primary symptom: p95 latency moved from 120ms to 680ms (Why: Derived from semantic atom.)\n4. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query. (Why: Derived from semantic atom.)\n5. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table. (Why: Derived from semantic atom.)\n6. Buffer reads spike during replay windows after deploy. (Why: Derived from semantic atom.)\n7. Refresh table statistics before adding indexes. (Why: Derived from semantic atom.)\n8. Add one composite index only if estimate mismatch remains after stats refresh. (Why: Derived from semantic atom.)\n9. Verify p95 latency and buffer hit ratio before and after change. (Why: Derived from semantic atom.)\n10. Do not ship query rewrite and index change in one release. (Why: Derived from semantic atom.)\n11. Do not create overlapping indexes without write-amplification checks. (Why: Derived from semantic atom.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+  "skill_graph": {
+    "name": "controlled trial text script smoke",
+    "goal": "Distill controlled_trial material into build_skill for self.",
+    "source_modalities": [
+      "text"
+    ],
+    "audience": "self",
+    "summary": "Service: order-api",
+    "tags": [
+      "controlled_trial",
+      "skill_graph"
+    ],
+    "domain": "controlled_trial",
+    "trigger": [
+      "Use when converting text evidence into build_skill."
+    ],
+    "inputs": [
+      "Source document"
+    ],
+    "preconditions": [
+      "Confirm source evidence is complete and correctly scoped to the goal."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Service: order-api",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "fc165f25-cad7-47b3-9ad6-07fcd953a154"
+        ],
+        "evidence_refs": [
+          "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "3969a69f-a51b-4047-aa63-79e3459f7867"
+      },
+      {
+        "step": 2,
+        "action": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "01bb1dab-1fc6-4f02-a453-f05596bd3535"
+        ],
+        "evidence_refs": [
+          "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "7ce4e5c4-26fc-42e1-92ac-9e5713813a4e"
+      },
+      {
+        "step": 3,
+        "action": "Primary symptom: p95 latency moved from 120ms to 680ms",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "f236e0e6-9ffb-4cb1-a3e0-8af3204bbef0"
+        ],
+        "evidence_refs": [
+          "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "acf07100-803b-4281-b572-6bfac2cd344a"
+      },
+      {
+        "step": 4,
+        "action": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "e4c181e5-d97d-4644-9353-f6a3cb9d72f2"
+        ],
+        "evidence_refs": [
+          "f45d60a5-8021-4452-9359-3d3b0f475285"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "2bb02dc1-cb51-46d8-89b0-f4896dee645c"
+      },
+      {
+        "step": 5,
+        "action": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "14bd6bba-db81-44b6-ae61-2506b0c76486"
+        ],
+        "evidence_refs": [
+          "f45d60a5-8021-4452-9359-3d3b0f475285"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "ddf62f94-2850-4a05-827e-1593798892b3"
+      },
+      {
+        "step": 6,
+        "action": "Buffer reads spike during replay windows after deploy.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "052ab698-f266-4d25-bb64-8ce1fce7e91a"
+        ],
+        "evidence_refs": [
+          "f45d60a5-8021-4452-9359-3d3b0f475285"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "8ea6c136-7ccc-4f1e-84c8-6e5ae1dfd0c9"
+      },
+      {
+        "step": 7,
+        "action": "Refresh table statistics before adding indexes.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "33a8192f-2ddf-4d8d-9217-f66aa3263d9d"
+        ],
+        "evidence_refs": [
+          "94246e8d-648a-4f08-87dd-782dd241d1ae"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "535f430c-f1a7-42c1-8744-756ecee617a8"
+      },
+      {
+        "step": 8,
+        "action": "Add one composite index only if estimate mismatch remains after stats refresh.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "c288442b-90e9-48c7-be1f-97415efaffb5"
+        ],
+        "evidence_refs": [
+          "94246e8d-648a-4f08-87dd-782dd241d1ae"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "33efe42f-0039-40f0-b54a-672731b7c3da"
+      },
+      {
+        "step": 9,
+        "action": "Verify p95 latency and buffer hit ratio before and after change.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "920e20ca-33df-4b59-93ee-9d372d9dbc12"
+        ],
+        "evidence_refs": [
+          "94246e8d-648a-4f08-87dd-782dd241d1ae"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "217a80cb-01aa-47e7-9c6b-7d8272d7bab1"
+      },
+      {
+        "step": 10,
+        "action": "Do not ship query rewrite and index change in one release.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "ef1edefe-fdde-4fa3-85c4-bd8e05ac320f"
+        ],
+        "evidence_refs": [
+          "07533987-73bb-4c38-bd58-cd860f368981"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "1ac314e6-31e5-4b3f-9d37-104dcc0c80ae"
+      },
+      {
+        "step": 11,
+        "action": "Do not create overlapping indexes without write-amplification checks.",
+        "why": "Derived from semantic atom.",
+        "atom_refs": [
+          "2dfdadb0-5da7-408c-83fb-dd9ed82d8861"
+        ],
+        "evidence_refs": [
+          "07533987-73bb-4c38-bd58-cd860f368981"
+        ],
+        "metadata": {},
+        "node_type": "step",
+        "node_id": "edf2cc8e-8fa5-42bd-902c-f0847f5aa1bd"
+      }
+    ],
+    "decisions": [],
+    "verifications": [],
+    "risks": [],
+    "examples": [],
+    "variables": [],
+    "edges": [
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "7ce4e5c4-26fc-42e1-92ac-9e5713813a4e",
+        "target_node_id": "3969a69f-a51b-4047-aa63-79e3459f7867",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "dd52032a-a41f-4a78-8566-9ac1b3a6eac1"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "acf07100-803b-4281-b572-6bfac2cd344a",
+        "target_node_id": "7ce4e5c4-26fc-42e1-92ac-9e5713813a4e",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "6d320eb3-fe4e-4bfe-88a8-27b21223461d"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "2bb02dc1-cb51-46d8-89b0-f4896dee645c",
+        "target_node_id": "acf07100-803b-4281-b572-6bfac2cd344a",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "50e82ff5-aa5f-4d67-a9af-c28559994a8e"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "ddf62f94-2850-4a05-827e-1593798892b3",
+        "target_node_id": "2bb02dc1-cb51-46d8-89b0-f4896dee645c",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "3c992770-244d-4a1b-b648-2bc3b718881f"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "8ea6c136-7ccc-4f1e-84c8-6e5ae1dfd0c9",
+        "target_node_id": "ddf62f94-2850-4a05-827e-1593798892b3",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "71fecc91-c916-48de-9d1c-eba25f699a5b"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "535f430c-f1a7-42c1-8744-756ecee617a8",
+        "target_node_id": "8ea6c136-7ccc-4f1e-84c8-6e5ae1dfd0c9",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "04611654-2e18-4016-b9f0-ca7313199145"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "33efe42f-0039-40f0-b54a-672731b7c3da",
+        "target_node_id": "535f430c-f1a7-42c1-8744-756ecee617a8",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "6d62bf27-9bd6-44dc-b52d-8ff542889384"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "217a80cb-01aa-47e7-9c6b-7d8272d7bab1",
+        "target_node_id": "33efe42f-0039-40f0-b54a-672731b7c3da",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "8c3b93eb-a669-4c28-9a01-fd55f7ede9c0"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "1ac314e6-31e5-4b3f-9d37-104dcc0c80ae",
+        "target_node_id": "217a80cb-01aa-47e7-9c6b-7d8272d7bab1",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "ea9fe130-5efc-4509-a568-1ef75bbcd8d8"
+      },
+      {
+        "edge_type": "depends_on",
+        "source_node_id": "edf2cc8e-8fa5-42bd-902c-f0847f5aa1bd",
+        "target_node_id": "1ac314e6-31e5-4b3f-9d37-104dcc0c80ae",
+        "rationale": "Step ordering dependency.",
+        "weight": 1.0,
+        "metadata": {},
+        "edge_id": "154add27-abe5-415a-9906-4954df784705"
+      }
+    ],
+    "evidence_refs": [
+      "125a902f-bfb8-4aad-b92a-44c5aff24760",
+      "9958d35e-e69e-4fd5-a426-50e1fecad4a6",
+      "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c",
+      "01c10d2d-bfb5-4df4-b198-1debbd65bc1c",
+      "f45d60a5-8021-4452-9359-3d3b0f475285",
+      "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8",
+      "94246e8d-648a-4f08-87dd-782dd241d1ae",
+      "955929b4-f201-400b-bf15-4df9ec5afcfb",
+      "07533987-73bb-4c38-bd58-cd860f368981"
+    ],
+    "atom_refs": [
+      "fc165f25-cad7-47b3-9ad6-07fcd953a154",
+      "01bb1dab-1fc6-4f02-a453-f05596bd3535",
+      "f236e0e6-9ffb-4cb1-a3e0-8af3204bbef0",
+      "e4c181e5-d97d-4644-9353-f6a3cb9d72f2",
+      "14bd6bba-db81-44b6-ae61-2506b0c76486",
+      "052ab698-f266-4d25-bb64-8ce1fce7e91a",
+      "33a8192f-2ddf-4d8d-9217-f66aa3263d9d",
+      "c288442b-90e9-48c7-be1f-97415efaffb5",
+      "920e20ca-33df-4b59-93ee-9d372d9dbc12",
+      "ef1edefe-fdde-4fa3-85c4-bd8e05ac320f",
+      "2dfdadb0-5da7-408c-83fb-dd9ed82d8861"
+    ],
+    "confidence": 0.95,
+    "version": "0.1.0",
+    "review_status": "draft",
+    "created_at": "2026-06-19T05:09:33Z",
+    "graph_id": "02f5d434-d197-43ff-b254-bae38a278572"
+  },
+  "publications": [
+    {
+      "publication_type": "skill_markdown",
+      "content": {
+        "filename": "SKILL.md",
+        "text": "---\nname: \"controlled trial text script smoke\"\ndescription: \"Use when Use when converting text evidence into build_skill.. Service: order-api\"\n---\n\n# controlled trial text script smoke\n\n## Workflow\n1. Service: order-api (Why: Derived from semantic atom.)\n2. Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z (Why: Derived from semantic atom.)\n3. Primary symptom: p95 latency moved from 120ms to 680ms (Why: Derived from semantic atom.)\n4. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query. (Why: Derived from semantic atom.)\n5. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table. (Why: Derived from semantic atom.)\n6. Buffer reads spike during replay windows after deploy. (Why: Derived from semantic atom.)\n7. Refresh table statistics before adding indexes. (Why: Derived from semantic atom.)\n8. Add one composite index only if estimate mismatch remains after stats refresh. (Why: Derived from semantic atom.)\n9. Verify p95 latency and buffer hit ratio before and after change. (Why: Derived from semantic atom.)\n10. Do not ship query rewrite and index change in one release. (Why: Derived from semantic atom.)\n11. Do not create overlapping indexes without write-amplification checks. (Why: Derived from semantic atom.)\n\n## Decision Rules\n- No explicit branch rule was extracted; execute workflow order first.\n\n## Validation\n- Confirm each key conclusion can be traced back to evidence_refs.\n\n## Failure Modes\n- Do not auto-publish trial output before human review approval.\n\n## References\n- [Evidence](references/evidence.md)\n- [Examples](references/examples.md)\n",
+        "description": "Use when Use when converting text evidence into build_skill.. Service: order-api",
+        "line_count": 32,
+        "line_limit": 220,
+        "references": {
+          "references/evidence.md": "# Evidence Digest\n\n## Context\n- review_status: `draft`\n- source_modalities: `text`\n- evidence_ref_count: `9`\n\n## Evidence References\n- `125a902f-bfb8-4aad-b92a-44c5aff24760`\n- `9958d35e-e69e-4fd5-a426-50e1fecad4a6`\n- `9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c`\n- `01c10d2d-bfb5-4df4-b198-1debbd65bc1c`\n- `f45d60a5-8021-4452-9359-3d3b0f475285`\n- `43b383b4-e1ba-41f7-b3c4-751f61eb6fc8`\n- `94246e8d-648a-4f08-87dd-782dd241d1ae`\n- `955929b4-f201-400b-bf15-4df9ec5afcfb`\n- `07533987-73bb-4c38-bd58-cd860f368981`\n",
+          "references/examples.md": "# Examples\n\nNo explicit example nodes were extracted for this skill.\n"
+        },
+        "graph_id": "02f5d434-d197-43ff-b254-bae38a278572",
+        "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5"
+      },
+      "path": "SKILL.md",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "02f5d434-d197-43ff-b254-bae38a278572",
+        "skill_id": "02f5d434-d197-43ff-b254-bae38a278572",
+        "version": "0.1.0",
+        "renderer": "portable_skill_markdown_v1",
+        "evidence_refs": [
+          "125a902f-bfb8-4aad-b92a-44c5aff24760",
+          "9958d35e-e69e-4fd5-a426-50e1fecad4a6",
+          "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c",
+          "01c10d2d-bfb5-4df4-b198-1debbd65bc1c",
+          "f45d60a5-8021-4452-9359-3d3b0f475285",
+          "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8",
+          "94246e8d-648a-4f08-87dd-782dd241d1ae",
+          "955929b4-f201-400b-bf15-4df9ec5afcfb",
+          "07533987-73bb-4c38-bd58-cd860f368981"
+        ]
+      },
+      "created_at": "2026-06-19T05:09:33Z",
+      "publication_id": "e7249420-c320-44a6-a6e3-17089b1bb072"
+    },
+    {
+      "publication_type": "skill_json",
+      "content": {
+        "filename": "skill.json",
+        "skill": {
+          "name": "controlled trial text script smoke",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: PostgreSQL Slow Query Notes",
+          "source_modality": "text",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert text evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Source document",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Service: order-api",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "Primary symptom: p95 latency moved from 120ms to 680ms",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 4,
+              "action": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 5,
+              "action": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 6,
+              "action": "Buffer reads spike during replay windows after deploy.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 7,
+              "action": "Refresh table statistics before adding indexes.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 8,
+              "action": "Add one composite index only if estimate mismatch remains after stats refresh.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "125a902f-bfb8-4aad-b92a-44c5aff24760@section:1",
+            "9958d35e-e69e-4fd5-a426-50e1fecad4a6@section:1.1",
+            "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c@section:1.1:paragraph:0001",
+            "01c10d2d-bfb5-4df4-b198-1debbd65bc1c@section:1.2",
+            "f45d60a5-8021-4452-9359-3d3b0f475285@section:1.2:paragraph:0002",
+            "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8@section:1.3",
+            "94246e8d-648a-4f08-87dd-782dd241d1ae@section:1.3:paragraph:0003",
+            "955929b4-f201-400b-bf15-4df9ec5afcfb@section:1.4",
+            "07533987-73bb-4c38-bd58-cd860f368981@section:1.4:paragraph:0004"
+          ],
+          "confidence": 0.9,
+          "version": "0.1.0",
+          "summary": "PostgreSQL Slow Query Notes",
+          "tags": [
+            "controlled_trial",
+            "text",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-06-19T05:09:33Z",
+          "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5"
+        },
+        "graph_id": "02f5d434-d197-43ff-b254-bae38a278572",
+        "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5"
+      },
+      "path": "skill.json",
+      "metadata": {
+        "source": "skill_graph",
+        "graph_id": "02f5d434-d197-43ff-b254-bae38a278572",
+        "skill_id": "02f5d434-d197-43ff-b254-bae38a278572",
+        "version": "0.1.0",
+        "renderer": "skill_json_v1_compat",
+        "evidence_refs": [
+          "125a902f-bfb8-4aad-b92a-44c5aff24760",
+          "9958d35e-e69e-4fd5-a426-50e1fecad4a6",
+          "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c",
+          "01c10d2d-bfb5-4df4-b198-1debbd65bc1c",
+          "f45d60a5-8021-4452-9359-3d3b0f475285",
+          "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8",
+          "94246e8d-648a-4f08-87dd-782dd241d1ae",
+          "955929b4-f201-400b-bf15-4df9ec5afcfb",
+          "07533987-73bb-4c38-bd58-cd860f368981"
+        ]
+      },
+      "created_at": "2026-06-19T05:09:33Z",
+      "publication_id": "441d461c-891d-4e63-a285-af31c53f749c"
+    }
+  ],
+  "quality_scores": {
+    "traceability_score": 1.0,
+    "actionability_score": 1.0,
+    "coverage_score": 1.0,
+    "consistency_score": 1.0,
+    "noise_score": 1.0,
+    "novelty_score": 1.0,
+    "overall_score": 1.0,
+    "diagnostics": {
+      "step_count": 8.0,
+      "evidence_node_count": 9.0,
+      "publication_count": 2.0
+    }
+  },
+  "review_task": {
+    "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5",
+    "decision": "review_required",
+    "reason_codes": [
+      "controlled_trial_requires_review"
+    ],
+    "revision_suggestions": [
+      "S_MANUAL_REVIEW_REQUIRED"
+    ],
+    "score_snapshot": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 1.0,
+      "overall_score": 1.0
+    },
+    "thresholds": {
+      "auto_publish_min_overall": 0.82,
+      "auto_publish_min_traceability": 0.78,
+      "auto_publish_min_actionability": 0.72,
+      "auto_publish_min_coverage": 0.7,
+      "auto_publish_min_consistency": 0.78,
+      "auto_publish_min_noise": 0.68,
+      "auto_publish_min_novelty": 0.55,
+      "reject_max_overall": 0.35,
+      "reject_max_traceability": 0.2,
+      "reject_max_actionability": 0.22,
+      "reject_max_coverage": 0.18,
+      "reject_max_consistency": 0.3,
+      "reject_max_noise": 0.22
+    },
+    "review_notes": "",
+    "status": "review_pending",
+    "created_at": "2026-06-19T05:09:33Z",
+    "review_task_id": "7679f706-1653-4ba3-8e65-90ecb9db403c"
+  },
+  "corpus": null,
+  "evidence_nodes": [
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1",
+      "text_content": "PostgreSQL Slow Query Notes",
+      "payload": {
+        "legacy_content": "PostgreSQL Slow Query Notes"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1",
+        "block:section",
+        "section_level:1",
+        "section_parent:root"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "125a902f-bfb8-4aad-b92a-44c5aff24760"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.1",
+      "text_content": "Incident Context",
+      "payload": {
+        "legacy_content": "Incident Context"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.1",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "9958d35e-e69e-4fd5-a426-50e1fecad4a6"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.1:paragraph:0001",
+      "text_content": "- Service: order-api\n- Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z\n- Primary symptom: p95 latency moved from 120ms to 680ms",
+      "payload": {
+        "legacy_content": "- Service: order-api\n- Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z\n- Primary symptom: p95 latency moved from 120ms to 680ms"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.1",
+        "block:paragraph"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.2",
+      "text_content": "Observations",
+      "payload": {
+        "legacy_content": "Observations"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.2",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "01c10d2d-bfb5-4df4-b198-1debbd65bc1c"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.2:paragraph:0002",
+      "text_content": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.\n2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.\n3. Buffer reads spike during replay windows after deploy.",
+      "payload": {
+        "legacy_content": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.\n2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.\n3. Buffer reads spike during replay windows after deploy."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.2",
+        "block:paragraph"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "f45d60a5-8021-4452-9359-3d3b0f475285"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.3",
+      "text_content": "Current Guidance",
+      "payload": {
+        "legacy_content": "Current Guidance"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.3",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.3:paragraph:0003",
+      "text_content": "1. Refresh table statistics before adding indexes.\n2. Add one composite index only if estimate mismatch remains after stats refresh.\n3. Verify p95 latency and buffer hit ratio before and after change.",
+      "payload": {
+        "legacy_content": "1. Refresh table statistics before adding indexes.\n2. Add one composite index only if estimate mismatch remains after stats refresh.\n3. Verify p95 latency and buffer hit ratio before and after change."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.3",
+        "block:paragraph"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "94246e8d-648a-4f08-87dd-782dd241d1ae"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.4",
+      "text_content": "Failure Modes",
+      "payload": {
+        "legacy_content": "Failure Modes"
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.9,
+      "tags": [
+        "section_path:1.4",
+        "block:section",
+        "section_level:2",
+        "section_parent:1"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "955929b4-f201-400b-bf15-4df9ec5afcfb"
+    },
+    {
+      "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+      "modality": "text",
+      "content_type": "text",
+      "span_ref": "section:1.4:paragraph:0004",
+      "text_content": "- Do not ship query rewrite and index change in one release.\n- Do not create overlapping indexes without write-amplification checks.",
+      "payload": {
+        "legacy_content": "- Do not ship query rewrite and index change in one release.\n- Do not create overlapping indexes without write-amplification checks."
+      },
+      "time_range": null,
+      "spatial_ref": null,
+      "structural_ref": null,
+      "speaker": null,
+      "confidence": 0.86,
+      "tags": [
+        "section_path:1.4",
+        "block:paragraph"
+      ],
+      "parents": [],
+      "children": [],
+      "derived_from": [],
+      "evidence_id": "07533987-73bb-4c38-bd58-cd860f368981"
+    }
+  ],
+  "request_payload": {
+    "title": "controlled trial text script smoke",
+    "content": null,
+    "file_path": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+    "goal": {
+      "goal_type": "build_skill",
+      "audience": "self",
+      "rigor": "draft",
+      "granularity": "task",
+      "domain": "controlled_trial"
+    },
+    "metadata": {}
+  },
+  "artifacts": {
+    "asset": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\asset.json",
+    "evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\evidence.json",
+    "insights": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\insights.json",
+    "skill": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\skill.json",
+    "skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\SKILL.md",
+    "bundle": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\bundle.json",
+    "evidence_nodes": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\evidence_nodes.json",
+    "publications_dir": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\publications",
+    "publication_manifest": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\publications\\manifest.json",
+    "quality_score": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\quality_score.json",
+    "review_task": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\review_task.json",
+    "review_feedback": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\review_feedback.json",
+    "reviewer_packet": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\reviewer_packet.json",
+    "review_policy": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\review_policy.json",
+    "publication_skill_markdown": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\publications\\SKILL.md",
+    "publication_skill_json": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\controlled-trial-text-script-smoke-a0c81032\\publications\\skill.json",
+    "review_queue_item": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\skills\\drafts\\review_queue\\pending\\7679f706-1653-4ba3-8e65-90ecb9db403c.json"
+  },
+  "adapter_metadata": {
+    "format": ".md",
+    "evidence_node_count": 9,
+    "publication_types": [
+      "skill_markdown",
+      "skill_json"
+    ],
+    "quality_scores": {
+      "traceability_score": 1.0,
+      "actionability_score": 1.0,
+      "coverage_score": 1.0,
+      "consistency_score": 1.0,
+      "noise_score": 1.0,
+      "novelty_score": 1.0,
+      "overall_score": 1.0,
+      "diagnostics": {
+        "step_count": 8.0,
+        "evidence_node_count": 9.0,
+        "publication_count": 2.0
+      }
+    },
+    "review_policy": {
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 1.0,
+        "overall_score": 1.0
+      }
+    },
+    "review_task": {
+      "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 1.0,
+        "overall_score": 1.0
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      },
+      "review_notes": "",
+      "status": "review_pending",
+      "created_at": "2026-06-19T05:09:33Z",
+      "review_task_id": "7679f706-1653-4ba3-8e65-90ecb9db403c"
+    },
+    "review_feedback": {
+      "review_task_id": "7679f706-1653-4ba3-8e65-90ecb9db403c",
+      "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5",
+      "decision": "review_required",
+      "status": "review_pending",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "categories": [
+        "manual_review"
+      ],
+      "atom_actions": [],
+      "graph_actions": [],
+      "policy_actions": [
+        {
+          "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+          "target": "policy",
+          "intent": "escalate_manual_review",
+          "reason_code": "MANUAL_REVIEW_FALLBACK",
+          "params": {
+            "priority": "medium"
+          }
+        }
+      ],
+      "revision_suggestions": [
+        "S_MANUAL_REVIEW_REQUIRED"
+      ],
+      "follow_up_checks": [
+        "CHECK_MANUAL_REVIEW_OUTCOME"
+      ],
+      "score_snapshot": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 1.0,
+        "overall_score": 1.0
+      },
+      "thresholds": {
+        "auto_publish_min_overall": 0.82,
+        "auto_publish_min_traceability": 0.78,
+        "auto_publish_min_actionability": 0.72,
+        "auto_publish_min_coverage": 0.7,
+        "auto_publish_min_consistency": 0.78,
+        "auto_publish_min_noise": 0.68,
+        "auto_publish_min_novelty": 0.55,
+        "reject_max_overall": 0.35,
+        "reject_max_traceability": 0.2,
+        "reject_max_actionability": 0.22,
+        "reject_max_coverage": 0.18,
+        "reject_max_consistency": 0.3,
+        "reject_max_noise": 0.22
+      }
+    },
+    "reviewer_packet": {
+      "schema_version": "reviewer_packet.v1",
+      "created_at": "2026-06-19T05:09:33Z",
+      "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5",
+      "skill_name": "controlled trial text script smoke",
+      "review_task_id": "7679f706-1653-4ba3-8e65-90ecb9db403c",
+      "review_status": "review_pending",
+      "decision": "review_required",
+      "reason_codes": [
+        "controlled_trial_requires_review"
+      ],
+      "input_summary": {
+        "title": "controlled trial text script smoke",
+        "goal": "Distill controlled_trial material into a build_skill for self. Seed: PostgreSQL Slow Query Notes",
+        "summary": "PostgreSQL Slow Query Notes",
+        "modalities": [
+          "text"
+        ],
+        "evidence_unit_count": 9,
+        "evidence_node_count": 9,
+        "asset_count": 1,
+        "asset_refs": []
+      },
+      "evidence_links": [
+        {
+          "evidence_id": "125a902f-bfb8-4aad-b92a-44c5aff24760",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.9,
+          "summary": "PostgreSQL Slow Query Notes",
+          "tags": [
+            "section_path:1",
+            "block:section",
+            "section_level:1",
+            "section_parent:root"
+          ]
+        },
+        {
+          "evidence_id": "9958d35e-e69e-4fd5-a426-50e1fecad4a6",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.1",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.9,
+          "summary": "Incident Context",
+          "tags": [
+            "section_path:1.1",
+            "block:section",
+            "section_level:2",
+            "section_parent:1"
+          ]
+        },
+        {
+          "evidence_id": "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.1:paragraph:0001",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.86,
+          "summary": "- Service: order-api - Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z - Primary symptom: p95 latency moved from 120ms to 680ms",
+          "tags": [
+            "section_path:1.1",
+            "block:paragraph"
+          ]
+        },
+        {
+          "evidence_id": "01c10d2d-bfb5-4df4-b198-1debbd65bc1c",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.2",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.9,
+          "summary": "Observations",
+          "tags": [
+            "section_path:1.2",
+            "block:section",
+            "section_level:2",
+            "section_parent:1"
+          ]
+        },
+        {
+          "evidence_id": "f45d60a5-8021-4452-9359-3d3b0f475285",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.2:paragraph:0002",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.86,
+          "summary": "1. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query. 2. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table. 3. Buffer reads...",
+          "tags": [
+            "section_path:1.2",
+            "block:paragraph"
+          ]
+        },
+        {
+          "evidence_id": "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.3",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.9,
+          "summary": "Current Guidance",
+          "tags": [
+            "section_path:1.3",
+            "block:section",
+            "section_level:2",
+            "section_parent:1"
+          ]
+        },
+        {
+          "evidence_id": "94246e8d-648a-4f08-87dd-782dd241d1ae",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.3:paragraph:0003",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.86,
+          "summary": "1. Refresh table statistics before adding indexes. 2. Add one composite index only if estimate mismatch remains after stats refresh. 3. Verify p95 latency and buffer hit ratio before and after change.",
+          "tags": [
+            "section_path:1.3",
+            "block:paragraph"
+          ]
+        },
+        {
+          "evidence_id": "955929b4-f201-400b-bf15-4df9ec5afcfb",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.4",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.9,
+          "summary": "Failure Modes",
+          "tags": [
+            "section_path:1.4",
+            "block:section",
+            "section_level:2",
+            "section_parent:1"
+          ]
+        },
+        {
+          "evidence_id": "07533987-73bb-4c38-bd58-cd860f368981",
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "span_ref": "section:1.4:paragraph:0004",
+          "content_type": "text",
+          "modality": "text",
+          "confidence": 0.86,
+          "summary": "- Do not ship query rewrite and index change in one release. - Do not create overlapping indexes without write-amplification checks.",
+          "tags": [
+            "section_path:1.4",
+            "block:paragraph"
+          ]
+        }
+      ],
+      "generated_skill": {
+        "skill": {
+          "name": "controlled trial text script smoke",
+          "goal": "Distill controlled_trial material into a build_skill for self. Seed: PostgreSQL Slow Query Notes",
+          "source_modality": "text",
+          "skill_type": "procedure",
+          "audience": "self",
+          "trigger": [
+            "Use when you need to convert text evidence into a reusable build_skill."
+          ],
+          "inputs": [
+            "Source document",
+            "Distillation goal"
+          ],
+          "preconditions": [
+            "Confirm the source material matches the declared distillation goal."
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "action": "Service: order-api",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 2,
+              "action": "Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 3,
+              "action": "Primary symptom: p95 latency moved from 120ms to 680ms",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 4,
+              "action": "`pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 5,
+              "action": "`EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 6,
+              "action": "Buffer reads spike during replay windows after deploy.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 7,
+              "action": "Refresh table statistics before adding indexes.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            },
+            {
+              "step": 8,
+              "action": "Add one composite index only if estimate mismatch remains after stats refresh.",
+              "why": "Derived from normalized evidence and intended to preserve the original reasoning chain."
+            }
+          ],
+          "decision_rules": [],
+          "anti_patterns": [],
+          "verification": [
+            "Confirm each key conclusion can be traced back to evidence_refs.",
+            "Run one manual rehearsal to verify the steps are executable."
+          ],
+          "evidence_refs": [
+            "125a902f-bfb8-4aad-b92a-44c5aff24760@section:1",
+            "9958d35e-e69e-4fd5-a426-50e1fecad4a6@section:1.1",
+            "9dd30bbd-03ba-4602-83eb-0fa2f8d0e41c@section:1.1:paragraph:0001",
+            "01c10d2d-bfb5-4df4-b198-1debbd65bc1c@section:1.2",
+            "f45d60a5-8021-4452-9359-3d3b0f475285@section:1.2:paragraph:0002",
+            "43b383b4-e1ba-41f7-b3c4-751f61eb6fc8@section:1.3",
+            "94246e8d-648a-4f08-87dd-782dd241d1ae@section:1.3:paragraph:0003",
+            "955929b4-f201-400b-bf15-4df9ec5afcfb@section:1.4",
+            "07533987-73bb-4c38-bd58-cd860f368981@section:1.4:paragraph:0004"
+          ],
+          "confidence": 0.9,
+          "version": "0.1.0",
+          "summary": "PostgreSQL Slow Query Notes",
+          "tags": [
+            "controlled_trial",
+            "text",
+            "build_skill",
+            "heuristic"
+          ],
+          "review_status": "draft",
+          "created_at": "2026-06-19T05:09:33Z",
+          "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5"
+        },
+        "skill_markdown_preview": "--- name: \"controlled trial text script smoke\" description: \"Use when Use when converting text evidence into build_skill.. Service: order-api\" --- # controlled trial text script smoke ## Workflow 1. Service: order-api (Why: Derived from semantic atom.) 2. Window: 2026-05-18T08:10Z to 2026-05-18T08:45Z (Why: Derived from semantic atom.) 3. Primary symptom: p95 latency moved from 120ms to 680ms (Why: Derived from semantic atom.) 4. `pg_stat_statements` shows `SELECT * FROM order_events WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1` as the dominant query. (Why: Derived from semantic atom.) 5. `EXPLAIN ANALYZE` reports row estimate mismatch (~30x) on the `order_events` table. (Why: Derived from semantic atom.) 6. Buffer reads spike during replay windows after deploy. (Why: Derived from semantic atom.) 7. Refresh table statistics before adding indexes. (Why: Derived from semantic atom.) 8. Add one composite index only if estimate mismatch remains after stats refresh. (Why: Derived from semantic atom.) 9. Verify p95 latency and buffer hit ratio before and after change. (Why: Derived from semantic atom.) 10. Do not ship query rewrite and index change in one release. (Why: Derive...",
+        "step_count": 8,
+        "decision_rule_count": 0,
+        "verification_count": 2,
+        "publication_types": [
+          "skill_markdown",
+          "skill_json"
+        ],
+        "graph_id": "02f5d434-d197-43ff-b254-bae38a278572"
+      },
+      "quality_scores": {
+        "traceability_score": 1.0,
+        "actionability_score": 1.0,
+        "coverage_score": 1.0,
+        "consistency_score": 1.0,
+        "noise_score": 1.0,
+        "novelty_score": 1.0,
+        "overall_score": 1.0,
+        "diagnostics": {
+          "step_count": 8.0,
+          "evidence_node_count": 9.0,
+          "publication_count": 2.0
+        }
+      },
+      "review_policy": {
+        "decision": "review_required",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        },
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 1.0,
+          "overall_score": 1.0
+        }
+      },
+      "review_feedback": {
+        "review_task_id": "7679f706-1653-4ba3-8e65-90ecb9db403c",
+        "skill_id": "a0c81032-d073-4955-80b8-b57106a0e3c5",
+        "decision": "review_required",
+        "status": "review_pending",
+        "reason_codes": [
+          "controlled_trial_requires_review"
+        ],
+        "categories": [
+          "manual_review"
+        ],
+        "atom_actions": [],
+        "graph_actions": [],
+        "policy_actions": [
+          {
+            "action_code": "POLICY_ESCALATE_MANUAL_REVIEW",
+            "target": "policy",
+            "intent": "escalate_manual_review",
+            "reason_code": "MANUAL_REVIEW_FALLBACK",
+            "params": {
+              "priority": "medium"
+            }
+          }
+        ],
+        "revision_suggestions": [
+          "S_MANUAL_REVIEW_REQUIRED"
+        ],
+        "follow_up_checks": [
+          "CHECK_MANUAL_REVIEW_OUTCOME"
+        ],
+        "score_snapshot": {
+          "traceability_score": 1.0,
+          "actionability_score": 1.0,
+          "coverage_score": 1.0,
+          "consistency_score": 1.0,
+          "noise_score": 1.0,
+          "novelty_score": 1.0,
+          "overall_score": 1.0
+        },
+        "thresholds": {
+          "auto_publish_min_overall": 0.82,
+          "auto_publish_min_traceability": 0.78,
+          "auto_publish_min_actionability": 0.72,
+          "auto_publish_min_coverage": 0.7,
+          "auto_publish_min_consistency": 0.78,
+          "auto_publish_min_noise": 0.68,
+          "auto_publish_min_novelty": 0.55,
+          "reject_max_overall": 0.35,
+          "reject_max_traceability": 0.2,
+          "reject_max_actionability": 0.22,
+          "reject_max_coverage": 0.18,
+          "reject_max_consistency": 0.3,
+          "reject_max_noise": 0.22
+        }
+      },
+      "risk_flags": [
+        {
+          "code": "controlled_trial_requires_review",
+          "severity": "medium",
+          "source": "review_policy"
+        }
+      ],
+      "approval_checklist": [
+        {
+          "check_id": "factual_accuracy",
+          "label": "Confirm generated skill facts match evidence.",
+          "required": true
+        },
+        {
+          "check_id": "actionability",
+          "label": "Confirm steps are concrete and executable by the target agent.",
+          "required": true
+        },
+        {
+          "check_id": "dangerous_operations",
+          "label": "Confirm dangerous commands or production changes are clearly guarded.",
+          "required": true
+        },
+        {
+          "check_id": "description_trigger",
+          "label": "Confirm description would trigger only for the intended scenario.",
+          "required": true
+        }
+      ]
+    },
+    "provider_footprint": {
+      "corpus_id": "",
+      "asset_breakdown": [
+        {
+          "asset_id": "15d8fe17-aef0-44d0-a30e-83d852e18eff",
+          "role": "primary",
+          "modality": "text",
+          "source_uri": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\examples\\trial\\text\\slow-query-notes.md",
+          "call_total": 0,
+          "provider_calls": []
+        }
+      ],
+      "summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      },
+      "runtime_provider_audits": [],
+      "runtime_summary": {
+        "total_calls": 0,
+        "total_successes": 0,
+        "total_failures": 0,
+        "providers": {},
+        "channels": {}
+      }
+    },
+    "tenant_scope": {}
+  }
+}
