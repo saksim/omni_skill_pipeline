@@ -108,6 +108,26 @@ class ServiceFactorySplitTests(unittest.TestCase):
         file_repo_cls.assert_called_once_with(settings.draft_dir)
         self.assertEqual(repository, 'file-repo')
 
+    def test_build_artifact_repository_file_mode_passes_encryption_settings(self) -> None:
+        factory_module = importlib.import_module('omni_skill_pipeline.service_factory')
+        factory_module = importlib.reload(factory_module)
+        settings = SimpleNamespace(
+            artifact_repository_mode='file',
+            draft_dir=Path('/virtual/drafts'),
+            artifact_encryption_mode='fernet',
+            artifact_encryption_key='test-key',
+            artifact_encryption_key_id='dogfood-key',
+        )
+        with patch.object(factory_module, 'FileArtifactRepository', return_value='file-repo') as file_repo_cls:
+            repository = factory_module._build_artifact_repository(settings)
+        file_repo_cls.assert_called_once_with(
+            settings.draft_dir,
+            encryption_mode='fernet',
+            encryption_key='test-key',
+            encryption_key_id='dogfood-key',
+        )
+        self.assertEqual(repository, 'file-repo')
+
     def test_build_artifact_repository_postgres_mode_requires_dsn(self) -> None:
         factory_module = importlib.import_module('omni_skill_pipeline.service_factory')
         factory_module = importlib.reload(factory_module)
@@ -132,6 +152,26 @@ class ServiceFactorySplitTests(unittest.TestCase):
             patch.object(factory_module, 'PostgresRepository', return_value='pg-repo') as pg_repo_cls,
         ):
             repository = factory_module._build_artifact_repository(settings)
+        pg_repo_cls.assert_called_once_with('postgresql://example')
+        self.assertEqual(repository, 'pg-repo')
+
+    def test_build_artifact_repository_postgres_mode_does_not_require_file_encryption_key(self) -> None:
+        factory_module = importlib.import_module('omni_skill_pipeline.service_factory')
+        factory_module = importlib.reload(factory_module)
+        settings = SimpleNamespace(
+            artifact_repository_mode='postgres',
+            draft_dir=Path('/virtual/drafts'),
+            postgres_repository_dsn='postgresql://example',
+            artifact_encryption_mode='fernet',
+            artifact_encryption_key='',
+            artifact_encryption_key_id='unused',
+        )
+        with (
+            patch.object(factory_module, 'FileArtifactRepository', return_value='file-repo') as file_repo_cls,
+            patch.object(factory_module, 'PostgresRepository', return_value='pg-repo') as pg_repo_cls,
+        ):
+            repository = factory_module._build_artifact_repository(settings)
+        file_repo_cls.assert_not_called()
         pg_repo_cls.assert_called_once_with('postgresql://example')
         self.assertEqual(repository, 'pg-repo')
 

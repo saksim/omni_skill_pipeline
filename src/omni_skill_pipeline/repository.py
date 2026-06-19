@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Sequence
 
+from omni_skill_pipeline.artifact_crypto import ArtifactEncryptionError, ArtifactEncryptor, is_encrypted_artifact_payload
 from omni_skill_pipeline.interfaces import ArtifactRepository, ReviewQueueRepository
 from omni_skill_pipeline.models import CorpusAssetRef, DistillBundle, EvidenceNode, EvidenceUnit, Publication, ReviewTask, new_id, utc_now_iso
 from omni_skill_pipeline.redaction import redact_sensitive_data
@@ -12,13 +13,25 @@ from omni_skill_pipeline.utils import slugify, unique_preserve_order
 
 
 class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
-    def __init__(self, base_dir: Path) -> None:
+    def __init__(
+        self,
+        base_dir: Path,
+        *,
+        encryption_mode: str = '',
+        encryption_key: str | None = None,
+        encryption_key_id: str = 'default',
+    ) -> None:
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.review_queue_dir = self.base_dir / 'review_queue'
         self.review_queue_pending_dir = self.review_queue_dir / 'pending'
         self.review_queue_consumed_dir = self.review_queue_dir / 'consumed'
         self.review_queue_closed_dir = self.review_queue_dir / 'closed'
+        self._encryptor = self._build_encryptor(
+            mode=encryption_mode,
+            key=encryption_key,
+            key_id=encryption_key_id,
+        )
 
     def save_bundle(self, bundle: DistillBundle) -> Dict[str, str]:
         slug = slugify(bundle.skill.name)
@@ -59,22 +72,13 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         if isinstance(review_policy_payload, dict) and review_policy_payload:
             artifacts["review_policy"] = bundle_dir / "review_policy.json"
 
-        artifacts["asset"].write_text(
-            json.dumps(redact_sensitive_data(bundle.asset.to_dict()), ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        self._write_json(artifacts["asset"], redact_sensitive_data(bundle.asset.to_dict()))
         self._write_json_array(artifacts["evidence"], bundle.evidence_units)
         self._write_json_array(artifacts["insights"], bundle.insights)
-        artifacts["skill"].write_text(
-            json.dumps(redact_sensitive_data(bundle.skill.to_dict()), ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
-        artifacts["skill_markdown"].write_text(str(redact_sensitive_data(bundle.skill_markdown)), encoding="utf-8")
+        self._write_json(artifacts["skill"], redact_sensitive_data(bundle.skill.to_dict()))
+        self._write_text(artifacts["skill_markdown"], str(redact_sensitive_data(bundle.skill_markdown)))
         if bundle.corpus is not None:
-            artifacts["corpus"].write_text(
-                json.dumps(redact_sensitive_data(bundle.corpus.to_dict()), ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            self._write_json(artifacts["corpus"], redact_sensitive_data(bundle.corpus.to_dict()))
             self._write_json_array(artifacts["corpus_assets"], bundle.corpus.assets)
         if bundle.evidence_nodes:
             self._write_json_array(artifacts["evidence_nodes"], bundle.evidence_nodes)
@@ -84,30 +88,15 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             publication_entries = self._write_publications(artifacts["publications_dir"], bundle.publications, artifacts)
             self._write_json_array(artifacts["publication_manifest"], publication_entries)
         if bundle.quality_scores:
-            artifacts["quality_score"].write_text(
-                json.dumps(redact_sensitive_data(bundle.quality_scores), ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            self._write_json(artifacts["quality_score"], redact_sensitive_data(bundle.quality_scores))
         if "review_task" in artifacts:
-            artifacts["review_task"].write_text(
-                json.dumps(redact_sensitive_data(review_task_payload), ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            self._write_json(artifacts["review_task"], redact_sensitive_data(review_task_payload))
         if "review_feedback" in artifacts:
-            artifacts["review_feedback"].write_text(
-                json.dumps(redact_sensitive_data(review_feedback_payload), ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            self._write_json(artifacts["review_feedback"], redact_sensitive_data(review_feedback_payload))
         if "reviewer_packet" in artifacts:
-            artifacts["reviewer_packet"].write_text(
-                json.dumps(redact_sensitive_data(reviewer_packet_payload), ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            self._write_json(artifacts["reviewer_packet"], redact_sensitive_data(reviewer_packet_payload))
         if "review_policy" in artifacts:
-            artifacts["review_policy"].write_text(
-                json.dumps(redact_sensitive_data(review_policy_payload), ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            self._write_json(artifacts["review_policy"], redact_sensitive_data(review_policy_payload))
         queue_item_path = self._enqueue_review_task(
             bundle=bundle,
             review_task_payload=review_task_payload,
@@ -120,10 +109,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
 
         artifact_strings = {name: str(path) for name, path in artifacts.items()}
         bundle.artifacts = artifact_strings
-        artifacts["bundle"].write_text(
-            json.dumps(redact_sensitive_data(bundle.to_dict()), ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        self._write_json(artifacts["bundle"], redact_sensitive_data(bundle.to_dict()))
         return artifact_strings
 
     def list_review_queue(
@@ -213,7 +199,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         consumed_payload['claimed_at'] = claimed_at
         consumed_payload['consumed_at'] = claimed_at
         consumed_payload['claimed_by'] = consumer.strip() or 'review-consumer'
-        consumed_path.write_text(json.dumps(consumed_payload, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+        self._write_json(consumed_path, consumed_payload)
         self._retire_queue_file(pending_path, consumed_payload)
         return consumed_payload
 
@@ -277,10 +263,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             closed_payload.setdefault('review_notes', '')
 
         closed_path = self.review_queue_closed_dir / ('%s.json' % target_review_task_id)
-        closed_path.write_text(
-            json.dumps(redact_sensitive_data(closed_payload), ensure_ascii=False, indent=2) + "\n",
-            encoding='utf-8',
-        )
+        self._write_json(closed_path, redact_sensitive_data(closed_payload))
         if source_path != closed_path:
             self._retire_queue_file(source_path, closed_payload)
         return closed_payload
@@ -380,10 +363,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             'reviewer_packet_path': str(reviewer_packet_path) if reviewer_packet_path is not None else '',
             'bundle_path': str(bundle_path),
         }
-        pending_path.write_text(
-            json.dumps(redact_sensitive_data(queue_item), ensure_ascii=False, indent=2) + "\n",
-            encoding='utf-8',
-        )
+        self._write_json(pending_path, redact_sensitive_data(queue_item))
         return pending_path
 
     def _should_enqueue_review_task(self, review_task_payload: dict[str, Any]) -> bool:
@@ -411,10 +391,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
         if not path.exists():
             return
         try:
-            path.write_text(
-                json.dumps(redact_sensitive_data(payload), ensure_ascii=False, indent=2) + "\n",
-                encoding='utf-8',
-            )
+            self._write_json(path, redact_sensitive_data(payload))
         except OSError:
             pass
         self._remove_queue_file(path)
@@ -442,8 +419,8 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
 
     def _read_queue_item(self, item_path: Path) -> dict[str, Any] | None:
         try:
-            payload = json.loads(item_path.read_text(encoding='utf-8'))
-        except (OSError, json.JSONDecodeError):
+            payload = json.loads(self._read_text(item_path))
+        except (OSError, json.JSONDecodeError, ArtifactEncryptionError):
             return None
         if not isinstance(payload, dict):
             return None
@@ -518,6 +495,39 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             return False
         return True
 
+    def _build_encryptor(
+        self,
+        *,
+        mode: str,
+        key: str | None,
+        key_id: str,
+    ) -> ArtifactEncryptor | None:
+        normalized_mode = str(mode or '').strip().lower()
+        if normalized_mode in {'', 'off', 'none', 'disabled', 'false', '0'}:
+            return None
+        if normalized_mode != 'fernet':
+            raise ArtifactEncryptionError(
+                'Unsupported OMNI_ARTIFACT_ENCRYPTION_MODE: %s (expected fernet|off).' % normalized_mode
+            )
+        return ArtifactEncryptor(key=str(key or ''), key_id=key_id)
+
+    def _write_json(self, target: Path, payload: Any) -> None:
+        self._write_text(target, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+
+    def _write_text(self, target: Path, text: str) -> None:
+        payload = str(text)
+        if self._encryptor is not None:
+            payload = self._encryptor.encrypt_text(payload)
+        target.write_text(payload, encoding='utf-8')
+
+    def _read_text(self, target: Path) -> str:
+        payload = target.read_text(encoding='utf-8')
+        if self._encryptor is not None:
+            return self._encryptor.decrypt_text(payload)
+        if is_encrypted_artifact_payload(payload):
+            raise ArtifactEncryptionError('Encrypted artifact requires OMNI_ARTIFACT_ENCRYPTION_KEY.')
+        return payload
+
     def _write_json_array(self, target: Path, items: Sequence[Any]) -> None:
         payload = []
         for item in items:
@@ -525,7 +535,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
                 payload.append(redact_sensitive_data(item.to_dict()))
             else:
                 payload.append(redact_sensitive_data(item))
-        target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        self._write_json(target, payload)
 
     def _write_publications(
         self,
@@ -576,12 +586,12 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
                 references_payload = publication.content.get('references')
                 if isinstance(references_payload, dict):
                     references = references_payload
-            target.write_text(str(redact_sensitive_data(text)), encoding='utf-8')
+            self._write_text(target, str(redact_sensitive_data(text)))
             self._write_publication_references(target.parent, references)
             return
         payload = publication.content if isinstance(publication.content, dict) else {'content': publication.content}
         payload = redact_sensitive_data(payload)
-        target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        self._write_json(target, payload)
 
     def _write_publication_references(self, publications_dir: Path, references: dict[str, Any]) -> None:
         if not references:
@@ -597,7 +607,7 @@ class FileArtifactRepository(ArtifactRepository, ReviewQueueRepository):
             for part in normalized_parts:
                 target = target / part
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(str(redact_sensitive_data(raw_content)), encoding='utf-8')
+            self._write_text(target, str(redact_sensitive_data(raw_content)))
 
     def _build_cross_asset_refs(self, bundle: DistillBundle) -> list[dict[str, Any]]:
         if bundle.corpus is None or len(bundle.corpus.assets) < 2:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "omni-skill-pipeline"
-version = "0.2.2"
+version = "0.2.3"
 description = "Distill text, audio, video, and image evidence into reusable SKILL artifacts."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,6 +12,7 @@ authors = [
   { name = "saksim" }
 ]
 dependencies = [
+  "cryptography>=42.0,<47.0",
   "pydantic>=2.8,<3.0",
   "pillow>=10.0,<13.0",
   "pypdf>=4.0,<6.0",

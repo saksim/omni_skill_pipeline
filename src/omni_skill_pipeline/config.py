@@ -42,6 +42,9 @@ class Settings:
     controlled_trial_review_reason_code: str
     portable_skill_markdown_line_limit: int
     artifact_repository_mode: str
+    artifact_encryption_mode: str
+    artifact_encryption_key: Optional[str]
+    artifact_encryption_key_id: str
     postgres_repository_dsn: Optional[str]
     dual_write_continue_on_secondary_error: bool
     dual_write_secondary_prefix: str
@@ -146,6 +149,16 @@ def load_settings(repo_root: Path = None) -> Settings:
         ),
         artifact_repository_mode=(
             str(os.getenv('OMNI_ARTIFACT_REPOSITORY_MODE', 'file')).strip() or 'file'
+        ),
+        artifact_encryption_mode=(
+            str(os.getenv('OMNI_ARTIFACT_ENCRYPTION_MODE', '')).strip().lower()
+        ),
+        artifact_encryption_key=(
+            str(os.getenv('OMNI_ARTIFACT_ENCRYPTION_KEY', '')).strip() or None
+        ),
+        artifact_encryption_key_id=(
+            str(os.getenv('OMNI_ARTIFACT_ENCRYPTION_KEY_ID', 'default')).strip()
+            or 'default'
         ),
         postgres_repository_dsn=(
             str(os.getenv('OMNI_POSTGRES_REPOSITORY_DSN', '')).strip() or None

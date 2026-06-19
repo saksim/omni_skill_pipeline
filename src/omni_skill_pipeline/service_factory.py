@@ -142,15 +142,14 @@ def _build_artifact_repository(settings: Settings):
                 'OMNI_POSTGRES_REPOSITORY_DSN is required when OMNI_ARTIFACT_REPOSITORY_MODE=%s.'
                 % mode
             )
-    file_repository = FileArtifactRepository(settings.draft_dir)
-
     if mode in {'', 'file'}:
-        return file_repository
+        return FileArtifactRepository(settings.draft_dir, **_artifact_encryption_kwargs(settings))
     if mode in {'postgres', 'dual_write'}:
         postgres_dsn = str(getattr(settings, 'postgres_repository_dsn', '') or '').strip()
         postgres_repository = PostgresRepository(postgres_dsn)
         if mode == 'postgres':
             return postgres_repository
+        file_repository = FileArtifactRepository(settings.draft_dir, **_artifact_encryption_kwargs(settings))
         return DualWriteArtifactRepository(
             primary=postgres_repository,
             secondary=file_repository,
@@ -167,6 +166,17 @@ def _build_artifact_repository(settings: Settings):
         'Unsupported OMNI_ARTIFACT_REPOSITORY_MODE: %s (expected file|postgres|dual_write).'
         % mode
     )
+
+
+def _artifact_encryption_kwargs(settings: Settings) -> dict[str, str]:
+    mode = str(getattr(settings, 'artifact_encryption_mode', '') or '').strip().lower()
+    if mode in {'', 'off', 'none', 'disabled', 'false', '0'}:
+        return {}
+    return {
+        'encryption_mode': mode,
+        'encryption_key': str(getattr(settings, 'artifact_encryption_key', '') or ''),
+        'encryption_key_id': str(getattr(settings, 'artifact_encryption_key_id', 'default') or 'default'),
+    }
 
 
 def _build_publication_orchestrator(*, insight_extractor, portable_skill_line_limit: int):
