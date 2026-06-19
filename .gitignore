@@ -106,6 +106,10 @@ skills/drafts/review_queue/pending/*.json
 *.7z
 *.zip
 
+# Versioned controlled-trial fixtures referenced by docs/working manifests.
+!examples/trial/text/query-bottleneck-summary.pdf
+!examples/trial/tabular/latency-error-report.csv
+
 # 其他垃圾数据
 *.tmp_*
 output/
