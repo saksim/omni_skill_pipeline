@@ -10,3 +10,7 @@ Use this layer for:
 - Dated release decision snapshots.
 
 Long-lived manuals should live in `docs/latest/`; superseded historical context should move to `docs/archive/`.
+
+Completed capability summaries that span multiple releases should be archived in
+`docs/archive/status/` after the relevant releases have shipped. Current record:
+`docs/archive/status/2026-06-19-completed-capabilities-archive.md`.

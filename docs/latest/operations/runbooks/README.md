@@ -4,6 +4,7 @@
 
 - Standard pre-release test script: `bash scripts/linux_release.sh`
 - [GitHub Release Workflow](github-release-workflow.md): `main` release candidate packs, `v*` tag GitHub Releases, manifest, summary, and checksums.
+- [Artifact Encryption](artifact-encryption.md): enable, verify, disable, and troubleshoot optional Fernet encryption for local file-backed artifacts and review queue files.
 - [Docker Zero-to-Release](docker-zero-to-release.md): bare Linux, Docker-only testing, release gate, deploy, acceptance, rollback.
 - [Launch Beta](launch-beta.md): external beta deploy, acceptance, rollback, log inspection, and temp cleanup.
 - [Production Operations Baseline](production-operations-baseline.md): GL-05 production operations workflow for deploy, validation, rollback, backup/restore, incident response, alerting, and operations evidence collection.
@@ -17,3 +18,4 @@
 - Runbooks are executable operations docs; keep commands aligned with `scripts/` and current API contracts.
 - For GitHub publication, use the `Release` workflow. It generates source, wheel, coverage, manifest, summary, and `SHA256SUMS`.
 - For strict container/API release evidence, prefer `scripts/linux_release.sh` over manually copying individual commands. It produces `release-artifacts-<release_id>.tar.gz` with logs, exit codes, baselines, and summary files.
+- `v0.2.3-internal.1` is the current internal dogfood release boundary. Its completed non-infrastructure hardening path is documented in `artifact-encryption.md`; Docker, Postgres, K8s, and external real-loop gates remain separate.

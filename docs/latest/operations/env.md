@@ -131,12 +131,16 @@ Mode semantics:
 - `OMNI_ARTIFACT_ENCRYPTION_MODE`: empty/off by default. Set to `fernet` to encrypt file-backed artifacts.
 - `OMNI_ARTIFACT_ENCRYPTION_KEY`: required when encryption mode is `fernet`; must be a Fernet key.
 - `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`: optional key identifier stored in encrypted envelopes, default `default`.
+- Operator runbook: `docs/latest/operations/runbooks/artifact-encryption.md`.
 
 Generate a local key:
 
 ```bash
 python -c "from omni_skill_pipeline.artifact_crypto import generate_fernet_key; print(generate_fernet_key())"
 ```
+
+Do not commit generated keys. Keep keys in a local secret store, CI secret, or
+password manager. The same key is required to read encrypted artifacts later.
 
 Scope:
 

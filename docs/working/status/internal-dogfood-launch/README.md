@@ -1,30 +1,35 @@
 # Internal Dogfood Launch Docs
 
-本目录存放“内部玩具上线 / Internal Dogfood Launch”的细则施工文档。
+This directory contains working-level construction and verification documents
+for the internal dogfood launch track.
 
-## 文档入口
+Use `docs/latest/operations/` for current operator manuals. Use this directory
+only when you need the historical construction plan, gate details, launch record
+template, or risk notes behind the internal dogfood decision.
 
-- [主施工计划](../2026-06-18-internal-dogfood-launch-construction-plan.md)
+## Documents
+
+- [Construction Plan](../2026-06-18-internal-dogfood-launch-construction-plan.md)
 - [P0 Workflow Fail Remediation](p0-workflow-fail-remediation.md)
 - [Internal Dogfood Gate Spec](internal-dogfood-gate-spec.md)
 - [Verification Runbook](verification-runbook.md)
 - [Risk, Rollback, and Observation](risk-rollback-observation.md)
 - [Launch Record Template](launch-record-template.md)
 
-## 口径
+## Boundary
 
-内部 dogfood 不是外部 Beta，不是 GA，也不是 SaaS。
+Internal dogfood is not external Beta, GA, or SaaS.
 
-它只证明：
+It proves:
 
-- 当前代码可被内部人员启动。
-- CI 和基础 smoke 不存在硬失败。
-- 生成能力可以被内部试用。
-- 所有风险和限制都有记录。
+- internal operators can start the current code
+- CI and basic smoke checks have no blocking failure for the internal path
+- generated skills can be reviewed and used internally
+- limitations and rollback points are recorded
 
-它不证明：
+It does not prove:
 
-- 存在真实业务闭环。
-- 可以对外承诺稳定性。
-- 可以跳过人工 review。
-- 可以替代 `scripts/launch_gate.py` 的外部上线判断。
+- real external business-loop coverage
+- production uptime or public reliability
+- safe automated publication without human review
+- replacement of `scripts/launch_gate.py` for external launch decisions

@@ -1,5 +1,45 @@
 # Testing
 
+## Current Operator Entry
+
+For `v0.2.3-internal.1`, use this short path before reading the historical TP
+appendices later in this file.
+
+Local regression:
+
+```bash
+python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
+```
+
+Release consumer smoke after building or downloading a release pack:
+
+```bash
+python scripts/release_consumer_smoke.py --release-dir <release-dir> --expected-release-id <release-tag>
+```
+
+Latest published internal release example:
+
+```bash
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.3-internal.1
+```
+
+Local artifact encryption regression:
+
+```bash
+python -m unittest tests.test_artifact_encryption tests.test_openai_provider_config tests.test_service_factory_split
+```
+
+Document sync gate:
+
+```bash
+python scripts/doc_sync.py --output -
+```
+
+Docker/Postgres/K8s validation is not part of the completed
+`v0.2.3-internal.1` internal release boundary. Use `bash scripts/linux_release.sh`
+only when a Docker-capable host is available and the goal is infrastructure
+validation.
+
 ## Standard Linux Release Test
 
 上线前的标准测试入口是 Linux/Docker-only 脚本：

@@ -5,6 +5,8 @@
 The repository has a lightweight release workflow for the current internal-to-main launch model.
 It does not deploy to a production URL by itself. It turns a green `main` commit into a verifiable release candidate pack, and turns a `v*` tag into a GitHub Release.
 
+Current published internal release: `v0.2.3-internal.1`.
+
 ## Entry Points
 
 The workflow lives at:
@@ -58,18 +60,26 @@ Preferred path:
 git fetch origin main
 git checkout main
 git pull --ff-only origin main
-git tag v0.2.0-internal.1
-git push origin v0.2.0-internal.1
+git tag <release_tag>
+git push origin <release_tag>
 ```
 
-That tag triggers the release workflow and publishes a GitHub Release with the generated artifact pack.
+Example:
+
+```bash
+git tag v0.2.3-internal.1
+git push origin v0.2.3-internal.1
+```
+
+That tag triggers the release workflow and publishes a GitHub Release with the
+generated artifact pack.
 
 Manual path:
 
 1. Open the `Release` workflow in GitHub Actions.
 2. Run workflow from `main`.
 3. Set `publish_github_release=true`.
-4. Set `release_tag`, for example `v0.2.0-internal.1`.
+4. Set `release_tag`, for example `v0.2.3-internal.1`.
 
 The workflow creates the tag if it does not already exist, then runs:
 
@@ -96,13 +106,21 @@ python scripts/release_consumer_smoke.py --release-dir . --expected-release-id <
 The `Release` workflow runs the same smoke against the generated artifact pack
 before upload/publication.
 
+For the latest published internal release:
+
+```bash
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.3-internal.1
+```
+
 For container/API deployment, continue with:
 
 ```bash
 bash scripts/linux_release.sh
 ```
 
-The Docker/Postgres release switch remains the strict gate for full production claims. The GitHub Release workflow is the stable packaging and publication layer.
+The Docker/Postgres release switch remains the strict gate for full production
+claims. The GitHub Release workflow is the stable packaging and publication
+layer, not an external deployment proof.
 
 ## Rollback
 
