@@ -127,6 +127,34 @@ Pass conditions:
 - If text distillation creates a pending review task, that task is visible in the pending review queue.
 - The JSON and Markdown smoke evidence files are written for launch-record review.
 
+## Step 6.2: Local artifact encryption smoke
+
+Generate a local Fernet key:
+
+```powershell
+python -c "from omni_skill_pipeline.artifact_crypto import generate_fernet_key; print(generate_fernet_key())"
+```
+
+Enable encrypted local file artifacts for the API/CLI process:
+
+```powershell
+$env:OMNI_ARTIFACT_ENCRYPTION_MODE = "fernet"
+$env:OMNI_ARTIFACT_ENCRYPTION_KEY = "<generated-key>"
+$env:OMNI_ARTIFACT_ENCRYPTION_KEY_ID = "internal-dogfood-local"
+```
+
+Regression command:
+
+```powershell
+python -B -m unittest tests.test_artifact_encryption tests.test_security_redaction_tp_e12 tests.test_review_queue_repository
+```
+
+Pass conditions:
+- Generated artifact files are encrypted envelopes when encryption is enabled.
+- Plaintext evidence is not visible in encrypted artifact files.
+- Review queue pending/consume/close workflows remain queryable with the configured key.
+- Missing or invalid encryption keys fail closed before writing artifacts.
+
 ## Step 7：Docker smoke
 
 如果当前环境有 Docker：

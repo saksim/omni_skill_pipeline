@@ -80,6 +80,7 @@ The documentation tree is split by lifecycle stage. Use the layer name as the fi
 
 - [Changelog](releases/CHANGELOG.md)
 - [Release Notes](releases/notes/README.md)
+- [v0.2.3-internal.1 Release Notes](releases/notes/v0.2.3-internal.1.md)
 - [v0.2.2-internal.1 Release Notes](releases/notes/v0.2.2-internal.1.md)
 - [v0.2.1-internal.1 Release Notes](releases/notes/v0.2.1-internal.1.md)
 - [v0.2.0-internal.1 Release Notes](releases/notes/v0.2.0-internal.1.md)
