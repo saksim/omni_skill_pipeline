@@ -3,6 +3,7 @@
 ## Available Runbooks
 
 - Standard pre-release test script: `bash scripts/linux_release.sh`
+- [GitHub Release Workflow](github-release-workflow.md): `main` release candidate packs, `v*` tag GitHub Releases, manifest, summary, and checksums.
 - [Docker Zero-to-Release](docker-zero-to-release.md): bare Linux, Docker-only testing, release gate, deploy, acceptance, rollback.
 - [Launch Beta](launch-beta.md): external beta deploy, acceptance, rollback, log inspection, and temp cleanup.
 - [Production Operations Baseline](production-operations-baseline.md): GL-05 production operations workflow for deploy, validation, rollback, backup/restore, incident response, alerting, and operations evidence collection.
@@ -14,4 +15,5 @@
 ## Notes
 
 - Runbooks are executable operations docs; keep commands aligned with `scripts/` and current API contracts.
-- For pre-release evidence collection, prefer `scripts/linux_release.sh` over manually copying individual commands. It produces `release-artifacts-<release_id>.tar.gz` with logs, exit codes, baselines, and summary files.
+- For GitHub publication, use the `Release` workflow. It generates source, wheel, coverage, manifest, summary, and `SHA256SUMS`.
+- For strict container/API release evidence, prefer `scripts/linux_release.sh` over manually copying individual commands. It produces `release-artifacts-<release_id>.tar.gz` with logs, exit codes, baselines, and summary files.

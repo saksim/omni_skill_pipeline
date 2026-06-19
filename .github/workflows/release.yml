@@ -1,0 +1,129 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_id:
+        description: "Optional release id override. Defaults to UTC timestamp plus commit."
+        required: false
+        type: string
+      publish_github_release:
+        description: "Publish a GitHub Release. Requires a tag ref or release_tag."
+        required: false
+        default: false
+        type: boolean
+      release_tag:
+        description: "Tag to create/use when publish_github_release is true, for example v0.2.0-internal.1."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+            requirements-dev.txt
+
+      - name: Resolve release metadata
+        id: release_meta
+        shell: bash
+        env:
+          INPUT_RELEASE_ID: ${{ github.event.inputs.release_id || '' }}
+          INPUT_RELEASE_TAG: ${{ github.event.inputs.release_tag || '' }}
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA::12}"
+          if [[ -n "${INPUT_RELEASE_ID}" ]]; then
+            release_id="${INPUT_RELEASE_ID}"
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            release_id="${GITHUB_REF_NAME}"
+          else
+            release_id="$(date -u +%Y%m%dT%H%M%SZ)-${short_sha}"
+          fi
+
+          if [[ -n "${INPUT_RELEASE_TAG}" ]]; then
+            release_tag="${INPUT_RELEASE_TAG}"
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            release_tag="${GITHUB_REF_NAME}"
+          else
+            release_tag=""
+          fi
+
+          echo "release_id=${release_id}" >> "${GITHUB_OUTPUT}"
+          echo "release_tag=${release_tag}" >> "${GITHUB_OUTPUT}"
+          echo "RELEASE_ID=${release_id}" >> "${GITHUB_ENV}"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Verify dependency graph
+        run: python -m pip check
+
+      - name: Run CI test suite with coverage gate
+        run: python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
+
+      - name: Build Python wheel
+        run: python -m pip wheel . --no-deps --wheel-dir dist
+
+      - name: Build release artifact pack
+        run: |
+          python scripts/release_artifacts.py \
+            --release-id "${RELEASE_ID}" \
+            --output-dir "release-artifacts/${RELEASE_ID}" \
+            --dist-dir dist \
+            --coverage-xml coverage.xml
+
+      - name: Upload release artifact pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: omni-skill-pipeline-${{ steps.release_meta.outputs.release_id }}
+          path: release-artifacts/${{ steps.release_meta.outputs.release_id }}
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.publish_github_release == true)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release_meta.outputs.release_id }}
+          RELEASE_TAG: ${{ steps.release_meta.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${RELEASE_TAG}" ]]; then
+            echo "release_tag is required for manual GitHub Release publication." >&2
+            exit 2
+          fi
+          if ! git rev-parse --verify --quiet "refs/tags/${RELEASE_TAG}" >/dev/null; then
+            git tag "${RELEASE_TAG}" "${GITHUB_SHA}"
+            git push origin "refs/tags/${RELEASE_TAG}"
+          fi
+          gh release create "${RELEASE_TAG}" \
+            release-artifacts/${RELEASE_ID}/* \
+            --title "Omni Skill Pipeline ${RELEASE_TAG}" \
+            --notes-file "release-artifacts/${RELEASE_ID}/release-summary.md" \
+            --latest
