@@ -1,19 +1,21 @@
-# Runbooks
+# Runbook 入口
 
-## Available Runbooks
+## 可用 Runbook
 
-- Standard pre-release test script: `bash scripts/linux_release.sh`
-- [GitHub Release Workflow](github-release-workflow.md): `main` release candidate packs, `v*` tag GitHub Releases, manifest, summary, and checksums.
-- [Docker Zero-to-Release](docker-zero-to-release.md): bare Linux, Docker-only testing, release gate, deploy, acceptance, rollback.
-- [Launch Beta](launch-beta.md): external beta deploy, acceptance, rollback, log inspection, and temp cleanup.
-- [Production Operations Baseline](production-operations-baseline.md): GL-05 production operations workflow for deploy, validation, rollback, backup/restore, incident response, alerting, and operations evidence collection.
-- [Controlled External Beta Onboarding](controlled-external-beta-onboarding.md): GL-03 operator flow for manifest validation, distill, review, export, validation, security gate, metrics, and readiness decision.
-- [Controlled Trial Loop](controlled-trial-loop.md): CBT-11 end-to-end controlled-trial runner (`manifest -> distill -> review packet -> export -> validate -> metrics`).
-- [Real Trial Loop Collection](real-trial-loop-collection.md): GL-12 collector plus GL-13 one-command bridge for real-loop evidence classification, trial metrics generation, and launch-gate progress tracking.
-- [Agent Smoke Protocol](agent-smoke-protocol.md): CBT-12 manual live-agent smoke checks for Codex/Claude Code/OpenCode plus status recording (`agent_smoke_passed` / `agent_smoke_failed` / `not_run`).
+- 标准 pre-release 测试脚本：`bash scripts/linux_release.sh`
+- [GitHub Release 工作流](github-release-workflow.md)：`main` release candidate pack、`v*` tag GitHub Release、manifest、summary 和 checksum。
+- [Artifact Encryption](artifact-encryption.md)：启用、验证、关闭并排查本地 file-backed artifact 与 review queue 文件的可选 Fernet 加密。
+- [Docker Zero-to-Release](docker-zero-to-release.md)：裸 Linux、Docker-only 测试、release gate、deploy、验收和 rollback。
+- [Launch Beta](launch-beta.md)：外部 beta deploy、验收、rollback、日志巡检和临时目录清理。
+- [Production Operations Baseline](production-operations-baseline.md)：GL-05 生产操作流程，覆盖 deploy、validation、rollback、backup/restore、incident response、alerting 和 operations evidence collection。
+- [Controlled External Beta Onboarding](controlled-external-beta-onboarding.md)：GL-03 操作流程，覆盖 manifest validation、distill、review、export、validation、security gate、metrics 和 readiness decision。
+- [Controlled Trial Loop](controlled-trial-loop.md)：CBT-11 端到端 controlled-trial runner，流程为 `manifest -> distill -> review packet -> export -> validate -> metrics`。
+- [Real Trial Loop Collection](real-trial-loop-collection.md)：GL-12 collector 与 GL-13 one-command bridge，用于 real-loop evidence classification、trial metrics generation 和 launch-gate progress tracking。
+- [Agent Smoke Protocol](agent-smoke-protocol.md)：CBT-12 针对 Codex/Claude Code/OpenCode 的人工 live-agent smoke 检查和状态记录。
 
-## Notes
+## 说明
 
-- Runbooks are executable operations docs; keep commands aligned with `scripts/` and current API contracts.
-- For GitHub publication, use the `Release` workflow. It generates source, wheel, coverage, manifest, summary, and `SHA256SUMS`.
-- For strict container/API release evidence, prefer `scripts/linux_release.sh` over manually copying individual commands. It produces `release-artifacts-<release_id>.tar.gz` with logs, exit codes, baselines, and summary files.
+- Runbook 是可执行操作文档；命令必须与 `scripts/` 和当前 API contract 保持一致。
+- GitHub publication 使用 `Release` workflow。它会生成 source、wheel、coverage、manifest、summary 和 `SHA256SUMS`。
+- 严格 container/API release 证据优先使用 `scripts/linux_release.sh`，不要手动复制分散命令。该脚本会输出包含日志、退出码、baseline 和 summary 的 `release-artifacts-<release_id>.tar.gz`。
+- `v0.2.4-internal.1` 是当前内部 dogfood 发版候选边界。非基础设施加固路径记录在 `artifact-encryption.md`；Docker、Postgres、K8s 和 external real-loop gate 是独立门禁。
