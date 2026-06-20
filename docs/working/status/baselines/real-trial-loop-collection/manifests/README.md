@@ -2,7 +2,7 @@
 
 Place operator-collected real loop manifest JSON files in this directory before running GL-13 batch intake.
 
-This directory is intentionally empty in source control except this README. The release artifact pipeline does not generate real Beta evidence here. A valid manifest must be a JSON object with a top-level `loops` list. Each launch-gate-eligible row must carry real evidence labels and trace fields such as `evidence_origin=real`, `launch_gate_eligible=true`, `source_system`, `source_reference`, `collected_at_utc`, `review_task_id`, `reviewed_by`, and `reviewed_at_utc`.
+This directory is intentionally empty in source control except this README. The release artifact pipeline does not generate real Beta evidence here. A valid manifest must be a JSON object with a top-level `loops` list. Each GL-63 slot manifest must contain exactly one loop for that slot; do not mix other slots, other modalities, or multiple accepted loops in the same slot file. Each launch-gate-eligible row must carry real evidence labels and trace fields such as `evidence_origin=real`, `launch_gate_eligible=true`, `source_system`, `source_reference`, `collected_at_utc`, `review_task_id`, `reviewed_by`, and `reviewed_at_utc`.
 
 Before running GL-13, run:
 

@@ -353,6 +353,13 @@ def _preflight_item(item: dict[str, Any], *, manifest_dir_override: Path | None)
         loop_id = _normalize_text(loop.get("loop_id")) or "loop-%03d" % index
         if _normalize_modality(loop.get("modality")) != required_modality:
             ignored_loop_ids.append(loop_id)
+            loop_failures.append(
+                {
+                    "loop_index": index,
+                    "loop_id": loop_id,
+                    "failure_codes": ["non_slot_loop_in_manifest"],
+                }
+            )
             continue
 
         is_valid, failure_codes = _validate_loop(
@@ -381,6 +388,11 @@ def _preflight_item(item: dict[str, Any], *, manifest_dir_override: Path | None)
         for loop_failure in loop_failures:
             for code in _as_list(loop_failure.get("failure_codes", [])):
                 _add_unique(failure_codes, str(code))
+    if len(accepted_loop_ids) > 1:
+        _add_unique(failure_codes, "multiple_required_modality_loops")
+    if ignored_loop_ids:
+        _add_unique(failure_codes, "manifest_contains_non_slot_loop")
+        _add_unique(failure_codes, "non_slot_loop_in_manifest")
 
     base["accepted_loop_ids"] = accepted_loop_ids
     base["ignored_loop_ids"] = ignored_loop_ids
@@ -414,6 +426,8 @@ def _warning_codes(*, invalid: int, missing: int, accepted: int, total: int, ite
         for code in _as_list(item.get("failure_codes", [])):
             if str(code).startswith("fixture_or_simulated_loop_rejected"):
                 _add_unique(warnings, "fixture_or_simulated_loop_rejected")
+            if str(code) in {"manifest_contains_non_slot_loop", "multiple_required_modality_loops"}:
+                _add_unique(warnings, "real_loop_manifest_slot_contamination")
     return warnings
 
 
@@ -626,6 +640,8 @@ def build_preflight_report(
             "source": "GL-63 operator manifest contract",
             "accepted_status": "valid",
             "accepted_loop_requirements": [
+                "exactly one slot loop per expected manifest file",
+                "no non-slot or extra loop rows in the slot manifest",
                 "status=complete",
                 "modality matches GL-63 work item",
                 "evidence_origin=real",

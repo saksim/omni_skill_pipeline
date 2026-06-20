@@ -39,6 +39,8 @@
 
 每个 manifest 必须是 JSON object，且包含顶层 `loops` 数组。每条进入 launch gate 的 loop 必须满足：
 
+每个 GL-63 槽位 manifest 只能包含一个本槽位 loop。不得在 `real-loop-001-text.json` 这类槽位文件中混入其它槽位、其它模态或多个合格 loop；GL-64 会将此类文件标记为 `invalid`，避免 GL-13 读取整个 manifest 时把污染行带入后续证据链。
+
 | 字段 | 要求 |
 | --- | --- |
 | `loop_id` | 唯一，建议格式 `real-{modality}-slot-{nnn}` |

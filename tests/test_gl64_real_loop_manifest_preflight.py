@@ -349,6 +349,101 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             self.assertIn("backfill_slot_index_mismatch", item.get("failure_codes", []))
             self.assertIn("backfill_action_id_mismatch", item.get("failure_codes", []))
 
+    def test_manifest_with_non_slot_loop_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            _write_json(workpack_path, _workpack(work_items=[_work_item(slot_index=1, modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [
+                        _valid_loop(loop_id="real-text-001", modality="text", slot_index=1),
+                        _valid_loop(loop_id="real-audio-002", modality="audio", slot_index=2),
+                    ],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertEqual(item.get("preflight_status"), "invalid")
+            self.assertIn("manifest_contains_non_slot_loop", item.get("failure_codes", []))
+            self.assertIn("non_slot_loop_in_manifest", item.get("failure_codes", []))
+            self.assertEqual(item.get("ignored_loop_ids"), ["real-audio-002"])
+            self.assertIn("real_loop_manifest_slot_contamination", payload.get("warning_codes", []))
+
+    def test_manifest_with_multiple_slot_loops_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            _write_json(workpack_path, _workpack(work_items=[_work_item(slot_index=1, modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [
+                        _valid_loop(loop_id="real-text-001", modality="text", slot_index=1),
+                        _valid_loop(loop_id="real-text-002", modality="text", slot_index=1),
+                    ],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertEqual(item.get("preflight_status"), "invalid")
+            self.assertEqual(item.get("accepted_loop_ids"), ["real-text-001", "real-text-002"])
+            self.assertIn("multiple_required_modality_loops", item.get("failure_codes", []))
+            self.assertIn("real_loop_manifest_slot_contamination", payload.get("warning_codes", []))
+
 
 if __name__ == "__main__":
     unittest.main()

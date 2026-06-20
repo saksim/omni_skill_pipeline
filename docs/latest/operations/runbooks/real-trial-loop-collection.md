@@ -180,7 +180,7 @@ python scripts/gl12_collect_loops.py \
 
 ## GL-64 Manifest Preflight Diagnostics
 
-Before GL-13 ingestion, run GL-64 to verify every GL-63 intake slot. This step does not create real evidence and does not relax launch-gate policy.
+Before GL-13 ingestion, run GL-64 to verify every GL-63 intake slot. This step does not create real evidence and does not relax launch-gate policy. Each GL-63 slot manifest must contain exactly one loop for that slot; extra loop rows, non-slot modalities, or multiple accepted loops in the same slot manifest are treated as slot contamination and keep GL-64 invalid.
 
 ```bash
 python -B scripts/gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
@@ -1260,6 +1260,5 @@ python scripts/gl33_submission_consumption.py \
   --consumed-manifest-output docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json \
   --owner controlled-beta-ops
 ```
-
 
 
