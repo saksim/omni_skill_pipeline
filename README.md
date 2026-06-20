@@ -2,7 +2,7 @@
 
 Omni Skill Pipeline 用于把文本、音频、图像、视频、表格和混合语料证据，蒸馏成可复用、可追溯、可审核的技能工件：`SKILL.md`、`skill.json`、`SkillGraph`、publication manifest，以及可移植的 agent skill package。
 
-当前发版候选版本是 `v0.2.5-internal.1`。这是内部 dogfood 与未来真实数据接入预案版本，不是外部 Beta、GA、SaaS 或生产部署承诺。
+当前发版候选版本是 `v0.2.5-internal.2`。这是内部 dogfood 与未来真实数据接入预案版本，不是外部 Beta、GA、SaaS 或生产部署承诺。
 
 ## 当前能力
 
@@ -56,11 +56,11 @@ python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xm
 
 ## 发布
 
-- 当前内部发版候选：`v0.2.5-internal.1`
+- 当前内部发版候选：`v0.2.5-internal.2`
 - 上一已发布内部 tag：`v0.2.4-internal.1`
 - CI 门禁：`.github/workflows/ci.yml`
 - Release 工作流：`.github/workflows/release.yml`
-- 发布说明：`docs/releases/notes/v0.2.5-internal.1.md`
+- 发布说明：`docs/releases/notes/v0.2.5-internal.2.md`
 - GitHub Release 手册：`docs/latest/operations/runbooks/github-release-workflow.md`
 - 本地 artifact 加密手册：`docs/latest/operations/runbooks/artifact-encryption.md`
 
