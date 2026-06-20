@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tomllib
 import unittest
 from pathlib import Path
 from uuid import uuid4
@@ -13,6 +14,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "release_artifacts.py"
 
 
+def _project_version() -> str:
+    payload = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    return str(payload["project"]["version"])
+
+
 class ReleaseArtifactsScriptTests(unittest.TestCase):
     def setUp(self) -> None:
         self.workspace = REPO_ROOT / "tests" / ".tmp_runtime" / uuid4().hex
@@ -20,7 +26,9 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
         self.output_dir = self.workspace / "release"
         self.dist_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        (self.dist_dir / "omni_skill_pipeline-0.2.4-py3-none-any.whl").write_bytes(b"wheel-bytes")
+        self.project_version = _project_version()
+        self.wheel_name = "omni_skill_pipeline-%s-py3-none-any.whl" % self.project_version
+        (self.dist_dir / self.wheel_name).write_bytes(b"wheel-bytes")
         (self.dist_dir / "coverage.xml").write_text("not a distribution\n", encoding="utf-8")
         (self.workspace / "coverage.xml").write_text("<coverage></coverage>\n", encoding="utf-8")
         (self.workspace / "notes.md").write_text(
@@ -60,7 +68,7 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
             "SHA256SUMS",
             "coverage.xml",
             "omni-skill-pipeline-source-test-release-001.tar.gz",
-            "omni_skill_pipeline-0.2.4-py3-none-any.whl",
+            self.wheel_name,
             "release-manifest.json",
             "release-summary.md",
         }
@@ -70,7 +78,7 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
         self.assertEqual(manifest["schema_version"], "omni.release_artifacts.v1")
         self.assertEqual(manifest["release_id"], "test-release-001")
         self.assertEqual(manifest["project"]["name"], "omni-skill-pipeline")
-        self.assertEqual(manifest["project"]["version"], "0.2.4")
+        self.assertEqual(manifest["project"]["version"], self.project_version)
         self.assertTrue(manifest["git"]["commit"])
 
         roles = {item["role"] for item in manifest["artifacts"]}
