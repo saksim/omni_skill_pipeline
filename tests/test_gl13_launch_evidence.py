@@ -28,17 +28,26 @@ def _release_report(decision: str = "GO") -> dict[str, Any]:
     }
 
 
+def _agent_smoke_record(agent: str) -> dict[str, Any]:
+    return {
+        "skill_id": "skill-1",
+        "agent": agent,
+        "status": "agent_smoke_passed",
+        "metrics_agent_smoke_result": "passed",
+        "reason": "%s selected expected skill." % agent,
+        "trigger_prompt": "Use the approved skill to produce the expected runbook.",
+        "expected_skill_selection": "skill-1",
+        "expected_task_output": "Runbook with validation checklist.",
+        "selected_skill": "skill-1",
+        "observed_task_output": "Runbook with validation checklist produced.",
+        "failure_code": "",
+    }
+
+
 def _agent_smoke_report() -> dict[str, Any]:
     return {
         "schema_version": "test.agent_smoke.v1",
-        "records": [
-            {
-                "skill_id": "skill-1",
-                "agent": "codex",
-                "status": "agent_smoke_passed",
-                "metrics_agent_smoke_result": "passed",
-            }
-        ],
+        "records": [_agent_smoke_record(agent) for agent in ["codex", "claude-code", "opencode"]],
     }
 
 

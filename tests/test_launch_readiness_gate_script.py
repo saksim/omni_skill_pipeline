@@ -131,17 +131,27 @@ def _trial_metrics_report(*, loops: int, modalities: int) -> dict[str, object]:
     }
 
 
-def _agent_smoke_report() -> dict[str, object]:
+def _agent_smoke_record(agent: str) -> dict[str, object]:
+    return {
+        "skill_id": "skill-1",
+        "agent": agent,
+        "status": "agent_smoke_passed",
+        "metrics_agent_smoke_result": "passed",
+        "reason": "%s selected expected skill." % agent,
+        "trigger_prompt": "Use the approved skill to produce the expected runbook.",
+        "expected_skill_selection": "skill-1",
+        "expected_task_output": "Runbook with validation checklist.",
+        "selected_skill": "skill-1",
+        "observed_task_output": "Runbook with validation checklist produced.",
+        "failure_code": "",
+    }
+
+
+def _agent_smoke_report(*, complete_matrix: bool = True) -> dict[str, object]:
+    agents = ["codex", "claude-code", "opencode"] if complete_matrix else ["codex"]
     return {
         "schema_version": "test.agent_smoke.v1",
-        "records": [
-            {
-                "skill_id": "skill-1",
-                "agent": "codex",
-                "status": "agent_smoke_passed",
-                "metrics_agent_smoke_result": "passed",
-            }
-        ],
+        "records": [_agent_smoke_record(agent) for agent in agents],
     }
 
 
@@ -252,6 +262,28 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
             self.assertEqual(report.get("failed_checks"), [])
+
+    def test_incomplete_agent_smoke_matrix_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report(complete_matrix=False))
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root)
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("agent_smoke_matrix_coverage", report.get("failed_checks", []))
+            matrix_check = next(
+                check for check in report.get("checks", []) if check.get("id") == "agent_smoke_matrix_coverage"
+            )
+            self.assertEqual(matrix_check.get("status"), "fail")
+            self.assertEqual(matrix_check.get("actual", {}).get("missing_cell_count"), 2)
 
     def test_missing_security_evidence_keeps_hold(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

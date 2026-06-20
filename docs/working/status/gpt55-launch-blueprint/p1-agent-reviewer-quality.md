@@ -87,10 +87,13 @@ python scripts\agent_smoke.py `
 
 校验返回 `AGENT_SMOKE_MATRIX_READY` 才表示记录矩阵完整；如果返回 `AGENT_SMOKE_MATRIX_INCOMPLETE`，应先补缺失 agent 记录或补齐记录字段，再进入 launch gate 复核。
 
+`launch_gate.py` 会复用同一套矩阵规则生成阻塞检查 `agent_smoke_matrix_coverage`。如果某个 skill 只记录了 Codex，但缺 Claude Code 或 OpenCode，launch gate 不能因为单格成功率为 100% 就放行。
+
 ### 质量门槛
 
 - agent smoke success rate 不低于当前 launch gate 阈值。
 - agent smoke matrix 必须覆盖所有真实 skill 包与 Codex、Claude Code、OpenCode 三端。
+- `launch_gate.py` 中 `agent_smoke_matrix_coverage` 必须为 `pass`。
 - 所有 failure code 必须可复现、可归类、可修复或被产品边界解释。
 - 失败记录不得删除，只能补充修复后的新记录。
 

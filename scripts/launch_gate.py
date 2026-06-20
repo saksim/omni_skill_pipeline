@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agent_smoke import TARGET_AGENTS, build_matrix_report
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CURRENT_STATUS_DOC = REPO_ROOT / "docs" / "working" / "status" / "CURRENT_STATUS.md"
@@ -520,6 +522,52 @@ def _evaluate_agent_smoke(report: dict[str, Any], *, minimum_success_rate: float
     )
 
 
+def _agent_smoke_required_skill_ids(report: dict[str, Any]) -> list[str]:
+    records = report.get("records", [])
+    if not isinstance(records, list):
+        return []
+    return sorted(
+        {
+            str(record.get("skill_id", "")).strip()
+            for record in records
+            if isinstance(record, dict) and str(record.get("skill_id", "")).strip()
+        }
+    )
+
+
+def _evaluate_agent_smoke_matrix(report: dict[str, Any]) -> dict[str, Any]:
+    matrix_report = build_matrix_report(
+        report,
+        required_skill_ids=_agent_smoke_required_skill_ids(report),
+        target_agents=list(TARGET_AGENTS),
+    )
+    counts = matrix_report.get("counts", {})
+    status = str(matrix_report.get("status", "")).strip()
+    return _make_check(
+        "agent_smoke_matrix_coverage",
+        "pass" if status == "AGENT_SMOKE_MATRIX_READY" else "fail",
+        {
+            "matrix_status": status,
+            "required_skill_count": int(counts.get("required_skill_count", 0) or 0),
+            "target_agents": matrix_report.get("target_agents", []),
+            "expected_cell_count": int(counts.get("expected_cell_count", 0) or 0),
+            "recorded_cell_count": int(counts.get("recorded_cell_count", 0) or 0),
+            "missing_cell_count": int(counts.get("missing_cell_count", 0) or 0),
+            "invalid_record_count": int(counts.get("invalid_record_count", 0) or 0),
+            "missing_cells": matrix_report.get("missing_cells", []),
+            "invalid_records": matrix_report.get("invalid_records", []),
+        },
+        {
+            "matrix_status": "AGENT_SMOKE_MATRIX_READY",
+            "target_agents": list(TARGET_AGENTS),
+        },
+        details=(
+            "Each approved skill in the agent smoke report must have a valid Codex, "
+            "Claude Code, and OpenCode record."
+        ),
+    )
+
+
 def _run_doc_sync() -> tuple[dict[str, Any] | None, str]:
     script = REPO_ROOT / "scripts" / "doc_sync.py"
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -818,6 +866,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
                 minimum_success_rate=max(0.0, min(1.0, float(args.minimum_agent_smoke_success_rate))),
             )
         )
+        checks.append(_evaluate_agent_smoke_matrix(agent_smoke_report))
 
     checks.append(_evaluate_doc_sync(report=doc_sync_report, source=doc_sync_source))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
