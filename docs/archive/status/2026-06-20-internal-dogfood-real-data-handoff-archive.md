@@ -2,7 +2,7 @@
 
 ## 归档结论
 
-本轮确认当前没有真实业务数据，因此 `v0.2.5-internal.1` 的发布口径限定为内部 dogfood 或内部玩具，不声明外部 Beta、GA、SaaS 或生产可用。
+本轮确认当前没有真实业务数据，因此 `v0.2.5-internal.2` 的发布口径限定为内部 dogfood 或内部玩具，不声明外部 Beta、GA、SaaS 或生产可用。
 
 同时，本轮已经把后续真实数据接入方式落到当前手册层，后续只要拿到真实数据，就可以按固定目录、固定 manifest 槽位和固定验收命令接入项目。
 
@@ -20,7 +20,7 @@
 - `docs/latest/operations/runbooks/real-trial-loop-collection.md`
 - `docs/working/status/gpt55-launch-blueprint/p0-real-loop-evidence.md`
 - `docs/working/status/baselines/real-trial-loop-collection/manifests/README.md`
-- `docs/releases/notes/v0.2.5-internal.1.md`
+- `docs/releases/notes/v0.2.5-internal.2.md`
 
 ## 不属于本轮完成范围
 

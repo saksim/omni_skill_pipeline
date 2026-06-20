@@ -2,13 +2,14 @@
 
 ## 2026-06-20
 
-### v0.2.5-internal.1
+### v0.2.5-internal.2
 
 - 新增中文真实数据接入与验收手册，约定后续真实原始数据放在本地 `data/real-inputs/<batch-id>/`，仓库只提交脱敏后的真实闭环 manifest。
 - 明确 10 个 GL-63 manifest 槽位、4 个目标模态、单槽位单 loop、source trace、review trace 和 agent smoke 记录的验收要求。
 - 将当前没有真实业务数据时的发布口径收敛为内部 dogfood 或内部玩具，不声明外部 Beta、GA、SaaS 或生产可用。
-- 补齐内部 dogfood 与真实数据接入预案归档，并将 README、latest 操作入口、runbook 索引、release note 和主索引更新到 `v0.2.5-internal.1`。
+- 补齐内部 dogfood 与真实数据接入预案归档，并将 README、latest 操作入口、runbook 索引、release note 和主索引更新到 `v0.2.5-internal.2`。
 - 将 package metadata 版本更新为 `0.2.5`，服务于本轮内部 release package。
+- 修复 release artifact 测试对旧版本号 `0.2.4` 的硬编码，使发版 workflow 能跟随 `pyproject.toml` 版本推进；`v0.2.5-internal.2` 取代未成功发布的 `v0.2.5-internal.1` tag。
 
 ### v0.2.4-internal.1
 
