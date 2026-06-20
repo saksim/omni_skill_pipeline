@@ -127,6 +127,26 @@ def _manifest_preflight_report(*, status: str = "REAL_LOOP_MANIFEST_PREFLIGHT_PE
     }
 
 
+def _manifest_preflight_workpack(manifest_dir: Path) -> dict[str, Any]:
+    return {
+        "schema_version": "real_trial_loop_intake_workpack.v1",
+        "input_paths": {
+            "operator_manifest_dir": str(manifest_dir),
+        },
+        "current_launch_evidence": {
+            "target_launch_modalities": ["text", "audio", "image", "video"],
+        },
+        "work_items": [
+            {
+                "intake_item_id": "gl63-real-loop-intake-slot-001-text",
+                "slot_index": 1,
+                "required_modality": "text",
+                "manifest_drop_path": str(manifest_dir / "real-loop-001-text.json"),
+            }
+        ],
+    }
+
+
 def _loop_row(*, loop_id: str, modality: str, evidence_origin: str, launch_gate_eligible: bool) -> dict[str, Any]:
     row: dict[str, Any] = {
         "loop_id": loop_id,
@@ -158,7 +178,6 @@ def _loop_row(*, loop_id: str, modality: str, evidence_origin: str, launch_gate_
     elif not launch_gate_eligible:
         row["launch_gate_ineligible_reason"] = "%s_evidence_not_launch_gate_eligible" % evidence_origin
     return row
-
 
 def _run_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return {
@@ -2712,6 +2731,66 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 evidence_pack_payload.get("input_sources", {}).get("input_loop_manifest_count"),
                 1,
             )
+
+    def test_pipeline_require_manifest_preflight_ready_blocks_pending_slot_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifests_dir = root / "real-loop-manifests"
+            manifests_dir.mkdir(parents=True, exist_ok=True)
+            workpack = root / "gl63-workpack.json"
+            manifest_preflight = root / "manifest-preflight.json"
+            manifest_preflight_summary = root / "manifest-preflight-summary.md"
+            evidence_pack = root / "real-trial-launch-evidence-pack.json"
+
+            _write_json(workpack, _manifest_preflight_workpack(manifests_dir))
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest-dir",
+                    str(manifests_dir),
+                    "--loop-manifest-pattern",
+                    "*.json",
+                    "--strict-loop-manifest-contract",
+                    "--require-manifest-preflight-ready",
+                    "--manifest-preflight-workpack",
+                    str(workpack),
+                    "--manifest-preflight-report",
+                    str(manifest_preflight),
+                    "--manifest-preflight-summary",
+                    str(manifest_preflight_summary),
+                    "--collection-report-output",
+                    str(root / "collection-report.json"),
+                    "--collection-summary-output",
+                    str(root / "collection-summary.md"),
+                    "--real-trial-manifest-output",
+                    str(root / "real-manifest.json"),
+                    "--trial-metrics-report-output",
+                    str(root / "trial-metrics-report.json"),
+                    "--trial-metrics-summary-output",
+                    str(root / "trial-metrics-summary.md"),
+                    "--launch-readiness-output",
+                    str(root / "launch-readiness-report.json"),
+                    "--launch-readiness-summary-output",
+                    str(root / "launch-readiness-summary.md"),
+                    "--evidence-pack-output",
+                    str(evidence_pack),
+                    "--max-evidence-age-hours",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            self.assertIn("real-trial-loop-manifest-preflight stdout", completed.stdout)
+            self.assertIn("REAL_LOOP_MANIFEST_PREFLIGHT_PENDING", completed.stdout)
+            payload = json.loads(manifest_preflight.read_text(encoding="utf-8"))
+            self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING")
+            self.assertFalse(evidence_pack.exists())
 
     def test_pipeline_accepts_loop_manifest_dir_input(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

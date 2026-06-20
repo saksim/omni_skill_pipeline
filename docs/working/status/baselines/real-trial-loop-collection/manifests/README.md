@@ -10,6 +10,6 @@ Before running GL-13, run:
 python -B scripts\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
 ```
 
-Only `REAL_LOOP_MANIFEST_PREFLIGHT_READY` means every GL-63 expected manifest file is present and structurally acceptable for the next ingestion step.
+Only `REAL_LOOP_MANIFEST_PREFLIGHT_READY` means every GL-63 expected manifest file is present and structurally acceptable for the next ingestion step. When running GL-13 from this slot directory, pass `--require-manifest-preflight-ready` so ingestion stops automatically if GL-64 reports pending or invalid slots.
 
 Use `real-trial-loop-metrics-manifest.template.json` in the parent directory as the contract reference.

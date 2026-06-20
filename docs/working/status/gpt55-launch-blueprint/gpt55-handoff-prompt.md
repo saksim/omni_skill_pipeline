@@ -11,7 +11,7 @@
 
 关键验收命令包括：
 python -B scripts\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
-python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs\working\status\baselines\real-trial-loop-collection\manifests --strict-loop-manifest-contract --max-evidence-age-hours 0
+python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs\working\status\baselines\real-trial-loop-collection\manifests --strict-loop-manifest-contract --require-manifest-preflight-ready --max-evidence-age-hours 0
 python scripts\trial_metrics.py --manifest docs\working\status\baselines\real-trial-loop-collection\real-trial-loop-metrics-manifest.json --print-summary --fail-on-ga-blocker
 python scripts\launch_gate.py --output - --summary-output - --max-evidence-age-hours 0 --print-json
 python scripts\doc_sync.py --output -

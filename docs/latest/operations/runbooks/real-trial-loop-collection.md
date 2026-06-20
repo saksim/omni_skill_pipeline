@@ -186,6 +186,8 @@ Before GL-13 ingestion, run GL-64 to verify every GL-63 intake slot. This step d
 python -B scripts/gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
 ```
 
+When GL-64 reports `REAL_LOOP_MANIFEST_PREFLIGHT_READY`, run GL-13 with `--require-manifest-preflight-ready` so GL-13 re-checks GL-64 and stops automatically if a slot regresses to missing or invalid before ingestion.
+
 The report exposes three operator-facing diagnostics:
 
 - `slot_readiness`: counts ready, missing, invalid, and blocked slots, plus missing or invalid manifest paths.
@@ -1061,6 +1063,8 @@ python scripts/gl13_launch_evidence.py \
 
   --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests \
 
+  --require-manifest-preflight-ready \
+
   --loop-manifest-pattern "*.json" \
 
   --collection-report-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json \
@@ -1260,5 +1264,3 @@ python scripts/gl33_submission_consumption.py \
   --consumed-manifest-output docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json \
   --owner controlled-beta-ops
 ```
-
-

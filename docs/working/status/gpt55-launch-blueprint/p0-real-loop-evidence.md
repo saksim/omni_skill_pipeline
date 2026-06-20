@@ -155,10 +155,12 @@ GL-64 报告中需要重点阅读以下区块：
 ### 4. 执行 GL-13 evidence ingestion
 
 ```powershell
-python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs\working\status\baselines\real-trial-loop-collection\manifests --strict-loop-manifest-contract --max-evidence-age-hours 0
+python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs\working\status\baselines\real-trial-loop-collection\manifests --strict-loop-manifest-contract --require-manifest-preflight-ready --max-evidence-age-hours 0
 ```
 
 若环境临时目录不可写，先修复本地运行环境。不得将运行环境失败解释为项目已经通过。
+
+`--require-manifest-preflight-ready` 会在 GL-13 摄入前自动运行 GL-64，并在任一槽位仍为 `missing` 或 `invalid` 时停止摄入。该开关不创建真实证据，只把“GL-64 READY 后才能进入 GL-13”的人工步骤固化为机器门禁。
 
 GL-13 生成的 `real-trial-launch-evidence-pack.json` 会携带 GL-64 预检摘要字段：
 

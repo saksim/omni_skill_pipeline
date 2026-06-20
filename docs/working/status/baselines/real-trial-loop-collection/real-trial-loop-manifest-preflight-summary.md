@@ -56,5 +56,5 @@
 ## Next Command
 
 ```powershell
-python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0
+python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --require-manifest-preflight-ready --no-run-doc-sync --max-evidence-age-hours 0
 ```

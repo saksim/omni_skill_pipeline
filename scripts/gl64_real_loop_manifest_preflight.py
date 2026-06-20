@@ -574,7 +574,8 @@ def _build_operator_action_plan(items: list[dict[str, Any]], *, manifest_dir: Pa
             "gl13_ingestion": (
                 "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir "
                 + _display_path(manifest_dir)
-                + " --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0"
+                + " --strict-loop-manifest-contract --require-manifest-preflight-ready "
+                + "--no-run-doc-sync --max-evidence-age-hours 0"
             ),
         },
         "policy_reminder": (
@@ -658,7 +659,8 @@ def build_preflight_report(
             "post_preflight_command": (
                 "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir "
                 + _display_path(manifest_dir)
-                + " --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0"
+                + " --strict-loop-manifest-contract --require-manifest-preflight-ready "
+                + "--no-run-doc-sync --max-evidence-age-hours 0"
             ),
         },
         "items": item_results,

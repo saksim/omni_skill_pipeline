@@ -13,6 +13,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REAL_LOOP_COLLECTION_SCRIPT = REPO_ROOT / "scripts" / "gl12_collect_loops.py"
+REAL_LOOP_MANIFEST_PREFLIGHT_SCRIPT = REPO_ROOT / "scripts" / "gl64_real_loop_manifest_preflight.py"
 REAL_LOOP_BACKFILL_EXECUTION_SCRIPT = REPO_ROOT / "scripts" / "gl22_backfill_exec.py"
 REAL_LOOP_BACKFILL_INTAKE_ACTIONS_SCRIPT = REPO_ROOT / "scripts" / "gl23_intake_actions.py"
 REAL_LOOP_BACKFILL_SUBMISSION_TEMPLATES_SCRIPT = (
@@ -891,6 +892,15 @@ DEFAULT_EVIDENCE_PACK = (
     / "real-trial-loop-collection"
     / "real-trial-launch-evidence-pack.json"
 )
+DEFAULT_MANIFEST_PREFLIGHT_WORKPACK = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-intake-workpack-report.json"
+)
 DEFAULT_MANIFEST_PREFLIGHT_REPORT = (
     REPO_ROOT
     / "docs"
@@ -1483,8 +1493,17 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
     parser.add_argument("--evidence-pack-output", default=str(DEFAULT_EVIDENCE_PACK))
+    parser.add_argument("--manifest-preflight-workpack", default=str(DEFAULT_MANIFEST_PREFLIGHT_WORKPACK))
     parser.add_argument("--manifest-preflight-report", default=str(DEFAULT_MANIFEST_PREFLIGHT_REPORT))
     parser.add_argument("--manifest-preflight-summary", default=str(DEFAULT_MANIFEST_PREFLIGHT_SUMMARY))
+    parser.add_argument(
+        "--require-manifest-preflight-ready",
+        action="store_true",
+        help=(
+            "Run GL-64 against the provided --loop-manifest-dir before GL-13 ingestion and stop unless "
+            "REAL_LOOP_MANIFEST_PREFLIGHT_READY is reached."
+        ),
+    )
     parser.add_argument("--run-doc-sync", dest="run_doc_sync", action="store_true", default=True)
     parser.add_argument("--no-run-doc-sync", dest="run_doc_sync", action="store_false")
     parser.add_argument("--minimum-complete-loops", type=int, default=10)
@@ -1668,6 +1687,40 @@ def _format_no_loop_manifest_matches_message(
         "Add at least one JSON manifest with top-level 'loops', or pass --run-report for run-report input."
         % (directory_text, normalized_pattern, str(bool(recursive)).lower())
     )
+
+
+def _build_manifest_preflight_command(args: argparse.Namespace, loop_manifest_dirs: list[Path]) -> list[str]:
+    if len(loop_manifest_dirs) != 1:
+        raise ValueError(
+            "--require-manifest-preflight-ready requires exactly one --loop-manifest-dir "
+            "matching the GL-63 operator manifest drop directory."
+        )
+    workpack_path = _resolve_required_output_path(
+        args.manifest_preflight_workpack,
+        name="manifest-preflight-workpack",
+    )
+    report_path = _resolve_required_output_path(
+        args.manifest_preflight_report,
+        name="manifest-preflight-report",
+    )
+    summary_path = _resolve_required_output_path(
+        args.manifest_preflight_summary,
+        name="manifest-preflight-summary",
+    )
+    return [
+        sys.executable,
+        str(REAL_LOOP_MANIFEST_PREFLIGHT_SCRIPT),
+        "--workpack",
+        str(workpack_path),
+        "--manifest-dir",
+        str(loop_manifest_dirs[0].resolve()),
+        "--output",
+        str(report_path),
+        "--summary-output",
+        str(summary_path),
+        "--fail-on-invalid",
+        "--fail-on-pending",
+    ]
 
 
 def _build_collection_command(
@@ -7402,6 +7455,16 @@ def main() -> int:
     except ValueError as exc:
         print("Real-trial launch evidence pipeline failed: %s" % exc, file=sys.stderr)
         return 2
+    if bool(args.require_manifest_preflight_ready):
+        try:
+            manifest_preflight_command = _build_manifest_preflight_command(args, loop_manifest_dirs)
+        except ValueError as exc:
+            print("Real-trial launch evidence pipeline failed: %s" % exc, file=sys.stderr)
+            return 2
+        manifest_preflight_result = _run_command(manifest_preflight_command)
+        _print_command_output("real-trial-loop-manifest-preflight", manifest_preflight_result)
+        if manifest_preflight_result.returncode != 0:
+            return manifest_preflight_result.returncode
     if (loop_manifest_values or loop_manifest_dir_values) and not loop_manifest_paths:
         print(
             "Real-trial launch evidence pipeline failed: %s"
@@ -8672,8 +8735,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
 
 
 

@@ -277,7 +277,7 @@
     "next_commands": {
       "placeholder_scan": "rg -n \"TEMPLATE_REQUIRED|placeholder|fixture|mock\" docs/working/status/baselines/real-trial-loop-collection/manifests",
       "gl64_preflight": "python -B scripts\\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending",
-      "gl13_ingestion": "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0"
+      "gl13_ingestion": "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --require-manifest-preflight-ready --no-run-doc-sync --max-evidence-age-hours 0"
     },
     "policy_reminder": "Do not convert fixture, mock, template, placeholder, or unreviewed loops into launch_gate_eligible=true evidence."
   },
@@ -298,7 +298,7 @@
       "critical_secret_or_pii_leak=false",
       "high_severity_incident=false"
     ],
-    "post_preflight_command": "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0"
+    "post_preflight_command": "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests --strict-loop-manifest-contract --require-manifest-preflight-ready --no-run-doc-sync --max-evidence-age-hours 0"
   },
   "items": [
     {
