@@ -178,6 +178,27 @@ python scripts/gl12_collect_loops.py \
 
 ```
 
+## GL-64 Manifest Preflight Diagnostics
+
+Before GL-13 ingestion, run GL-64 to verify every GL-63 intake slot. This step does not create real evidence and does not relax launch-gate policy.
+
+```bash
+python -B scripts/gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
+```
+
+The report exposes three operator-facing diagnostics:
+
+- `slot_readiness`: counts ready, missing, invalid, and blocked slots, plus missing or invalid manifest paths.
+- `modality_readiness`: shows target launch modalities, covered target modalities, missing target modalities, and slot counts by modality.
+- `operator_action_plan`: lists the next required action per blocked slot. `drop_real_manifest` means the operator must submit a real manifest file. `repair_real_manifest` means a submitted file exists but does not satisfy the real-loop contract.
+
+Execution order:
+
+1. Follow `operator_action_plan.next_actions` until every blocked slot is fixed.
+2. Prioritize `modality_readiness.missing_target_launch_modalities` before filling pure volume gaps.
+3. Require `slot_readiness.blocked_slot_count=0` before running GL-13.
+4. Run `operator_action_plan.next_commands.placeholder_scan` before ingestion; any hit for `TEMPLATE_REQUIRED`, `placeholder`, `fixture`, or `mock` must be resolved as real evidence intake work.
+
 
 
 The collection report now includes:
@@ -1212,7 +1233,6 @@ python scripts/gl33_submission_consumption.py \
   --consumed-manifest-output docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json \
   --owner controlled-beta-ops
 ```
-
 
 
 

@@ -134,6 +134,22 @@ python -B scripts\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-
 
 只接受 `REAL_LOOP_MANIFEST_PREFLIGHT_READY`。如果出现 missing 或 invalid，按报告逐项修正，不进入下一步。
 
+GL-64 报告中需要重点阅读以下区块：
+
+| 区块 | 用途 |
+| --- | --- |
+| `slot_readiness` | 汇总 10 个槽位的 ready、missing、invalid、blocked 数量，并列出缺失或非法 manifest 路径 |
+| `modality_readiness` | 汇总 text、audio、image、video 的目标覆盖、已覆盖模态、缺失模态和各模态槽位数 |
+| `operator_action_plan` | 输出下一步操作清单；`drop_real_manifest` 表示需要投递真实 manifest，`repair_real_manifest` 表示已有文件但字段或证据不合格 |
+
+执行顺序必须是：
+
+1. 先看 `operator_action_plan.next_actions`，按槽位逐个补充或修复真实 manifest。
+2. 再看 `modality_readiness.missing_target_launch_modalities`，优先补齐仍为 `missing` 的目标模态。
+3. 最后看 `slot_readiness.blocked_slot_count`，必须降为 `0` 才能进入 GL-13。
+
+`operator_action_plan.next_commands.placeholder_scan` 会给出模板污染扫描命令；只要真实 manifest 命中 `TEMPLATE_REQUIRED`、`placeholder`、`fixture` 或 `mock`，必须先回到证据采集，不得进入 GL-13。
+
 ### 4. 执行 GL-13 evidence ingestion
 
 ```powershell

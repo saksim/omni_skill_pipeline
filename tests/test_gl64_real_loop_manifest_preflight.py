@@ -140,7 +140,23 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             payload = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING")
             self.assertEqual(payload.get("counts", {}).get("missing_item_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("blocked_slot_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("missing_slot_count"), 1)
+            self.assertIn(
+                "real-loop-001-audio.json",
+                payload.get("slot_readiness", {}).get("missing_manifest_paths", [""])[0],
+            )
+            self.assertEqual(
+                payload.get("modality_readiness", {}).get("missing_slot_count_by_modality", {}).get("audio"),
+                1,
+            )
+            self.assertEqual(payload.get("operator_action_plan", {}).get("pending_action_count"), 1)
+            self.assertEqual(
+                payload.get("operator_action_plan", {}).get("next_actions", [{}])[0].get("action"),
+                "drop_real_manifest",
+            )
             self.assertIn("real_loop_manifests_missing", payload.get("warning_codes", []))
+            self.assertIn("real_loop_slot_gap_action_plan_required", payload.get("warning_codes", []))
 
     def test_valid_real_manifest_is_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -183,6 +199,14 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             payload = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_READY")
             self.assertEqual(payload.get("counts", {}).get("valid_item_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("ready_slot_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("blocked_slot_count"), 0)
+            self.assertEqual(
+                payload.get("modality_readiness", {}).get("covered_target_launch_modalities"),
+                ["text"],
+            )
+            self.assertEqual(payload.get("operator_action_plan", {}).get("status"), "ready_for_gl13")
+            self.assertEqual(payload.get("operator_action_plan", {}).get("next_actions"), [])
             self.assertEqual(payload.get("items", [])[0].get("accepted_loop_ids"), ["real-text-001"])
 
     def test_fixture_manifest_is_invalid_and_can_fail(self) -> None:
@@ -230,6 +254,11 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_INVALID")
             item = payload.get("items", [])[0]
             self.assertIn("fixture_or_simulated_loop_rejected", item.get("failure_codes", []))
+            self.assertEqual(payload.get("slot_readiness", {}).get("invalid_slot_count"), 1)
+            self.assertEqual(
+                payload.get("operator_action_plan", {}).get("next_actions", [{}])[0].get("action"),
+                "repair_real_manifest",
+            )
             self.assertIn("real_loop_manifests_invalid", payload.get("warning_codes", []))
 
     def test_manifest_missing_backfill_linkage_is_invalid(self) -> None:

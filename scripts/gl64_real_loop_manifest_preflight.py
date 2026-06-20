@@ -408,11 +408,166 @@ def _warning_codes(*, invalid: int, missing: int, accepted: int, total: int, ite
         warnings.append("real_loop_manifests_invalid")
     if total > 0 and accepted < total:
         warnings.append("real_loop_manifest_preflight_not_ready")
+    if missing > 0 or invalid > 0:
+        warnings.append("real_loop_slot_gap_action_plan_required")
     for item in items:
         for code in _as_list(item.get("failure_codes", [])):
             if str(code).startswith("fixture_or_simulated_loop_rejected"):
                 _add_unique(warnings, "fixture_or_simulated_loop_rejected")
     return warnings
+
+
+def _target_launch_modalities(workpack: dict[str, Any], items: list[dict[str, Any]]) -> list[str]:
+    current_launch_evidence = _as_dict(workpack.get("current_launch_evidence", {}))
+    raw_targets = _as_list(current_launch_evidence.get("target_launch_modalities", []))
+    targets: list[str] = []
+    for value in raw_targets:
+        modality = _normalize_modality(value)
+        if modality:
+            _add_unique(targets, modality)
+    if targets:
+        return targets
+
+    for item in items:
+        modality = _normalize_modality(item.get("required_modality"))
+        if modality:
+            _add_unique(targets, modality)
+    return targets
+
+
+def _count_by_modality(items: list[dict[str, Any]], *, status: str | None = None) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in items:
+        if status is not None and str(item.get("preflight_status", "")) != status:
+            continue
+        modality = _normalize_modality(item.get("required_modality"))
+        if not modality:
+            modality = "unknown"
+        counts[modality] = counts.get(modality, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _slot_action(item: dict[str, Any]) -> str:
+    status = str(item.get("preflight_status", ""))
+    if status == "missing":
+        return "drop_real_manifest"
+    if status == "invalid":
+        return "repair_real_manifest"
+    if status == "valid":
+        return "ready_for_gl13"
+    return "inspect_manifest"
+
+
+def _build_slot_readiness(items: list[dict[str, Any]]) -> dict[str, Any]:
+    valid_items = [item for item in items if item.get("preflight_status") == "valid"]
+    missing_items = [item for item in items if item.get("preflight_status") == "missing"]
+    invalid_items = [item for item in items if item.get("preflight_status") == "invalid"]
+    blocking_items = missing_items + invalid_items
+    first_blocking_slot = None
+    if blocking_items:
+        first = sorted(blocking_items, key=lambda item: _to_int(item.get("slot_index"), default=0))[0]
+        first_blocking_slot = {
+            "slot_index": _to_int(first.get("slot_index"), default=0),
+            "required_modality": _normalize_modality(first.get("required_modality")),
+            "preflight_status": str(first.get("preflight_status", "")),
+            "expected_manifest_path": str(first.get("expected_manifest_path", "")),
+            "failure_codes": _as_list(first.get("failure_codes", [])),
+        }
+
+    return {
+        "required_slot_count": len(items),
+        "ready_slot_count": len(valid_items),
+        "missing_slot_count": len(missing_items),
+        "invalid_slot_count": len(invalid_items),
+        "blocked_slot_count": len(blocking_items),
+        "ready_manifest_paths": [str(item.get("expected_manifest_path", "")) for item in valid_items],
+        "missing_manifest_paths": [str(item.get("expected_manifest_path", "")) for item in missing_items],
+        "invalid_manifest_paths": [str(item.get("expected_manifest_path", "")) for item in invalid_items],
+        "first_blocking_slot": first_blocking_slot,
+    }
+
+
+def _build_modality_readiness(workpack: dict[str, Any], items: list[dict[str, Any]]) -> dict[str, Any]:
+    target_modalities = _target_launch_modalities(workpack, items)
+    required_counts = _count_by_modality(items)
+    ready_counts = _count_by_modality(items, status="valid")
+    missing_counts = _count_by_modality(items, status="missing")
+    invalid_counts = _count_by_modality(items, status="invalid")
+
+    for modality in target_modalities:
+        required_counts.setdefault(modality, 0)
+        ready_counts.setdefault(modality, 0)
+        missing_counts.setdefault(modality, 0)
+        invalid_counts.setdefault(modality, 0)
+
+    modality_rows: list[dict[str, Any]] = []
+    covered_targets = [modality for modality in target_modalities if int(ready_counts.get(modality, 0)) > 0]
+    missing_targets = [modality for modality in target_modalities if int(ready_counts.get(modality, 0)) <= 0]
+    all_modalities = sorted(set(required_counts) | set(target_modalities))
+    for modality in all_modalities:
+        ready_count = int(ready_counts.get(modality, 0))
+        is_target = modality in target_modalities
+        modality_rows.append(
+            {
+                "modality": modality,
+                "is_target_launch_modality": is_target,
+                "required_slot_count": int(required_counts.get(modality, 0)),
+                "ready_slot_count": ready_count,
+                "missing_slot_count": int(missing_counts.get(modality, 0)),
+                "invalid_slot_count": int(invalid_counts.get(modality, 0)),
+                "readiness_status": "covered" if ready_count > 0 else "missing",
+            }
+        )
+
+    return {
+        "target_launch_modalities": target_modalities,
+        "covered_target_launch_modalities": covered_targets,
+        "missing_target_launch_modalities": missing_targets,
+        "required_slot_count_by_modality": dict(sorted(required_counts.items())),
+        "ready_slot_count_by_modality": dict(sorted(ready_counts.items())),
+        "missing_slot_count_by_modality": dict(sorted(missing_counts.items())),
+        "invalid_slot_count_by_modality": dict(sorted(invalid_counts.items())),
+        "modalities": modality_rows,
+    }
+
+
+def _build_operator_action_plan(items: list[dict[str, Any]], *, manifest_dir: Path) -> dict[str, Any]:
+    pending_items = [item for item in items if item.get("preflight_status") != "valid"]
+    next_actions = []
+    for item in sorted(pending_items, key=lambda value: _to_int(value.get("slot_index"), default=0)):
+        next_actions.append(
+            {
+                "action": _slot_action(item),
+                "slot_index": _to_int(item.get("slot_index"), default=0),
+                "required_modality": _normalize_modality(item.get("required_modality")),
+                "intake_item_id": str(item.get("intake_item_id", "")),
+                "expected_manifest_path": str(item.get("expected_manifest_path", "")),
+                "accepted_backfill_action_ids": _as_list(item.get("accepted_backfill_action_ids", [])),
+                "failure_codes": _as_list(item.get("failure_codes", [])),
+            }
+        )
+
+    return {
+        "status": "action_required" if next_actions else "ready_for_gl13",
+        "pending_action_count": len(next_actions),
+        "next_actions": next_actions,
+        "next_commands": {
+            "placeholder_scan": (
+                "rg -n \"TEMPLATE_REQUIRED|placeholder|fixture|mock\" "
+                + _display_path(manifest_dir)
+            ),
+            "gl64_preflight": "python -B scripts\\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending",
+            "gl13_ingestion": (
+                "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir "
+                + _display_path(manifest_dir)
+                + " --strict-loop-manifest-contract --no-run-doc-sync --max-evidence-age-hours 0"
+            ),
+        },
+        "policy_reminder": (
+            "Do not convert fixture, mock, template, placeholder, or unreviewed loops into "
+            "launch_gate_eligible=true evidence."
+        ),
+    }
 
 
 def build_preflight_report(
@@ -434,6 +589,9 @@ def build_preflight_report(
     missing = len([item for item in item_results if item.get("preflight_status") == "missing"])
     accepted_loops = sum(len(_as_list(item.get("accepted_loop_ids", []))) for item in item_results)
     status = _status_from_counts(total=total, invalid=invalid, missing=missing)
+    slot_readiness = _build_slot_readiness(item_results)
+    modality_readiness = _build_modality_readiness(workpack, item_results)
+    operator_action_plan = _build_operator_action_plan(item_results, manifest_dir=manifest_dir)
 
     return {
         "schema_version": "real_trial_loop_manifest_preflight.v1",
@@ -461,6 +619,9 @@ def build_preflight_report(
             total=total,
             items=item_results,
         ),
+        "slot_readiness": slot_readiness,
+        "modality_readiness": modality_readiness,
+        "operator_action_plan": operator_action_plan,
         "manifest_acceptance_contract": {
             "source": "GL-63 operator manifest contract",
             "accepted_status": "valid",
@@ -494,6 +655,10 @@ def render_summary(report: dict[str, Any]) -> str:
     warnings = _as_list(report.get("warning_codes", []))
     items = _as_list(report.get("items", []))
     contract = _as_dict(report.get("manifest_acceptance_contract", {}))
+    slot_readiness = _as_dict(report.get("slot_readiness", {}))
+    modality_readiness = _as_dict(report.get("modality_readiness", {}))
+    operator_action_plan = _as_dict(report.get("operator_action_plan", {}))
+    first_blocking_slot = _as_dict(slot_readiness.get("first_blocking_slot", {}))
 
     lines = [
         "# Real Trial Loop Manifest Preflight Summary",
@@ -511,8 +676,71 @@ def render_summary(report: dict[str, Any]) -> str:
         "- Invalid items: `%s`" % str(_to_int(counts.get("invalid_item_count"), default=0)),
         "- Accepted loop rows: `%s`" % str(_to_int(counts.get("accepted_loop_count"), default=0)),
         "",
-        "## Warning Codes",
+        "## Slot Readiness",
+        "- Required slots: `%s`" % str(_to_int(slot_readiness.get("required_slot_count"), default=0)),
+        "- Ready slots: `%s`" % str(_to_int(slot_readiness.get("ready_slot_count"), default=0)),
+        "- Blocked slots: `%s`" % str(_to_int(slot_readiness.get("blocked_slot_count"), default=0)),
+        "- Missing slot files: `%s`" % str(_to_int(slot_readiness.get("missing_slot_count"), default=0)),
+        "- Invalid slot files: `%s`" % str(_to_int(slot_readiness.get("invalid_slot_count"), default=0)),
     ]
+    if first_blocking_slot:
+        lines.extend(
+            [
+                "- First blocking slot: `%s` `%s` `%s`"
+                % (
+                    str(first_blocking_slot.get("slot_index", "")),
+                    str(first_blocking_slot.get("required_modality", "")),
+                    str(first_blocking_slot.get("expected_manifest_path", "")),
+                ),
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Modality Readiness",
+            "- Target launch modalities: `%s`"
+            % ", ".join(str(item) for item in _as_list(modality_readiness.get("target_launch_modalities", []))),
+            "- Covered target modalities: `%s`"
+            % (
+                ", ".join(str(item) for item in _as_list(modality_readiness.get("covered_target_launch_modalities", [])))
+                or "none"
+            ),
+            "- Missing target modalities: `%s`"
+            % (
+                ", ".join(str(item) for item in _as_list(modality_readiness.get("missing_target_launch_modalities", [])))
+                or "none"
+            ),
+            "",
+            "## Operator Action Plan",
+            "- Status: `%s`" % str(operator_action_plan.get("status", "unknown")),
+            "- Pending actions: `%s`" % str(_to_int(operator_action_plan.get("pending_action_count"), default=0)),
+        ]
+    )
+    next_actions = _as_list(operator_action_plan.get("next_actions", []))
+    if next_actions:
+        for action in next_actions:
+            if not isinstance(action, dict):
+                continue
+            lines.append(
+                "- `%s` slot=%s modality=%s manifest=%s failures=%s"
+                % (
+                    str(action.get("action", "")),
+                    str(action.get("slot_index", "")),
+                    str(action.get("required_modality", "")),
+                    str(action.get("expected_manifest_path", "")),
+                    ", ".join(str(code) for code in _as_list(action.get("failure_codes", []))) or "none",
+                )
+            )
+    else:
+        lines.append("- none")
+
+    lines.extend(
+        [
+            "",
+            "## Warning Codes",
+        ]
+    )
     if warnings:
         lines.extend("- `%s`" % str(item) for item in warnings)
     else:
