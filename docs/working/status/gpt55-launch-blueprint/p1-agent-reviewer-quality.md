@@ -89,6 +89,8 @@ python scripts\agent_smoke.py `
 
 `launch_gate.py` 会复用同一套矩阵规则生成阻塞检查 `agent_smoke_matrix_coverage`。如果某个 skill 只记录了 Codex，但缺 Claude Code 或 OpenCode，launch gate 不能因为单格成功率为 100% 就放行。
 
+从 2026-06-20 起，`launch_gate.py` 不再只使用 agent smoke 报告里已经出现的 `skill_id` 作为 required skill 集合。门禁会同时读取 `controlled-trial-run-report.json` 中 `evidence_origin=real` 且 `launch_gate_eligible=true` 的样本，并从 `export_results[].package_path` / `skill_path` 推导真实导出的 skill 包目录名；只要真实 eligible 导出包没有 Codex、Claude Code、OpenCode 三端记录，`agent_smoke_matrix_coverage` 就必须保持 `fail`。
+
 `not_run` 的语义是“已明确记录不可运行原因”，不是成功。它可以补齐三端矩阵覆盖，但不会进入 `agent_smoke_success_rate` 的已执行记录分母；如果全部记录都是 `not_run`，上线门禁仍会失败。
 
 ### 质量门槛

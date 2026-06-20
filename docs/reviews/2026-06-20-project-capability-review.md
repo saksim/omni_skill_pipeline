@@ -12,7 +12,7 @@
 
 | 验证项 | 结果 | 评审解读 |
 | --- | --- | --- |
-| `python scripts\launch_gate.py --output - --summary-output - --max-evidence-age-hours 0 --print-json` | `HOLD`，15 项检查 14 过 1 失败 | 产品上线 readiness 未达标，唯一阻断项是 `trial_loop_volume_and_modality_coverage` |
+| `python scripts\launch_gate.py --output - --summary-output - --max-evidence-age-hours 0 --print-json` | `HOLD`，16 项检查 15 过 1 失败 | 产品上线 readiness 未达标，唯一阻断项是 `trial_loop_volume_and_modality_coverage` |
 | launch-gate-eligible real complete loops | `0/10` | 没有达到受控外部 Beta 所需真实闭环数量 |
 | launch-gate-eligible real modalities | `0/4` | 没有达到受控外部 Beta 所需真实模态覆盖 |
 | 完整 pytest | `816 passed, 3 skipped, 1 warning, 2 subtests passed` | 工程回归状态强 |

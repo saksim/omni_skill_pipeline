@@ -162,6 +162,31 @@ def _agent_smoke_report(*, complete_matrix: bool = True, unavailable_agents: boo
     }
 
 
+def _trial_run_report_with_real_export(skill_id: str) -> dict[str, object]:
+    skill_dir = Path("exports") / "real-text-001" / "skills" / "portable" / skill_id
+    return {
+        "samples": [
+            {
+                "sample_id": "real-text-001",
+                "loop_metrics": {
+                    "loop_id": "real-text-001",
+                    "status": "complete",
+                    "modality": "text",
+                    "evidence_origin": "real",
+                    "launch_gate_eligible": True,
+                },
+                "export_results": [
+                    {
+                        "target": "portable",
+                        "skill_path": str(skill_dir / "SKILL.md"),
+                        "package_path": str(skill_dir / "agent_skill_package.json"),
+                    }
+                ],
+            }
+        ]
+    }
+
+
 def _security_report() -> dict[str, object]:
     return {
         "schema_version": "test.security_gate.v1",
@@ -291,6 +316,33 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
             )
             self.assertEqual(matrix_check.get("status"), "fail")
             self.assertEqual(matrix_check.get("actual", {}).get("missing_cell_count"), 2)
+
+    def test_real_export_without_agent_smoke_records_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", _trial_run_report_with_real_export("real-text-skill"))
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root)
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("agent_smoke_matrix_coverage", report.get("failed_checks", []))
+            matrix_check = next(
+                check for check in report.get("checks", []) if check.get("id") == "agent_smoke_matrix_coverage"
+            )
+            self.assertEqual(matrix_check.get("status"), "fail")
+            self.assertIn("real-text-skill", matrix_check.get("actual", {}).get("required_skill_ids", []))
+            self.assertEqual(matrix_check.get("actual", {}).get("missing_cell_count"), 3)
+            self.assertEqual(
+                {cell.get("agent") for cell in matrix_check.get("actual", {}).get("missing_cells", [])},
+                {"codex", "claude-code", "opencode"},
+            )
 
     def test_not_run_agent_cells_complete_matrix_without_lowering_executed_success_rate(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

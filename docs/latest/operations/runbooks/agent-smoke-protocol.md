@@ -178,6 +178,8 @@ python scripts\agent_smoke.py `
 
 注意：矩阵校验只检查记录完整性，不会证明 smoke 真实发生。真实运行证据仍必须来自人工执行记录。
 
+上线门禁额外有一层交叉校验：`scripts/launch_gate.py` 会读取 `controlled-trial-run-report.json` 中 `evidence_origin=real` 且 `launch_gate_eligible=true` 的样本，并从真实导出的 `package_path` / `skill_path` 推导 required skill 集合。即使 `agent-smoke-report.json` 自身矩阵完整，只要真实 eligible 导出包缺少 Codex、Claude Code 或 OpenCode 任一记录，`agent_smoke_matrix_coverage` 仍会阻塞上线。
+
 ## 隔离规则
 
 - 受控试运行阶段保持人工 agent smoke。
