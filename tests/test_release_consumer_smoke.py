@@ -21,7 +21,7 @@ def _sha256(path: Path) -> str:
 class ReleaseConsumerSmokeTests(unittest.TestCase):
     def _write_pack(self, root: Path) -> None:
         source = root / "omni-skill-pipeline-source-test-release.tar.gz"
-        wheel = root / "omni_skill_pipeline-0.2.3-py3-none-any.whl"
+        wheel = root / "omni_skill_pipeline-0.2.4-py3-none-any.whl"
         coverage = root / "coverage.xml"
         summary = root / "release-summary.md"
         source.write_bytes(b"source")
@@ -33,7 +33,7 @@ class ReleaseConsumerSmokeTests(unittest.TestCase):
             "release_id": "test-release",
             "project": {
                 "name": "omni-skill-pipeline",
-                "version": "0.2.3",
+                "version": "0.2.4",
             },
             "artifacts": [
                 {
@@ -92,7 +92,7 @@ class ReleaseConsumerSmokeTests(unittest.TestCase):
             report = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(report["schema_version"], "release_consumer_smoke.v1")
             self.assertEqual(report["decision"], "PASS")
-            self.assertEqual(report["release"]["project_version"], "0.2.3")
+            self.assertEqual(report["release"]["project_version"], "0.2.4")
             self.assertIn("Decision: `PASS`", summary_path.read_text(encoding="utf-8"))
 
     def test_checksum_mismatch_fails(self) -> None:

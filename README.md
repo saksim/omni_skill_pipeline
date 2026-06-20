@@ -1,25 +1,22 @@
 # Omni Skill Pipeline
 
-将多模态输入蒸馏为可复用、可追溯、可演化的 `SKILL.md` / `skill.json` / publication artifacts。
+Omni Skill Pipeline 用于把文本、音频、图像、视频、表格和混合语料证据，蒸馏成可复用、可追溯、可审核的技能工件：`SKILL.md`、`skill.json`、`SkillGraph`、publication manifest，以及可移植的 agent skill package。
 
-## 判词
-
-这不是“文件转 Markdown 工具”，而是一条 `Evidence -> SkillDocument / SkillGraph -> Publication` 的知识蒸馏主链。
+当前发版候选版本是 `v0.2.4-internal.1`。这是内部 dogfood 文档与发布记录整理版本，不是外部 Beta、GA、SaaS 或生产部署承诺。
 
 ## 当前能力
 
-- 文本：支持 `txt / md / markdown / rst / log / json / html / doc / docx / pdf`
-- 音频：支持 `audio -> transcript -> skill`，可接 OpenAI ASR
-- 图像：支持 `image -> OCR + scene summary -> skill`
-- 视频：支持 `video -> audio + keyframe + OCR + scene summary -> skill`
-- 表格与时序：支持 `tabular/time-series -> TABLE / METRIC / EVENT -> skill`
-- V2 语义层：已落地 `Corpus`、`EvidenceNode`、`SemanticAtom`、`SkillGraph`、`Publication`
-- 质量门禁：已落地 quality scoring、review policy、review task、review feedback 持久化
-- 输出工件：默认写入 `skills/drafts/`，包含 `SKILL.md`、`skill.json`、`bundle.json`、publication manifest 与 review artifacts
+- 文本：支持 `txt`、`md`、`markdown`、`rst`、`log`、`json`、`html`、`doc`、`docx`、`pdf`。
+- 音频：支持 transcript-first 流程，可选接入 OpenAI ASR。
+- 图像：支持 OCR 与场景摘要证据抽取；视觉/OCR 不确定内容仍需人工审核。
+- 视频：支持 transcript、keyframe、OCR、场景摘要和时间线证据。
+- 表格/时序：支持生成 `TABLE`、`METRIC`、`EVENT` 证据。
+- V2 语义层：已包含 `Corpus`、`EvidenceNode`、`SemanticAtom`、`SkillGraph`、`Publication`。
+- 审核控制：已包含质量评分、review policy、review task、review feedback、reviewer packet 和 review queue 操作。
+- 发布交付：已包含 GitHub Release 工件包、校验和、可安装 wheel、发布说明和 release consumer smoke（发布消费者冒烟验证）。
+- 内部 dogfood 加固：已包含 live API smoke 证据，以及本地 file-backed artifact 的可选 Fernet 加密。
 
 ## 快速开始
-
-### 1. 准备 Python 3.11 环境
 
 PowerShell:
 
@@ -28,6 +25,7 @@ py -3.11 -m venv .venv
 . .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
+python -m omni_skill_pipeline.cli show-template
 ```
 
 POSIX:
@@ -37,92 +35,46 @@ python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
-```
-
-### 2. 验证 CLI 可用
-
-```bash
 python -m omni_skill_pipeline.cli show-template
 ```
 
-### 3. 跑一次本地回归
+执行本地回归门禁：
 
 ```bash
-python scripts/ci.py
+python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
 ```
 
-## 入口
+## 主要入口
 
-- Package root: `src/omni_skill_pipeline/`
-- CLI entry: `src/omni_skill_pipeline/cli.py`
-- API app: `apps/api/main.py`
-- Worker app: `apps/worker/main.py`
-- Template contract: `docs/latest/contracts/SKILL.template.md`
-- Skill schema: `docs/latest/contracts/skill.schema.json`
+- 包根目录：`src/omni_skill_pipeline/`
+- CLI 入口：`src/omni_skill_pipeline/cli.py`
+- API 应用：`apps/api/main.py`
+- Worker 应用：`apps/worker/main.py`
+- 模板契约：`docs/latest/contracts/SKILL.template.md`
+- Skill schema：`docs/latest/contracts/skill.schema.json`
+- 操作手册入口：`docs/latest/operations/OPERATIONS.md`
 
-## Release
+## 发布
 
-- CI gate: `.github/workflows/ci.yml`
-- Release workflow: `.github/workflows/release.yml`
-- Main push: upload a release candidate pack with source archive, wheel, coverage XML, manifest, summary, and checksums.
-- Formal GitHub Release: push a `v*` tag, or run the `Release` workflow manually with `publish_github_release=true` and `release_tag`.
-- Runtime/container validation: `bash scripts/linux_release.sh`
-- Runbook: [docs/latest/operations/runbooks/github-release-workflow.md](docs/latest/operations/runbooks/github-release-workflow.md)
+- 当前内部发版候选：`v0.2.4-internal.1`
+- 上一已发布内部 tag：`v0.2.3-internal.1`
+- CI 门禁：`.github/workflows/ci.yml`
+- Release 工作流：`.github/workflows/release.yml`
+- 发布说明：`docs/releases/notes/v0.2.4-internal.1.md`
+- GitHub Release 手册：`docs/latest/operations/runbooks/github-release-workflow.md`
+- 本地 artifact 加密手册：`docs/latest/operations/runbooks/artifact-encryption.md`
 
-## 文档导航
+正式 GitHub Release 通过推送 `v*` tag 创建，也可以手动触发 `Release` workflow，并设置 `publish_github_release=true` 与 `release_tag`。Release workflow 会生成源码包、wheel、`coverage.xml`、`release-manifest.json`、`release-summary.md`、`SHA256SUMS`，并在上传/发布前执行 release consumer smoke（发布消费者冒烟验证）。
 
-### Layers
+## 文档分层
 
-- 总索引: [docs/INDEX.md](docs/INDEX.md)
-- 最新已发布手册: [docs/latest/README.md](docs/latest/README.md)
-- 当前迭代材料: [docs/working/README.md](docs/working/README.md)
-- 发布记录: [docs/releases/README.md](docs/releases/README.md)
-- 历史归档: [docs/archive/README.md](docs/archive/README.md)
+- `docs/latest/`：最新已发布手册和当前操作参考。
+- `docs/working/`：当前迭代计划、状态、baseline 和证据。
+- `docs/releases/`：changelog、发布说明和发布决策标准。
+- `docs/archive/`：历史评估、已替代状态快照和已完成能力归档。
 
-### Latest
-
-- 架构入口: [docs/latest/architecture/ARCHITECTURE.md](docs/latest/architecture/ARCHITECTURE.md)
-- V2 设计: [docs/latest/architecture/skill-distillation-v2.md](docs/latest/architecture/skill-distillation-v2.md)
-- 运行文档入口: [docs/latest/operations/OPERATIONS.md](docs/latest/operations/OPERATIONS.md)
-- API: [docs/latest/operations/api.md](docs/latest/operations/api.md)
-- CLI: [docs/latest/operations/cli.md](docs/latest/operations/cli.md)
-- Environment: [docs/latest/operations/env.md](docs/latest/operations/env.md)
-- Testing: [docs/latest/operations/testing.md](docs/latest/operations/testing.md)
-
-### Working
-
-- 当前状态: [docs/working/status/CURRENT_STATUS.md](docs/working/status/CURRENT_STATUS.md)
-- V2 路线图: [docs/working/architecture/skill-distillation-v2-roadmap.md](docs/working/architecture/skill-distillation-v2-roadmap.md)
-- V2 开发拆解: [docs/working/architecture/skill-distillation-v2-implementation-backlog.md](docs/working/architecture/skill-distillation-v2-implementation-backlog.md)
-- V2 施工任务单: [docs/working/architecture/skill-distillation-v2-work-orders.md](docs/working/architecture/skill-distillation-v2-work-orders.md)
-- 试运行与发布基线: [docs/working/status/baselines/README.md](docs/working/status/baselines/README.md)
-
-### Releases And Archive
-
-- Changelog: [docs/releases/CHANGELOG.md](docs/releases/CHANGELOG.md)
-- V2 release switch standard: [docs/releases/standards/v2-release-switch-standard.md](docs/releases/standards/v2-release-switch-standard.md)
-- 评估归档入口: [docs/archive/assessments/glm-5.1-project-assessment.md](docs/archive/assessments/glm-5.1-project-assessment.md)
+选择文档时先从 `docs/INDEX.md` 开始。
 
 ## 当前工程判断
 
-- 多模态主链已经可跑通，并有 `unittest` 回归覆盖。
-- 最新 Linux release run 已达到 `GO`，当前目标从补 Beta 阻断项调整为受控业务试运行。
-- `test_mvp.py` 已覆盖 text / audio / image / video / tabular 主路径。
-- `test_v2_schema_and_corpus.py` 已覆盖 corpus、publication、quality、review artifacts 落盘。
-- API schema validation、auth、rate limiting、error contract、trace context、review queue、worker retry/idempotency、Postgres repository 与 release gate 已逐步落地。
-- 受控业务试运行阶段要求限制客户/团队、限制多模态场景、限制数据范围，所有产物默认人工 REVIEW。
-- 短期最弱环节不是主链能力，而是最后一公里：需要把内部 `SkillDocument / SkillGraph` 稳定编译成 Codex / Claude Code / OpenCode 可发现、可触发、可执行的 agent skill package，并用真实业务闭环证明质量。
-- 广义产品上线不再沿用旧 L1/L2 缺口清单直接开工；后续以 `GL-*` 任务组推进受控外部 Beta、单团队 GA review 和平台化能力建设。
-- 广义产品上线 readiness gate 已落地：`python scripts/launch_gate.py --output - --summary-output -` 会输出 `HOLD` / `READY_FOR_CONTROLLED_BETA` 等机器可读判定；当前仓库仍因 trial 覆盖不足保持 `HOLD`。
-
-## 目录骨架
-
-```text
-./README.md
-./docs/
-./src/
-./apps/
-./examples/
-./skills/
-./tests/
-```
+内部 dogfood 路径已经可供内部使用。广义外部上线 gate 仍保持 `HOLD`，原因是 launch-gate-eligible 的真实业务闭环证据仍不足。Docker、Postgres、K8s、Vault/KMS、生产 key rotation、OCR hardening 和外部真实闭环采集，仍不属于当前内部版本已完成边界，除非后续 release 明确关闭这些能力。
