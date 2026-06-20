@@ -29,18 +29,68 @@
 ### 执行命令模板
 
 ```powershell
-python scripts\agent_smoke.py --skill-id real-text-slot-001 --agent codex --status passed --reason "真实文本闭环可触发目标 skill" --trigger-prompt "根据真实工单生成可执行 runbook" --expected-skill-selection "database-slow-query-notes-to-review-skill" --expected-task-output "生成审核后的 runbook" --observed-skill-selection "database-slow-query-notes-to-review-skill" --observed-task-output "已生成并通过 reviewer 审核" --print-json
+python scripts\agent_smoke.py `
+  --skill-id real-text-slot-001 `
+  --agent codex `
+  --status agent_smoke_passed `
+  --reason "真实文本闭环可触发目标 skill" `
+  --trigger-prompt "根据真实工单生成可执行 runbook" `
+  --expected-skill-selection "database-slow-query-notes-to-review-skill" `
+  --expected-task-output "生成审核后的 runbook" `
+  --selected-skill "database-slow-query-notes-to-review-skill" `
+  --observed-task-output "已生成并通过 reviewer 审核" `
+  --print-json
 ```
 
 失败样例也必须保留：
 
 ```powershell
-python scripts\agent_smoke.py --skill-id real-audio-slot-002 --agent opencode --status failed --reason "音频转写输入缺少时间戳，agent 未能稳定选择目标 skill" --failure-code missing_audio_transcript_timestamp --trigger-prompt "根据真实音频跟进记录生成复盘流程" --expected-skill-selection "audio-follow-up-call-to-runbook-revision-skill" --expected-task-output "生成可审核 runbook" --print-json
+python scripts\agent_smoke.py `
+  --skill-id real-audio-slot-002 `
+  --agent opencode `
+  --status agent_smoke_failed `
+  --reason "音频转写输入缺少时间戳，agent 未能稳定选择目标 skill" `
+  --failure-code missing_audio_transcript_timestamp `
+  --trigger-prompt "根据真实音频跟进记录生成复盘流程" `
+  --expected-skill-selection "audio-follow-up-call-to-runbook-revision-skill" `
+  --expected-task-output "生成可审核 runbook" `
+  --selected-skill "audio-follow-up-call-to-runbook-revision-skill" `
+  --observed-task-output "输出缺少可审核 runbook 的关键时间戳证据" `
+  --print-json
 ```
+
+若某个 agent 暂时不可用，不允许留空，应记录 `not_run`：
+
+```powershell
+python scripts\agent_smoke.py `
+  --skill-id real-audio-slot-002 `
+  --agent claude-code `
+  --status not_run `
+  --reason "Claude Code 环境本轮不可用，等待下一轮人工 smoke" `
+  --trigger-prompt "根据真实音频跟进记录生成复盘流程" `
+  --expected-skill-selection "audio-follow-up-call-to-runbook-revision-skill" `
+  --expected-task-output "生成可审核 runbook" `
+  --print-json
+```
+
+### 三端矩阵校验
+
+记录完成后必须执行只读矩阵校验，确保每个真实 skill 包都有 Codex、Claude Code、OpenCode 三个格子的记录：
+
+```powershell
+python scripts\agent_smoke.py `
+  --validate-matrix `
+  --required-skill-id real-text-slot-001,real-audio-slot-002 `
+  --fail-on-incomplete `
+  --print-json
+```
+
+校验返回 `AGENT_SMOKE_MATRIX_READY` 才表示记录矩阵完整；如果返回 `AGENT_SMOKE_MATRIX_INCOMPLETE`，应先补缺失 agent 记录或补齐记录字段，再进入 launch gate 复核。
 
 ### 质量门槛
 
 - agent smoke success rate 不低于当前 launch gate 阈值。
+- agent smoke matrix 必须覆盖所有真实 skill 包与 Codex、Claude Code、OpenCode 三端。
 - 所有 failure code 必须可复现、可归类、可修复或被产品边界解释。
 - 失败记录不得删除，只能补充修复后的新记录。
 
