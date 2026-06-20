@@ -1175,6 +1175,20 @@ GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable revie
   - `evidence_classification.real_loop_manifest_preflight_operator_pending_action_count`
   - `evidence_classification.real_loop_manifest_preflight_operator_next_actions`
 
+- P1 reviewer / agent quality diagnostics:
+  - `evidence_classification.trial_success_criteria_status`
+  - `evidence_classification.trial_success_criteria_failed_condition_ids`
+  - `evidence_classification.trial_quality_reviewer_approval_rate_status`
+  - `evidence_classification.trial_quality_reviewer_approval_rate`
+  - `evidence_classification.trial_quality_median_reviewer_edit_distance_status`
+  - `evidence_classification.trial_quality_median_reviewer_edit_distance_pct`
+  - `evidence_classification.trial_quality_agent_smoke_success_rate_status`
+  - `evidence_classification.trial_quality_agent_smoke_success_rate`
+  - `evidence_classification.trial_quality_provider_failure_rate_status`
+  - `evidence_classification.trial_quality_provider_failure_rate`
+  - `evidence_classification.trial_quality_cost_per_accepted_skill_status`
+  - `evidence_classification.trial_quality_cost_per_accepted_skill_usd`
+
 - GL-27 escalation exports:
   - `evidence_paths.real_trial_backfill_handoff_escalations_report`
   - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
@@ -1246,7 +1260,6 @@ python scripts/gl33_submission_consumption.py \
   --consumed-manifest-output docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json \
   --owner controlled-beta-ops
 ```
-
 
 
 

@@ -2375,6 +2375,30 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 classification.get("real_loop_manifest_preflight_operator_next_actions", [{}])[0].get("action"),
                 "drop_real_manifest",
             )
+            self.assertEqual(classification.get("trial_success_criteria_status"), "fail")
+            self.assertIn(
+                "launch_gate_eligible_loop_volume_and_modality_coverage",
+                classification.get("trial_success_criteria_failed_condition_ids", []),
+            )
+            self.assertEqual(classification.get("trial_quality_reviewer_approval_rate_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_reviewer_approval_rate"), 1.0)
+            self.assertEqual(classification.get("trial_quality_review_evaluable_count"), 1)
+            self.assertEqual(classification.get("trial_quality_approved_after_one_revision_count"), 1)
+            self.assertEqual(classification.get("trial_quality_median_reviewer_edit_distance_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_median_reviewer_edit_distance_pct"), 20.0)
+            self.assertEqual(classification.get("trial_quality_reviewer_edit_distance_sample_count"), 1)
+            self.assertEqual(classification.get("trial_quality_agent_smoke_success_rate_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_agent_smoke_success_rate"), 1.0)
+            self.assertEqual(classification.get("trial_quality_approved_with_not_run_smoke_count"), 0)
+            self.assertEqual(classification.get("trial_quality_provider_failure_rate_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_provider_failure_rate"), 0.0)
+            self.assertEqual(classification.get("trial_quality_provider_failure_count_total"), 0)
+            self.assertEqual(classification.get("trial_quality_provider_call_count_total"), 2)
+            self.assertEqual(classification.get("trial_quality_cost_per_accepted_skill_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_cost_per_accepted_skill_usd"), 0.3)
+            self.assertEqual(classification.get("trial_quality_cost_approved_skill_count"), 1)
+            self.assertEqual(classification.get("trial_quality_cost_missing_count"), 0)
+            self.assertTrue(classification.get("trial_quality_cost_accepted_by_operator"))
             self.assertEqual(classification.get("recommended_backfill_slot_count"), 10)
             slots = classification.get("recommended_backfill_slots", [])
             self.assertEqual(len(slots), 10)

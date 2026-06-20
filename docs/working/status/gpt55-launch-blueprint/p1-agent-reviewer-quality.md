@@ -132,6 +132,22 @@ python scripts\tune_review.py --manifest docs\working\status\baselines\real-tria
 
 若校准失败，不要先改阈值。先检查 reviewer 规则、样本分类、返修标准是否一致。
 
+### GL-13 质量证据包复核
+
+运行 GL-13 后，`real-trial-launch-evidence-pack.json` 会把 reviewer、agent、provider、cost 条件摘要同步写入 `evidence_classification`。复核时重点读取：
+
+| 字段 | 用途 |
+| --- | --- |
+| `trial_success_criteria_status` | 判断 trial metrics 总体是否仍失败 |
+| `trial_success_criteria_failed_condition_ids` | 快速定位失败条件 |
+| `trial_quality_reviewer_approval_rate_status` / `trial_quality_reviewer_approval_rate` | 判断一轮内通过率是否达标 |
+| `trial_quality_median_reviewer_edit_distance_status` / `trial_quality_median_reviewer_edit_distance_pct` | 判断 reviewer 改动距离是否过高 |
+| `trial_quality_agent_smoke_success_rate_status` / `trial_quality_agent_smoke_success_rate` | 判断 agent smoke 成功率是否达标 |
+| `trial_quality_provider_failure_rate_status` / `trial_quality_provider_failure_rate` | 判断外部 provider/runtime 失败率是否达标 |
+| `trial_quality_cost_per_accepted_skill_status` / `trial_quality_cost_per_accepted_skill_usd` | 判断成本记录是否完整并被 operator 接受 |
+
+这些字段只反映 `trial_metrics.py` 的质量条件，不会放宽 `launch_gate.py`。如果真实 loop 数量达标后仍为 `HOLD`，优先查看 `trial_success_criteria_failed_condition_ids` 和上述 `trial_quality_*_status`。
+
 ## Review queue 施工
 
 如果真实审核开始形成排队压力，再启用 review queue 验证：

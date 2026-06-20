@@ -1621,6 +1621,13 @@ def _to_int(value: Any, *, default: int = 0) -> int:
         return int(default)
 
 
+def _to_float(value: Any, *, default: float = 0.0) -> float:
+    try:
+        return float(value or 0.0)
+    except (TypeError, ValueError):
+        return float(default)
+
+
 def _resolve_loop_manifest_paths(
     *,
     explicit_paths: list[str],
@@ -4024,6 +4031,25 @@ def _build_path_hygiene(evidence_pack: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _success_condition_by_id(trial_metrics_report: dict[str, Any], condition_id: str) -> dict[str, Any]:
+    success_criteria = trial_metrics_report.get("success_criteria", {})
+    if not isinstance(success_criteria, dict):
+        return {}
+    conditions = success_criteria.get("conditions", [])
+    if not isinstance(conditions, list):
+        return {}
+    for condition in conditions:
+        if not isinstance(condition, dict):
+            continue
+        if str(condition.get("id", "")).strip() == condition_id:
+            return condition
+    return {}
+
+
+def _success_condition_status(condition: dict[str, Any]) -> str:
+    return str(condition.get("status", "unknown")).strip() or "unknown"
+
+
 def _build_evidence_pack(
     *,
     args: argparse.Namespace,
@@ -4073,6 +4099,29 @@ def _build_evidence_pack(
     launch_gate_evidence = trial_metrics.get("launch_gate_evidence", {})
     if not isinstance(launch_gate_evidence, dict):
         launch_gate_evidence = {}
+    review_quality = trial_metrics.get("review_quality", {})
+    if not isinstance(review_quality, dict):
+        review_quality = {}
+    reviewer_edit_distance = trial_metrics.get("reviewer_edit_distance_pct", {})
+    if not isinstance(reviewer_edit_distance, dict):
+        reviewer_edit_distance = {}
+    provider_runtime = trial_metrics.get("provider_runtime", {})
+    if not isinstance(provider_runtime, dict):
+        provider_runtime = {}
+    cost_placeholder = trial_metrics.get("cost_placeholder", {})
+    if not isinstance(cost_placeholder, dict):
+        cost_placeholder = {}
+    success_criteria = trial_metrics_report.get("success_criteria", {})
+    if not isinstance(success_criteria, dict):
+        success_criteria = {}
+    reviewer_approval_condition = _success_condition_by_id(trial_metrics_report, "reviewer_approval_rate")
+    median_reviewer_edit_distance_condition = _success_condition_by_id(
+        trial_metrics_report,
+        "median_reviewer_edit_distance",
+    )
+    agent_smoke_success_condition = _success_condition_by_id(trial_metrics_report, "agent_smoke_success_rate")
+    provider_failure_condition = _success_condition_by_id(trial_metrics_report, "provider_failure_rate")
+    cost_per_accepted_skill_condition = _success_condition_by_id(trial_metrics_report, "cost_per_accepted_skill")
     safety = trial_metrics.get("safety", {})
     if not isinstance(safety, dict):
         safety = {}
@@ -4907,6 +4956,84 @@ def _build_evidence_pack(
             "real_evidence_template_placeholder_records": launch_gate_evidence.get(
                 "real_evidence_template_placeholder_records",
                 [],
+            ),
+            "trial_success_criteria_status": str(success_criteria.get("status", "unknown")),
+            "trial_success_criteria_passed_count": int(success_criteria.get("passed_count", 0) or 0),
+            "trial_success_criteria_failed_count": int(success_criteria.get("failed_count", 0) or 0),
+            "trial_success_criteria_failed_condition_ids": [
+                str(item.get("id", "")).strip()
+                for item in success_criteria.get("failed_conditions", [])
+                if isinstance(item, dict) and str(item.get("id", "")).strip()
+            ]
+            if isinstance(success_criteria.get("failed_conditions", []), list)
+            else [],
+            "trial_quality_reviewer_approval_rate_status": _success_condition_status(
+                reviewer_approval_condition
+            ),
+            "trial_quality_reviewer_approval_rate": _to_float(
+                review_quality.get("approval_rate_after_one_revision", 0.0),
+            ),
+            "trial_quality_reviewer_approval_rate_expected_min": _to_float(
+                reviewer_approval_condition.get("expected_min", 0.0),
+            ),
+            "trial_quality_review_evaluable_count": int(review_quality.get("review_evaluable_count", 0) or 0),
+            "trial_quality_approved_after_one_revision_count": int(
+                review_quality.get("approved_after_one_revision_count", 0) or 0
+            ),
+            "trial_quality_median_reviewer_edit_distance_status": _success_condition_status(
+                median_reviewer_edit_distance_condition
+            ),
+            "trial_quality_median_reviewer_edit_distance_pct": _to_float(
+                reviewer_edit_distance.get("median", 0.0),
+            ),
+            "trial_quality_median_reviewer_edit_distance_expected_max": _to_float(
+                median_reviewer_edit_distance_condition.get("expected_max", 0.0),
+            ),
+            "trial_quality_reviewer_edit_distance_sample_count": int(
+                reviewer_edit_distance.get("samples", 0) or 0
+            ),
+            "trial_quality_agent_smoke_success_rate_status": _success_condition_status(
+                agent_smoke_success_condition
+            ),
+            "trial_quality_agent_smoke_success_rate": _to_float(
+                review_quality.get("agent_smoke_success_rate", 0.0),
+            ),
+            "trial_quality_agent_smoke_success_rate_expected_min": _to_float(
+                agent_smoke_success_condition.get("expected_min", 0.0),
+            ),
+            "trial_quality_approved_with_not_run_smoke_count": int(
+                review_quality.get("approved_with_not_run_smoke_count", 0) or 0
+            ),
+            "trial_quality_provider_failure_rate_status": _success_condition_status(
+                provider_failure_condition
+            ),
+            "trial_quality_provider_failure_rate": _to_float(
+                provider_runtime.get("provider_failure_rate", 0.0),
+            ),
+            "trial_quality_provider_failure_rate_expected_max": _to_float(
+                provider_failure_condition.get("expected_max", 0.0),
+            ),
+            "trial_quality_provider_failure_count_total": int(
+                provider_runtime.get("provider_failure_count_total", 0) or 0
+            ),
+            "trial_quality_provider_call_count_total": int(
+                provider_runtime.get("provider_call_count_total", 0) or 0
+            ),
+            "trial_quality_retry_count_total": int(provider_runtime.get("retry_count_total", 0) or 0),
+            "trial_quality_cost_per_accepted_skill_status": _success_condition_status(
+                cost_per_accepted_skill_condition
+            ),
+            "trial_quality_cost_per_accepted_skill_usd": _to_float(
+                cost_placeholder.get("cost_per_accepted_skill_usd", 0.0),
+            ),
+            "trial_quality_cost_approved_skill_count": int(
+                cost_placeholder.get("approved_skill_count", 0) or 0
+            ),
+            "trial_quality_cost_missing_count": int(
+                cost_placeholder.get("approved_skill_missing_cost_count", 0) or 0
+            ),
+            "trial_quality_cost_accepted_by_operator": bool(
+                cost_placeholder.get("accepted_by_operator", False)
             ),
             "collection_program_status": str(collection_alignment.get("program_status", "unknown")),
             "collection_blockers": collection_alignment.get("blockers", []),
@@ -8545,10 +8672,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-
-
 
 
 
