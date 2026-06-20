@@ -40,7 +40,13 @@ def _work_item(*, slot_index: int = 1, modality: str = "text") -> dict[str, Any]
     }
 
 
-def _valid_loop(*, loop_id: str = "real-text-001", modality: str = "text") -> dict[str, Any]:
+def _valid_loop(
+    *,
+    loop_id: str = "real-text-001",
+    modality: str = "text",
+    slot_index: int = 1,
+    backfill_action_id: str = "",
+) -> dict[str, Any]:
     return {
         "loop_id": loop_id,
         "status": "complete",
@@ -66,6 +72,8 @@ def _valid_loop(*, loop_id: str = "real-text-001", modality: str = "text") -> di
         "retry_count": 0,
         "artifact_count": 8,
         "estimated_cost_usd": 0.31,
+        "backfill_slot_index": slot_index,
+        "backfill_action_id": backfill_action_id or "gl23-slot-%03d-%s" % (slot_index, modality),
     }
 
 
@@ -223,6 +231,94 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             item = payload.get("items", [])[0]
             self.assertIn("fixture_or_simulated_loop_rejected", item.get("failure_codes", []))
             self.assertIn("real_loop_manifests_invalid", payload.get("warning_codes", []))
+
+    def test_manifest_missing_backfill_linkage_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            loop = _valid_loop()
+            loop.pop("backfill_slot_index", None)
+            loop.pop("backfill_action_id", None)
+            _write_json(workpack_path, _workpack(work_items=[_work_item(modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [loop],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertIn("backfill_slot_index_missing", item.get("failure_codes", []))
+            self.assertIn("backfill_action_id_missing_or_placeholder", item.get("failure_codes", []))
+
+    def test_manifest_backfill_linkage_must_match_workpack_slot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            loop = _valid_loop(slot_index=2, backfill_action_id="gl23-slot-002-text")
+            _write_json(workpack_path, _workpack(work_items=[_work_item(slot_index=1, modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [loop],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertIn("backfill_slot_index_mismatch", item.get("failure_codes", []))
+            self.assertIn("backfill_action_id_mismatch", item.get("failure_codes", []))
 
 
 if __name__ == "__main__":

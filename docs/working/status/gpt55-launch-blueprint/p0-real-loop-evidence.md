@@ -56,6 +56,8 @@
 | `revisions_before_approval` | 返修次数 |
 | `reviewer_edit_distance_pct` | 审核编辑距离百分比 |
 | `agent_smoke_result` | `passed`、`failed` 或 `not_run`，不得留空 |
+| `backfill_slot_index` | 必须等于 GL-63 槽位编号 |
+| `backfill_action_id` | 必须绑定 GL-63 intake item 或对应 GL-23 action |
 | `published_without_review` | 外部发布前必须为 `false` |
 | `critical_secret_or_pii_leak` | 必须为 `false` |
 | `high_severity_incident` | 必须为 `false` |
@@ -91,7 +93,9 @@
       "provider_call_count": 2,
       "retry_count": 0,
       "artifact_count": 8,
-      "estimated_cost_usd": 0.31
+      "estimated_cost_usd": 0.31,
+      "backfill_slot_index": 1,
+      "backfill_action_id": "gl23-slot-001-text"
     }
   ]
 }
@@ -120,6 +124,7 @@ rg -n "TEMPLATE_REQUIRED|placeholder|fixture|mock" docs\working\status\baselines
 - 真实 review task。
 - reviewer 结论。
 - agent smoke 结果或明确未运行原因。
+- GL-63 槽位编号和 GL-23/GL-63 intake action。
 
 ### 3. 执行 GL-64 结构预检
 

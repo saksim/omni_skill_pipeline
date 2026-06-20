@@ -209,7 +209,13 @@ def _add_unique(target: list[str], code: str) -> None:
         target.append(code)
 
 
-def _validate_loop(loop: dict[str, Any], *, required_modality: str) -> tuple[bool, list[str]]:
+def _validate_loop(
+    loop: dict[str, Any],
+    *,
+    required_modality: str,
+    required_slot_index: int,
+    accepted_backfill_action_ids: list[str],
+) -> tuple[bool, list[str]]:
     failure_codes: list[str] = []
     loop_id = _normalize_text(loop.get("loop_id"))
 
@@ -230,6 +236,22 @@ def _validate_loop(loop: dict[str, Any], *, required_modality: str) -> tuple[boo
 
     if not _is_true(loop.get("launch_gate_eligible")):
         _add_unique(failure_codes, "launch_gate_eligible_not_true")
+
+    raw_backfill_slot_index = loop.get("backfill_slot_index")
+    if raw_backfill_slot_index in (None, ""):
+        _add_unique(failure_codes, "backfill_slot_index_missing")
+    else:
+        parsed_backfill_slot_index = _to_int(raw_backfill_slot_index, default=0)
+        if parsed_backfill_slot_index <= 0:
+            _add_unique(failure_codes, "backfill_slot_index_invalid")
+        elif required_slot_index > 0 and parsed_backfill_slot_index != required_slot_index:
+            _add_unique(failure_codes, "backfill_slot_index_mismatch")
+
+    backfill_action_id = _normalize_text(loop.get("backfill_action_id"))
+    if not backfill_action_id or _is_placeholder_text(backfill_action_id):
+        _add_unique(failure_codes, "backfill_action_id_missing_or_placeholder")
+    elif accepted_backfill_action_ids and backfill_action_id not in set(accepted_backfill_action_ids):
+        _add_unique(failure_codes, "backfill_action_id_mismatch")
 
     for field in REQUIRED_TEXT_FIELDS:
         value = loop.get(field)
@@ -270,11 +292,22 @@ def _validate_loop(loop: dict[str, Any], *, required_modality: str) -> tuple[boo
 
 def _preflight_item(item: dict[str, Any], *, manifest_dir_override: Path | None) -> dict[str, Any]:
     required_modality = _normalize_modality(item.get("required_modality"))
+    slot_index = _to_int(item.get("slot_index"), default=0)
+    intake_item_id = _normalize_text(item.get("intake_item_id"))
+    accepted_backfill_action_ids = [
+        value
+        for value in [
+            intake_item_id,
+            "gl23-slot-%03d-%s" % (slot_index, required_modality) if slot_index > 0 and required_modality else "",
+        ]
+        if value
+    ]
     manifest_path = _expected_manifest_path(item, manifest_dir_override=manifest_dir_override)
     base = {
-        "intake_item_id": _normalize_text(item.get("intake_item_id")),
+        "intake_item_id": intake_item_id,
         "required_modality": required_modality,
-        "slot_index": _to_int(item.get("slot_index"), default=0),
+        "slot_index": slot_index,
+        "accepted_backfill_action_ids": accepted_backfill_action_ids,
         "expected_manifest_path": _display_path(manifest_path),
         "accepted_loop_ids": [],
         "ignored_loop_ids": [],
@@ -322,7 +355,12 @@ def _preflight_item(item: dict[str, Any], *, manifest_dir_override: Path | None)
             ignored_loop_ids.append(loop_id)
             continue
 
-        is_valid, failure_codes = _validate_loop(loop, required_modality=required_modality)
+        is_valid, failure_codes = _validate_loop(
+            loop,
+            required_modality=required_modality,
+            required_slot_index=slot_index,
+            accepted_backfill_action_ids=accepted_backfill_action_ids,
+        )
         if is_valid:
             accepted_loop_ids.append(loop_id)
         else:
@@ -434,6 +472,8 @@ def build_preflight_report(
                 "source_system/source_reference/collected_at_utc present",
                 "review_task_id/reviewed_by/reviewed_at_utc present",
                 "agent_smoke_result executed",
+                "backfill_slot_index matches GL-63 work item",
+                "backfill_action_id links to GL-63 or GL-23 intake action",
                 "published_without_review=false",
                 "critical_secret_or_pii_leak=false",
                 "high_severity_incident=false",
