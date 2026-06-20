@@ -9,6 +9,7 @@
 - [项目能力与目标达成度评审 2026-06-20](../../../reviews/2026-06-20-project-capability-review.md)
 - [Real Trial Loop Intake Workpack Summary](../baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md)
 - [Real Trial Loop Manifest Preflight Summary](../baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-summary.md)
+- [真实数据接入与验收手册](../../../latest/operations/runbooks/real-data-intake-and-validation.md)
 - [Real Trial Loop Collection Runbook](../../../latest/operations/runbooks/real-trial-loop-collection.md)
 
 ## 当前状态
@@ -19,6 +20,8 @@
 | launch-gate-eligible modalities | `0` | `>=4` |
 | 缺失目标模态 | `text, audio, image, video` | `none` |
 | 待填 manifest | `10` | `0` |
+
+当前没有真实业务数据时，本施工包只能支持内部 dogfood 或内部玩具口径，不得声明外部 Beta/GA。后续拿到真实数据后，先按 [真实数据接入与验收手册](../../../latest/operations/runbooks/real-data-intake-and-validation.md) 投递本地原始数据和脱敏 manifest，再执行本文的 GL-64、GL-13、trial metrics 与 launch gate 验收。
 
 ## Manifest 槽位
 

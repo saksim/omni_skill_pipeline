@@ -44,6 +44,7 @@
 - [测试](latest/operations/testing.md)
 - [脚本命名映射](latest/operations/script-name-map.md)
 - [Runbook 入口](latest/operations/runbooks/README.md)
+- [真实数据接入与验收手册](latest/operations/runbooks/real-data-intake-and-validation.md)
 - [操作环境](latest/operations/environments/README.md)
 - [操作接口](latest/operations/interfaces/README.md)
 
@@ -80,6 +81,7 @@
 
 - [变更日志](releases/CHANGELOG.md)
 - [发布说明](releases/notes/README.md)
+- [v0.2.5-internal.1 发布说明](releases/notes/v0.2.5-internal.1.md)
 - [v0.2.4-internal.1 发布说明](releases/notes/v0.2.4-internal.1.md)
 - [v0.2.3-internal.1 发布说明](releases/notes/v0.2.3-internal.1.md)
 - [v0.2.2-internal.1 发布说明](releases/notes/v0.2.2-internal.1.md)
@@ -91,6 +93,7 @@
 ## 归档（archive）
 
 - [已完成能力归档 2026-06-19](archive/status/2026-06-19-completed-capabilities-archive.md)
+- [内部 dogfood 与真实数据接入预案归档 2026-06-20](archive/status/2026-06-20-internal-dogfood-real-data-handoff-archive.md)
 - [中文文档与发布记录归档 2026-06-20](archive/status/2026-06-20-documentation-localization-archive.md)
 - [GLM-5.1 评估跳转](archive/assessments/glm-5.1-project-assessment.md)
 - [GLM-5.1 原始评估归档](archive/assessments/2026-04-22-glm-5.1-project-assessment.md)

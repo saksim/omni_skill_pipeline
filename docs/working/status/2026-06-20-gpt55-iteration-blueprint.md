@@ -10,6 +10,8 @@
 
 ## 诊断基线
 
+2026-06-20 追加决策：当前没有真实业务数据，因此上线口径选择内部 dogfood 或内部玩具。后续真实数据接入方式已经固化到 `docs/latest/operations/runbooks/real-data-intake-and-validation.md`，真实原始数据放在本地 `data/real-inputs/<batch-id>/`，仓库只提交脱敏 manifest 和验收证据。
+
 以 2026-06-20 评估报告为准，当前状态如下：
 
 | 领域 | 当前结论 | 关键证据 |

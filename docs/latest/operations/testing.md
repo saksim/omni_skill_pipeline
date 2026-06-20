@@ -2,7 +2,7 @@
 
 ## 当前操作入口
 
-`v0.2.4-internal.1` 发版候选的一线操作优先使用本节命令。后面的 TP 附录是历史测试映射和生成记录，主要用于 doc sync 与回归追溯，不是日常操作入口。
+`v0.2.5-internal.1` 发版候选的一线操作优先使用本节命令。后面的 TP 附录是历史测试映射和生成记录，主要用于 doc sync 与回归追溯，不是日常操作入口。
 
 本地回归：
 
@@ -19,7 +19,7 @@ python scripts/release_consumer_smoke.py --release-dir <release-dir> --expected-
 最新已发布内部版本示例：
 
 ```bash
-python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.4-internal.1
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.5-internal.1
 ```
 
 本地 artifact 加密回归：
@@ -34,7 +34,7 @@ python -m unittest tests.test_artifact_encryption tests.test_openai_provider_con
 python scripts/doc_sync.py --output -
 ```
 
-Docker/Postgres/K8s 验证不属于 `v0.2.4-internal.1` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
+Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.1` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test
 

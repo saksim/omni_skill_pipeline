@@ -2,7 +2,7 @@
 
 `docs/latest/` 是最新已发布手册层：这里的文档是今天应该使用的操作和参考材料。
 
-当前发版候选内部版本：`v0.2.4-internal.1`。
+当前发版候选内部版本：`v0.2.5-internal.1`。
 
 本层用于：
 
@@ -17,6 +17,7 @@
 - 操作入口：`operations/OPERATIONS.md`
 - Runbook 入口：`operations/runbooks/README.md`
 - GitHub Release 流程：`operations/runbooks/github-release-workflow.md`
+- 真实数据接入：`operations/runbooks/real-data-intake-and-validation.md`
 - Artifact 加密：`operations/runbooks/artifact-encryption.md`
 - 环境变量：`operations/env.md`
 

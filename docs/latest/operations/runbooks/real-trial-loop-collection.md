@@ -1,5 +1,7 @@
 # Real Trial Loop Collection (GL-12 / GL-13 / GL-16)
 
+中文操作者优先阅读 [真实数据接入与验收手册](real-data-intake-and-validation.md)。本文保留 GL-12、GL-13、GL-16 及后续 GL 链路的底层细节，用于排查和复盘，不替代真实数据接入手册的投递目录、manifest 槽位和验收口径。
+
 
 
 ## Verdict

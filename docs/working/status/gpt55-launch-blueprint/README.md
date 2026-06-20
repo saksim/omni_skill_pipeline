@@ -17,6 +17,7 @@
 - 当前内部 dogfood 可用，但外部 Beta/GA 仍被真实证据门禁阻塞。
 - 当前真实 launch-gate-eligible loops 是 `0/10`。
 - 当前真实 launch-gate-eligible modalities 是 `0/4`。
+- 当前没有真实业务数据时，只能发布为内部 dogfood/内部玩具；后续真实数据接入方式见 [真实数据接入与验收手册](../../../latest/operations/runbooks/real-data-intake-and-validation.md)。
 - 当前 Docker smoke 失败点是 base image metadata 拉取或构建，不是应用 health endpoint 本身。
 - 当前 pgvector/Qdrant 不在 P0 上线主路径内。
 

@@ -7,6 +7,8 @@
 
 先执行 S0 基线确认，再优先完成 P0 真实业务闭环证据施工。当前最大阻塞是 launch-gate-eligible real loops 为 0/10，launch-gate-eligible modalities 为 0/4。不得把 fixture、template、placeholder、mock 或未审核产物标记为 launch_gate_eligible=true。
 
+当前没有真实业务数据时，只能维持内部 dogfood/内部玩具口径。后续拿到真实数据后，先阅读 docs/latest/operations/runbooks/real-data-intake-and-validation.md，把原始数据放入本地 data/real-inputs/<batch-id>/，再把脱敏 manifest 放入 docs/working/status/baselines/real-trial-loop-collection/manifests/。
+
 每一轮只做施工文档内的任务。如果认为必须做文档外能力，先说明原因并等待确认。每完成一轮，需要输出一句话概括改动、剩余 blocker 数量、已运行的验收命令和失败项。
 
 关键验收命令包括：
