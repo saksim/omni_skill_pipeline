@@ -1,6 +1,6 @@
 {
   "schema_version": "cbt12.agent_smoke_report.v1",
-  "updated_at_utc": "2026-05-21T03:08:55Z",
+  "updated_at_utc": "2026-06-20T09:23:34Z",
   "records": [
     {
       "recorded_at_utc": "2026-05-21T03:08:55Z",
@@ -16,7 +16,37 @@
       "observed_task_output": "Produced checklist with rollback and validation.",
       "failure_code": "",
       "notes": ""
+    },
+    {
+      "recorded_at_utc": "2026-06-20T09:23:19Z",
+      "skill_id": "cbt12-sample-skill",
+      "agent": "claude-code",
+      "status": "not_run",
+      "metrics_agent_smoke_result": "not_run",
+      "reason": "Claude Code environment is not available from this Codex-controlled workspace; record explicit not_run instead of leaving the matrix cell missing.",
+      "trigger_prompt": "Use the incident runbook skill to triage the sample issue.",
+      "expected_skill_selection": "incident-runbook-skill",
+      "expected_task_output": "Checklist with rollback and validation steps.",
+      "selected_skill": "",
+      "observed_task_output": "",
+      "failure_code": "",
+      "notes": "CODEX-5.5 controlled-trial matrix completion: explicit unavailable-agent evidence."
+    },
+    {
+      "recorded_at_utc": "2026-06-20T09:23:34Z",
+      "skill_id": "cbt12-sample-skill",
+      "agent": "opencode",
+      "status": "not_run",
+      "metrics_agent_smoke_result": "not_run",
+      "reason": "OpenCode environment is not available from this Codex-controlled workspace; record explicit not_run instead of leaving the matrix cell missing.",
+      "trigger_prompt": "Use the incident runbook skill to triage the sample issue.",
+      "expected_skill_selection": "incident-runbook-skill",
+      "expected_task_output": "Checklist with rollback and validation steps.",
+      "selected_skill": "",
+      "observed_task_output": "",
+      "failure_code": "",
+      "notes": "CODEX-5.5 controlled-trial matrix completion: explicit unavailable-agent evidence."
     }
   ],
-  "record_count": 1
+  "record_count": 3
 }

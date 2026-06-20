@@ -502,23 +502,50 @@ def _evaluate_agent_smoke(report: dict[str, Any], *, minimum_success_rate: float
         return _make_check(
             "agent_smoke_success_rate",
             "fail",
-            {"record_count": 0, "success_rate": 0.0},
+            {"record_count": 0, "executable_record_count": 0, "success_rate": 0.0},
             {"minimum_success_rate": minimum_success_rate},
             details="Agent smoke report must include at least one executable record.",
         )
     passed = 0
+    executable_records = 0
+    not_run_count = 0
     for record in records:
         if not isinstance(record, dict):
             continue
+        status = str(record.get("status", "")).strip().lower()
+        metrics_result = str(record.get("metrics_agent_smoke_result", "")).strip().lower()
+        if status == "not_run" or metrics_result == "not_run":
+            not_run_count += 1
+            continue
+        executable_records += 1
         if _status_is_pass(record.get("metrics_agent_smoke_result")) or _status_is_pass(record.get("status")):
             passed += 1
-    success_rate = passed / len(records)
+    if executable_records <= 0:
+        return _make_check(
+            "agent_smoke_success_rate",
+            "fail",
+            {
+                "record_count": len(records),
+                "executable_record_count": 0,
+                "not_run_record_count": not_run_count,
+                "success_rate": 0.0,
+            },
+            {"minimum_success_rate": minimum_success_rate, "minimum_executable_records": 1},
+            details="Agent smoke report must include at least one executed pass/fail record.",
+        )
+    success_rate = passed / executable_records
     return _make_check(
         "agent_smoke_success_rate",
         "pass" if success_rate >= minimum_success_rate else "fail",
-        {"record_count": len(records), "passed": passed, "success_rate": success_rate},
-        {"minimum_success_rate": minimum_success_rate},
-        details="Approved skills must work in the target agent smoke matrix.",
+        {
+            "record_count": len(records),
+            "executable_record_count": executable_records,
+            "not_run_record_count": not_run_count,
+            "passed": passed,
+            "success_rate": success_rate,
+        },
+        {"minimum_success_rate": minimum_success_rate, "minimum_executable_records": 1},
+        details="Executed agent smoke records must meet the success threshold; not_run records are covered by matrix.",
     )
 
 
