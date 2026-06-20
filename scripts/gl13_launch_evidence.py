@@ -891,6 +891,24 @@ DEFAULT_EVIDENCE_PACK = (
     / "real-trial-loop-collection"
     / "real-trial-launch-evidence-pack.json"
 )
+DEFAULT_MANIFEST_PREFLIGHT_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-manifest-preflight-report.json"
+)
+DEFAULT_MANIFEST_PREFLIGHT_SUMMARY = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-manifest-preflight-summary.md"
+)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -1465,6 +1483,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
     parser.add_argument("--evidence-pack-output", default=str(DEFAULT_EVIDENCE_PACK))
+    parser.add_argument("--manifest-preflight-report", default=str(DEFAULT_MANIFEST_PREFLIGHT_REPORT))
+    parser.add_argument("--manifest-preflight-summary", default=str(DEFAULT_MANIFEST_PREFLIGHT_SUMMARY))
     parser.add_argument("--run-doc-sync", dest="run_doc_sync", action="store_true", default=True)
     parser.add_argument("--no-run-doc-sync", dest="run_doc_sync", action="store_false")
     parser.add_argument("--minimum-complete-loops", type=int, default=10)
@@ -4043,6 +4063,7 @@ def _build_evidence_pack(
     backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report: dict[str, Any],
     backfill_handoff_report: dict[str, Any],
     backfill_handoff_escalations_report: dict[str, Any],
+    manifest_preflight_report: dict[str, Any],
     run_report_paths: list[Path],
     loop_manifest_paths: list[Path],
 ) -> dict[str, Any]:
@@ -4444,6 +4465,18 @@ def _build_evidence_pack(
     backfill_handoff_escalation_exports = backfill_handoff_escalations_report.get("escalation_exports", {})
     if not isinstance(backfill_handoff_escalation_exports, dict):
         backfill_handoff_escalation_exports = {}
+    manifest_preflight_counts = manifest_preflight_report.get("counts", {})
+    if not isinstance(manifest_preflight_counts, dict):
+        manifest_preflight_counts = {}
+    manifest_preflight_slot_readiness = manifest_preflight_report.get("slot_readiness", {})
+    if not isinstance(manifest_preflight_slot_readiness, dict):
+        manifest_preflight_slot_readiness = {}
+    manifest_preflight_modality_readiness = manifest_preflight_report.get("modality_readiness", {})
+    if not isinstance(manifest_preflight_modality_readiness, dict):
+        manifest_preflight_modality_readiness = {}
+    manifest_preflight_operator_action_plan = manifest_preflight_report.get("operator_action_plan", {})
+    if not isinstance(manifest_preflight_operator_action_plan, dict):
+        manifest_preflight_operator_action_plan = {}
     failed_checks = launch_readiness_report.get("failed_checks", [])
     if not isinstance(failed_checks, list):
         failed_checks = []
@@ -4738,6 +4771,8 @@ def _build_evidence_pack(
             "real_trial_backfill_handoff_escalations_summary": str(
                 Path(args.backfill_handoff_escalations_summary_output).resolve()
             ),
+            "real_trial_loop_manifest_preflight_report": str(Path(args.manifest_preflight_report).resolve()),
+            "real_trial_loop_manifest_preflight_summary": str(Path(args.manifest_preflight_summary).resolve()),
             "trial_metrics_report": str(_resolve_required_output_path(args.trial_metrics_report_output, name="trial-metrics-report-output")),
             "trial_metrics_summary": str(Path(args.trial_metrics_summary_output).resolve()),
             "launch_readiness_report": str(_resolve_required_output_path(args.launch_readiness_output, name="launch-readiness-output")),
@@ -4781,6 +4816,78 @@ def _build_evidence_pack(
             "covered_target_launch_modalities": collection_alignment.get("covered_target_launch_modalities", []),
             "missing_target_launch_modalities": collection_alignment.get("missing_target_launch_modalities", []),
             "recommended_next_modalities": collection_alignment.get("recommended_next_modalities", []),
+            "real_loop_manifest_preflight_status": str(manifest_preflight_report.get("status", "unknown")),
+            "real_loop_manifest_preflight_launch_gate_policy_unchanged": bool(
+                manifest_preflight_report.get("launch_gate_policy_unchanged", False)
+            ),
+            "real_loop_manifest_preflight_warning_codes": manifest_preflight_report.get("warning_codes", []),
+            "real_loop_manifest_preflight_total_intake_item_count": int(
+                manifest_preflight_counts.get("total_intake_item_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_submitted_manifest_count": int(
+                manifest_preflight_counts.get("submitted_manifest_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_valid_item_count": int(
+                manifest_preflight_counts.get("valid_item_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_missing_item_count": int(
+                manifest_preflight_counts.get("missing_item_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_invalid_item_count": int(
+                manifest_preflight_counts.get("invalid_item_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_accepted_loop_count": int(
+                manifest_preflight_counts.get("accepted_loop_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_required_slot_count": int(
+                manifest_preflight_slot_readiness.get("required_slot_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_ready_slot_count": int(
+                manifest_preflight_slot_readiness.get("ready_slot_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_blocked_slot_count": int(
+                manifest_preflight_slot_readiness.get("blocked_slot_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_missing_slot_count": int(
+                manifest_preflight_slot_readiness.get("missing_slot_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_invalid_slot_count": int(
+                manifest_preflight_slot_readiness.get("invalid_slot_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_missing_manifest_paths": manifest_preflight_slot_readiness.get(
+                "missing_manifest_paths",
+                [],
+            ),
+            "real_loop_manifest_preflight_invalid_manifest_paths": manifest_preflight_slot_readiness.get(
+                "invalid_manifest_paths",
+                [],
+            ),
+            "real_loop_manifest_preflight_first_blocking_slot": manifest_preflight_slot_readiness.get(
+                "first_blocking_slot",
+                None,
+            ),
+            "real_loop_manifest_preflight_target_launch_modalities": manifest_preflight_modality_readiness.get(
+                "target_launch_modalities",
+                [],
+            ),
+            "real_loop_manifest_preflight_covered_target_launch_modalities": manifest_preflight_modality_readiness.get(
+                "covered_target_launch_modalities",
+                [],
+            ),
+            "real_loop_manifest_preflight_missing_target_launch_modalities": manifest_preflight_modality_readiness.get(
+                "missing_target_launch_modalities",
+                [],
+            ),
+            "real_loop_manifest_preflight_operator_action_status": str(
+                manifest_preflight_operator_action_plan.get("status", "unknown")
+            ),
+            "real_loop_manifest_preflight_operator_pending_action_count": int(
+                manifest_preflight_operator_action_plan.get("pending_action_count", 0) or 0
+            ),
+            "real_loop_manifest_preflight_operator_next_actions": manifest_preflight_operator_action_plan.get(
+                "next_actions",
+                [],
+            ),
             "launch_gate_eligible_complete_loop_count_by_modality": collection_alignment.get(
                 "launch_gate_eligible_complete_loop_count_by_modality", {}
             ),
@@ -8357,6 +8464,7 @@ def main() -> int:
         )
         backfill_handoff_report = _read_json(Path(args.backfill_handoff_output).resolve())
         backfill_handoff_escalations_report = _read_json(Path(args.backfill_handoff_escalations_output).resolve())
+        manifest_preflight_report = _read_json(Path(args.manifest_preflight_report).resolve())
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         print("Real-trial launch evidence pipeline failed while reading reports: %s" % exc, file=sys.stderr)
         return 2
@@ -8400,6 +8508,7 @@ def main() -> int:
             backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report=backfill_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_escalations_report,
             backfill_handoff_report=backfill_handoff_report,
             backfill_handoff_escalations_report=backfill_handoff_escalations_report,
+            manifest_preflight_report=manifest_preflight_report,
             run_report_paths=run_report_paths,
             loop_manifest_paths=loop_manifest_paths,
         )
@@ -8436,9 +8545,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-
 
 
 

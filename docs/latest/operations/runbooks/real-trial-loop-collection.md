@@ -1162,6 +1162,19 @@ GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable revie
   - `backfill_submission_template_owner`
   - `backfill_submission_template_missing_actions`
 
+- GL-64 manifest preflight diagnostics:
+  - `evidence_paths.real_trial_loop_manifest_preflight_report`
+  - `evidence_paths.real_trial_loop_manifest_preflight_summary`
+  - `evidence_classification.real_loop_manifest_preflight_status`
+  - `evidence_classification.real_loop_manifest_preflight_valid_item_count`
+  - `evidence_classification.real_loop_manifest_preflight_missing_item_count`
+  - `evidence_classification.real_loop_manifest_preflight_invalid_item_count`
+  - `evidence_classification.real_loop_manifest_preflight_blocked_slot_count`
+  - `evidence_classification.real_loop_manifest_preflight_missing_target_launch_modalities`
+  - `evidence_classification.real_loop_manifest_preflight_operator_action_status`
+  - `evidence_classification.real_loop_manifest_preflight_operator_pending_action_count`
+  - `evidence_classification.real_loop_manifest_preflight_operator_next_actions`
+
 - GL-27 escalation exports:
   - `evidence_paths.real_trial_backfill_handoff_escalations_report`
   - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
@@ -1233,7 +1246,6 @@ python scripts/gl33_submission_consumption.py \
   --consumed-manifest-output docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json \
   --owner controlled-beta-ops
 ```
-
 
 
 

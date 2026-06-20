@@ -158,6 +158,15 @@ python -B scripts\gl13_launch_evidence.py --loop-manifest-dir docs\working\statu
 
 若环境临时目录不可写，先修复本地运行环境。不得将运行环境失败解释为项目已经通过。
 
+GL-13 生成的 `real-trial-launch-evidence-pack.json` 会携带 GL-64 预检摘要字段：
+
+- `evidence_classification.real_loop_manifest_preflight_status`
+- `evidence_classification.real_loop_manifest_preflight_blocked_slot_count`
+- `evidence_classification.real_loop_manifest_preflight_missing_target_launch_modalities`
+- `evidence_classification.real_loop_manifest_preflight_operator_next_actions`
+
+这些字段只用于 reviewer/operator 定位缺口，不改变 launch gate 结论。若 `real_loop_manifest_preflight_status` 不是 `REAL_LOOP_MANIFEST_PREFLIGHT_READY`，必须继续修 manifest，不得把 GL-13 产物解释为可上线。
+
 ### 5. 运行 trial metrics
 
 ```powershell
