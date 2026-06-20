@@ -4,6 +4,8 @@
 
 本审计记录 `v0.2.3-internal.1` 之后完成的文档刷新。目标是让当前操作手册与最新内部 dogfood release 保持一致，并记录哪些历史能力已经归档。
 
+2026-06-20 追加：本轮中文文档刷新已经纳入 `v0.2.4-internal.1` 发版候选，归档记录见 `docs/archive/status/2026-06-20-documentation-localization-archive.md`。
+
 ## 范围
 
 已检查并更新：

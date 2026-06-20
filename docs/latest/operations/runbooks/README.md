@@ -18,4 +18,4 @@
 - Runbook 是可执行操作文档；命令必须与 `scripts/` 和当前 API contract 保持一致。
 - GitHub publication 使用 `Release` workflow。它会生成 source、wheel、coverage、manifest、summary 和 `SHA256SUMS`。
 - 严格 container/API release 证据优先使用 `scripts/linux_release.sh`，不要手动复制分散命令。该脚本会输出包含日志、退出码、baseline 和 summary 的 `release-artifacts-<release_id>.tar.gz`。
-- `v0.2.3-internal.1` 是当前内部 dogfood release 边界。非基础设施加固路径记录在 `artifact-encryption.md`；Docker、Postgres、K8s 和 external real-loop gate 是独立门禁。
+- `v0.2.4-internal.1` 是当前内部 dogfood 发版候选边界。非基础设施加固路径记录在 `artifact-encryption.md`；Docker、Postgres、K8s 和 external real-loop gate 是独立门禁。

@@ -71,8 +71,9 @@
 
 ## 发布（releases）
 
-- [Changelog](releases/CHANGELOG.md)
+- [变更日志](releases/CHANGELOG.md)
 - [发布说明](releases/notes/README.md)
+- [v0.2.4-internal.1 发布说明](releases/notes/v0.2.4-internal.1.md)
 - [v0.2.3-internal.1 发布说明](releases/notes/v0.2.3-internal.1.md)
 - [v0.2.2-internal.1 发布说明](releases/notes/v0.2.2-internal.1.md)
 - [v0.2.1-internal.1 发布说明](releases/notes/v0.2.1-internal.1.md)
@@ -83,6 +84,7 @@
 ## 归档（archive）
 
 - [已完成能力归档 2026-06-19](archive/status/2026-06-19-completed-capabilities-archive.md)
+- [中文文档与发布记录归档 2026-06-20](archive/status/2026-06-20-documentation-localization-archive.md)
 - [GLM-5.1 评估跳转](archive/assessments/glm-5.1-project-assessment.md)
 - [GLM-5.1 原始评估归档](archive/assessments/2026-04-22-glm-5.1-project-assessment.md)
 - [Pre-Launch Status 归档](archive/status/2026-04-24-current-status-pre-launch-master-plan.md)

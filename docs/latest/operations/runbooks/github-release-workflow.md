@@ -6,7 +6,7 @@
 
 它本身不会部署到生产 URL。它的作用是把绿色 `main` commit 转成可验证的 release candidate pack，并在推送 `v*` tag 时生成 GitHub Release。
 
-当前已发布内部版本：`v0.2.3-internal.1`。
+当前发版候选内部版本：`v0.2.4-internal.1`。
 
 ## 入口
 
@@ -66,8 +66,8 @@ git push origin <release_tag>
 示例：
 
 ```bash
-git tag v0.2.3-internal.1
-git push origin v0.2.3-internal.1
+git tag v0.2.4-internal.1
+git push origin v0.2.4-internal.1
 ```
 
 该 tag 会触发 release workflow，并用生成的 artifact pack 发布 GitHub Release。
@@ -77,7 +77,7 @@ git push origin v0.2.3-internal.1
 1. 打开 GitHub Actions 中的 `Release` workflow。
 2. 从 `main` 运行 workflow。
 3. 设置 `publish_github_release=true`。
-4. 设置 `release_tag`，例如 `v0.2.3-internal.1`。
+4. 设置 `release_tag`，例如 `v0.2.4-internal.1`。
 
 如果 tag 不存在，workflow 会先创建 tag，然后执行：
 
@@ -106,7 +106,7 @@ python scripts/release_consumer_smoke.py --release-dir . --expected-release-id <
 最新已发布内部版本示例：
 
 ```bash
-python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.3-internal.1
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.4-internal.1
 ```
 
 如果目标是 container/API deployment，继续执行：
