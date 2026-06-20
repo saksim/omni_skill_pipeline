@@ -28,17 +28,26 @@ def _release_report(decision: str = "GO") -> dict[str, Any]:
     }
 
 
+def _agent_smoke_record(agent: str) -> dict[str, Any]:
+    return {
+        "skill_id": "skill-1",
+        "agent": agent,
+        "status": "agent_smoke_passed",
+        "metrics_agent_smoke_result": "passed",
+        "reason": "%s selected expected skill." % agent,
+        "trigger_prompt": "Use the approved skill to produce the expected runbook.",
+        "expected_skill_selection": "skill-1",
+        "expected_task_output": "Runbook with validation checklist.",
+        "selected_skill": "skill-1",
+        "observed_task_output": "Runbook with validation checklist produced.",
+        "failure_code": "",
+    }
+
+
 def _agent_smoke_report() -> dict[str, Any]:
     return {
         "schema_version": "test.agent_smoke.v1",
-        "records": [
-            {
-                "skill_id": "skill-1",
-                "agent": "codex",
-                "status": "agent_smoke_passed",
-                "metrics_agent_smoke_result": "passed",
-            }
-        ],
+        "records": [_agent_smoke_record(agent) for agent in ["codex", "claude-code", "opencode"]],
     }
 
 
@@ -53,6 +62,88 @@ def _ops_readiness_report() -> dict[str, Any]:
         "check_count": 1,
         "pass_count": 1,
         "fail_count": 0,
+    }
+
+
+def _manifest_preflight_report(*, status: str = "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING") -> dict[str, Any]:
+    return {
+        "schema_version": "real_trial_loop_manifest_preflight.v1",
+        "status": status,
+        "launch_gate_policy_unchanged": True,
+        "counts": {
+            "total_intake_item_count": 10,
+            "submitted_manifest_count": 0,
+            "valid_item_count": 0,
+            "invalid_item_count": 0,
+            "missing_item_count": 10,
+            "accepted_loop_count": 0,
+        },
+        "warning_codes": [
+            "real_loop_manifests_missing",
+            "real_loop_manifest_preflight_not_ready",
+            "real_loop_slot_gap_action_plan_required",
+        ],
+        "slot_readiness": {
+            "required_slot_count": 10,
+            "ready_slot_count": 0,
+            "blocked_slot_count": 10,
+            "missing_slot_count": 10,
+            "invalid_slot_count": 0,
+            "missing_manifest_paths": [
+                "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-001-text.json"
+            ],
+            "invalid_manifest_paths": [],
+            "first_blocking_slot": {
+                "slot_index": 1,
+                "required_modality": "text",
+                "preflight_status": "missing",
+                "expected_manifest_path": (
+                    "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-001-text.json"
+                ),
+                "failure_codes": ["manifest_file_missing"],
+            },
+        },
+        "modality_readiness": {
+            "target_launch_modalities": ["text", "audio", "image", "video"],
+            "covered_target_launch_modalities": [],
+            "missing_target_launch_modalities": ["text", "audio", "image", "video"],
+        },
+        "operator_action_plan": {
+            "status": "action_required",
+            "pending_action_count": 10,
+            "next_actions": [
+                {
+                    "action": "drop_real_manifest",
+                    "slot_index": 1,
+                    "required_modality": "text",
+                    "intake_item_id": "gl63-real-loop-intake-slot-001-text",
+                    "expected_manifest_path": (
+                        "docs/working/status/baselines/real-trial-loop-collection/manifests/real-loop-001-text.json"
+                    ),
+                    "failure_codes": ["manifest_file_missing"],
+                }
+            ],
+        },
+    }
+
+
+def _manifest_preflight_workpack(manifest_dir: Path) -> dict[str, Any]:
+    return {
+        "schema_version": "real_trial_loop_intake_workpack.v1",
+        "input_paths": {
+            "operator_manifest_dir": str(manifest_dir),
+        },
+        "current_launch_evidence": {
+            "target_launch_modalities": ["text", "audio", "image", "video"],
+        },
+        "work_items": [
+            {
+                "intake_item_id": "gl63-real-loop-intake-slot-001-text",
+                "slot_index": 1,
+                "required_modality": "text",
+                "manifest_drop_path": str(manifest_dir / "real-loop-001-text.json"),
+            }
+        ],
     }
 
 
@@ -87,7 +178,6 @@ def _loop_row(*, loop_id: str, modality: str, evidence_origin: str, launch_gate_
     elif not launch_gate_eligible:
         row["launch_gate_ineligible_reason"] = "%s_evidence_not_launch_gate_eligible" % evidence_origin
     return row
-
 
 def _run_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return {
@@ -293,6 +383,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             real_manifest = root / "real-manifest.json"
             trial_metrics_report = root / "trial-metrics-report.json"
             trial_metrics_summary = root / "trial-metrics-summary.md"
+            manifest_preflight = root / "manifest-preflight.json"
+            manifest_preflight_summary = root / "manifest-preflight-summary.md"
             launch_report = root / "launch-readiness-report.json"
             launch_summary = root / "launch-readiness-summary.md"
             evidence_pack = root / "real-trial-launch-evidence-pack.json"
@@ -315,6 +407,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             _write_json(agent_smoke, _agent_smoke_report())
             _write_json(doc_sync, _doc_sync_report())
             _write_json(ops_readiness, _ops_readiness_report())
+            _write_json(manifest_preflight, _manifest_preflight_report())
+            manifest_preflight_summary.write_text("preflight pending\n", encoding="utf-8")
 
             completed = subprocess.run(
                 [
@@ -338,6 +432,10 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(launch_summary),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--manifest-preflight-report",
+                    str(manifest_preflight),
+                    "--manifest-preflight-summary",
+                    str(manifest_preflight_summary),
                     *_gl13_temp_output_args(root),
                     "--backfill-execution-output",
                     str(root / "real-trial-backfill-execution-report.json"),
@@ -2159,6 +2257,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             agent_smoke = root / "agent-smoke.json"
             doc_sync = root / "doc-sync.json"
             ops_readiness = root / "ops-readiness.json"
+            manifest_preflight = root / "manifest-preflight.json"
+            manifest_preflight_summary = root / "manifest-preflight-summary.md"
             launch_report = root / "launch-readiness-report.json"
             evidence_pack = root / "real-trial-launch-evidence-pack.json"
 
@@ -2180,6 +2280,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             _write_json(agent_smoke, _agent_smoke_report())
             _write_json(doc_sync, _doc_sync_report())
             _write_json(ops_readiness, _ops_readiness_report())
+            _write_json(manifest_preflight, _manifest_preflight_report())
+            manifest_preflight_summary.write_text("preflight pending\n", encoding="utf-8")
 
             completed = subprocess.run(
                 [
@@ -2203,6 +2305,10 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--manifest-preflight-report",
+                    str(manifest_preflight),
+                    "--manifest-preflight-summary",
+                    str(manifest_preflight_summary),
                     "--backfill-execution-output",
                     str(root / "real-trial-backfill-execution-report.json"),
                     "--backfill-execution-summary-output",
@@ -2256,7 +2362,62 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             self.assertFalse(evidence_pack_payload.get("ready_for_controlled_beta"))
             failed_checks = evidence_pack_payload.get("gate_summary", {}).get("failed_checks", [])
             self.assertIn("trial_loop_volume_and_modality_coverage", failed_checks)
+            evidence_paths = evidence_pack_payload.get("evidence_paths", {})
+            self.assertEqual(evidence_paths.get("real_trial_loop_manifest_preflight_report"), str(manifest_preflight))
+            self.assertEqual(
+                evidence_paths.get("real_trial_loop_manifest_preflight_summary"),
+                str(manifest_preflight_summary),
+            )
             classification = evidence_pack_payload.get("evidence_classification", {})
+            self.assertEqual(
+                classification.get("real_loop_manifest_preflight_status"),
+                "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING",
+            )
+            self.assertTrue(classification.get("real_loop_manifest_preflight_launch_gate_policy_unchanged"))
+            self.assertIn(
+                "real_loop_slot_gap_action_plan_required",
+                classification.get("real_loop_manifest_preflight_warning_codes", []),
+            )
+            self.assertEqual(classification.get("real_loop_manifest_preflight_valid_item_count"), 0)
+            self.assertEqual(classification.get("real_loop_manifest_preflight_missing_item_count"), 10)
+            self.assertEqual(classification.get("real_loop_manifest_preflight_blocked_slot_count"), 10)
+            self.assertEqual(
+                classification.get("real_loop_manifest_preflight_missing_target_launch_modalities"),
+                ["text", "audio", "image", "video"],
+            )
+            self.assertEqual(
+                classification.get("real_loop_manifest_preflight_operator_action_status"),
+                "action_required",
+            )
+            self.assertEqual(classification.get("real_loop_manifest_preflight_operator_pending_action_count"), 10)
+            self.assertEqual(
+                classification.get("real_loop_manifest_preflight_operator_next_actions", [{}])[0].get("action"),
+                "drop_real_manifest",
+            )
+            self.assertEqual(classification.get("trial_success_criteria_status"), "fail")
+            self.assertIn(
+                "launch_gate_eligible_loop_volume_and_modality_coverage",
+                classification.get("trial_success_criteria_failed_condition_ids", []),
+            )
+            self.assertEqual(classification.get("trial_quality_reviewer_approval_rate_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_reviewer_approval_rate"), 1.0)
+            self.assertEqual(classification.get("trial_quality_review_evaluable_count"), 1)
+            self.assertEqual(classification.get("trial_quality_approved_after_one_revision_count"), 1)
+            self.assertEqual(classification.get("trial_quality_median_reviewer_edit_distance_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_median_reviewer_edit_distance_pct"), 20.0)
+            self.assertEqual(classification.get("trial_quality_reviewer_edit_distance_sample_count"), 1)
+            self.assertEqual(classification.get("trial_quality_agent_smoke_success_rate_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_agent_smoke_success_rate"), 1.0)
+            self.assertEqual(classification.get("trial_quality_approved_with_not_run_smoke_count"), 0)
+            self.assertEqual(classification.get("trial_quality_provider_failure_rate_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_provider_failure_rate"), 0.0)
+            self.assertEqual(classification.get("trial_quality_provider_failure_count_total"), 0)
+            self.assertEqual(classification.get("trial_quality_provider_call_count_total"), 2)
+            self.assertEqual(classification.get("trial_quality_cost_per_accepted_skill_status"), "pass")
+            self.assertEqual(classification.get("trial_quality_cost_per_accepted_skill_usd"), 0.3)
+            self.assertEqual(classification.get("trial_quality_cost_approved_skill_count"), 1)
+            self.assertEqual(classification.get("trial_quality_cost_missing_count"), 0)
+            self.assertTrue(classification.get("trial_quality_cost_accepted_by_operator"))
             self.assertEqual(classification.get("recommended_backfill_slot_count"), 10)
             slots = classification.get("recommended_backfill_slots", [])
             self.assertEqual(len(slots), 10)
@@ -2570,6 +2731,66 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                 evidence_pack_payload.get("input_sources", {}).get("input_loop_manifest_count"),
                 1,
             )
+
+    def test_pipeline_require_manifest_preflight_ready_blocks_pending_slot_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifests_dir = root / "real-loop-manifests"
+            manifests_dir.mkdir(parents=True, exist_ok=True)
+            workpack = root / "gl63-workpack.json"
+            manifest_preflight = root / "manifest-preflight.json"
+            manifest_preflight_summary = root / "manifest-preflight-summary.md"
+            evidence_pack = root / "real-trial-launch-evidence-pack.json"
+
+            _write_json(workpack, _manifest_preflight_workpack(manifests_dir))
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--loop-manifest-dir",
+                    str(manifests_dir),
+                    "--loop-manifest-pattern",
+                    "*.json",
+                    "--strict-loop-manifest-contract",
+                    "--require-manifest-preflight-ready",
+                    "--manifest-preflight-workpack",
+                    str(workpack),
+                    "--manifest-preflight-report",
+                    str(manifest_preflight),
+                    "--manifest-preflight-summary",
+                    str(manifest_preflight_summary),
+                    "--collection-report-output",
+                    str(root / "collection-report.json"),
+                    "--collection-summary-output",
+                    str(root / "collection-summary.md"),
+                    "--real-trial-manifest-output",
+                    str(root / "real-manifest.json"),
+                    "--trial-metrics-report-output",
+                    str(root / "trial-metrics-report.json"),
+                    "--trial-metrics-summary-output",
+                    str(root / "trial-metrics-summary.md"),
+                    "--launch-readiness-output",
+                    str(root / "launch-readiness-report.json"),
+                    "--launch-readiness-summary-output",
+                    str(root / "launch-readiness-summary.md"),
+                    "--evidence-pack-output",
+                    str(evidence_pack),
+                    "--max-evidence-age-hours",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            self.assertIn("real-trial-loop-manifest-preflight stdout", completed.stdout)
+            self.assertIn("REAL_LOOP_MANIFEST_PREFLIGHT_PENDING", completed.stdout)
+            payload = json.loads(manifest_preflight.read_text(encoding="utf-8"))
+            self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING")
+            self.assertFalse(evidence_pack.exists())
 
     def test_pipeline_accepts_loop_manifest_dir_input(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -5459,6 +5680,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             agent_smoke = root / "agent-smoke.json"
             doc_sync = root / "doc-sync.json"
             ops_readiness = root / "ops-readiness.json"
+            manifest_preflight = root / "manifest-preflight.json"
+            manifest_preflight_summary = root / "manifest-preflight-summary.md"
             launch_report = root / "launch-readiness-report.json"
             evidence_pack = root / "real-trial-launch-evidence-pack.json"
 
@@ -5516,6 +5739,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             _write_json(agent_smoke, _agent_smoke_report())
             _write_json(doc_sync, _doc_sync_report())
             _write_json(ops_readiness, _ops_readiness_report())
+            _write_json(manifest_preflight, _manifest_preflight_report())
+            manifest_preflight_summary.write_text("preflight pending\n", encoding="utf-8")
 
             completed = subprocess.run(
                 [
@@ -5541,6 +5766,10 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--manifest-preflight-report",
+                    str(manifest_preflight),
+                    "--manifest-preflight-summary",
+                    str(manifest_preflight_summary),
                     "--backfill-execution-output",
                     str(root / "real-trial-backfill-execution-report.json"),
                     "--backfill-execution-summary-output",
@@ -5677,6 +5906,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             agent_smoke = root / "agent-smoke.json"
             doc_sync = root / "doc-sync.json"
             ops_readiness = root / "ops-readiness.json"
+            manifest_preflight = root / "manifest-preflight.json"
+            manifest_preflight_summary = root / "manifest-preflight-summary.md"
             launch_report = root / "launch-readiness-report.json"
             evidence_pack = root / "real-trial-launch-evidence-pack.json"
 
@@ -5705,6 +5936,8 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
             _write_json(agent_smoke, _agent_smoke_report())
             _write_json(doc_sync, _doc_sync_report())
             _write_json(ops_readiness, _ops_readiness_report())
+            _write_json(manifest_preflight, _manifest_preflight_report())
+            manifest_preflight_summary.write_text("preflight pending\n", encoding="utf-8")
 
             completed = subprocess.run(
                 [
@@ -5728,6 +5961,10 @@ class RealTrialLaunchEvidenceScriptTests(unittest.TestCase):
                     str(root / "launch-readiness-summary.md"),
                     "--evidence-pack-output",
                     str(evidence_pack),
+                    "--manifest-preflight-report",
+                    str(manifest_preflight),
+                    "--manifest-preflight-summary",
+                    str(manifest_preflight_summary),
                     "--backfill-execution-output",
                     str(root / "real-trial-backfill-execution-report.json"),
                     "--backfill-execution-summary-output",

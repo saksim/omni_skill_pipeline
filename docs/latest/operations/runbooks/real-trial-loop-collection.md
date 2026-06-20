@@ -1,5 +1,7 @@
 # Real Trial Loop Collection (GL-12 / GL-13 / GL-16)
 
+中文操作者优先阅读 [真实数据接入与验收手册](real-data-intake-and-validation.md)。本文保留 GL-12、GL-13、GL-16 及后续 GL 链路的底层细节，用于排查和复盘，不替代真实数据接入手册的投递目录、manifest 槽位和验收口径。
+
 
 
 ## Verdict
@@ -177,6 +179,29 @@ python scripts/gl12_collect_loops.py \
   --strict-loop-manifest-contract
 
 ```
+
+## GL-64 Manifest Preflight Diagnostics
+
+Before GL-13 ingestion, run GL-64 to verify every GL-63 intake slot. This step does not create real evidence and does not relax launch-gate policy. Each GL-63 slot manifest must contain exactly one loop for that slot; extra loop rows, non-slot modalities, or multiple accepted loops in the same slot manifest are treated as slot contamination and keep GL-64 invalid.
+
+```bash
+python -B scripts/gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
+```
+
+When GL-64 reports `REAL_LOOP_MANIFEST_PREFLIGHT_READY`, run GL-13 with `--require-manifest-preflight-ready` so GL-13 re-checks GL-64 and stops automatically if a slot regresses to missing or invalid before ingestion.
+
+The report exposes three operator-facing diagnostics:
+
+- `slot_readiness`: counts ready, missing, invalid, and blocked slots, plus missing or invalid manifest paths.
+- `modality_readiness`: shows target launch modalities, covered target modalities, missing target modalities, and slot counts by modality.
+- `operator_action_plan`: lists the next required action per blocked slot. `drop_real_manifest` means the operator must submit a real manifest file. `repair_real_manifest` means a submitted file exists but does not satisfy the real-loop contract.
+
+Execution order:
+
+1. Follow `operator_action_plan.next_actions` until every blocked slot is fixed.
+2. Prioritize `modality_readiness.missing_target_launch_modalities` before filling pure volume gaps.
+3. Require `slot_readiness.blocked_slot_count=0` before running GL-13.
+4. Run `operator_action_plan.next_commands.placeholder_scan` before ingestion; any hit for `TEMPLATE_REQUIRED`, `placeholder`, `fixture`, or `mock` must be resolved as real evidence intake work.
 
 
 
@@ -1040,6 +1065,8 @@ python scripts/gl13_launch_evidence.py \
 
   --loop-manifest-dir docs/working/status/baselines/real-trial-loop-collection/manifests \
 
+  --require-manifest-preflight-ready \
+
   --loop-manifest-pattern "*.json" \
 
   --collection-report-output docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-collection-report.json \
@@ -1141,6 +1168,33 @@ GL-16 publishes `real-trial-launch-evidence-pack.json` as machine-readable revie
   - `backfill_submission_template_owner`
   - `backfill_submission_template_missing_actions`
 
+- GL-64 manifest preflight diagnostics:
+  - `evidence_paths.real_trial_loop_manifest_preflight_report`
+  - `evidence_paths.real_trial_loop_manifest_preflight_summary`
+  - `evidence_classification.real_loop_manifest_preflight_status`
+  - `evidence_classification.real_loop_manifest_preflight_valid_item_count`
+  - `evidence_classification.real_loop_manifest_preflight_missing_item_count`
+  - `evidence_classification.real_loop_manifest_preflight_invalid_item_count`
+  - `evidence_classification.real_loop_manifest_preflight_blocked_slot_count`
+  - `evidence_classification.real_loop_manifest_preflight_missing_target_launch_modalities`
+  - `evidence_classification.real_loop_manifest_preflight_operator_action_status`
+  - `evidence_classification.real_loop_manifest_preflight_operator_pending_action_count`
+  - `evidence_classification.real_loop_manifest_preflight_operator_next_actions`
+
+- P1 reviewer / agent quality diagnostics:
+  - `evidence_classification.trial_success_criteria_status`
+  - `evidence_classification.trial_success_criteria_failed_condition_ids`
+  - `evidence_classification.trial_quality_reviewer_approval_rate_status`
+  - `evidence_classification.trial_quality_reviewer_approval_rate`
+  - `evidence_classification.trial_quality_median_reviewer_edit_distance_status`
+  - `evidence_classification.trial_quality_median_reviewer_edit_distance_pct`
+  - `evidence_classification.trial_quality_agent_smoke_success_rate_status`
+  - `evidence_classification.trial_quality_agent_smoke_success_rate`
+  - `evidence_classification.trial_quality_provider_failure_rate_status`
+  - `evidence_classification.trial_quality_provider_failure_rate`
+  - `evidence_classification.trial_quality_cost_per_accepted_skill_status`
+  - `evidence_classification.trial_quality_cost_per_accepted_skill_usd`
+
 - GL-27 escalation exports:
   - `evidence_paths.real_trial_backfill_handoff_escalations_report`
   - `evidence_paths.real_trial_backfill_handoff_escalations_summary`
@@ -1212,9 +1266,3 @@ python scripts/gl33_submission_consumption.py \
   --consumed-manifest-output docs/working/status/baselines/real-trial-loop-collection/manifests/real-trial-backfill-submission-manifest.consumed.json \
   --owner controlled-beta-ops
 ```
-
-
-
-
-
-
