@@ -40,7 +40,13 @@ def _work_item(*, slot_index: int = 1, modality: str = "text") -> dict[str, Any]
     }
 
 
-def _valid_loop(*, loop_id: str = "real-text-001", modality: str = "text") -> dict[str, Any]:
+def _valid_loop(
+    *,
+    loop_id: str = "real-text-001",
+    modality: str = "text",
+    slot_index: int = 1,
+    backfill_action_id: str = "",
+) -> dict[str, Any]:
     return {
         "loop_id": loop_id,
         "status": "complete",
@@ -66,6 +72,8 @@ def _valid_loop(*, loop_id: str = "real-text-001", modality: str = "text") -> di
         "retry_count": 0,
         "artifact_count": 8,
         "estimated_cost_usd": 0.31,
+        "backfill_slot_index": slot_index,
+        "backfill_action_id": backfill_action_id or "gl23-slot-%03d-%s" % (slot_index, modality),
     }
 
 
@@ -132,7 +140,23 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             payload = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING")
             self.assertEqual(payload.get("counts", {}).get("missing_item_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("blocked_slot_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("missing_slot_count"), 1)
+            self.assertIn(
+                "real-loop-001-audio.json",
+                payload.get("slot_readiness", {}).get("missing_manifest_paths", [""])[0],
+            )
+            self.assertEqual(
+                payload.get("modality_readiness", {}).get("missing_slot_count_by_modality", {}).get("audio"),
+                1,
+            )
+            self.assertEqual(payload.get("operator_action_plan", {}).get("pending_action_count"), 1)
+            self.assertEqual(
+                payload.get("operator_action_plan", {}).get("next_actions", [{}])[0].get("action"),
+                "drop_real_manifest",
+            )
             self.assertIn("real_loop_manifests_missing", payload.get("warning_codes", []))
+            self.assertIn("real_loop_slot_gap_action_plan_required", payload.get("warning_codes", []))
 
     def test_valid_real_manifest_is_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -175,6 +199,14 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             payload = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_READY")
             self.assertEqual(payload.get("counts", {}).get("valid_item_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("ready_slot_count"), 1)
+            self.assertEqual(payload.get("slot_readiness", {}).get("blocked_slot_count"), 0)
+            self.assertEqual(
+                payload.get("modality_readiness", {}).get("covered_target_launch_modalities"),
+                ["text"],
+            )
+            self.assertEqual(payload.get("operator_action_plan", {}).get("status"), "ready_for_gl13")
+            self.assertEqual(payload.get("operator_action_plan", {}).get("next_actions"), [])
             self.assertEqual(payload.get("items", [])[0].get("accepted_loop_ids"), ["real-text-001"])
 
     def test_fixture_manifest_is_invalid_and_can_fail(self) -> None:
@@ -222,7 +254,195 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             self.assertEqual(payload.get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_INVALID")
             item = payload.get("items", [])[0]
             self.assertIn("fixture_or_simulated_loop_rejected", item.get("failure_codes", []))
+            self.assertEqual(payload.get("slot_readiness", {}).get("invalid_slot_count"), 1)
+            self.assertEqual(
+                payload.get("operator_action_plan", {}).get("next_actions", [{}])[0].get("action"),
+                "repair_real_manifest",
+            )
             self.assertIn("real_loop_manifests_invalid", payload.get("warning_codes", []))
+
+    def test_manifest_missing_backfill_linkage_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            loop = _valid_loop()
+            loop.pop("backfill_slot_index", None)
+            loop.pop("backfill_action_id", None)
+            _write_json(workpack_path, _workpack(work_items=[_work_item(modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [loop],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertIn("backfill_slot_index_missing", item.get("failure_codes", []))
+            self.assertIn("backfill_action_id_missing_or_placeholder", item.get("failure_codes", []))
+
+    def test_manifest_backfill_linkage_must_match_workpack_slot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            loop = _valid_loop(slot_index=2, backfill_action_id="gl23-slot-002-text")
+            _write_json(workpack_path, _workpack(work_items=[_work_item(slot_index=1, modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [loop],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertIn("backfill_slot_index_mismatch", item.get("failure_codes", []))
+            self.assertIn("backfill_action_id_mismatch", item.get("failure_codes", []))
+
+    def test_manifest_with_non_slot_loop_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            _write_json(workpack_path, _workpack(work_items=[_work_item(slot_index=1, modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [
+                        _valid_loop(loop_id="real-text-001", modality="text", slot_index=1),
+                        _valid_loop(loop_id="real-audio-002", modality="audio", slot_index=2),
+                    ],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertEqual(item.get("preflight_status"), "invalid")
+            self.assertIn("manifest_contains_non_slot_loop", item.get("failure_codes", []))
+            self.assertIn("non_slot_loop_in_manifest", item.get("failure_codes", []))
+            self.assertEqual(item.get("ignored_loop_ids"), ["real-audio-002"])
+            self.assertIn("real_loop_manifest_slot_contamination", payload.get("warning_codes", []))
+
+    def test_manifest_with_multiple_slot_loops_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            _write_json(workpack_path, _workpack(work_items=[_work_item(slot_index=1, modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [
+                        _valid_loop(loop_id="real-text-001", modality="text", slot_index=1),
+                        _valid_loop(loop_id="real-text-002", modality="text", slot_index=1),
+                    ],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertEqual(item.get("preflight_status"), "invalid")
+            self.assertEqual(item.get("accepted_loop_ids"), ["real-text-001", "real-text-002"])
+            self.assertIn("multiple_required_modality_loops", item.get("failure_codes", []))
+            self.assertIn("real_loop_manifest_slot_contamination", payload.get("warning_codes", []))
 
 
 if __name__ == "__main__":

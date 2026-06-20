@@ -13,4 +13,4 @@
 
 跨多个 release 汇总的已完成能力，应在相关 release 真正发布后归档到 `docs/archive/status/`。当前记录：`docs/archive/status/2026-06-19-completed-capabilities-archive.md`。
 
-当前发版候选：`v0.2.4-internal.1`。本轮 release 重点是把中文操作文档、文档分层核验结果和归档记录纳入发布记录，不新增运行时能力声明。
+当前发版候选：`v0.2.5-internal.1`。本轮 release 重点是在没有真实业务数据时收敛为内部 dogfood 口径，并补齐后续真实数据接入、验收和归档文档。

@@ -6,6 +6,7 @@
 
 - [latest/](latest/README.md)：最新已发布手册和当前操作参考。
 - [working/](working/README.md)：当前迭代状态、计划、backlog、baseline 和证据。
+- [reviews/](reviews/README.md)：项目级评审、能力评估、上线判断和风险复盘。
 - [releases/](releases/README.md)：changelog、发布说明、发布标准和带日期的发布决策快照。
 - [archive/](archive/README.md)：历史评估、已替代状态快照和已完成能力归档。
 
@@ -43,11 +44,14 @@
 - [测试](latest/operations/testing.md)
 - [脚本命名映射](latest/operations/script-name-map.md)
 - [Runbook 入口](latest/operations/runbooks/README.md)
+- [真实数据接入与验收手册](latest/operations/runbooks/real-data-intake-and-validation.md)
 - [操作环境](latest/operations/environments/README.md)
 - [操作接口](latest/operations/interfaces/README.md)
 
 ## 当前迭代（working）
 
+- [GPT5.5 后续迭代蓝图 2026-06-20](working/status/2026-06-20-gpt55-iteration-blueprint.md)
+- [GPT5.5 上线施工包](working/status/gpt55-launch-blueprint/README.md)
 - [当前状态](working/status/CURRENT_STATUS.md)
 - [上线 readiness 总计划](working/status/launch-readiness-master-plan.md)
 - [蒸馏平台战略评估](working/status/2026-05-17-distillation-platform-strategy-assessment.md)
@@ -69,10 +73,15 @@
 - [Baseline 包](working/status/baselines/README.md)
 - [操作文档审计 2026-06-19](working/status/2026-06-19-operations-docs-audit.md)
 
+## 评审（reviews）
+
+- [项目能力与目标达成度评审 2026-06-20](reviews/2026-06-20-project-capability-review.md)
+
 ## 发布（releases）
 
 - [变更日志](releases/CHANGELOG.md)
 - [发布说明](releases/notes/README.md)
+- [v0.2.5-internal.1 发布说明](releases/notes/v0.2.5-internal.1.md)
 - [v0.2.4-internal.1 发布说明](releases/notes/v0.2.4-internal.1.md)
 - [v0.2.3-internal.1 发布说明](releases/notes/v0.2.3-internal.1.md)
 - [v0.2.2-internal.1 发布说明](releases/notes/v0.2.2-internal.1.md)
@@ -84,6 +93,7 @@
 ## 归档（archive）
 
 - [已完成能力归档 2026-06-19](archive/status/2026-06-19-completed-capabilities-archive.md)
+- [内部 dogfood 与真实数据接入预案归档 2026-06-20](archive/status/2026-06-20-internal-dogfood-real-data-handoff-archive.md)
 - [中文文档与发布记录归档 2026-06-20](archive/status/2026-06-20-documentation-localization-archive.md)
 - [GLM-5.1 评估跳转](archive/assessments/glm-5.1-project-assessment.md)
 - [GLM-5.1 原始评估归档](archive/assessments/2026-04-22-glm-5.1-project-assessment.md)
@@ -94,5 +104,6 @@
 - 根目录只保留 [README.md](../README.md) 作为主入口。
 - `docs/latest/` 是唯一应被视为“当前已发布手册”的层。
 - `docs/working/` 可在迭代中变化，也可以包含生成证据。
+- `docs/reviews/` 用于集中保存阶段性评审、能力评估、上线判断和风险复盘。
 - `docs/releases/` 记录发布决策和 changelog 历史。
 - `docs/archive/` 仅用于可追溯性，不驱动当前操作。

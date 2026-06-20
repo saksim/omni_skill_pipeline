@@ -96,6 +96,7 @@ skills/drafts/review_queue/pending/*.json
 .pytype/
 
 # 数据
+data/real-inputs/
 *.csv
 *.xlsx
 *.xls

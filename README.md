@@ -2,7 +2,7 @@
 
 Omni Skill Pipeline 用于把文本、音频、图像、视频、表格和混合语料证据，蒸馏成可复用、可追溯、可审核的技能工件：`SKILL.md`、`skill.json`、`SkillGraph`、publication manifest，以及可移植的 agent skill package。
 
-当前发版候选版本是 `v0.2.4-internal.1`。这是内部 dogfood 文档与发布记录整理版本，不是外部 Beta、GA、SaaS 或生产部署承诺。
+当前发版候选版本是 `v0.2.5-internal.1`。这是内部 dogfood 与未来真实数据接入预案版本，不是外部 Beta、GA、SaaS 或生产部署承诺。
 
 ## 当前能力
 
@@ -56,11 +56,11 @@ python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xm
 
 ## 发布
 
-- 当前内部发版候选：`v0.2.4-internal.1`
-- 上一已发布内部 tag：`v0.2.3-internal.1`
+- 当前内部发版候选：`v0.2.5-internal.1`
+- 上一已发布内部 tag：`v0.2.4-internal.1`
 - CI 门禁：`.github/workflows/ci.yml`
 - Release 工作流：`.github/workflows/release.yml`
-- 发布说明：`docs/releases/notes/v0.2.4-internal.1.md`
+- 发布说明：`docs/releases/notes/v0.2.5-internal.1.md`
 - GitHub Release 手册：`docs/latest/operations/runbooks/github-release-workflow.md`
 - 本地 artifact 加密手册：`docs/latest/operations/runbooks/artifact-encryption.md`
 
@@ -77,4 +77,4 @@ python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xm
 
 ## 当前工程判断
 
-内部 dogfood 路径已经可供内部使用。广义外部上线 gate 仍保持 `HOLD`，原因是 launch-gate-eligible 的真实业务闭环证据仍不足。Docker、Postgres、K8s、Vault/KMS、生产 key rotation、OCR hardening 和外部真实闭环采集，仍不属于当前内部版本已完成边界，除非后续 release 明确关闭这些能力。
+内部 dogfood 路径已经可供内部使用。广义外部上线 gate 仍保持 `HOLD`，原因是 launch-gate-eligible 的真实业务闭环证据仍不足。后续拿到真实数据时，先按 `docs/latest/operations/runbooks/real-data-intake-and-validation.md` 投递本地原始数据和脱敏 manifest，再运行 GL-64、GL-13、trial metrics 与 launch gate。Docker、Postgres、K8s、Vault/KMS、生产 key rotation、OCR hardening 和外部真实闭环采集，仍不属于当前内部版本已完成边界，除非后续 release 明确关闭这些能力。

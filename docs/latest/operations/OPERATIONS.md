@@ -1,6 +1,6 @@
 # 操作文档入口
 
-这是 `v0.2.4-internal.1` 发版候选的当前操作入口。
+这是 `v0.2.5-internal.1` 发版候选的当前操作入口。
 
 当前支持的上线姿态是内部 dogfood。使用这些文档可以在内部路径下运行、验证、打包和操作本仓库。不要把这些文档当作外部 Beta、GA、SaaS、Docker/Postgres 生产验证或 K8s readiness 的证据。
 
@@ -10,8 +10,9 @@
 2. 按 [CLI](cli.md) 验证本地 CLI/package 可用。
 3. 按 [Testing](testing.md) 跑本地回归门禁。
 4. 需要 GitHub release package 时，按 [GitHub Release Workflow](runbooks/github-release-workflow.md) 执行。
-5. 需要保护 file-backed artifact 时，按 [Artifact Encryption](runbooks/artifact-encryption.md) 执行。
-6. 需要 live internal API dogfood 证据时，使用 release notes 和 runbook 中记录的 internal dogfood smoke 命令。
+5. 后续拿到真实业务数据时，按 [真实数据接入与验收手册](runbooks/real-data-intake-and-validation.md) 执行。
+6. 需要保护 file-backed artifact 时，按 [Artifact Encryption](runbooks/artifact-encryption.md) 执行。
+7. 需要 live internal API dogfood 证据时，使用 release notes 和 runbook 中记录的 internal dogfood smoke 命令。
 
 ## 当前操作域
 
@@ -29,6 +30,7 @@
 
 - [Runbooks](runbooks/README.md)
 - [GitHub Release Workflow](runbooks/github-release-workflow.md)
+- [真实数据接入与验收手册](runbooks/real-data-intake-and-validation.md)
 - [Artifact Encryption](runbooks/artifact-encryption.md)
 - [Docker Zero-to-Release Runbook](runbooks/docker-zero-to-release.md)
 - [Launch Beta Runbook](runbooks/launch-beta.md)
@@ -39,7 +41,7 @@
 
 ## 当前边界
 
-- `v0.2.4-internal.1` 继承已完成的非基础设施内部 dogfood 路径，并补齐中文操作文档、发布记录和归档记录。
+- `v0.2.5-internal.1` 继承已完成的非基础设施内部 dogfood 路径，并补齐未来真实数据接入、验收和归档口径。
 - 本地 file artifact 加密是可选能力，默认关闭。
 - Docker、Postgres、K8s、Vault/KMS、自动 key rotation、OCR hardening 和 external real-loop collection 都不是当前已完成 release claim。
 - `scripts/launch_gate.py` 仍可能返回 `HOLD`；这会阻断外部上线声明，不阻断内部 dogfood 操作。

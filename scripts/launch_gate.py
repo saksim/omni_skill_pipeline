@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agent_smoke import TARGET_AGENTS, build_matrix_report
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CURRENT_STATUS_DOC = REPO_ROOT / "docs" / "working" / "status" / "CURRENT_STATUS.md"
@@ -500,23 +502,166 @@ def _evaluate_agent_smoke(report: dict[str, Any], *, minimum_success_rate: float
         return _make_check(
             "agent_smoke_success_rate",
             "fail",
-            {"record_count": 0, "success_rate": 0.0},
+            {"record_count": 0, "executable_record_count": 0, "success_rate": 0.0},
             {"minimum_success_rate": minimum_success_rate},
             details="Agent smoke report must include at least one executable record.",
         )
     passed = 0
+    executable_records = 0
+    not_run_count = 0
     for record in records:
         if not isinstance(record, dict):
             continue
+        status = str(record.get("status", "")).strip().lower()
+        metrics_result = str(record.get("metrics_agent_smoke_result", "")).strip().lower()
+        if status == "not_run" or metrics_result == "not_run":
+            not_run_count += 1
+            continue
+        executable_records += 1
         if _status_is_pass(record.get("metrics_agent_smoke_result")) or _status_is_pass(record.get("status")):
             passed += 1
-    success_rate = passed / len(records)
+    if executable_records <= 0:
+        return _make_check(
+            "agent_smoke_success_rate",
+            "fail",
+            {
+                "record_count": len(records),
+                "executable_record_count": 0,
+                "not_run_record_count": not_run_count,
+                "success_rate": 0.0,
+            },
+            {"minimum_success_rate": minimum_success_rate, "minimum_executable_records": 1},
+            details="Agent smoke report must include at least one executed pass/fail record.",
+        )
+    success_rate = passed / executable_records
     return _make_check(
         "agent_smoke_success_rate",
         "pass" if success_rate >= minimum_success_rate else "fail",
-        {"record_count": len(records), "passed": passed, "success_rate": success_rate},
-        {"minimum_success_rate": minimum_success_rate},
-        details="Approved skills must work in the target agent smoke matrix.",
+        {
+            "record_count": len(records),
+            "executable_record_count": executable_records,
+            "not_run_record_count": not_run_count,
+            "passed": passed,
+            "success_rate": success_rate,
+        },
+        {"minimum_success_rate": minimum_success_rate, "minimum_executable_records": 1},
+        details="Executed agent smoke records must meet the success threshold; not_run records are covered by matrix.",
+    )
+
+
+def _agent_smoke_record_skill_ids(report: dict[str, Any]) -> set[str]:
+    records = report.get("records", [])
+    if not isinstance(records, list):
+        return set()
+    return {
+        str(record.get("skill_id", "")).strip()
+        for record in records
+        if isinstance(record, dict) and str(record.get("skill_id", "")).strip()
+    }
+
+
+def _skill_id_from_path(raw_path: Any) -> str:
+    value = str(raw_path or "").strip()
+    if not value:
+        return ""
+    path = Path(value)
+    if path.name in {"SKILL.md", "agent_skill_package.json"}:
+        return path.parent.name.strip()
+    return path.name.strip()
+
+
+def _real_launch_gate_sample(sample: dict[str, Any]) -> bool:
+    loop_metrics = sample.get("loop_metrics", {})
+    if not isinstance(loop_metrics, dict):
+        loop_metrics = {}
+    evidence_origin = str(loop_metrics.get("evidence_origin", sample.get("evidence_origin", ""))).strip().lower()
+    if evidence_origin != "real":
+        return False
+    if not _truthy(loop_metrics.get("launch_gate_eligible", sample.get("launch_gate_eligible", False))):
+        return False
+    status = str(loop_metrics.get("status", sample.get("status", ""))).strip().lower()
+    return status in {"", "complete", "completed", "pass", "passed", "success"}
+
+
+def _trial_run_real_skill_ids(report: dict[str, Any] | None) -> set[str]:
+    if report is None:
+        return set()
+    samples = report.get("samples", [])
+    if not isinstance(samples, list):
+        return set()
+
+    skill_ids: set[str] = set()
+    direct_keys = ("skill_id", "approved_skill_id", "package_name", "skill_package_id")
+    for sample in samples:
+        if not isinstance(sample, dict) or not _real_launch_gate_sample(sample):
+            continue
+        loop_metrics = sample.get("loop_metrics", {})
+        containers = [sample]
+        if isinstance(loop_metrics, dict):
+            containers.append(loop_metrics)
+        for container in containers:
+            for key in direct_keys:
+                value = str(container.get(key, "")).strip()
+                if value:
+                    skill_ids.add(value)
+
+        export_results = sample.get("export_results", [])
+        if not isinstance(export_results, list):
+            continue
+        for export_result in export_results:
+            if not isinstance(export_result, dict):
+                continue
+            for key in ("package_path", "skill_path"):
+                value = _skill_id_from_path(export_result.get(key))
+                if value:
+                    skill_ids.add(value)
+    return skill_ids
+
+
+def _agent_smoke_required_skill_ids(
+    report: dict[str, Any],
+    *,
+    trial_run_report: dict[str, Any] | None = None,
+) -> list[str]:
+    return sorted(_agent_smoke_record_skill_ids(report) | _trial_run_real_skill_ids(trial_run_report))
+
+
+def _evaluate_agent_smoke_matrix(
+    report: dict[str, Any],
+    *,
+    trial_run_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    required_skill_ids = _agent_smoke_required_skill_ids(report, trial_run_report=trial_run_report)
+    matrix_report = build_matrix_report(
+        report,
+        required_skill_ids=required_skill_ids,
+        target_agents=list(TARGET_AGENTS),
+    )
+    counts = matrix_report.get("counts", {})
+    status = str(matrix_report.get("status", "")).strip()
+    return _make_check(
+        "agent_smoke_matrix_coverage",
+        "pass" if status == "AGENT_SMOKE_MATRIX_READY" else "fail",
+        {
+            "matrix_status": status,
+            "required_skill_ids": required_skill_ids,
+            "required_skill_count": int(counts.get("required_skill_count", 0) or 0),
+            "target_agents": matrix_report.get("target_agents", []),
+            "expected_cell_count": int(counts.get("expected_cell_count", 0) or 0),
+            "recorded_cell_count": int(counts.get("recorded_cell_count", 0) or 0),
+            "missing_cell_count": int(counts.get("missing_cell_count", 0) or 0),
+            "invalid_record_count": int(counts.get("invalid_record_count", 0) or 0),
+            "missing_cells": matrix_report.get("missing_cells", []),
+            "invalid_records": matrix_report.get("invalid_records", []),
+        },
+        {
+            "matrix_status": "AGENT_SMOKE_MATRIX_READY",
+            "target_agents": list(TARGET_AGENTS),
+        },
+        details=(
+            "Each approved skill in the agent smoke report and each real launch-gate-eligible "
+            "exported skill must have a valid Codex, Claude Code, and OpenCode record."
+        ),
     )
 
 
@@ -818,6 +963,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
                 minimum_success_rate=max(0.0, min(1.0, float(args.minimum_agent_smoke_success_rate))),
             )
         )
+        checks.append(_evaluate_agent_smoke_matrix(agent_smoke_report, trial_run_report=trial_run_report))
 
     checks.append(_evaluate_doc_sync(report=doc_sync_report, source=doc_sync_source))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))

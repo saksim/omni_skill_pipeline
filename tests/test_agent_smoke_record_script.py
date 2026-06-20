@@ -174,6 +174,116 @@ class AgentSmokeRecordScriptTests(unittest.TestCase):
             self.assertEqual(records[0].get("failure_code"), "wrong_skill_selected")
             self.assertEqual(records[0].get("metrics_agent_smoke_result"), "failed")
 
+    def test_matrix_validation_fails_when_required_agent_cells_are_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            report_path = tmp_path / "agent-smoke-report.json"
+            report_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "cbt12.agent_smoke_report.v1",
+                        "records": [
+                            {
+                                "skill_id": "trial-skill-004",
+                                "agent": "codex",
+                                "status": "agent_smoke_passed",
+                                "metrics_agent_smoke_result": "passed",
+                                "reason": "Codex selected expected skill.",
+                                "trigger_prompt": "Use the skill.",
+                                "expected_skill_selection": "trial-skill",
+                                "expected_task_output": "Expected checklist.",
+                                "selected_skill": "trial-skill",
+                                "observed_task_output": "Expected checklist produced.",
+                                "failure_code": "",
+                            }
+                        ],
+                    },
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--report",
+                    str(report_path),
+                    "--validate-matrix",
+                    "--required-skill-id",
+                    "trial-skill-004",
+                    "--fail-on-incomplete",
+                    "--print-json",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            self.assertIn("status=AGENT_SMOKE_MATRIX_INCOMPLETE", completed.stdout)
+            self.assertIn("missing=2", completed.stdout)
+            self.assertIn('"agent": "claude-code"', completed.stdout)
+            self.assertIn('"agent": "opencode"', completed.stdout)
+
+    def test_matrix_validation_passes_when_all_target_agents_are_recorded(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            report_path = tmp_path / "agent-smoke-report.json"
+            records = []
+            for agent in ["codex", "claude-code", "opencode"]:
+                records.append(
+                    {
+                        "skill_id": "trial-skill-005",
+                        "agent": agent,
+                        "status": "agent_smoke_passed",
+                        "metrics_agent_smoke_result": "passed",
+                        "reason": "%s selected expected skill." % agent,
+                        "trigger_prompt": "Use the skill.",
+                        "expected_skill_selection": "trial-skill",
+                        "expected_task_output": "Expected checklist.",
+                        "selected_skill": "trial-skill",
+                        "observed_task_output": "Expected checklist produced.",
+                        "failure_code": "",
+                    }
+                )
+            report_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "cbt12.agent_smoke_report.v1",
+                        "records": records,
+                    },
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--report",
+                    str(report_path),
+                    "--validate-matrix",
+                    "--required-skill-id",
+                    "trial-skill-005",
+                    "--fail-on-incomplete",
+                    "--print-json",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 0, completed.stderr + completed.stdout)
+            self.assertIn("status=AGENT_SMOKE_MATRIX_READY", completed.stdout)
+            self.assertIn("expected=3", completed.stdout)
+            self.assertIn("recorded=3", completed.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,10 +1,10 @@
 {
   "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_ingestion.v1",
-  "generated_at_utc": "2026-06-19T05:10:17Z",
+  "generated_at_utc": "2026-06-20T06:50:09Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
-    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpr4hipjhx\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalations-report.json",
-    "handoff_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpr4hipjhx\\real-trial-backfill-handoff-report.json",
+    "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalations_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpbatm49nc\\real-trial-backfill-submission-queue-followup-resolution-escalation-action-plan-closure-cadence-escalations-report.json",
+    "handoff_report": "C:\\Users\\saksim\\AppData\\Local\\Temp\\tmpbatm49nc\\real-trial-backfill-handoff-report.json",
     "acknowledgements_report": ""
   },
   "followup_resolution_escalation_action_plan_closure_cadence_escalation_status_gl49": "ACTION_PLAN_CLOSURE_CADENCE_ESCALATION_NOT_REQUIRED",
