@@ -6,6 +6,7 @@
 
 - [latest/](latest/README.md)：最新已发布手册和当前操作参考。
 - [working/](working/README.md)：当前迭代状态、计划、backlog、baseline 和证据。
+- [reviews/](reviews/README.md)：项目级评审、能力评估、上线判断和风险复盘。
 - [releases/](releases/README.md)：changelog、发布说明、发布标准和带日期的发布决策快照。
 - [archive/](archive/README.md)：历史评估、已替代状态快照和已完成能力归档。
 
@@ -69,6 +70,10 @@
 - [Baseline 包](working/status/baselines/README.md)
 - [操作文档审计 2026-06-19](working/status/2026-06-19-operations-docs-audit.md)
 
+## 评审（reviews）
+
+- [项目能力与目标达成度评审 2026-06-20](reviews/2026-06-20-project-capability-review.md)
+
 ## 发布（releases）
 
 - [变更日志](releases/CHANGELOG.md)
@@ -94,5 +99,6 @@
 - 根目录只保留 [README.md](../README.md) 作为主入口。
 - `docs/latest/` 是唯一应被视为“当前已发布手册”的层。
 - `docs/working/` 可在迭代中变化，也可以包含生成证据。
+- `docs/reviews/` 用于集中保存阶段性评审、能力评估、上线判断和风险复盘。
 - `docs/releases/` 记录发布决策和 changelog 历史。
 - `docs/archive/` 仅用于可追溯性，不驱动当前操作。

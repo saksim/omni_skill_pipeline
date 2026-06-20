@@ -1,6 +1,6 @@
 {
   "schema_version": "real_trial_submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence.v1",
-  "generated_at_utc": "2026-06-19T05:10:18Z",
+  "generated_at_utc": "2026-06-20T06:50:10Z",
   "owner": "controlled-beta-ops",
   "input_paths": {
     "submission_queue_followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\real-trial-loop-collection\\backfill-submission-queue-fo-2f660197a8.json",
@@ -24,10 +24,10 @@
   "refresh_cadence": {
     "refresh_interval_hours": 24.0,
     "cadence_status": "CADENCE_ON_SCHEDULE",
-    "previous_generated_at_utc": "2026-06-19T05:10:07Z",
-    "next_refresh_due_utc": "2026-06-20T05:10:07Z",
+    "previous_generated_at_utc": "2026-06-20T06:50:00Z",
+    "next_refresh_due_utc": "2026-06-21T06:50:00Z",
     "due_in_hours": 23.997,
-    "evaluated_at_utc": "2026-06-19T05:10:18Z"
+    "evaluated_at_utc": "2026-06-20T06:50:10Z"
   },
   "followup_resolution_escalation_action_plan_closure_cadence_escalation_acknowledgement_closure_cadence_escalation_closure_cadence_escalation_closure_cadence_rows": []
 }
