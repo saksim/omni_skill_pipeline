@@ -49,6 +49,8 @@
 
 ## 当前迭代（working）
 
+- [GPT5.5 后续迭代蓝图 2026-06-20](working/status/2026-06-20-gpt55-iteration-blueprint.md)
+- [GPT5.5 上线施工包](working/status/gpt55-launch-blueprint/README.md)
 - [当前状态](working/status/CURRENT_STATUS.md)
 - [上线 readiness 总计划](working/status/launch-readiness-master-plan.md)
 - [蒸馏平台战略评估](working/status/2026-05-17-distillation-platform-strategy-assessment.md)

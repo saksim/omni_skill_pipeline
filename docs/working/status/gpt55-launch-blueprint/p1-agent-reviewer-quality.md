@@ -1,0 +1,96 @@
+# P1 Agent Smoke 与 Reviewer Ops 施工方案
+
+## 目标
+
+补齐真实 agent 使用证据和真实 reviewer 操作数据，避免项目只达到数量门槛，却没有质量闭环。
+
+## 输入文档
+
+- [Agent Smoke Protocol](../../../latest/operations/runbooks/agent-smoke-protocol.md)
+- [Controlled Trial Metrics Summary](../baselines/controlled-trial/trial-metrics-summary.md)
+- [Real Trial Loop Collection Runbook](../../../latest/operations/runbooks/real-trial-loop-collection.md)
+
+## 当前判断
+
+当前 fixture 闭环里的 reviewer 指标和 agent smoke 指标表面上通过，但这些不等价于真实 Beta 证据。后续必须把相同字段迁移到 `evidence_origin=real` 的闭环上。
+
+## Agent smoke 施工
+
+### 覆盖范围
+
+每个进入真实 launch gate 的 skill 包，至少记录：
+
+- Codex smoke。
+- Claude Code smoke。
+- OpenCode smoke。
+
+如果某个 agent 暂时不可用，必须记录 `status=not_run` 和明确原因。不能静默缺失。
+
+### 执行命令模板
+
+```powershell
+python scripts\agent_smoke.py --skill-id real-text-slot-001 --agent codex --status passed --reason "真实文本闭环可触发目标 skill" --trigger-prompt "根据真实工单生成可执行 runbook" --expected-skill-selection "database-slow-query-notes-to-review-skill" --expected-task-output "生成审核后的 runbook" --observed-skill-selection "database-slow-query-notes-to-review-skill" --observed-task-output "已生成并通过 reviewer 审核" --print-json
+```
+
+失败样例也必须保留：
+
+```powershell
+python scripts\agent_smoke.py --skill-id real-audio-slot-002 --agent opencode --status failed --reason "音频转写输入缺少时间戳，agent 未能稳定选择目标 skill" --failure-code missing_audio_transcript_timestamp --trigger-prompt "根据真实音频跟进记录生成复盘流程" --expected-skill-selection "audio-follow-up-call-to-runbook-revision-skill" --expected-task-output "生成可审核 runbook" --print-json
+```
+
+### 质量门槛
+
+- agent smoke success rate 不低于当前 launch gate 阈值。
+- 所有 failure code 必须可复现、可归类、可修复或被产品边界解释。
+- 失败记录不得删除，只能补充修复后的新记录。
+
+## Reviewer ops 施工
+
+### 必填字段
+
+每条真实 loop 必须有：
+
+| 字段 | 要求 |
+| --- | --- |
+| `review_task_id` | 可追踪到审核任务 |
+| `reviewed_by` | 可识别审核角色或人员 |
+| `reviewed_at_utc` | UTC 时间 |
+| `review_outcome` | approved、rejected 或 changes_requested |
+| `revisions_before_approval` | 数字 |
+| `reviewer_edit_distance_pct` | 数字 |
+| `published_without_review` | 外部发布前必须为 `false` |
+
+### 审核流程
+
+1. reviewer 查看原始输入、生成 skill 包、reference、examples、risk note。
+2. reviewer 给出 `approved`、`changes_requested` 或 `rejected`。
+3. 如果返修，记录每一轮返修原因。
+4. 最终通过时记录 revision count 和 edit distance。
+5. 将 reviewer 字段写回 real loop manifest。
+
+### 校准命令
+
+```powershell
+python scripts\tune_review.py --manifest docs\working\status\baselines\real-trial-loop-collection\real-trial-loop-metrics-manifest.json --print-json --fail-on-mismatch
+```
+
+若校准失败，不要先改阈值。先检查 reviewer 规则、样本分类、返修标准是否一致。
+
+## Review queue 施工
+
+如果真实审核开始形成排队压力，再启用 review queue 验证：
+
+```powershell
+python scripts\ga_review_queue.py --stage review_queue_repository --dry-run --print-json
+python scripts\ga_review_queue.py --stage review_queue_service_flow --dry-run --print-json
+python scripts\ga_review_queue.py --stage review_feedback --dry-run --print-json
+```
+
+只有 dry-run 通过后，才允许进入真实写入或 API 验证。
+
+## 完成定义
+
+- 所有 launch-gate-eligible real loops 都有 reviewer trace。
+- 所有真实 skill 包都有 agent smoke 记录或明确不可运行原因。
+- `trial_metrics.py --fail-on-ga-blocker` 不因 reviewer 或 agent 质量失败。
+- `tune_review.py --fail-on-mismatch` 通过，或每个 mismatch 都有已登记修复计划。
