@@ -47,6 +47,10 @@ def _valid_loop(
     slot_index: int = 1,
     backfill_action_id: str = "",
 ) -> dict[str, Any]:
+    evidence_ref = (
+        "docs/working/status/baselines/real-trial-loop-collection/"
+        "real-trial-loop-intake-workpack-summary.md"
+    )
     return {
         "loop_id": loop_id,
         "status": "complete",
@@ -55,11 +59,26 @@ def _valid_loop(
         "launch_gate_eligible": True,
         "source_system": "pilot-ops",
         "source_reference": "ticket://INC-2001",
+        "source_bundle_ref": "local-secure-store://real_loop_sources/RL-001/source_bundle",
+        "source_hashes": [
+            {
+                "filename": "redacted-source.md",
+                "sha256": "a" * 64,
+            }
+        ],
+        "business_expectation_ref": evidence_ref,
+        "run_evidence_ref": evidence_ref,
+        "human_review_ref": evidence_ref,
+        "agent_smoke_ref": evidence_ref,
+        "generated_bundle_hash": "b" * 64,
         "collected_at_utc": "2026-06-19T00:00:00Z",
         "review_task_id": "review-INC-2001",
         "reviewed_by": "reviewer-a",
         "reviewed_at_utc": "2026-06-19T00:05:00Z",
         "review_outcome": "approved",
+        "redaction_status": "passed",
+        "pii_status": "no_raw_pii_in_repo",
+        "review_status": "approved",
         "revisions_before_approval": 1,
         "reviewer_edit_distance_pct": 18.0,
         "agent_smoke_result": "passed",
@@ -348,6 +367,61 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             item = payload.get("items", [])[0]
             self.assertIn("backfill_slot_index_mismatch", item.get("failure_codes", []))
             self.assertIn("backfill_action_id_mismatch", item.get("failure_codes", []))
+
+    def test_manifest_missing_evidence_contract_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            loop = _valid_loop()
+            loop.pop("source_hashes", None)
+            loop["business_expectation_ref"] = "missing/evidence.md"
+            loop["generated_bundle_hash"] = "not-a-sha"
+            loop["redaction_status"] = "pending"
+            loop["agent_smoke_result"] = "not_run"
+            _write_json(workpack_path, _workpack(work_items=[_work_item(modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [loop],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertIn("source_hashes_missing", item.get("failure_codes", []))
+            self.assertIn(
+                "evidence_ref_missing_or_unreadable:business_expectation_ref",
+                item.get("failure_codes", []),
+            )
+            self.assertIn("generated_bundle_hash_invalid", item.get("failure_codes", []))
+            self.assertIn("redaction_status_not_passed", item.get("failure_codes", []))
+            self.assertIn("agent_smoke_result_not_executed", item.get("failure_codes", []))
+            self.assertIn("real_loop_evidence_contract_invalid", payload.get("warning_codes", []))
 
     def test_manifest_with_non_slot_loop_is_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

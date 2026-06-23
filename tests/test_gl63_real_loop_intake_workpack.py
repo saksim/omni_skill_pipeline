@@ -146,7 +146,10 @@ class RealTrialLoopIntakeWorkpackScriptTests(unittest.TestCase):
             self.assertEqual(len(work_items), 2)
             self.assertEqual(work_items[0].get("linked_gl62_escalation_item_id"), "gl62-escalation-text")
             self.assertIn("source_reference", work_items[0].get("required_trace_fields", []))
-            self.assertIn("agent_smoke_result", work_items[0].get("required_quality_fields", []))
+            self.assertIn("source_hashes", work_items[0].get("required_trace_fields", []))
+            self.assertIn("agent_smoke_ref", work_items[0].get("required_trace_fields", []))
+            self.assertIn("agent_smoke_result=passed", work_items[0].get("required_quality_fields", []))
+            self.assertIn("redaction_status=passed", work_items[0].get("required_quality_fields", []))
             self.assertTrue(str(work_items[0].get("manifest_drop_path", "")).endswith("real-loop-001-text.json"))
 
     def test_fail_on_action_required_returns_non_zero(self) -> None:

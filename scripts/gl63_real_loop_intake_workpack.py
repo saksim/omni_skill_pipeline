@@ -18,19 +18,29 @@ DEFAULT_MANIFEST_DIR = REAL_TRIAL_BASELINE_DIR / "manifests"
 REQUIRED_TRACE_FIELDS = [
     "evidence_origin=real",
     "launch_gate_eligible=true",
+    "source_bundle_ref",
+    "source_hashes",
     "source_system",
     "source_reference",
     "collected_at_utc",
+    "business_expectation_ref",
+    "run_evidence_ref",
+    "human_review_ref",
+    "agent_smoke_ref",
+    "generated_bundle_hash",
     "review_task_id",
     "reviewed_by",
     "reviewed_at_utc",
 ]
 REQUIRED_QUALITY_FIELDS = [
     "status=complete",
-    "review_outcome",
+    "review_outcome=approved",
+    "redaction_status=passed",
+    "pii_status=no_raw_pii_in_repo",
+    "review_status=approved",
     "revisions_before_approval",
     "reviewer_edit_distance_pct",
-    "agent_smoke_result",
+    "agent_smoke_result=passed",
     "published_without_review=false",
     "critical_secret_or_pii_leak=false",
     "high_severity_incident=false",
@@ -199,8 +209,9 @@ def _build_workpack(
                 "linked_gl62_escalation_item_id": str(linked_gl62_row.get("escalation_item_id", "")).strip(),
                 "linked_gl62_escalation_action": str(linked_gl62_row.get("escalation_action", "")).strip(),
                 "acceptance_rule": (
-                    "The manifest loop must be real, complete, reviewed, source-traced, and launch_gate_eligible=true. "
-                    "Fixture or simulated loops must stay launch_gate_eligible=false."
+                    "The manifest loop must be real, complete, reviewed, source-traced, redacted, "
+                    "agent-smoke-tested, and launch_gate_eligible=true. Fixture or simulated loops "
+                    "must stay launch_gate_eligible=false."
                 ),
             }
         )
@@ -252,6 +263,10 @@ def _build_workpack(
             "top_level_contract": "JSON object with a top-level loops list",
             "required_trace_fields": REQUIRED_TRACE_FIELDS,
             "required_quality_fields": REQUIRED_QUALITY_FIELDS,
+            "evidence_reference_policy": (
+                "source_bundle_ref may point to controlled local/object storage; business expectation, "
+                "run evidence, human review, and agent smoke refs must be sanitized, reviewable refs."
+            ),
             "post_drop_command": (
                 "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir "
                 + _display_path(manifest_dir)

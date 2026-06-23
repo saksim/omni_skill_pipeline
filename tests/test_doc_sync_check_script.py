@@ -327,6 +327,30 @@ class DocSyncCheckScriptTests(unittest.TestCase):
         self.assertIn('## Host Assumptions', check['details']['missing_required_headings'])
         self.assertIn('Docker Engine', check['details']['missing_required_markers'])
 
+    def test_script_name_map_coverage_reports_missing_scripts(self) -> None:
+        spec = importlib.util.spec_from_file_location('run_doc_sync_check', SCRIPT_PATH)
+        self.assertIsNotNone(spec)
+        assert spec is not None
+        module = importlib.util.module_from_spec(spec)
+        self.assertIsNotNone(spec.loader)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            scripts_dir = Path(tmp_dir) / 'scripts'
+            scripts_dir.mkdir()
+            (scripts_dir / 'covered.py').write_text('print("covered")\n', encoding='utf-8')
+            (scripts_dir / 'missing.py').write_text('print("missing")\n', encoding='utf-8')
+
+            check = module._check_script_name_map_coverage(
+                scripts_dir=scripts_dir,
+                script_map_doc_text='`scripts/covered.py`',
+            )
+
+        self.assertEqual(check.get('status'), 'fail')
+        self.assertEqual(check.get('name'), 'script_name_map_coverage')
+        self.assertEqual(check['details']['missing'], ['missing.py'])
+
     def test_script_smoke_validates_docs_against_code_surfaces(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
@@ -342,6 +366,8 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             api_doc_path = repo_root / 'api.md'
             worker_doc_path = repo_root / 'worker.md'
             testing_doc_path = repo_root / 'testing.md'
+            script_map_doc_path = repo_root / 'script-name-map.md'
+            scripts_dir_path = repo_root / 'scripts'
             arch_migration_doc_path = repo_root / 'v1-to-v2-migration-guide.md'
             ops_migration_doc_path = repo_root / 'v1-to-v2-migration-runbook.md'
             release_standard_doc_path = repo_root / 'v2-release-switch-standard.md'
@@ -354,6 +380,9 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             (repo_root / 'docs').mkdir()
             linked_doc = repo_root / 'docs' / 'index.md'
             linked_doc.write_text('# index\n', encoding='utf-8')
+            scripts_dir_path.mkdir()
+            (scripts_dir_path / 'alpha.py').write_text('print("alpha")\n', encoding='utf-8')
+            (scripts_dir_path / 'beta.py').write_text('print("beta")\n', encoding='utf-8')
 
             readme_path.write_text(
                 '# README\n\n- [docs](docs/index.md)\n',
@@ -386,6 +415,10 @@ class DocSyncCheckScriptTests(unittest.TestCase):
             )
             testing_doc_path.write_text(
                 'TP-E10-01\nTP-E13-01\nTP-E13-02\nTP-E13-03\n',
+                encoding='utf-8',
+            )
+            script_map_doc_path.write_text(
+                '| `scripts/alpha.py` |\n| `scripts/beta.py` |\n',
                 encoding='utf-8',
             )
             arch_migration_doc_path.write_text(VALID_ARCH_MIGRATION_DOC, encoding='utf-8')
@@ -421,6 +454,10 @@ class DocSyncCheckScriptTests(unittest.TestCase):
                     str(worker_doc_path),
                     '--testing-doc',
                     str(testing_doc_path),
+                    '--script-map-doc',
+                    str(script_map_doc_path),
+                    '--scripts-dir',
+                    str(scripts_dir_path),
                     '--arch-migration-doc',
                     str(arch_migration_doc_path),
                     '--ops-migration-doc',

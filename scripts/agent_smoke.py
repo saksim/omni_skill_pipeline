@@ -126,6 +126,17 @@ def _parse_args() -> argparse.Namespace:
         help="In matrix validation mode, exit 1 when required cells are missing or malformed.",
     )
     parser.add_argument(
+        "--require-real-runs",
+        action="store_true",
+        help="In matrix validation mode, require passed live-run records instead of allowing not_run/failed cells.",
+    )
+    parser.add_argument(
+        "--min-passed-agents",
+        type=int,
+        default=len(TARGET_AGENTS),
+        help="Minimum distinct agents with passed live-run records when --require-real-runs is set.",
+    )
+    parser.add_argument(
         "--print-json",
         action="store_true",
         help="Print full report JSON after write, or matrix JSON in --validate-matrix mode.",
@@ -399,6 +410,48 @@ def build_matrix_report(
     }
 
 
+def apply_real_run_gate(matrix_report: dict[str, Any], *, min_passed_agents: int) -> dict[str, Any]:
+    passed_agents: set[str] = set()
+    non_passed_cells: list[dict[str, str]] = []
+    target_agents = [str(item) for item in matrix_report.get("target_agents", [])]
+    required_skill_ids = [str(item) for item in matrix_report.get("required_skill_ids", [])]
+
+    for row in matrix_report.get("matrix", []):
+        if not isinstance(row, dict):
+            continue
+        skill_id = str(row.get("skill_id", "")).strip()
+        agents = row.get("agents", {})
+        if not isinstance(agents, dict):
+            continue
+        for agent in target_agents:
+            cell = agents.get(agent, {})
+            status = str(cell.get("status", "missing") if isinstance(cell, dict) else "missing").strip().lower()
+            if status == "agent_smoke_passed":
+                passed_agents.add(agent)
+            else:
+                non_passed_cells.append(
+                    {
+                        "skill_id": skill_id,
+                        "agent": agent,
+                        "status": status or "missing",
+                    }
+                )
+
+    minimum = max(0, int(min_passed_agents))
+    matrix_ready = str(matrix_report.get("status", "")) == "AGENT_SMOKE_MATRIX_READY"
+    real_ready = matrix_ready and not non_passed_cells and len(passed_agents) >= minimum
+    matrix_report["real_run_gate"] = {
+        "status": "AGENT_SMOKE_REAL_EVIDENCE_READY" if real_ready else "AGENT_SMOKE_REAL_EVIDENCE_INCOMPLETE",
+        "agents_required": minimum,
+        "agents_passed": len(passed_agents),
+        "passed_agents": sorted(passed_agents),
+        "required_skill_count": len(required_skill_ids),
+        "non_passed_cells": non_passed_cells,
+    }
+    matrix_report["status"] = matrix_report["real_run_gate"]["status"]
+    return matrix_report
+
+
 def main() -> int:
     args = _parse_args()
     report_path = Path(args.report).resolve()
@@ -411,6 +464,11 @@ def main() -> int:
                 required_skill_ids=_required_skill_ids(report, args.required_skill_id),
                 target_agents=_target_agents(args.target_agent),
             )
+            if bool(args.require_real_runs):
+                matrix_report = apply_real_run_gate(
+                    matrix_report,
+                    min_passed_agents=int(args.min_passed_agents),
+                )
             counts = matrix_report.get("counts", {})
             print(
                 "Agent smoke matrix status=%s skills=%s expected=%s recorded=%s missing=%s invalid=%s"
@@ -423,9 +481,24 @@ def main() -> int:
                     int(counts.get("invalid_record_count", 0) or 0),
                 )
             )
+            if bool(args.require_real_runs):
+                real_gate = matrix_report.get("real_run_gate", {})
+                print(
+                    "Agent smoke real-run gate status=%s agents_passed=%s agents_required=%s"
+                    % (
+                        str(real_gate.get("status", "unknown")),
+                        int(real_gate.get("agents_passed", 0) or 0),
+                        int(real_gate.get("agents_required", 0) or 0),
+                    )
+                )
             if args.print_json:
                 print(json.dumps(matrix_report, ensure_ascii=False, indent=2))
-            if bool(args.fail_on_incomplete) and str(matrix_report.get("status")) != "AGENT_SMOKE_MATRIX_READY":
+            expected_status = (
+                "AGENT_SMOKE_REAL_EVIDENCE_READY"
+                if bool(args.require_real_runs)
+                else "AGENT_SMOKE_MATRIX_READY"
+            )
+            if bool(args.fail_on_incomplete) and str(matrix_report.get("status")) != expected_status:
                 return 1
             return 0
 

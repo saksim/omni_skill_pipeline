@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,11 +24,20 @@ REQUIRED_TEXT_FIELDS = [
     "source_system",
     "source_reference",
     "collected_at_utc",
+    "source_bundle_ref",
+    "business_expectation_ref",
+    "run_evidence_ref",
+    "human_review_ref",
+    "agent_smoke_ref",
+    "generated_bundle_hash",
     "review_task_id",
     "reviewed_by",
     "reviewed_at_utc",
     "review_outcome",
     "agent_smoke_result",
+    "redaction_status",
+    "pii_status",
+    "review_status",
 ]
 REQUIRED_NUMERIC_FIELDS = [
     "revisions_before_approval",
@@ -48,9 +58,32 @@ TRACE_IDENTITY_FIELDS = [
     "loop_id",
     "source_system",
     "source_reference",
+    "source_bundle_ref",
     "review_task_id",
     "reviewed_by",
 ]
+EVIDENCE_REF_FIELDS = [
+    "business_expectation_ref",
+    "run_evidence_ref",
+    "human_review_ref",
+    "agent_smoke_ref",
+]
+APPROVED_REVIEW_OUTCOMES = {
+    "approved",
+    "approved_for_beta_evidence",
+    "pass",
+    "passed",
+}
+APPROVED_REVIEW_STATUSES = {
+    "approved",
+    "approved_for_beta_evidence",
+    "published",
+}
+PASSED_AGENT_SMOKE_RESULTS = {
+    "agent_smoke_passed",
+    "passed",
+    "passed_with_minor_issues",
+}
 PLACEHOLDER_TOKENS = {
     "",
     "example",
@@ -69,6 +102,8 @@ PLACEHOLDER_TOKENS = {
     "unknown",
 }
 SIMULATED_TOKENS = ("fixture", "synthetic", "simulated", "mock", "dummy", "example", "sample")
+SHA256_PATTERN = re.compile(r"^[0-9a-fA-F]{64}$")
+URI_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://")
 
 
 def _utc_now_iso() -> str:
@@ -150,6 +185,37 @@ def _is_placeholder_text(value: Any) -> bool:
 def _contains_simulated_token(value: Any) -> bool:
     lowered = _normalize_text(value).lower()
     return any(token in lowered for token in SIMULATED_TOKENS)
+
+
+def _is_sha256(value: Any) -> bool:
+    return SHA256_PATTERN.fullmatch(_normalize_text(value)) is not None
+
+
+def _ref_exists_or_is_uri(value: Any) -> bool:
+    text = _normalize_text(value)
+    if _is_placeholder_text(text):
+        return False
+    if URI_PATTERN.match(text):
+        return True
+    return _resolve_path(text).is_file()
+
+
+def _validate_source_hashes(value: Any) -> list[str]:
+    failure_codes: list[str] = []
+    hashes = _as_list(value)
+    if not hashes:
+        return ["source_hashes_missing"]
+    for index, item in enumerate(hashes, start=1):
+        if not isinstance(item, dict):
+            _add_unique(failure_codes, "source_hash_row_not_object:%s" % index)
+            continue
+        filename = item.get("filename")
+        sha256 = item.get("sha256")
+        if _is_placeholder_text(filename):
+            _add_unique(failure_codes, "source_hash_filename_missing_or_placeholder:%s" % index)
+        if not _is_sha256(sha256):
+            _add_unique(failure_codes, "source_hash_sha256_invalid:%s" % index)
+    return failure_codes
 
 
 def _is_true(value: Any) -> bool:
@@ -263,6 +329,24 @@ def _validate_loop(
     agent_smoke = _normalize_text(loop.get("agent_smoke_result")).lower()
     if agent_smoke in {"not_run", "not-run", "skipped", "skip"}:
         _add_unique(failure_codes, "agent_smoke_result_not_executed")
+    elif agent_smoke not in PASSED_AGENT_SMOKE_RESULTS:
+        _add_unique(failure_codes, "agent_smoke_result_not_passed")
+
+    if _normalize_text(loop.get("review_outcome")).lower() not in APPROVED_REVIEW_OUTCOMES:
+        _add_unique(failure_codes, "review_outcome_not_approved")
+    if _normalize_text(loop.get("review_status")).lower() not in APPROVED_REVIEW_STATUSES:
+        _add_unique(failure_codes, "review_status_not_approved")
+    if _normalize_text(loop.get("redaction_status")).lower() != "passed":
+        _add_unique(failure_codes, "redaction_status_not_passed")
+    if _normalize_text(loop.get("pii_status")).lower() != "no_raw_pii_in_repo":
+        _add_unique(failure_codes, "pii_status_not_no_raw_pii_in_repo")
+    if not _is_sha256(loop.get("generated_bundle_hash")):
+        _add_unique(failure_codes, "generated_bundle_hash_invalid")
+    for code in _validate_source_hashes(loop.get("source_hashes")):
+        _add_unique(failure_codes, code)
+    for field in EVIDENCE_REF_FIELDS:
+        if not _ref_exists_or_is_uri(loop.get(field)):
+            _add_unique(failure_codes, "evidence_ref_missing_or_unreadable:%s" % field)
 
     for field in REQUIRED_NUMERIC_FIELDS:
         if field not in loop:
@@ -428,6 +512,19 @@ def _warning_codes(*, invalid: int, missing: int, accepted: int, total: int, ite
                 _add_unique(warnings, "fixture_or_simulated_loop_rejected")
             if str(code) in {"manifest_contains_non_slot_loop", "multiple_required_modality_loops"}:
                 _add_unique(warnings, "real_loop_manifest_slot_contamination")
+            if str(code).startswith(
+                (
+                    "source_hash",
+                    "evidence_ref",
+                    "generated_bundle_hash",
+                    "redaction_status",
+                    "pii_status",
+                    "review_status",
+                    "review_outcome",
+                    "agent_smoke_result",
+                )
+            ):
+                _add_unique(warnings, "real_loop_evidence_contract_invalid")
     return warnings
 
 
@@ -647,9 +744,17 @@ def build_preflight_report(
                 "modality matches GL-63 work item",
                 "evidence_origin=real",
                 "launch_gate_eligible=true",
+                "source_bundle_ref points to controlled storage, not raw repo content",
+                "source_hashes includes at least one sha256",
+                "business_expectation_ref/run_evidence_ref/human_review_ref/agent_smoke_ref are readable refs",
+                "generated_bundle_hash is sha256",
+                "redaction_status=passed",
+                "pii_status=no_raw_pii_in_repo",
+                "review_status=approved or published",
                 "source_system/source_reference/collected_at_utc present",
                 "review_task_id/reviewed_by/reviewed_at_utc present",
-                "agent_smoke_result executed",
+                "review_outcome approved",
+                "agent_smoke_result passed",
                 "backfill_slot_index matches GL-63 work item",
                 "backfill_action_id links to GL-63 or GL-23 intake action",
                 "published_without_review=false",
