@@ -34,6 +34,120 @@ data/real-inputs/2026-06-20-batch-001/
 
 `data/real-inputs/` 已加入 `.gitignore`。该目录只用于本地或受控环境运行，不进入仓库，不进入 release 包。
 
+## 数据范式
+
+不能只放一个 `source` 文件就算完成。每个槽位必须是一个本地 source bundle，用来证明“这个输入来自真实文件、项目实际处理过、结果有人审过、并且知道什么叫正确”。
+
+每个槽位目录建议使用以下结构：
+
+```text
+data/real-inputs/<batch-id>/
+  slot-001-text/
+    source/
+      source.pdf
+    task.md
+    expected.md
+    review.md
+    run-evidence.json
+  slot-002-audio/
+    source/
+      source.mp3
+    task.md
+    expected.md
+    review.md
+    run-evidence.json
+```
+
+每个槽位的最小范式如下：
+
+| 文件或目录 | 是否必须 | 作用 | 进入仓库 |
+| --- | --- | --- | --- |
+| `source/` | 是 | 原始输入文件，可以是 PDF、代码库压缩包、Markdown、音频、图片或视频 | 否 |
+| `task.md` | 是 | 本槽位希望项目完成的业务任务，例如“从 PDF 提炼可复用技能” | 否 |
+| `expected.md` | 是 | 业务上认为正确的内容、必须命中的要点、拒绝条件和评分口径 | 否 |
+| `review.md` | 是 | 人工审阅记录，说明输出是否通过、改了几轮、主要问题是什么 | 否 |
+| `run-evidence.json` | 是 | 本地运行证据，记录耗时、产物数量、provider 调用数、重试次数、成本估算 | 否 |
+| 脱敏 manifest | 是 | 仓库内可追溯、可验证的闭环记录 | 是 |
+
+`source/` 里可以放多个文件，但一个 GL-63 槽位只能形成一个合格 loop。比如一个代码库压缩包可以包含多文件，但它仍然对应 `real-loop-005-text.json` 里的一条 `loops[0]`。
+
+### `task.md` 最小内容
+
+```markdown
+# Task
+
+- business_scenario: public-demo-skill-distillation
+- input_modality: text
+- requested_action: 从输入文件中提炼一个可复用的技能说明、关键约束和验证步骤。
+- expected_artifact_type: SKILL.md draft + skill metadata summary
+- operator_note: 使用公开或自有样本模拟真实业务，不包含客户隐私和生产凭证。
+```
+
+### `expected.md` 最小内容
+
+```markdown
+# Expected Outcome
+
+- must_include:
+  - 输入文件的核心主题。
+  - 至少 3 条可执行步骤或规则。
+  - 至少 1 条限制、风险或不适用场景。
+- must_not_include:
+  - 凭证、token、cookie、私钥、未脱敏个人信息。
+  - 与源文件无关的臆造事实。
+- pass_criteria:
+  - 主要事实与源文件一致。
+  - 人工审阅后 `review_outcome=approved`。
+  - agent smoke 实际执行，结果不是 `not_run` 或 `skipped`。
+```
+
+### `review.md` 最小内容
+
+```markdown
+# Review
+
+- review_task_id: review-public-demo-001
+- reviewed_by: operator
+- reviewed_at_utc: 2026-06-23T10:30:00Z
+- review_outcome: approved
+- revisions_before_approval: 1
+- reviewer_edit_distance_pct: 18.0
+- reviewer_notes: 输出覆盖了 expected.md 的 must_include，未发现敏感信息。
+```
+
+### `run-evidence.json` 最小内容
+
+```json
+{
+  "latency_ms": 910.0,
+  "provider_failure_count": 0,
+  "provider_call_count": 2,
+  "retry_count": 0,
+  "artifact_count": 1,
+  "estimated_cost_usd": 0.01,
+  "agent_smoke_result": "passed"
+}
+```
+
+这些本地文件用于指导处理和复核，不直接进入仓库。仓库只提交脱敏后的 manifest；manifest 可以引用 `task_reference`、`expected_reference`、`review_task_id`、`artifact_reference` 这类稳定编号，但不能写入本机绝对路径、未脱敏原文或敏感信息。
+
+## 业务期望正确内容是否必须提供
+
+如果目标只是证明“项目能读取文件并产生产物”，`expected.md` 可以很薄；但如果目标是让项目真正可优化、可回归、可判断质量，`expected.md` 必须提供。
+
+原因很简单：没有期望正确内容，系统只能验证“跑过了”，不能判断“做对了”。后续要优化 prompt、模型调用、技能生成质量、跨 agent smoke 或成本/质量权衡时，`expected.md` 和 `review.md` 是主要依据。
+
+本项目采用以下分级：
+
+| 等级 | 可接受数据 | 能证明什么 | 是否足以解除 HOLD |
+| --- | --- | --- | --- |
+| L0 fixture | 人工模板、空文件、mock、placeholder | 只能测代码路径 | 否 |
+| L1 真实来源无期望 | 真实 PDF/代码/音视频，但没有 `expected.md` 和审阅 | 只能测摄入能力 | 否 |
+| L2 公开 demo 闭环 | 公开或自有真实文件 + task + expected + review + run evidence | 可以证明公开 demo 上线闭环 | 是，前提是 10 槽位全过 |
+| L3 真实业务闭环 | 授权业务数据 + task + expected + review + run evidence | 可以证明业务 Beta/GA 准备度 | 是 |
+
+当前如果你拿不到商业真实数据，推荐使用 L2：公开 demo 闭环。它不能证明“客户生产业务已经验证”，但足够把当前 HOLD 从“没有真实闭环证据”推进为“公开 demo 样本闭环已达标”。
+
 ## 仓库里应该提交什么
 
 提交到仓库的是脱敏后的 manifest，而不是真实原件。目标路径固定为：
@@ -84,8 +198,17 @@ docs/working/status/baselines/real-trial-loop-collection/manifests/
       "revisions_before_approval": 1,
       "reviewer_edit_distance_pct": 18.0,
       "agent_smoke_result": "passed",
+      "latency_ms": 910.0,
+      "provider_failure_count": 0,
+      "provider_call_count": 2,
+      "retry_count": 0,
+      "artifact_count": 1,
+      "estimated_cost_usd": 0.01,
       "backfill_slot_index": 1,
       "backfill_action_id": "gl23-slot-001-text",
+      "task_reference": "public-demo-001-task",
+      "expected_reference": "public-demo-001-expected",
+      "artifact_reference": "public-demo-001-artifact",
       "published_without_review": false,
       "critical_secret_or_pii_leak": false,
       "high_severity_incident": false
@@ -110,6 +233,8 @@ docs/working/status/baselines/real-trial-loop-collection/manifests/
 - 来源证据：`source_system`、`source_reference`、`collected_at_utc`。
 - 审核证据：`review_task_id`、`reviewed_by`、`reviewed_at_utc`、`review_outcome`。
 - agent 证据：`agent_smoke_result`，或者明确的失败记录和失败原因。
+- 业务正确性证据：本地 `expected.md` 必须说明必须命中的内容、拒绝条件和通过标准。
+- 运行证据：本地 `run-evidence.json` 必须能对应 manifest 中的 `latency_ms`、`provider_failure_count`、`provider_call_count`、`retry_count`、`artifact_count` 和 `estimated_cost_usd`。
 
 ## 验收命令
 
