@@ -213,6 +213,18 @@ def _operations_readiness_report(status: str = "pass") -> dict[str, object]:
     }
 
 
+def _secrets_readiness_report(status: str = "SECRETS_READINESS_READY") -> dict[str, object]:
+    fail_count = 0 if status == "SECRETS_READINESS_READY" else 1
+    return {
+        "schema_version": "secrets_readiness.v1",
+        "status": status,
+        "check_count": 5,
+        "pass_count": 5 - fail_count,
+        "fail_count": fail_count,
+        "failed_checks": [] if fail_count == 0 else ["production_secret_manager_evidence"],
+    }
+
+
 def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
     output_path = root / "launch-readiness-report.json"
     completed = subprocess.run(
@@ -235,6 +247,8 @@ def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
             str(root / "doc-sync.json"),
             "--operations-readiness-report",
             str(root / "ops-readiness.json"),
+            "--secrets-readiness-report",
+            str(root / "secrets-readiness.json"),
             "--no-run-doc-sync",
             "--max-evidence-age-hours",
             "0",
@@ -592,6 +606,63 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "HOLD")
             self.assertIn("operations_readiness_evidence", report.get("failed_checks", []))
+
+    def test_require_secrets_readiness_missing_evidence_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-secrets-readiness")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("secrets_readiness_evidence", report.get("failed_checks", []))
+            self.assertIn("secrets_readiness_status", report.get("failed_checks", []))
+
+    def test_require_secrets_readiness_failed_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "secrets-readiness.json", _secrets_readiness_report("SECRETS_READINESS_BLOCKED"))
+
+            report = _run_gate(root, "--require-secrets-readiness")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("secrets_readiness_status", report.get("failed_checks", []))
+            check = next(check for check in report.get("checks", []) if check.get("id") == "secrets_readiness_status")
+            self.assertEqual(check.get("actual", {}).get("status"), "SECRETS_READINESS_BLOCKED")
+
+    def test_require_secrets_readiness_passes_with_ready_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "secrets-readiness.json", _secrets_readiness_report())
+
+            report = _run_gate(root, "--require-secrets-readiness")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            check = next(check for check in report.get("checks", []) if check.get("id") == "secrets_readiness_status")
+            self.assertEqual(check.get("status"), "pass")
 
 
 if __name__ == "__main__":

@@ -148,6 +148,20 @@ python -c "from omni_skill_pipeline.artifact_crypto import generate_fernet_key; 
 - 读取加密 review queue entry 需要配置同一个 key。
 - 不提供 Vault/KMS 集成或自动 key rotation。
 
+## Secrets Readiness
+
+默认 secrets readiness 只证明仓库内没有明显明文 secret、`.env.example` 使用空值或占位符、运行手册要求 key 存放在仓库外：
+
+```bash
+python scripts/secrets_readiness.py --print-json
+```
+
+生产级密钥管理必须提供外部 Secret Manager/Vault/KMS 证据，不能把本地 `.env`、CI secret 或手工密码管理器说明当作完整生产集成：
+
+```bash
+python scripts/secrets_readiness.py --require-production-manager --fail-on-blocked --print-json
+```
+
 ## Scratch Root Prune 变量
 
 - `OMNI_TMP_MEDIA_ROOT`：临时媒体 artifact root，默认 `.tmp_omni_media`。

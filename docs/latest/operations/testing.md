@@ -196,6 +196,21 @@ python scripts/postgres_readiness.py --fail-on-blocked --print-json
 
 `postgres_readiness.py` only returns `POSTGRES_READINESS_READY` when the Postgres GA report and soak report are `execution_mode=executed` with `decision=PASS`, the benchmark has `run_postgres=true`, schema migration SQL exists, backup/restore operations evidence exists, and the retention policy CLI surface is documented.
 
+Secrets readiness has two levels. The default command checks repo secret hygiene, placeholders, and docs:
+
+```bash
+python scripts/secrets_readiness.py --print-json
+```
+
+Production secret-management readiness requires external Secret Manager/Vault/KMS evidence and must be wired into launch gate explicitly:
+
+```bash
+python scripts/secrets_readiness.py --require-production-manager --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-secrets-readiness --secrets-readiness-report docs/working/status/baselines/secrets-readiness-report.json --print-json
+```
+
+Do not treat local `.env.example`, `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`, or internal dogfood encryption docs as proof that Vault/KMS/Secret Manager integration is complete.
+
 ## 定向执行
 
 查看当前已映射 Task Package:

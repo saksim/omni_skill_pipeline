@@ -32,6 +32,9 @@ DEFAULT_DOC_SYNC_REPORT = (
 DEFAULT_OPERATIONS_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-report.json"
 )
+DEFAULT_SECRETS_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "secrets-readiness-report.json"
+)
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "broad-launch-readiness-report.json"
 )
@@ -97,6 +100,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--security-gate-report", default="")
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
+    parser.add_argument("--secrets-readiness-report", default=str(DEFAULT_SECRETS_READINESS_REPORT))
     parser.add_argument("--run-doc-sync", dest="run_doc_sync", action="store_true", default=True)
     parser.add_argument("--no-run-doc-sync", dest="run_doc_sync", action="store_false")
     parser.add_argument("--minimum-complete-loops", type=int, default=10)
@@ -116,6 +120,11 @@ def _parse_args() -> argparse.Namespace:
         type=int,
         default=len(TARGET_AGENTS),
         help="Minimum distinct agents with passed live-run records when --require-real-agent-smoke is set.",
+    )
+    parser.add_argument(
+        "--require-secrets-readiness",
+        action="store_true",
+        help="Require a passing secrets-readiness report before launch readiness can pass.",
     )
     parser.add_argument("--maximum-provider-failure-rate", type=float, default=0.05)
     parser.add_argument(
@@ -818,6 +827,29 @@ def _evaluate_operations_readiness(report: dict[str, Any] | None) -> dict[str, A
     )
 
 
+def _evaluate_secrets_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "secrets_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "secrets_readiness.v1", "status": "SECRETS_READINESS_READY"},
+            details="Missing secrets-readiness evidence keeps strict launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "secrets_readiness_status",
+        "pass"
+        if schema_version == "secrets_readiness.v1" and status == "SECRETS_READINESS_READY" and fail_count == 0
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "secrets_readiness.v1", "status": "SECRETS_READINESS_READY", "fail_count": 0},
+        details="Strict launch readiness requires repo secret hygiene and, when requested, external manager evidence.",
+    )
+
+
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
@@ -856,6 +888,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     agent_smoke_path = Path(args.agent_smoke_report).resolve()
     doc_sync_path = Path(args.doc_sync_report).resolve()
     operations_readiness_path = Path(args.operations_readiness_report).resolve()
+    secrets_readiness_path = Path(args.secrets_readiness_report).resolve()
     security_report_path = Path(args.security_gate_report).resolve() if str(args.security_gate_report).strip() else None
 
     loaded: dict[str, Any] = {}
@@ -868,6 +901,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         "security_gate_report": str(security_report_path) if security_report_path else "",
         "doc_sync_report": str(doc_sync_path),
         "operations_readiness_report": str(operations_readiness_path),
+        "secrets_readiness_report": str(secrets_readiness_path) if bool(args.require_secrets_readiness) else "",
     }
     checks: list[dict[str, Any]] = []
 
@@ -977,6 +1011,33 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
             )
         )
 
+    secrets_readiness_report = None
+    if bool(args.require_secrets_readiness):
+        if secrets_readiness_path.is_file():
+            try:
+                secrets_readiness_report = _read_json(secrets_readiness_path)
+                loaded["secrets_readiness_report"] = secrets_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "secrets_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable secrets readiness report",
+                        details="Secrets-readiness evidence is required in strict secret mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "secrets_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable secrets readiness report",
+                    details="Secrets-readiness evidence is required in strict secret mode.",
+                )
+            )
+
     release_decision, release_source = _extract_release_decision(
         release_report=release_report,
         trial_metrics_report=trial_metrics_report,
@@ -1037,6 +1098,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
 
     checks.append(_evaluate_doc_sync(report=doc_sync_report, source=doc_sync_source))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
+    if bool(args.require_secrets_readiness):
+        checks.append(_evaluate_secrets_readiness(secrets_readiness_report))
 
     forbidden_markers: list[dict[str, str]] = []
     for source, payload in loaded.items():
@@ -1065,6 +1128,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         freshness_paths["doc_sync_report"] = doc_sync_path
     if operations_readiness_path.is_file():
         freshness_paths["operations_readiness_report"] = operations_readiness_path
+    if bool(args.require_secrets_readiness) and secrets_readiness_path.is_file():
+        freshness_paths["secrets_readiness_report"] = secrets_readiness_path
     checks.append(_evaluate_freshness(freshness_paths, max_age_hours=float(args.max_evidence_age_hours)))
 
     failed_checks = [check["id"] for check in checks if check.get("blocking") and check.get("status") != "pass"]
