@@ -184,6 +184,18 @@ python scripts/bench_dual_write.py --iterations 20 --postgres-dsn "$OMNI_TEST_PO
 - 第二个命令测 file + Postgres dual-write 时延。
 - 默认报告落盘：`docs/working/status/baselines/e8-dual-write-benchmark-report.json`。
 
+Postgres/dual-write readiness 需要真实执行报告，不能使用 dry-run 计划替代：
+
+```bash
+python scripts/pg_ga.py --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
+python scripts/pg_soak.py --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
+python scripts/bench_dual_write.py --iterations 120 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN" --output docs/working/status/baselines/e13-postgres-soak-benchmark-report.json
+python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
+python scripts/postgres_readiness.py --fail-on-blocked --print-json
+```
+
+`postgres_readiness.py` only returns `POSTGRES_READINESS_READY` when the Postgres GA report and soak report are `execution_mode=executed` with `decision=PASS`, the benchmark has `run_postgres=true`, schema migration SQL exists, backup/restore operations evidence exists, and the retention policy CLI surface is documented.
+
 ## 定向执行
 
 查看当前已映射 Task Package:

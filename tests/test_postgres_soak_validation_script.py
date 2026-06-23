@@ -49,11 +49,44 @@ class PostgresSoakValidationScriptTests(unittest.TestCase):
             self.assertIn('scripts/bench_dual_write.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
+            self.assertEqual(report.get('schema_version'), 'postgres_soak_validation.v1')
+            self.assertEqual(report.get('execution_mode'), 'dry_run')
+            self.assertEqual(report.get('decision'), 'DRY_RUN')
             self.assertEqual(report.get('stage_count'), 3)
             self.assertEqual(
                 [item.get('name') for item in report.get('stages', [])],
                 ['tp_postgres', 'review_queue', 'dual_write_benchmark'],
             )
+
+    def test_script_execution_writes_stage_results_for_non_postgres_stage(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            output_path = Path(tmp_dir) / 'postgres-soak-report.json'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    sys.executable,
+                    '--stages',
+                    'review_queue',
+                    '--output',
+                    str(output_path),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            report = json.loads(output_path.read_text(encoding='utf-8'))
+            self.assertEqual(report.get('schema_version'), 'postgres_soak_validation.v1')
+            self.assertEqual(report.get('execution_mode'), 'executed')
+            self.assertEqual(report.get('decision'), 'PASS')
+            self.assertEqual(report.get('blocking_codes'), [])
+            self.assertEqual(len(report.get('stage_results', [])), 1)
+            self.assertEqual(report['stage_results'][0].get('name'), 'review_queue')
+            self.assertEqual(report['stage_results'][0].get('status'), 'pass')
+            self.assertEqual(report['stage_results'][0].get('exit_code'), 0)
 
     def test_script_respects_stage_selection_and_benchmark_options(self) -> None:
         completed = subprocess.run(
