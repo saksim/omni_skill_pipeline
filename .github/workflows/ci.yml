@@ -41,9 +41,59 @@ jobs:
         run: python -m coverage --version
 
       - name: Run CI test suite with coverage gate
+        id: ci_run
+        shell: bash
         env:
           PYTHONPATH: src
-        run: python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
+          CI_PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          set +e
+          python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml
+          ci_exit=$?
+          set -e
+          mkdir -p ci-evidence
+          if [[ -f coverage.xml ]]; then
+            cp coverage.xml "ci-evidence/coverage-python-${CI_PYTHON_VERSION}.xml"
+          fi
+          export CI_EXIT_CODE="${ci_exit}"
+          python - <<'PY'
+          import datetime
+          import json
+          import os
+          import pathlib
+          import platform
+
+          declared = os.environ["CI_PYTHON_VERSION"]
+          tag = declared.replace(".", "_")
+          exit_code = int(os.environ["CI_EXIT_CODE"])
+          evidence_dir = pathlib.Path("ci-evidence")
+          coverage_name = "coverage-python-%s.xml" % declared
+          payload = {
+              "schema_version": "ci_summary.v1",
+              "generated_at_utc": datetime.datetime.now(datetime.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+              "declared_python_version": declared,
+              "python_version": platform.python_version(),
+              "status": "passed" if exit_code == 0 else "failed",
+              "exit_code": exit_code,
+              "commands": [
+                  {
+                      "name": "repo_ci",
+                      "command": "python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xml coverage.xml",
+                      "exit_code": exit_code,
+                  }
+              ],
+              "coverage_xml": coverage_name if (evidence_dir / coverage_name).is_file() else "",
+              "github": {
+                  "run_id": os.environ.get("GITHUB_RUN_ID", ""),
+                  "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+                  "sha": os.environ.get("GITHUB_SHA", ""),
+                  "ref": os.environ.get("GITHUB_REF", ""),
+              },
+          }
+          path = evidence_dir / ("ci_summary_python_%s.json" % tag)
+          path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          exit "${ci_exit}"
 
       - name: Upload coverage XML
         if: always()
@@ -51,4 +101,128 @@ jobs:
         with:
           name: coverage-xml-py${{ matrix.python-version }}
           path: coverage.xml
+          if-no-files-found: warn
+
+      - name: Upload CI evidence summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-evidence-py${{ matrix.python-version }}
+          path: ci-evidence/
+          if-no-files-found: error
+
+  ci-evidence-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: test
+    if: always()
+    env:
+      PYTHONPATH: src
+      RELEASE_ID: ci-evidence-${{ github.sha }}
+
+    steps:
+      - name: Require Python matrix success
+        if: ${{ needs.test.result != 'success' }}
+        run: |
+          echo "Python matrix did not pass: ${{ needs.test.result }}" >&2
+          exit 1
+
+      - name: Checkout
+        if: ${{ needs.test.result == 'success' }}
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: ${{ needs.test.result == 'success' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+            requirements-dev.txt
+
+      - name: Install dependencies
+        if: ${{ needs.test.result == 'success' }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Download matrix evidence
+        if: ${{ needs.test.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ci-evidence-py*
+          path: ci-evidence
+          merge-multiple: true
+
+      - name: Normalize coverage evidence
+        if: ${{ needs.test.result == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f ci-evidence/coverage-python-3.11.xml ]]; then
+            cp ci-evidence/coverage-python-3.11.xml ci-evidence/coverage.xml
+          elif [[ -f ci-evidence/coverage-python-3.12.xml ]]; then
+            cp ci-evidence/coverage-python-3.12.xml ci-evidence/coverage.xml
+          else
+            echo "missing per-version coverage XML evidence" >&2
+            exit 1
+          fi
+
+      - name: Generate doc sync evidence
+        if: ${{ needs.test.result == 'success' }}
+        run: python scripts/doc_sync.py --output ci-evidence/doc_sync.json
+
+      - name: Build release evidence pack
+        if: ${{ needs.test.result == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip wheel . --no-deps --wheel-dir dist
+          python scripts/release_artifacts.py \
+            --release-id "${RELEASE_ID}" \
+            --output-dir "release-artifacts/${RELEASE_ID}" \
+            --dist-dir dist \
+            --coverage-xml ci-evidence/coverage.xml
+          cp "release-artifacts/${RELEASE_ID}/release-manifest.json" ci-evidence/release_artifacts.json
+
+      - name: Generate release consumer evidence
+        if: ${{ needs.test.result == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/release_consumer_smoke.py \
+            --release-dir "release-artifacts/${RELEASE_ID}" \
+            --expected-release-id "${RELEASE_ID}" \
+            --output ci-evidence/release_consumer_smoke.json \
+            --summary-output ci-evidence/release_consumer_smoke_summary.md
+
+      - name: Generate launch gate evidence
+        if: ${{ needs.test.result == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/launch_gate.py \
+            --output ci-evidence/launch_gate.json \
+            --summary-output ci-evidence/launch_gate_summary.md \
+            --doc-sync-report ci-evidence/doc_sync.json \
+            --no-run-doc-sync \
+            --max-evidence-age-hours 0
+
+      - name: Validate CI evidence contract
+        if: ${{ needs.test.result == 'success' }}
+        run: |
+          python scripts/ci_evidence.py \
+            --evidence-dir ci-evidence \
+            --output ci-evidence/ci_evidence_report.json \
+            --summary-output ci-evidence/ci_evidence_summary.md \
+            --fail-on-blocked \
+            --print-json
+
+      - name: Upload CI evidence contract
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-evidence-contract
+          path: ci-evidence/
           if-no-files-found: warn

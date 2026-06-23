@@ -34,6 +34,24 @@ python -m unittest tests.test_artifact_encryption tests.test_openai_provider_con
 python scripts/doc_sync.py --output -
 ```
 
+CI evidence contract:
+
+```bash
+python scripts/ci_evidence.py --evidence-dir ci-evidence --fail-on-blocked --print-json
+```
+
+The archived CI evidence directory must contain:
+
+- `ci_summary_python_3_11.json`
+- `ci_summary_python_3_12.json`
+- `coverage.xml`
+- `doc_sync.json`
+- `release_artifacts.json`
+- `release_consumer_smoke.json`
+- `launch_gate.json`
+
+`launch_gate.json` may still report `HOLD` while real external loop evidence is incomplete; this command only verifies that CI archived an explicit launch-gate artifact.
+
 Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.2` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test
