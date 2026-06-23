@@ -211,6 +211,24 @@ python scripts/launch_gate.py --require-secrets-readiness --secrets-readiness-re
 
 Do not treat local `.env.example`, `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`, or internal dogfood encryption docs as proof that Vault/KMS/Secret Manager integration is complete.
 
+K8s readiness also has two levels. The default command checks static manifest hygiene only:
+
+```bash
+python scripts/k8s_readiness.py --print-json
+```
+
+Production Kubernetes readiness requires external cluster evidence and must be wired into launch gate explicitly:
+
+```bash
+kubectl apply --dry-run=server -f k8s/
+kubectl rollout status deployment/omni-skill-pipeline -n omni-skill-pipeline
+kubectl logs deployment/omni-skill-pipeline -n omni-skill-pipeline --tail=200
+python scripts/k8s_readiness.py --require-cluster-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-k8s-readiness --k8s-readiness-report docs/working/status/baselines/k8s-readiness-report.json --print-json
+```
+
+Do not treat the repository `k8s/` manifests or static readiness report as proof that a live Kubernetes rollout, server-side dry-run, or log inspection has completed.
+
 ## 定向执行
 
 查看当前已映射 Task Package:

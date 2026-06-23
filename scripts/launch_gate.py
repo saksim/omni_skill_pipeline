@@ -35,6 +35,9 @@ DEFAULT_OPERATIONS_READINESS_REPORT = (
 DEFAULT_SECRETS_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "secrets-readiness-report.json"
 )
+DEFAULT_K8S_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "k8s-readiness-report.json"
+)
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "broad-launch-readiness-report.json"
 )
@@ -101,6 +104,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
     parser.add_argument("--secrets-readiness-report", default=str(DEFAULT_SECRETS_READINESS_REPORT))
+    parser.add_argument("--k8s-readiness-report", default=str(DEFAULT_K8S_READINESS_REPORT))
     parser.add_argument("--run-doc-sync", dest="run_doc_sync", action="store_true", default=True)
     parser.add_argument("--no-run-doc-sync", dest="run_doc_sync", action="store_false")
     parser.add_argument("--minimum-complete-loops", type=int, default=10)
@@ -125,6 +129,11 @@ def _parse_args() -> argparse.Namespace:
         "--require-secrets-readiness",
         action="store_true",
         help="Require a passing secrets-readiness report before launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-k8s-readiness",
+        action="store_true",
+        help="Require a passing Kubernetes readiness report before strict production launch readiness can pass.",
     )
     parser.add_argument("--maximum-provider-failure-rate", type=float, default=0.05)
     parser.add_argument(
@@ -850,6 +859,29 @@ def _evaluate_secrets_readiness(report: dict[str, Any] | None) -> dict[str, Any]
     )
 
 
+def _evaluate_k8s_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "k8s_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "k8s_readiness.v1", "status": "K8S_READINESS_READY"},
+            details="Missing Kubernetes readiness evidence keeps strict production launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "k8s_readiness_status",
+        "pass"
+        if schema_version == "k8s_readiness.v1" and status == "K8S_READINESS_READY" and fail_count == 0
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "k8s_readiness.v1", "status": "K8S_READINESS_READY", "fail_count": 0},
+        details="Strict production readiness requires K8s manifests and, when requested by that report, cluster evidence.",
+    )
+
+
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
@@ -889,6 +921,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     doc_sync_path = Path(args.doc_sync_report).resolve()
     operations_readiness_path = Path(args.operations_readiness_report).resolve()
     secrets_readiness_path = Path(args.secrets_readiness_report).resolve()
+    k8s_readiness_path = Path(args.k8s_readiness_report).resolve()
     security_report_path = Path(args.security_gate_report).resolve() if str(args.security_gate_report).strip() else None
 
     loaded: dict[str, Any] = {}
@@ -902,6 +935,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         "doc_sync_report": str(doc_sync_path),
         "operations_readiness_report": str(operations_readiness_path),
         "secrets_readiness_report": str(secrets_readiness_path) if bool(args.require_secrets_readiness) else "",
+        "k8s_readiness_report": str(k8s_readiness_path) if bool(args.require_k8s_readiness) else "",
     }
     checks: list[dict[str, Any]] = []
 
@@ -1038,6 +1072,33 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
                 )
             )
 
+    k8s_readiness_report = None
+    if bool(args.require_k8s_readiness):
+        if k8s_readiness_path.is_file():
+            try:
+                k8s_readiness_report = _read_json(k8s_readiness_path)
+                loaded["k8s_readiness_report"] = k8s_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "k8s_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable Kubernetes readiness report",
+                        details="Kubernetes readiness evidence is required in strict K8s mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "k8s_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable Kubernetes readiness report",
+                    details="Kubernetes readiness evidence is required in strict K8s mode.",
+                )
+            )
+
     release_decision, release_source = _extract_release_decision(
         release_report=release_report,
         trial_metrics_report=trial_metrics_report,
@@ -1100,6 +1161,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
     if bool(args.require_secrets_readiness):
         checks.append(_evaluate_secrets_readiness(secrets_readiness_report))
+    if bool(args.require_k8s_readiness):
+        checks.append(_evaluate_k8s_readiness(k8s_readiness_report))
 
     forbidden_markers: list[dict[str, str]] = []
     for source, payload in loaded.items():
@@ -1130,6 +1193,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         freshness_paths["operations_readiness_report"] = operations_readiness_path
     if bool(args.require_secrets_readiness) and secrets_readiness_path.is_file():
         freshness_paths["secrets_readiness_report"] = secrets_readiness_path
+    if bool(args.require_k8s_readiness) and k8s_readiness_path.is_file():
+        freshness_paths["k8s_readiness_report"] = k8s_readiness_path
     checks.append(_evaluate_freshness(freshness_paths, max_age_hours=float(args.max_evidence_age_hours)))
 
     failed_checks = [check["id"] for check in checks if check.get("blocking") and check.get("status") != "pass"]

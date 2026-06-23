@@ -225,6 +225,18 @@ def _secrets_readiness_report(status: str = "SECRETS_READINESS_READY") -> dict[s
     }
 
 
+def _k8s_readiness_report(status: str = "K8S_READINESS_READY") -> dict[str, object]:
+    fail_count = 0 if status == "K8S_READINESS_READY" else 1
+    return {
+        "schema_version": "k8s_readiness.v1",
+        "status": status,
+        "check_count": 8,
+        "pass_count": 8 - fail_count,
+        "fail_count": fail_count,
+        "failed_checks": [] if fail_count == 0 else ["k8s_cluster_evidence"],
+    }
+
+
 def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
     output_path = root / "launch-readiness-report.json"
     completed = subprocess.run(
@@ -249,6 +261,8 @@ def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
             str(root / "ops-readiness.json"),
             "--secrets-readiness-report",
             str(root / "secrets-readiness.json"),
+            "--k8s-readiness-report",
+            str(root / "k8s-readiness.json"),
             "--no-run-doc-sync",
             "--max-evidence-age-hours",
             "0",
@@ -662,6 +676,63 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
             check = next(check for check in report.get("checks", []) if check.get("id") == "secrets_readiness_status")
+            self.assertEqual(check.get("status"), "pass")
+
+    def test_require_k8s_readiness_missing_evidence_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-k8s-readiness")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("k8s_readiness_evidence", report.get("failed_checks", []))
+            self.assertIn("k8s_readiness_status", report.get("failed_checks", []))
+
+    def test_require_k8s_readiness_failed_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "k8s-readiness.json", _k8s_readiness_report("K8S_READINESS_BLOCKED"))
+
+            report = _run_gate(root, "--require-k8s-readiness")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("k8s_readiness_status", report.get("failed_checks", []))
+            check = next(check for check in report.get("checks", []) if check.get("id") == "k8s_readiness_status")
+            self.assertEqual(check.get("actual", {}).get("status"), "K8S_READINESS_BLOCKED")
+
+    def test_require_k8s_readiness_passes_with_ready_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "k8s-readiness.json", _k8s_readiness_report())
+
+            report = _run_gate(root, "--require-k8s-readiness")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            check = next(check for check in report.get("checks", []) if check.get("id") == "k8s_readiness_status")
             self.assertEqual(check.get("status"), "pass")
 
 

@@ -60,6 +60,27 @@ docker run --rm -d \
 curl -fsS http://127.0.0.1:8000/healthz
 ```
 
+## Kubernetes Deploy Workflow
+
+Kubernetes is a P2 productionization path and is not required for the internal dogfood release. The repository `k8s/` directory provides the minimum deployment, service, ingress, configmap, secret-reference, probe, and HPA baseline; runtime secrets must be provisioned outside the repository.
+
+Static manifest readiness:
+
+```bash
+python scripts/k8s_readiness.py --print-json
+```
+
+Cluster validation requires real kubectl evidence:
+
+```bash
+kubectl apply --dry-run=server -f k8s/
+kubectl rollout status deployment/omni-skill-pipeline -n omni-skill-pipeline
+kubectl logs deployment/omni-skill-pipeline -n omni-skill-pipeline --tail=200
+python scripts/k8s_readiness.py --require-cluster-evidence --fail-on-blocked --print-json
+```
+
+The strict `k8s_readiness.py` mode must not pass unless external cluster evidence records server dry-run, rollout, health probe, log inspection, and secret-reference validation.
+
 ## Validation Workflow
 
 Run strict validation evidence before any launch claim:
@@ -69,6 +90,7 @@ python scripts/release_gate.py --python python3 --output docs/working/status/bas
 python scripts/launch_gate.py --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
 python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
+python scripts/k8s_readiness.py --output docs/working/status/baselines/k8s-readiness-report.json --summary-output docs/working/status/baselines/k8s-readiness-summary.md
 ```
 
 Decision rules:
