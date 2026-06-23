@@ -13,6 +13,7 @@ if str(SRC_ROOT) not in sys.path:
 
 from omni_skill_pipeline.exporters import AgentSkillExporter
 from omni_skill_pipeline.models import AgentSkillTarget
+from omni_skill_pipeline.validation import validate_skill_package
 
 
 class AgentSkillExporterSecurityGateTests(unittest.TestCase):
@@ -43,7 +44,30 @@ class AgentSkillExporterSecurityGateTests(unittest.TestCase):
             self.assertIn('incident-a.md', first.get('source_uri', ''))
             self.assertIn('incident-b.md', second.get('source_uri', ''))
 
-    def _write_bundle(self, root: Path, *, unsafe: bool, with_corpus: bool = False) -> Path:
+    def test_exporter_uses_published_review_task_for_stale_draft_bundle_status(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle_path = self._write_bundle(root, unsafe=False, review_status='draft', auto_publish=True)
+            exporter = AgentSkillExporter(output_root=root / 'out')
+
+            results = exporter.export_from_bundle(bundle_path=bundle_path, target=AgentSkillTarget.PORTABLE)
+
+            package = json.loads(results[0].package_path.read_text(encoding='utf-8'))
+            self.assertEqual(package['review_status'], 'published')
+            self.assertEqual(package['metadata']['review_status_source'], 'review_task')
+            self.assertEqual(package['metadata']['review_task_id'], 'review-task-1')
+            report = validate_skill_package(package_path=results[0].package_path.parent, max_lines=500)
+            self.assertEqual(report.status, 'pass')
+
+    def _write_bundle(
+        self,
+        root: Path,
+        *,
+        unsafe: bool,
+        with_corpus: bool = False,
+        review_status: str = 'published',
+        auto_publish: bool = False,
+    ) -> Path:
         bundle_dir = root / 'bundle'
         publication_dir = bundle_dir / 'publications'
         references_dir = publication_dir / 'references'
@@ -79,7 +103,7 @@ class AgentSkillExporterSecurityGateTests(unittest.TestCase):
                 'name': 'sample-skill',
                 'summary': 'sample description',
                 'skill_id': 'skill-1',
-                'review_status': 'published',
+                'review_status': review_status,
             },
             'asset': {'source_uri': 'file:///tmp/default.md'},
             'evidence_units': [
@@ -93,6 +117,12 @@ class AgentSkillExporterSecurityGateTests(unittest.TestCase):
             'request_payload': {'sensitivity': 'internal' if not unsafe else 'restricted'},
             'adapter_metadata': {'reviewer_packet': {'review_task_id': 'review-task-1'}},
         }
+        if auto_publish:
+            payload['adapter_metadata']['review_task'] = {
+                'review_task_id': 'review-task-1',
+                'decision': 'auto_publish',
+                'status': 'published',
+            }
         if with_corpus:
             payload['corpus_assets'] = [
                 {'asset_id': 'asset-1', 'source_uri': 'file:///fixtures/incident-a.md'},

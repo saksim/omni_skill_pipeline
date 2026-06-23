@@ -32,6 +32,11 @@ python -m pip wheel . --no-deps --wheel-dir dist
 python scripts/release_artifacts.py --release-id "$RELEASE_ID" --output-dir "release-artifacts/$RELEASE_ID" --dist-dir dist --coverage-xml coverage.xml
 ```
 
+`scripts/release_artifacts.py` uses `git archive` in a normal checkout. If the
+same script is run from a plain source tree without `.git`, it falls back to a
+source-tree archive and records `source_archive_mode=source_tree_fallback` in
+`release-manifest.json`.
+
 上传 artifact 包含：
 
 - `omni-skill-pipeline-source-<release_id>.tar.gz`

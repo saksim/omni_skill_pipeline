@@ -2,11 +2,11 @@
 
 ## 基线
 
-运行时只需要干净的 Python 3.11 环境、可选媒体二进制工具，以及在启用 provider 时提供对应凭证。文档中不要硬编码绝对解释器路径。
+运行时只需要干净的 Python 3.11 或 3.12 环境、可选媒体二进制工具，以及在启用 provider 时提供对应凭证。文档中不要硬编码绝对解释器路径。
 
 ## 运行时
 
-- Python：`3.11+`
+- Python：`3.11` 或 `3.12`。`v0.2.x` 不声明支持 Python 3.13。
 - 安装模式：优先使用隔离虚拟环境。
 - Package root：`src/omni_skill_pipeline/`
 - API 入口：`apps/api/main.py`

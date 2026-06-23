@@ -35,6 +35,7 @@ FAILURE_CODE_ABSOLUTE_PATH_LEAK = 'ABSOLUTE_PATH_LEAK'
 FAILURE_CODE_SECRET_TOKEN_LEAK = 'SECRET_TOKEN_LEAK'
 FAILURE_CODE_DANGEROUS_COMMAND_MARKER = 'DANGEROUS_COMMAND_MARKER'
 FAILURE_CODE_REVIEW_APPROVAL_MISSING = 'REVIEW_APPROVAL_MISSING'
+FAILURE_CODE_REVIEW_REJECTED = 'REVIEW_REJECTED'
 FAILURE_CODE_PACKAGE_METADATA_MISSING = 'PACKAGE_METADATA_MISSING'
 
 _DANGEROUS_COMMAND_MARKERS = (
@@ -106,6 +107,7 @@ def validate_skill_package(
     max_lines: int = DEFAULT_MAX_SKILL_LINES,
     min_description_words: int = DEFAULT_MIN_DESCRIPTION_WORDS,
     max_description_words: int = DEFAULT_MAX_DESCRIPTION_WORDS,
+    allow_draft: bool = False,
 ) -> SkillUsabilityReport:
     package_root = Path(package_path).resolve()
     skill_path = package_root / 'SKILL.md'
@@ -204,7 +206,13 @@ def validate_skill_package(
     issues.extend(_detect_absolute_path_leak(markdown))
     issues.extend(_detect_secret_leak(markdown))
     issues.extend(_detect_dangerous_command_markers(markdown))
-    issues.extend(_validate_review_approval(markdown=markdown, package_metadata_path=package_metadata_path))
+    issues.extend(
+        _validate_review_approval(
+            markdown=markdown,
+            package_metadata_path=package_metadata_path,
+            allow_draft=bool(allow_draft),
+        )
+    )
 
     status = 'pass' if not issues else 'fail'
     return SkillUsabilityReport(
@@ -379,7 +387,12 @@ def _detect_dangerous_command_markers(markdown: str) -> list[SkillUsabilityIssue
     return []
 
 
-def _validate_review_approval(*, markdown: str, package_metadata_path: Path) -> list[SkillUsabilityIssue]:
+def _validate_review_approval(
+    *,
+    markdown: str,
+    package_metadata_path: Path,
+    allow_draft: bool,
+) -> list[SkillUsabilityIssue]:
     issues: list[SkillUsabilityIssue] = []
     status = ''
     try:
@@ -390,13 +403,25 @@ def _validate_review_approval(*, markdown: str, package_metadata_path: Path) -> 
     except Exception:
         status = ''
 
-    if status == 'published':
+    if status in {'published', 'approved'}:
+        return issues
+    if status == 'rejected':
+        issues.append(
+            SkillUsabilityIssue(
+                code=FAILURE_CODE_REVIEW_REJECTED,
+                message='Skill package was rejected by review and cannot pass validation.',
+            )
+        )
+        return issues
+    if allow_draft and status in {'draft', 'review_pending', 'review_required'}:
         return issues
 
     lowered = markdown.lower()
     approved_markers = (
         'review_status: `published`',
         'review_status: published',
+        'review_status: `approved`',
+        'review_status: approved',
         'human review approved',
         'review approved',
     )

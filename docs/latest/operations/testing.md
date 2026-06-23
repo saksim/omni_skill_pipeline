@@ -72,6 +72,10 @@ bash scripts/linux_release.sh
 
 ## 本地环境对齐
 
+Supported runtime for `v0.2.x`: Python `3.11` and `3.12`. Python `3.13`
+is outside the supported matrix until dependency constraints and CI are
+updated together.
+
 PowerShell:
 
 ```powershell

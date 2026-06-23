@@ -171,7 +171,7 @@ Docker Engine can run docker build, docker run --rm, docker run -d, --network ho
 
 ## Python Contract
 
-pyproject.toml declares requires-python = ">=3.11"; no host Python is required.
+pyproject.toml declares requires-python = ">=3.11,<3.13"; no host Python is required.
 
 ## Source Bootstrap
 

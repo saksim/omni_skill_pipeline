@@ -7,7 +7,7 @@ name = "omni-skill-pipeline"
 version = "0.2.5"
 description = "Distill text, audio, video, and image evidence into reusable SKILL artifacts."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.13"
 authors = [
   { name = "saksim" }
 ]

@@ -41,7 +41,7 @@ class DockerZeroToReleaseRunbookTests(unittest.TestCase):
         content = RUNBOOK_PATH.read_text(encoding="utf-8")
         required_markers = [
             "不要求 `python`",
-            'requires-python = ">=3.11"',
+            'requires-python = ">=3.11,<3.13"',
             "python:3.11-slim",
             "docker build -f Dockerfile.test -t omni-skill-pipeline:test .",
             "docker build -t omni-skill-pipeline:beta .",

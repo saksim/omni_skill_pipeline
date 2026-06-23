@@ -432,7 +432,7 @@ def _check_docker_zero_to_release_runbook_completeness(
     required_markers = [
         'Bare Linux',
         'Docker Engine',
-        'requires-python = ">=3.11"',
+        'requires-python = ">=3.11,<3.13"',
         'python:3.11-slim',
         'Dockerfile.test',
         'tar -czf',
