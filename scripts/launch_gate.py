@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agent_smoke import TARGET_AGENTS, build_matrix_report
+from agent_smoke import TARGET_AGENTS, apply_real_run_gate, build_matrix_report
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -102,6 +102,21 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--minimum-complete-loops", type=int, default=10)
     parser.add_argument("--minimum-modalities", type=int, default=4)
     parser.add_argument("--minimum-agent-smoke-success-rate", type=float, default=0.8)
+    parser.add_argument(
+        "--require-real-agent-smoke",
+        action="store_true",
+        help=(
+            "Require every launch-gate agent smoke matrix cell to be a passed live-run record. "
+            "Use this for controlled external beta readiness; not_run records stay acceptable only "
+            "for internal dogfood explanations."
+        ),
+    )
+    parser.add_argument(
+        "--minimum-real-agent-smoke-agents",
+        type=int,
+        default=len(TARGET_AGENTS),
+        help="Minimum distinct agents with passed live-run records when --require-real-agent-smoke is set.",
+    )
     parser.add_argument("--maximum-provider-failure-rate", type=float, default=0.05)
     parser.add_argument(
         "--max-evidence-age-hours",
@@ -665,6 +680,53 @@ def _evaluate_agent_smoke_matrix(
     )
 
 
+def _evaluate_agent_smoke_real_evidence(
+    report: dict[str, Any],
+    *,
+    trial_run_report: dict[str, Any] | None = None,
+    minimum_real_agents: int,
+) -> dict[str, Any]:
+    required_skill_ids = _agent_smoke_required_skill_ids(report, trial_run_report=trial_run_report)
+    matrix_report = build_matrix_report(
+        report,
+        required_skill_ids=required_skill_ids,
+        target_agents=list(TARGET_AGENTS),
+    )
+    matrix_report = apply_real_run_gate(
+        matrix_report,
+        min_passed_agents=max(0, int(minimum_real_agents)),
+    )
+    counts = matrix_report.get("counts", {})
+    real_gate = matrix_report.get("real_run_gate", {})
+    status = str(real_gate.get("status", "")).strip()
+    return _make_check(
+        "agent_smoke_real_evidence",
+        "pass" if status == "AGENT_SMOKE_REAL_EVIDENCE_READY" else "fail",
+        {
+            "real_run_status": status,
+            "matrix_status": str(matrix_report.get("status", "")).strip(),
+            "required_skill_ids": required_skill_ids,
+            "required_skill_count": int(counts.get("required_skill_count", 0) or 0),
+            "target_agents": matrix_report.get("target_agents", []),
+            "agents_required": int(real_gate.get("agents_required", 0) or 0),
+            "agents_passed": int(real_gate.get("agents_passed", 0) or 0),
+            "passed_agents": real_gate.get("passed_agents", []),
+            "non_passed_cells": real_gate.get("non_passed_cells", []),
+            "missing_cell_count": int(counts.get("missing_cell_count", 0) or 0),
+            "invalid_record_count": int(counts.get("invalid_record_count", 0) or 0),
+        },
+        {
+            "real_run_status": "AGENT_SMOKE_REAL_EVIDENCE_READY",
+            "agents_required": max(0, int(minimum_real_agents)),
+            "target_agents": list(TARGET_AGENTS),
+        },
+        details=(
+            "Controlled beta readiness requires passed live-run smoke records for every required "
+            "skill and target agent; failed and not_run records cannot satisfy this stricter gate."
+        ),
+    )
+
+
 def _run_doc_sync() -> tuple[dict[str, Any] | None, str]:
     script = REPO_ROOT / "scripts" / "doc_sync.py"
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -964,6 +1026,14 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
             )
         )
         checks.append(_evaluate_agent_smoke_matrix(agent_smoke_report, trial_run_report=trial_run_report))
+        if bool(args.require_real_agent_smoke):
+            checks.append(
+                _evaluate_agent_smoke_real_evidence(
+                    agent_smoke_report,
+                    trial_run_report=trial_run_report,
+                    minimum_real_agents=int(args.minimum_real_agent_smoke_agents),
+                )
+            )
 
     checks.append(_evaluate_doc_sync(report=doc_sync_report, source=doc_sync_source))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))

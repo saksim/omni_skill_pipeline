@@ -370,6 +370,61 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
             self.assertEqual(success_check.get("actual", {}).get("not_run_record_count"), 2)
             self.assertEqual(matrix_check.get("status"), "pass")
 
+    def test_require_real_agent_smoke_blocks_not_run_cells(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report(unavailable_agents=True))
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-real-agent-smoke")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("agent_smoke_real_evidence", report.get("failed_checks", []))
+            real_check = next(
+                check for check in report.get("checks", []) if check.get("id") == "agent_smoke_real_evidence"
+            )
+            self.assertEqual(real_check.get("status"), "fail")
+            self.assertEqual(
+                real_check.get("actual", {}).get("real_run_status"),
+                "AGENT_SMOKE_REAL_EVIDENCE_INCOMPLETE",
+            )
+            self.assertEqual(real_check.get("actual", {}).get("agents_passed"), 1)
+            self.assertEqual(
+                {cell.get("agent") for cell in real_check.get("actual", {}).get("non_passed_cells", [])},
+                {"claude-code", "opencode"},
+            )
+
+    def test_require_real_agent_smoke_passes_when_all_agents_passed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-real-agent-smoke")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            real_check = next(
+                check for check in report.get("checks", []) if check.get("id") == "agent_smoke_real_evidence"
+            )
+            self.assertEqual(real_check.get("status"), "pass")
+            self.assertEqual(
+                real_check.get("actual", {}).get("real_run_status"),
+                "AGENT_SMOKE_REAL_EVIDENCE_READY",
+            )
+            self.assertEqual(real_check.get("actual", {}).get("agents_passed"), 3)
+
     def test_missing_security_evidence_keeps_hold(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

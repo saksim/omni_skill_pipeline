@@ -184,9 +184,10 @@ Beta 前的真实运行门禁应使用更严格的模式：
 
 ```powershell
 python scripts\agent_smoke.py --validate-matrix --require-real-runs --min-passed-agents 3 --fail-on-incomplete --print-json
+python scripts\launch_gate.py --require-real-agent-smoke --print-json
 ```
 
-该命令不会创建任何 smoke 记录，只会拒绝把 `not_run` 或 failed 记录当作 Beta readiness 证据。
+这些命令不会创建任何 smoke 记录，只会拒绝把 `not_run` 或 failed 记录当作 Beta readiness 证据。`launch_gate.py` 的默认模式仍保留 internal dogfood 语义：`not_run` 可以解释环境不可用，但启用 `--require-real-agent-smoke` 后会新增 `agent_smoke_real_evidence` 阻塞检查。
 
 上线门禁额外有一层交叉校验：`scripts/launch_gate.py` 会读取 `controlled-trial-run-report.json` 中 `evidence_origin=real` 且 `launch_gate_eligible=true` 的样本，并从真实导出的 `package_path` / `skill_path` 推导 required skill 集合。即使 `agent-smoke-report.json` 自身矩阵完整，只要真实 eligible 导出包缺少 Codex、Claude Code 或 OpenCode 任一记录，`agent_smoke_matrix_coverage` 仍会阻塞上线。
 
@@ -205,3 +206,4 @@ CBT-12 满足时，必须同时符合：
 - 每条记录都有非空 `reason`。
 - `python scripts\agent_smoke.py --validate-matrix --fail-on-incomplete --print-json` 返回 `AGENT_SMOKE_MATRIX_READY`。
 - Beta readiness 门禁中，`python scripts\agent_smoke.py --validate-matrix --require-real-runs --min-passed-agents 3 --fail-on-incomplete --print-json` 返回 `AGENT_SMOKE_REAL_EVIDENCE_READY`。
+- Beta readiness 门禁中，`python scripts\launch_gate.py --require-real-agent-smoke --print-json` 不包含 `agent_smoke_real_evidence` 失败项。
