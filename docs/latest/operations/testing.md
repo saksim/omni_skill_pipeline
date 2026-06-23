@@ -244,6 +244,21 @@ python scripts/launch_gate.py --require-product-surface-readiness --product-surf
 
 Do not treat the static API/console surface as proof that a real external beta user completed the workflow.
 
+Observability readiness also has two levels. The default command checks the P2 static observability contract only:
+
+```bash
+python scripts/observability_readiness.py --print-json
+```
+
+Strict production observability readiness requires live dashboard or evidence-bundle proof covering job duration, job success/fail, retry, modality success rate, human review scores, release artifact build pass/fail, agent smoke pass/fail, and redaction/secret access failures:
+
+```bash
+python scripts/observability_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-observability-readiness --observability-readiness-report docs/working/status/baselines/observability-readiness-report.json --print-json
+```
+
+Do not treat the static trial metrics, platform console fields, or release evidence contract as proof that a live production dashboard has been reviewed.
+
 ## 定向执行
 
 查看当前已映射 Task Package:

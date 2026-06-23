@@ -1,0 +1,146 @@
+{
+  "schema_version": "observability_readiness.v1",
+  "generated_at_utc": "2026-06-23T14:56:23Z",
+  "status": "OBSERVABILITY_READINESS_READY",
+  "live_evidence_required": false,
+  "required_trial_metric_paths": [
+    "trial_metrics.loop_count",
+    "trial_metrics.complete_loop_count",
+    "trial_metrics.complete_modalities",
+    "trial_metrics.latency_ms.average",
+    "trial_metrics.latency_ms.samples",
+    "trial_metrics.provider_runtime.provider_failure_count_total",
+    "trial_metrics.provider_runtime.provider_call_count_total",
+    "trial_metrics.provider_runtime.provider_failure_rate",
+    "trial_metrics.provider_runtime.retry_count_total",
+    "trial_metrics.provider_runtime.retry_count_average_per_loop",
+    "trial_metrics.review_outcome_counts",
+    "trial_metrics.reviewer_edit_distance_pct.median",
+    "trial_metrics.reviewer_edit_distance_pct.samples",
+    "trial_metrics.review_quality.review_evaluable_count",
+    "trial_metrics.review_quality.approval_rate_after_one_revision",
+    "trial_metrics.review_quality.agent_smoke_success_rate",
+    "trial_metrics.safety.critical_secret_or_pii_leak_count",
+    "trial_metrics.safety.unreviewed_published_count",
+    "trial_metrics.launch_gate_evidence.complete_loop_count",
+    "trial_metrics.launch_gate_evidence.complete_modalities",
+    "trial_metrics.launch_gate_evidence.evidence_origin_counts"
+  ],
+  "required_console_markers": [
+    "job_runtime",
+    "modality_success",
+    "human_review_scores",
+    "agent_smoke",
+    "release_artifact_evidence",
+    "redaction_secret_failures"
+  ],
+  "required_live_status_fields": [
+    "job_duration_status",
+    "job_success_failure_status",
+    "retry_status",
+    "modality_success_status",
+    "human_review_scores_status",
+    "release_artifact_status",
+    "agent_smoke_status",
+    "redaction_secret_failure_status",
+    "dashboard_status"
+  ],
+  "check_count": 6,
+  "pass_count": 6,
+  "fail_count": 0,
+  "failed_checks": [],
+  "checks": [
+    {
+      "id": "observability_trial_metrics_contract",
+      "status": "pass",
+      "actual": {
+        "missing_paths": [],
+        "invalid": []
+      },
+      "expected": {
+        "missing_paths": [],
+        "invalid": []
+      },
+      "details": "Trial metrics must expose job duration, job success/fail, retry, modality, human review, agent smoke, and redaction/secret failure counters."
+    },
+    {
+      "id": "observability_agent_smoke_contract",
+      "status": "pass",
+      "actual": {
+        "record_count": 3,
+        "status_counts": {
+          "passed": 1,
+          "failed": 0,
+          "not_run": 2,
+          "unknown": 0
+        },
+        "invalid": []
+      },
+      "expected": {
+        "record_count": ">=1",
+        "executed_pass_fail_record": ">=1",
+        "invalid": []
+      },
+      "details": "Agent smoke observability must preserve pass/fail/not_run counts instead of only a boolean."
+    },
+    {
+      "id": "observability_console_contract",
+      "status": "pass",
+      "actual": {
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_markers": []
+      },
+      "details": "Platform console metrics view must aggregate observability fields from existing evidence files."
+    },
+    {
+      "id": "observability_release_artifact_contract",
+      "status": "pass",
+      "actual": {
+        "missing_docs": [],
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_docs": [],
+        "missing_markers": []
+      },
+      "details": "Release artifact build pass/fail must remain tied to release artifact and consumer smoke evidence."
+    },
+    {
+      "id": "observability_launch_security_contract",
+      "status": "pass",
+      "actual": {
+        "missing": []
+      },
+      "expected": {
+        "missing": []
+      },
+      "details": "Launch evidence must preserve redaction, secret, and PII failure counters for observability."
+    },
+    {
+      "id": "observability_runbook_contract",
+      "status": "pass",
+      "actual": {
+        "missing_docs": [],
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_docs": [],
+        "missing_markers": []
+      },
+      "details": "Operators need a documented workflow for the observability readiness report and strict evidence mode."
+    }
+  ],
+  "evidence_paths": {
+    "trial_metrics_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\trial-metrics-report.json",
+    "agent_smoke_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\controlled-trial\\agent-smoke-report.json",
+    "release_gate_plan": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\e13-release-gate-validation-plan.json",
+    "launch_gate_report": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\broad-launch-readiness-report.json",
+    "console_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\src\\omni_skill_pipeline\\platform_console.py",
+    "testing_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\latest\\operations\\testing.md",
+    "script_map": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\latest\\operations\\script-name-map.md",
+    "operations_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\latest\\operations\\runbooks\\production-operations-baseline.md",
+    "live_evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\observability-live-evidence.json"
+  }
+}

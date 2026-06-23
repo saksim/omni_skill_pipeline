@@ -357,6 +357,7 @@ These endpoints follow the same API key and rate-limit middleware used by `/v1/d
   - Behavior:
     - Returns a single aggregated operator/reviewer surface with six view groups: `trial_runs`, `review_queue`, `skill_registry`, `metrics`, `security_failures`, and `cost`.
     - Uses current baseline evidence files under `docs/working/status/baselines/` plus review queue/runtime and governance ledger.
+    - The `metrics` view includes job runtime duration/success/fail/retry counters, modality success rate, human review scores, agent smoke pass/fail counts, release artifact build pass/fail evidence, and redaction/secret failure counters when the corresponding baseline reports exist.
     - Keeps tenant scope filtering aligned with GL-08 authz constraints.
   - Primary use: one-call snapshot for operators to monitor trial state and launch blockers without manually reading raw artifact directories.
 

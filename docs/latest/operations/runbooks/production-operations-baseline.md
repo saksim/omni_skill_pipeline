@@ -91,6 +91,7 @@ python scripts/launch_gate.py --output docs/working/status/baselines/broad-launc
 python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
 python scripts/k8s_readiness.py --output docs/working/status/baselines/k8s-readiness-report.json --summary-output docs/working/status/baselines/k8s-readiness-summary.md
+python scripts/observability_readiness.py --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
 ```
 
 Decision rules:
@@ -190,6 +191,34 @@ Alert handling sequence:
 2. Run incident response workflow.
 3. Record resolution with root cause and prevention action.
 
+## Observability Evidence Workflow
+
+Generate the static observability readiness report before strict production readiness review:
+
+```bash
+python scripts/observability_readiness.py --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
+```
+
+Strict production observability requires a live dashboard or evidence bundle, then launch gate enforcement:
+
+```bash
+python scripts/observability_readiness.py --require-live-evidence --fail-on-blocked --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
+python scripts/launch_gate.py --require-observability-readiness --observability-readiness-report docs/working/status/baselines/observability-readiness-report.json --print-json
+```
+
+Minimum observability evidence fields:
+
+- job duration
+- job success/fail
+- retry counts and retry rate
+- modality success rate
+- human review scores
+- release artifact build pass/fail
+- agent smoke pass/fail
+- redaction/secret access failures
+
+Static trial metrics, platform console fields, and release evidence contracts are not enough for strict production observability unless external dashboard evidence is attached.
+
 ## Evidence Collection Workflow
 
 Generate and archive the minimum GL-05 evidence set:
@@ -199,6 +228,7 @@ python scripts/release_gate.py --python python3 --output docs/working/status/bas
 python scripts/launch_gate.py --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
 python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
+python scripts/observability_readiness.py --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
 ```
 
 Required artifacts:
@@ -207,6 +237,7 @@ Required artifacts:
 - `docs/working/status/baselines/broad-launch-readiness-report.json`
 - `docs/working/status/baselines/e13-doc-sync-check-report.json`
 - `docs/working/status/baselines/operations-readiness-report.json`
+- `docs/working/status/baselines/observability-readiness-report.json`
 - optional summary markdowns for human review
 
 ## Linux / CI Fallback
