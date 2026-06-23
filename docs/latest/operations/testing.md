@@ -229,6 +229,21 @@ python scripts/launch_gate.py --require-k8s-readiness --k8s-readiness-report doc
 
 Do not treat the repository `k8s/` manifests or static readiness report as proof that a live Kubernetes rollout, server-side dry-run, or log inspection has completed.
 
+Product surface readiness also has two levels. The default command checks the P2-5 static beta product-entry contract only:
+
+```bash
+python scripts/product_surface_readiness.py --print-json
+```
+
+Strict beta product-surface readiness requires live operator evidence covering source intake, job run, generated skill preview, human review, export/validate, evidence/manifest, and launch gate dashboard review:
+
+```bash
+python scripts/product_surface_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-product-surface-readiness --product-surface-readiness-report docs/working/status/baselines/product-surface-readiness-report.json --print-json
+```
+
+Do not treat the static API/console surface as proof that a real external beta user completed the workflow.
+
 ## 定向执行
 
 查看当前已映射 Task Package:
