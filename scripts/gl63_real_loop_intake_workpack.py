@@ -38,6 +38,14 @@ REQUIRED_QUALITY_FIELDS = [
     "redaction_status=passed",
     "pii_status=no_raw_pii_in_repo",
     "review_status=approved",
+    "quality_gate_ref",
+    "quality_gate_status=passed",
+    "quality_scores.faithfulness>=4",
+    "quality_scores.traceability>=4",
+    "quality_scores.safety_redaction=5",
+    "quality_scores.agent_usability>=4",
+    "critical_issues=[]",
+    "requires_human_review=true",
     "revisions_before_approval",
     "reviewer_edit_distance_pct",
     "agent_smoke_result=passed",
@@ -210,8 +218,8 @@ def _build_workpack(
                 "linked_gl62_escalation_action": str(linked_gl62_row.get("escalation_action", "")).strip(),
                 "acceptance_rule": (
                     "The manifest loop must be real, complete, reviewed, source-traced, redacted, "
-                    "agent-smoke-tested, and launch_gate_eligible=true. Fixture or simulated loops "
-                    "must stay launch_gate_eligible=false."
+                    "quality-gate-passed, agent-smoke-tested, and launch_gate_eligible=true. "
+                    "Fixture or simulated loops must stay launch_gate_eligible=false."
                 ),
             }
         )
@@ -265,7 +273,8 @@ def _build_workpack(
             "required_quality_fields": REQUIRED_QUALITY_FIELDS,
             "evidence_reference_policy": (
                 "source_bundle_ref may point to controlled local/object storage; business expectation, "
-                "run evidence, human review, and agent smoke refs must be sanitized, reviewable refs."
+                "run evidence, human review, agent smoke, and quality gate refs must be sanitized, "
+                "reviewable refs."
             ),
             "post_drop_command": (
                 "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir "

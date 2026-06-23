@@ -29,12 +29,14 @@ REQUIRED_TEXT_FIELDS = [
     "run_evidence_ref",
     "human_review_ref",
     "agent_smoke_ref",
+    "quality_gate_ref",
     "generated_bundle_hash",
     "review_task_id",
     "reviewed_by",
     "reviewed_at_utc",
     "review_outcome",
     "agent_smoke_result",
+    "quality_gate_status",
     "redaction_status",
     "pii_status",
     "review_status",
@@ -67,6 +69,7 @@ EVIDENCE_REF_FIELDS = [
     "run_evidence_ref",
     "human_review_ref",
     "agent_smoke_ref",
+    "quality_gate_ref",
 ]
 APPROVED_REVIEW_OUTCOMES = {
     "approved",
@@ -83,6 +86,11 @@ PASSED_AGENT_SMOKE_RESULTS = {
     "agent_smoke_passed",
     "passed",
     "passed_with_minor_issues",
+}
+PASSED_QUALITY_GATE_STATUSES = {
+    "multimodal_quality_gate_ready",
+    "passed",
+    "ready",
 }
 PLACEHOLDER_TOKENS = {
     "",
@@ -332,6 +340,10 @@ def _validate_loop(
     elif agent_smoke not in PASSED_AGENT_SMOKE_RESULTS:
         _add_unique(failure_codes, "agent_smoke_result_not_passed")
 
+    quality_gate_status = _normalize_text(loop.get("quality_gate_status")).lower()
+    if quality_gate_status not in PASSED_QUALITY_GATE_STATUSES:
+        _add_unique(failure_codes, "quality_gate_status_not_passed")
+
     if _normalize_text(loop.get("review_outcome")).lower() not in APPROVED_REVIEW_OUTCOMES:
         _add_unique(failure_codes, "review_outcome_not_approved")
     if _normalize_text(loop.get("review_status")).lower() not in APPROVED_REVIEW_STATUSES:
@@ -522,9 +534,13 @@ def _warning_codes(*, invalid: int, missing: int, accepted: int, total: int, ite
                     "review_status",
                     "review_outcome",
                     "agent_smoke_result",
+                    "quality_gate_status",
+                    "quality_gate",
                 )
             ):
                 _add_unique(warnings, "real_loop_evidence_contract_invalid")
+            if str(code).startswith("quality_gate"):
+                _add_unique(warnings, "multimodal_quality_gate_invalid")
     return warnings
 
 
@@ -667,6 +683,7 @@ def _build_operator_action_plan(items: list[dict[str, Any]], *, manifest_dir: Pa
                 "rg -n \"TEMPLATE_REQUIRED|placeholder|fixture|mock\" "
                 + _display_path(manifest_dir)
             ),
+            "quality_gate": "python scripts\\multimodal_quality_gate.py --fail-on-blocked --print-json",
             "gl64_preflight": "python -B scripts\\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending",
             "gl13_ingestion": (
                 "python -B scripts\\gl13_launch_evidence.py --loop-manifest-dir "
@@ -746,8 +763,9 @@ def build_preflight_report(
                 "launch_gate_eligible=true",
                 "source_bundle_ref points to controlled storage, not raw repo content",
                 "source_hashes includes at least one sha256",
-                "business_expectation_ref/run_evidence_ref/human_review_ref/agent_smoke_ref are readable refs",
+                "business_expectation_ref/run_evidence_ref/human_review_ref/agent_smoke_ref/quality_gate_ref are readable refs",
                 "generated_bundle_hash is sha256",
+                "quality_gate_status passed",
                 "redaction_status=passed",
                 "pii_status=no_raw_pii_in_repo",
                 "review_status=approved or published",

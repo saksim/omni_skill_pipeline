@@ -70,12 +70,14 @@ def _valid_loop(
         "run_evidence_ref": evidence_ref,
         "human_review_ref": evidence_ref,
         "agent_smoke_ref": evidence_ref,
+        "quality_gate_ref": evidence_ref,
         "generated_bundle_hash": "b" * 64,
         "collected_at_utc": "2026-06-19T00:00:00Z",
         "review_task_id": "review-INC-2001",
         "reviewed_by": "reviewer-a",
         "reviewed_at_utc": "2026-06-19T00:05:00Z",
         "review_outcome": "approved",
+        "quality_gate_status": "passed",
         "redaction_status": "passed",
         "pii_status": "no_raw_pii_in_repo",
         "review_status": "approved",
@@ -422,6 +424,55 @@ class RealTrialLoopManifestPreflightScriptTests(unittest.TestCase):
             self.assertIn("redaction_status_not_passed", item.get("failure_codes", []))
             self.assertIn("agent_smoke_result_not_executed", item.get("failure_codes", []))
             self.assertIn("real_loop_evidence_contract_invalid", payload.get("warning_codes", []))
+
+    def test_manifest_missing_quality_gate_contract_is_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            manifest_dir = root / "manifests"
+            workpack_path = root / "workpack.json"
+            report_path = root / "preflight.json"
+            loop = _valid_loop()
+            loop.pop("quality_gate_ref", None)
+            loop["quality_gate_status"] = "blocked"
+            _write_json(workpack_path, _workpack(work_items=[_work_item(modality="text")]))
+            _write_json(
+                manifest_dir / "real-loop-001-text.json",
+                {
+                    "manifest_id": "operator-real-text-001",
+                    "manifest_version": "1.0",
+                    "loops": [loop],
+                },
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--workpack",
+                    str(workpack_path),
+                    "--manifest-dir",
+                    str(manifest_dir),
+                    "--output",
+                    str(report_path),
+                    "--summary-output",
+                    "-",
+                    "--fail-on-invalid",
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 1, completed.stderr + completed.stdout)
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            item = payload.get("items", [])[0]
+            self.assertIn(
+                "required_text_field_missing_or_placeholder:quality_gate_ref",
+                item.get("failure_codes", []),
+            )
+            self.assertIn("quality_gate_status_not_passed", item.get("failure_codes", []))
+            self.assertIn("multimodal_quality_gate_invalid", payload.get("warning_codes", []))
 
     def test_manifest_with_non_slot_loop_is_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

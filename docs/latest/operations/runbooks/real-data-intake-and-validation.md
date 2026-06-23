@@ -49,6 +49,7 @@ data/real-inputs/<batch-id>/
     expected.md
     review.md
     run-evidence.json
+    quality-evidence.json
   slot-002-audio/
     source/
       source.mp3
@@ -67,6 +68,7 @@ data/real-inputs/<batch-id>/
 | `expected.md` | 是 | 业务上认为正确的内容、必须命中的要点、拒绝条件和评分口径 | 否 |
 | `review.md` | 是 | 人工审阅记录，说明输出是否通过、改了几轮、主要问题是什么 | 否 |
 | `run-evidence.json` | 是 | 本地运行证据，记录耗时、产物数量、provider 调用数、重试次数、成本估算 | 否 |
+| `quality-evidence.json` | 是 | 多模态质量评分、人审结论、OCR/ASR 降级说明 | 可脱敏汇总后入库 |
 | 脱敏 manifest | 是 | 仓库内可追溯、可验证的闭环记录 | 是 |
 
 `source/` 里可以放多个文件，但一个 GL-63 槽位只能形成一个合格 loop。比如一个代码库压缩包可以包含多文件，但它仍然对应 `real-loop-005-text.json` 里的一条 `loops[0]`。
@@ -98,6 +100,7 @@ data/real-inputs/<batch-id>/
 - pass_criteria:
   - 主要事实与源文件一致。
   - 人工审阅后 `review_outcome=approved`。
+  - 多模态质量门禁为 `MULTIMODAL_QUALITY_GATE_READY` 或该 loop 的 `quality_gate_status=passed`。
   - agent smoke 实际执行，结果不是 `not_run` 或 `skipped`。
 ```
 
@@ -128,6 +131,39 @@ data/real-inputs/<batch-id>/
   "agent_smoke_result": "passed"
 }
 ```
+
+### `quality-evidence.json` 最小内容
+
+质量证据必须来自人工复核后的真实输出，不得用 demo/fixture 代替。每条记录至少包含：
+
+```json
+{
+  "loop_id": "real-image-slot-003",
+  "modality": "image",
+  "quality_scores": {
+    "faithfulness": 4,
+    "completeness": 4,
+    "reusability": 4,
+    "traceability": 4,
+    "safety_redaction": 5,
+    "agent_usability": 4
+  },
+  "critical_issues": [],
+  "minor_issues": [],
+  "requires_human_review": true,
+  "human_review_decision": "approved_for_beta_evidence",
+  "ocr_confidence": 0.72,
+  "uncertain_regions": []
+}
+```
+
+生成或校验质量门禁报告：
+
+```powershell
+python scripts\multimodal_quality_gate.py --evidence docs\working\status\baselines\real-trial-loop-collection\real-trial-multimodal-quality-evidence.json --fail-on-blocked --print-json
+```
+
+该命令只有在 `text,audio,image,video` 均有通过记录、关键阈值达标、无 critical issue、且人审批准时才输出 `MULTIMODAL_QUALITY_GATE_READY`。若 OCR/ASR provider 不可用，证据里必须包含 transcript 或 graceful degradation 说明，不能把低置信输出当确定事实。
 
 这些本地文件用于指导处理和复核，不直接进入仓库。仓库只提交脱敏后的 manifest；manifest 可以引用 `task_reference`、`expected_reference`、`review_task_id`、`artifact_reference` 这类稳定编号，但不能写入本机绝对路径、未脱敏原文或敏感信息。
 
@@ -190,11 +226,28 @@ docs/working/status/baselines/real-trial-loop-collection/manifests/
       "launch_gate_eligible": true,
       "source_system": "pilot-ops",
       "source_reference": "ticket://INC-2001",
+      "source_bundle_ref": "local-secure-store://real_loop_sources/RL-001/source_bundle",
+      "source_hashes": [
+        {
+          "filename": "redacted-source.md",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "business_expectation_ref": "docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md",
+      "run_evidence_ref": "docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md",
+      "human_review_ref": "docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md",
+      "agent_smoke_ref": "docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-intake-workpack-summary.md",
+      "quality_gate_ref": "docs/working/status/baselines/real-trial-loop-collection/real-trial-multimodal-quality-gate-summary.md",
+      "generated_bundle_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "collected_at_utc": "2026-06-20T01:00:00Z",
       "review_task_id": "review-INC-2001",
       "reviewed_by": "reviewer-a",
       "reviewed_at_utc": "2026-06-20T01:30:00Z",
       "review_outcome": "approved",
+      "redaction_status": "passed",
+      "pii_status": "no_raw_pii_in_repo",
+      "review_status": "approved",
+      "quality_gate_status": "passed",
       "revisions_before_approval": 1,
       "reviewer_edit_distance_pct": 18.0,
       "agent_smoke_result": "passed",
@@ -235,6 +288,7 @@ docs/working/status/baselines/real-trial-loop-collection/manifests/
 - agent 证据：`agent_smoke_result`，或者明确的失败记录和失败原因。
 - 业务正确性证据：本地 `expected.md` 必须说明必须命中的内容、拒绝条件和通过标准。
 - 运行证据：本地 `run-evidence.json` 必须能对应 manifest 中的 `latency_ms`、`provider_failure_count`、`provider_call_count`、`retry_count`、`artifact_count` 和 `estimated_cost_usd`。
+- 质量证据：`quality-evidence.json` 必须通过 `scripts\multimodal_quality_gate.py`，manifest 必须记录 `quality_gate_ref` 和 `quality_gate_status=passed`。
 
 ## 验收命令
 
@@ -244,7 +298,13 @@ docs/working/status/baselines/real-trial-loop-collection/manifests/
 rg -n "TEMPLATE_REQUIRED|placeholder|fixture|mock" docs\working\status\baselines\real-trial-loop-collection\manifests
 ```
 
-再跑 GL-64 manifest 预检：
+先跑质量门禁：
+
+```powershell
+python scripts\multimodal_quality_gate.py --fail-on-blocked --print-json
+```
+
+然后跑 GL-64 manifest 预检：
 
 ```powershell
 python -B scripts\gl64_real_loop_manifest_preflight.py --fail-on-invalid --fail-on-pending
@@ -284,6 +344,7 @@ python scripts\doc_sync.py --output -
 - launch-gate-eligible modalities 覆盖 `text, audio, image, video`。
 - source trace missing 为 `0`。
 - review trace missing 为 `0`。
+- multimodal quality gate 为 `MULTIMODAL_QUALITY_GATE_READY`，每条 manifest 的 `quality_gate_status=passed`。
 - placeholder field count 为 `0`。
 - `critical_secret_or_pii_leak` 为 `0`。
 

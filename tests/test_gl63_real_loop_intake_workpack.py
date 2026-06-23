@@ -148,8 +148,12 @@ class RealTrialLoopIntakeWorkpackScriptTests(unittest.TestCase):
             self.assertIn("source_reference", work_items[0].get("required_trace_fields", []))
             self.assertIn("source_hashes", work_items[0].get("required_trace_fields", []))
             self.assertIn("agent_smoke_ref", work_items[0].get("required_trace_fields", []))
+            self.assertIn("quality_gate_ref", work_items[0].get("required_quality_fields", []))
+            self.assertIn("quality_gate_status=passed", work_items[0].get("required_quality_fields", []))
+            self.assertIn("quality_scores.faithfulness>=4", work_items[0].get("required_quality_fields", []))
             self.assertIn("agent_smoke_result=passed", work_items[0].get("required_quality_fields", []))
             self.assertIn("redaction_status=passed", work_items[0].get("required_quality_fields", []))
+            self.assertIn("quality-gate-passed", work_items[0].get("acceptance_rule", ""))
             self.assertTrue(str(work_items[0].get("manifest_drop_path", "")).endswith("real-loop-001-text.json"))
 
     def test_fail_on_action_required_returns_non_zero(self) -> None:
