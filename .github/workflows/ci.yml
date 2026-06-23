@@ -111,14 +111,13 @@ jobs:
           path: ci-evidence/
           if-no-files-found: error
 
-  ci-evidence-contract:
+  docker-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     needs: test
     if: always()
     env:
-      PYTHONPATH: src
-      RELEASE_ID: ci-evidence-${{ github.sha }}
+      DOCKER_SMOKE_DIR: docker-smoke
 
     steps:
       - name: Require Python matrix success
@@ -131,8 +130,57 @@ jobs:
         if: ${{ needs.test.result == 'success' }}
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Run Docker container smoke
         if: ${{ needs.test.result == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${DOCKER_SMOKE_DIR}"
+          short_sha="${GITHUB_SHA::12}"
+          python scripts/container_smoke.py \
+            --image-tag "omni-skill-pipeline:ci-${short_sha}" \
+            --container-name "omni-ci-smoke-${short_sha}" \
+            --port 18000 \
+            --timeout-seconds 60 \
+            --interval-seconds 2 \
+            --docker-config-dir "${RUNNER_TEMP}/docker-config" \
+            --output "${DOCKER_SMOKE_DIR}/container_smoke_report.json" \
+            --summary-output "${DOCKER_SMOKE_DIR}/container_smoke_summary.md" \
+            --print-json
+
+      - name: Upload Docker smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-smoke-evidence
+          path: docker-smoke/
+          if-no-files-found: warn
+
+  ci-evidence-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs:
+      - test
+      - docker-smoke
+    if: always()
+    env:
+      PYTHONPATH: src
+      RELEASE_ID: ci-evidence-${{ github.sha }}
+
+    steps:
+      - name: Require prerequisite jobs success
+        if: ${{ needs.test.result != 'success' || needs.docker-smoke.result != 'success' }}
+        run: |
+          echo "Python matrix did not pass: ${{ needs.test.result }}" >&2
+          echo "Docker smoke did not pass: ${{ needs.docker-smoke.result }}" >&2
+          exit 1
+
+      - name: Checkout
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -142,13 +190,13 @@ jobs:
             requirements-dev.txt
 
       - name: Install dependencies
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
 
       - name: Download matrix evidence
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         uses: actions/download-artifact@v4
         with:
           pattern: ci-evidence-py*
@@ -156,7 +204,7 @@ jobs:
           merge-multiple: true
 
       - name: Normalize coverage evidence
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -170,11 +218,11 @@ jobs:
           fi
 
       - name: Generate doc sync evidence
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         run: python scripts/doc_sync.py --output ci-evidence/doc_sync.json
 
       - name: Build release evidence pack
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -187,7 +235,7 @@ jobs:
           cp "release-artifacts/${RELEASE_ID}/release-manifest.json" ci-evidence/release_artifacts.json
 
       - name: Generate release consumer evidence
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -198,7 +246,7 @@ jobs:
             --summary-output ci-evidence/release_consumer_smoke_summary.md
 
       - name: Generate launch gate evidence
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -210,7 +258,7 @@ jobs:
             --max-evidence-age-hours 0
 
       - name: Validate CI evidence contract
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.result == 'success' && needs.docker-smoke.result == 'success' }}
         run: |
           python scripts/ci_evidence.py \
             --evidence-dir ci-evidence \

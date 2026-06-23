@@ -155,7 +155,7 @@ python scripts/ci.py --no-coverage --keep-going --isolate-test-files --test-patt
 
 ## 容器烟测脚本
 
-容器基线烟测（构建镜像 + 启动容器 + 轮询 `/healthz`）：
+容器基线烟测（构建镜像 + 记录 image size + 容器内 CLI smoke + 启动容器 + 轮询 `/healthz`）：
 
 ```bash
 python scripts/container_smoke.py --image-tag omni-skill-pipeline:local --port 18000
@@ -166,6 +166,8 @@ python scripts/container_smoke.py --image-tag omni-skill-pipeline:local --port 1
 ```bash
 python scripts/container_smoke.py --dry-run
 ```
+
+GitHub Actions CI 在 Python 3.11/3.12 matrix 成功后也会执行真实 Docker smoke job，并上传 `docker-smoke-evidence` artifact，内含 `container_smoke_report.json` 与 `container_smoke_summary.md`。报告必须记录 image size、`omni-skill --help` CLI smoke、`/healthz` API smoke、container logs 与 cleanup 结果；`--dry-run`、`--skip-build` 或 `--skip-run` 结果不能作为 Docker readiness 证据。
 
 Linux 统一验测时建议直接使用该脚本，作为 `LC-L1-18` 的容器回归入口。
 
