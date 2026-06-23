@@ -225,6 +225,18 @@ def _secrets_readiness_report(status: str = "SECRETS_READINESS_READY") -> dict[s
     }
 
 
+def _docker_readiness_report(status: str = "DOCKER_READINESS_READY") -> dict[str, object]:
+    fail_count = 0 if status == "DOCKER_READINESS_READY" else 1
+    return {
+        "schema_version": "docker_readiness.v1",
+        "status": status,
+        "check_count": 5,
+        "pass_count": 5 - fail_count,
+        "fail_count": fail_count,
+        "failed_checks": [] if fail_count == 0 else ["docker_live_evidence"],
+    }
+
+
 def _k8s_readiness_report(status: str = "K8S_READINESS_READY") -> dict[str, object]:
     fail_count = 0 if status == "K8S_READINESS_READY" else 1
     return {
@@ -285,6 +297,8 @@ def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
             str(root / "ops-readiness.json"),
             "--secrets-readiness-report",
             str(root / "secrets-readiness.json"),
+            "--docker-readiness-report",
+            str(root / "docker-readiness.json"),
             "--k8s-readiness-report",
             str(root / "k8s-readiness.json"),
             "--product-surface-readiness-report",
@@ -704,6 +718,63 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
             check = next(check for check in report.get("checks", []) if check.get("id") == "secrets_readiness_status")
+            self.assertEqual(check.get("status"), "pass")
+
+    def test_require_docker_readiness_missing_evidence_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-docker-readiness")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("docker_readiness_evidence", report.get("failed_checks", []))
+            self.assertIn("docker_readiness_status", report.get("failed_checks", []))
+
+    def test_require_docker_readiness_failed_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "docker-readiness.json", _docker_readiness_report("DOCKER_READINESS_BLOCKED"))
+
+            report = _run_gate(root, "--require-docker-readiness")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("docker_readiness_status", report.get("failed_checks", []))
+            check = next(check for check in report.get("checks", []) if check.get("id") == "docker_readiness_status")
+            self.assertEqual(check.get("actual", {}).get("status"), "DOCKER_READINESS_BLOCKED")
+
+    def test_require_docker_readiness_passes_with_ready_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "docker-readiness.json", _docker_readiness_report())
+
+            report = _run_gate(root, "--require-docker-readiness")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            check = next(check for check in report.get("checks", []) if check.get("id") == "docker_readiness_status")
             self.assertEqual(check.get("status"), "pass")
 
     def test_require_k8s_readiness_missing_evidence_keeps_hold(self) -> None:

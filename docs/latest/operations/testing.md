@@ -171,6 +171,21 @@ GitHub Actions CI 在 Python 3.11/3.12 matrix 成功后也会执行真实 Docker
 
 Linux 统一验测时建议直接使用该脚本，作为 `LC-L1-18` 的容器回归入口。
 
+Docker readiness also has two levels. The default command checks the static Dockerfile, `.dockerignore`, container smoke script, CI artifact wiring, and operations docs:
+
+```bash
+python scripts/docker_readiness.py --print-json
+```
+
+Strict Docker readiness requires live non-dry-run evidence for image build, image size, CLI smoke, container run, `/healthz`, logs, and cleanup; it must be wired into launch gate explicitly:
+
+```bash
+python scripts/docker_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-docker-readiness --docker-readiness-report docs/working/status/baselines/docker-readiness-report.json --print-json
+```
+
+Do not treat `--dry-run`, `--skip-build`, or `--skip-run` container smoke output as Docker readiness evidence.
+
 ## Dual-Write Benchmark Harness
 
 `LC-L2-33` 引入 dual-write 基准脚本：

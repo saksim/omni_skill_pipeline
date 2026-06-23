@@ -35,6 +35,9 @@ DEFAULT_OPERATIONS_READINESS_REPORT = (
 DEFAULT_SECRETS_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "secrets-readiness-report.json"
 )
+DEFAULT_DOCKER_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "docker-readiness-report.json"
+)
 DEFAULT_K8S_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "k8s-readiness-report.json"
 )
@@ -110,6 +113,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
     parser.add_argument("--secrets-readiness-report", default=str(DEFAULT_SECRETS_READINESS_REPORT))
+    parser.add_argument("--docker-readiness-report", default=str(DEFAULT_DOCKER_READINESS_REPORT))
     parser.add_argument("--k8s-readiness-report", default=str(DEFAULT_K8S_READINESS_REPORT))
     parser.add_argument("--product-surface-readiness-report", default=str(DEFAULT_PRODUCT_SURFACE_READINESS_REPORT))
     parser.add_argument("--observability-readiness-report", default=str(DEFAULT_OBSERVABILITY_READINESS_REPORT))
@@ -137,6 +141,11 @@ def _parse_args() -> argparse.Namespace:
         "--require-secrets-readiness",
         action="store_true",
         help="Require a passing secrets-readiness report before launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-docker-readiness",
+        action="store_true",
+        help="Require a passing Docker readiness report before strict production launch readiness can pass.",
     )
     parser.add_argument(
         "--require-k8s-readiness",
@@ -877,6 +886,29 @@ def _evaluate_secrets_readiness(report: dict[str, Any] | None) -> dict[str, Any]
     )
 
 
+def _evaluate_docker_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "docker_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "docker_readiness.v1", "status": "DOCKER_READINESS_READY"},
+            details="Missing Docker readiness evidence keeps strict production launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "docker_readiness_status",
+        "pass"
+        if schema_version == "docker_readiness.v1" and status == "DOCKER_READINESS_READY" and fail_count == 0
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "docker_readiness.v1", "status": "DOCKER_READINESS_READY", "fail_count": 0},
+        details="Strict production readiness requires a complete Docker smoke evidence contract.",
+    )
+
+
 def _evaluate_k8s_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
     if report is None:
         return _make_check(
@@ -1001,6 +1033,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     doc_sync_path = Path(args.doc_sync_report).resolve()
     operations_readiness_path = Path(args.operations_readiness_report).resolve()
     secrets_readiness_path = Path(args.secrets_readiness_report).resolve()
+    docker_readiness_path = Path(args.docker_readiness_report).resolve()
     k8s_readiness_path = Path(args.k8s_readiness_report).resolve()
     product_surface_readiness_path = Path(args.product_surface_readiness_report).resolve()
     observability_readiness_path = Path(args.observability_readiness_report).resolve()
@@ -1017,6 +1050,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         "doc_sync_report": str(doc_sync_path),
         "operations_readiness_report": str(operations_readiness_path),
         "secrets_readiness_report": str(secrets_readiness_path) if bool(args.require_secrets_readiness) else "",
+        "docker_readiness_report": str(docker_readiness_path) if bool(args.require_docker_readiness) else "",
         "k8s_readiness_report": str(k8s_readiness_path) if bool(args.require_k8s_readiness) else "",
         "product_surface_readiness_report": (
             str(product_surface_readiness_path) if bool(args.require_product_surface_readiness) else ""
@@ -1157,6 +1191,33 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
                     "missing",
                     "readable secrets readiness report",
                     details="Secrets-readiness evidence is required in strict secret mode.",
+                )
+            )
+
+    docker_readiness_report = None
+    if bool(args.require_docker_readiness):
+        if docker_readiness_path.is_file():
+            try:
+                docker_readiness_report = _read_json(docker_readiness_path)
+                loaded["docker_readiness_report"] = docker_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "docker_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable Docker readiness report",
+                        details="Docker readiness evidence is required in strict Docker mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "docker_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable Docker readiness report",
+                    details="Docker readiness evidence is required in strict Docker mode.",
                 )
             )
 
@@ -1303,6 +1364,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
     if bool(args.require_secrets_readiness):
         checks.append(_evaluate_secrets_readiness(secrets_readiness_report))
+    if bool(args.require_docker_readiness):
+        checks.append(_evaluate_docker_readiness(docker_readiness_report))
     if bool(args.require_k8s_readiness):
         checks.append(_evaluate_k8s_readiness(k8s_readiness_report))
     if bool(args.require_product_surface_readiness):
@@ -1339,6 +1402,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         freshness_paths["operations_readiness_report"] = operations_readiness_path
     if bool(args.require_secrets_readiness) and secrets_readiness_path.is_file():
         freshness_paths["secrets_readiness_report"] = secrets_readiness_path
+    if bool(args.require_docker_readiness) and docker_readiness_path.is_file():
+        freshness_paths["docker_readiness_report"] = docker_readiness_path
     if bool(args.require_k8s_readiness) and k8s_readiness_path.is_file():
         freshness_paths["k8s_readiness_report"] = k8s_readiness_path
     if bool(args.require_product_surface_readiness) and product_surface_readiness_path.is_file():

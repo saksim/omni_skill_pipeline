@@ -60,6 +60,24 @@ docker run --rm -d \
 curl -fsS http://127.0.0.1:8000/healthz
 ```
 
+## Docker Readiness Workflow
+
+Static Docker readiness verifies the runtime image contract, build-context hygiene, container smoke script, CI smoke evidence wiring, and operations docs:
+
+```bash
+python scripts/docker_readiness.py --print-json
+```
+
+Strict Docker readiness requires live non-dry-run evidence from `container_smoke.py`, including image build, image size, CLI smoke, container run, `/healthz`, logs, and cleanup, then explicit launch gate enforcement:
+
+```bash
+python scripts/container_smoke.py --image-tag omni-skill-pipeline:beta --port 18000
+python scripts/docker_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-docker-readiness --docker-readiness-report docs/working/status/baselines/docker-readiness-report.json --print-json
+```
+
+Do not count `--dry-run`, `--skip-build`, or `--skip-run` container smoke output as Docker readiness evidence.
+
 ## Kubernetes Deploy Workflow
 
 Kubernetes is a P2 productionization path and is not required for the internal dogfood release. The repository `k8s/` directory provides the minimum deployment, service, ingress, configmap, secret-reference, probe, and HPA baseline; runtime secrets must be provisioned outside the repository.
@@ -90,6 +108,7 @@ python scripts/release_gate.py --python python3 --output docs/working/status/bas
 python scripts/launch_gate.py --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
 python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
+python scripts/docker_readiness.py --output docs/working/status/baselines/docker-readiness-report.json --summary-output docs/working/status/baselines/docker-readiness-summary.md
 python scripts/k8s_readiness.py --output docs/working/status/baselines/k8s-readiness-report.json --summary-output docs/working/status/baselines/k8s-readiness-summary.md
 python scripts/observability_readiness.py --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
 ```
@@ -228,6 +247,7 @@ python scripts/release_gate.py --python python3 --output docs/working/status/bas
 python scripts/launch_gate.py --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
 python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
+python scripts/docker_readiness.py --output docs/working/status/baselines/docker-readiness-report.json --summary-output docs/working/status/baselines/docker-readiness-summary.md
 python scripts/observability_readiness.py --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
 ```
 
@@ -237,6 +257,7 @@ Required artifacts:
 - `docs/working/status/baselines/broad-launch-readiness-report.json`
 - `docs/working/status/baselines/e13-doc-sync-check-report.json`
 - `docs/working/status/baselines/operations-readiness-report.json`
+- `docs/working/status/baselines/docker-readiness-report.json`
 - `docs/working/status/baselines/observability-readiness-report.json`
 - optional summary markdowns for human review
 
