@@ -41,6 +41,15 @@ DEFAULT_MULTIMODAL_QUALITY_GATE_REPORT = (
     / "real-trial-loop-collection"
     / "real-trial-multimodal-quality-gate-report.json"
 )
+DEFAULT_REAL_LOOP_PREFLIGHT_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-manifest-preflight-report.json"
+)
 DEFAULT_OPERATIONS_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-report.json"
 )
@@ -125,6 +134,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--ci-evidence-report", default=str(DEFAULT_CI_EVIDENCE_REPORT))
     parser.add_argument("--multimodal-quality-gate-report", default=str(DEFAULT_MULTIMODAL_QUALITY_GATE_REPORT))
+    parser.add_argument("--real-loop-preflight-report", default=str(DEFAULT_REAL_LOOP_PREFLIGHT_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
     parser.add_argument("--secrets-readiness-report", default=str(DEFAULT_SECRETS_READINESS_REPORT))
     parser.add_argument("--docker-readiness-report", default=str(DEFAULT_DOCKER_READINESS_REPORT))
@@ -165,6 +175,11 @@ def _parse_args() -> argparse.Namespace:
         "--require-multimodal-quality-gate",
         action="store_true",
         help="Require a passing multimodal quality gate report before strict launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-real-loop-preflight",
+        action="store_true",
+        help="Require a passing GL-64 real-loop manifest preflight report before strict launch readiness can pass.",
     )
     parser.add_argument(
         "--require-docker-readiness",
@@ -988,6 +1003,93 @@ def _evaluate_multimodal_quality_gate(report: dict[str, Any] | None) -> dict[str
     )
 
 
+def _evaluate_real_loop_preflight(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "real_loop_preflight_status",
+            "fail",
+            "missing",
+            {
+                "schema_version": "real_trial_loop_manifest_preflight.v1",
+                "status": "REAL_LOOP_MANIFEST_PREFLIGHT_READY",
+            },
+            details="Missing GL-64 real-loop manifest preflight evidence keeps strict launch readiness at HOLD.",
+        )
+
+    def _count(container: dict[str, Any], key: str) -> int:
+        try:
+            return int(container.get(key) or 0)
+        except (TypeError, ValueError):
+            return -1
+
+    status = str(report.get("status", "")).strip()
+    schema_version = str(report.get("schema_version", "")).strip()
+    counts = report.get("counts", {})
+    if not isinstance(counts, dict):
+        counts = {}
+    slot_readiness = report.get("slot_readiness", {})
+    if not isinstance(slot_readiness, dict):
+        slot_readiness = {}
+    modality_readiness = report.get("modality_readiness", {})
+    if not isinstance(modality_readiness, dict):
+        modality_readiness = {}
+    operator_action_plan = report.get("operator_action_plan", {})
+    if not isinstance(operator_action_plan, dict):
+        operator_action_plan = {}
+
+    invalid_item_count = _count(counts, "invalid_item_count")
+    missing_item_count = _count(counts, "missing_item_count")
+    pending_item_count = _count(counts, "pending_item_count")
+    blocked_slot_count = _count(slot_readiness, "blocked_slot_count")
+    operator_pending_action_count = _count(operator_action_plan, "pending_action_count")
+    missing_target_launch_modalities = modality_readiness.get("missing_target_launch_modalities", [])
+    warning_codes = report.get("warning_codes", [])
+    if not isinstance(missing_target_launch_modalities, list):
+        missing_target_launch_modalities = []
+    if not isinstance(warning_codes, list):
+        warning_codes = []
+
+    passed = (
+        schema_version == "real_trial_loop_manifest_preflight.v1"
+        and status == "REAL_LOOP_MANIFEST_PREFLIGHT_READY"
+        and invalid_item_count == 0
+        and missing_item_count == 0
+        and pending_item_count == 0
+        and blocked_slot_count == 0
+        and operator_pending_action_count == 0
+        and not missing_target_launch_modalities
+    )
+    return _make_check(
+        "real_loop_preflight_status",
+        "pass" if passed else "fail",
+        {
+            "schema_version": schema_version,
+            "status": status,
+            "invalid_item_count": invalid_item_count,
+            "missing_item_count": missing_item_count,
+            "pending_item_count": pending_item_count,
+            "blocked_slot_count": blocked_slot_count,
+            "operator_pending_action_count": operator_pending_action_count,
+            "missing_target_launch_modalities": missing_target_launch_modalities,
+            "warning_codes": warning_codes,
+        },
+        {
+            "schema_version": "real_trial_loop_manifest_preflight.v1",
+            "status": "REAL_LOOP_MANIFEST_PREFLIGHT_READY",
+            "invalid_item_count": 0,
+            "missing_item_count": 0,
+            "pending_item_count": 0,
+            "blocked_slot_count": 0,
+            "operator_pending_action_count": 0,
+            "missing_target_launch_modalities": [],
+        },
+        details=(
+            "Strict launch readiness requires GL-64 to prove every operator-supplied real-loop manifest "
+            "is present, valid, launch-gate eligible, reviewed, quality-gated, and ready for GL-13 ingestion."
+        ),
+    )
+
+
 def _evaluate_docker_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
     if report is None:
         return _make_check(
@@ -1135,6 +1237,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     doc_sync_path = Path(args.doc_sync_report).resolve()
     ci_evidence_path = Path(args.ci_evidence_report).resolve()
     multimodal_quality_gate_path = Path(args.multimodal_quality_gate_report).resolve()
+    real_loop_preflight_path = Path(args.real_loop_preflight_report).resolve()
     operations_readiness_path = Path(args.operations_readiness_report).resolve()
     secrets_readiness_path = Path(args.secrets_readiness_report).resolve()
     docker_readiness_path = Path(args.docker_readiness_report).resolve()
@@ -1156,6 +1259,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         "multimodal_quality_gate_report": (
             str(multimodal_quality_gate_path) if bool(args.require_multimodal_quality_gate) else ""
         ),
+        "real_loop_preflight_report": str(real_loop_preflight_path) if bool(args.require_real_loop_preflight) else "",
         "operations_readiness_report": str(operations_readiness_path),
         "secrets_readiness_report": str(secrets_readiness_path) if bool(args.require_secrets_readiness) else "",
         "docker_readiness_report": str(docker_readiness_path) if bool(args.require_docker_readiness) else "",
@@ -1326,6 +1430,33 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
                     "missing",
                     "readable multimodal quality gate report",
                     details="Multimodal quality gate evidence is required in strict launch evidence mode.",
+                )
+            )
+
+    real_loop_preflight_report = None
+    if bool(args.require_real_loop_preflight):
+        if real_loop_preflight_path.is_file():
+            try:
+                real_loop_preflight_report = _read_json(real_loop_preflight_path)
+                loaded["real_loop_preflight_report"] = real_loop_preflight_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "real_loop_preflight_evidence",
+                        "fail",
+                        str(exc),
+                        "readable GL-64 real-loop manifest preflight report",
+                        details="GL-64 real-loop manifest preflight evidence is required in strict launch mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "real_loop_preflight_evidence",
+                    "fail",
+                    "missing",
+                    "readable GL-64 real-loop manifest preflight report",
+                    details="GL-64 real-loop manifest preflight evidence is required in strict launch mode.",
                 )
             )
 
@@ -1527,6 +1658,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         checks.append(_evaluate_ci_evidence(ci_evidence_report))
     if bool(args.require_multimodal_quality_gate):
         checks.append(_evaluate_multimodal_quality_gate(multimodal_quality_gate_report))
+    if bool(args.require_real_loop_preflight):
+        checks.append(_evaluate_real_loop_preflight(real_loop_preflight_report))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
     if bool(args.require_secrets_readiness):
         checks.append(_evaluate_secrets_readiness(secrets_readiness_report))
@@ -1568,6 +1701,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         freshness_paths["ci_evidence_report"] = ci_evidence_path
     if bool(args.require_multimodal_quality_gate) and multimodal_quality_gate_path.is_file():
         freshness_paths["multimodal_quality_gate_report"] = multimodal_quality_gate_path
+    if bool(args.require_real_loop_preflight) and real_loop_preflight_path.is_file():
+        freshness_paths["real_loop_preflight_report"] = real_loop_preflight_path
     if operations_readiness_path.is_file():
         freshness_paths["operations_readiness_report"] = operations_readiness_path
     if bool(args.require_secrets_readiness) and secrets_readiness_path.is_file():

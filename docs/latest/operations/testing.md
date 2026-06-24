@@ -68,6 +68,14 @@ python scripts/launch_gate.py --require-multimodal-quality-gate --multimodal-qua
 
 The multimodal quality gate report must be `MULTIMODAL_QUALITY_GATE_READY`, cover text/audio/image/video, have no blocked quality records, and preserve the OCR/ASR fallback and human-review evidence contract.
 
+Strict launch readiness can also require GL-64 real-loop manifest preflight evidence explicitly:
+
+```bash
+python scripts/launch_gate.py --require-real-loop-preflight --real-loop-preflight-report docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-report.json --print-json
+```
+
+The real-loop preflight report must be `REAL_LOOP_MANIFEST_PREFLIGHT_READY`, use `real_trial_loop_manifest_preflight.v1`, have zero missing/invalid/pending items, and have no blocked slot or operator action before launch evidence can pass.
+
 Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.2` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test

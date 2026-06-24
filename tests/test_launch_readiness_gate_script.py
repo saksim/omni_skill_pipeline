@@ -236,6 +236,43 @@ def _multimodal_quality_gate_report(status: str = "MULTIMODAL_QUALITY_GATE_READY
     }
 
 
+def _real_loop_preflight_report(status: str = "REAL_LOOP_MANIFEST_PREFLIGHT_READY") -> dict[str, object]:
+    blocked_count = 0 if status == "REAL_LOOP_MANIFEST_PREFLIGHT_READY" else 1
+    return {
+        "schema_version": "real_trial_loop_manifest_preflight.v1",
+        "status": status,
+        "counts": {
+            "total_intake_item_count": 10,
+            "submitted_manifest_count": 10 - blocked_count,
+            "valid_item_count": 10 - blocked_count,
+            "invalid_item_count": 0,
+            "missing_item_count": blocked_count,
+            "accepted_loop_count": 10 - blocked_count,
+            "pending_item_count": blocked_count,
+        },
+        "warning_codes": [] if blocked_count == 0 else ["real_loop_manifests_missing"],
+        "slot_readiness": {
+            "required_slot_count": 10,
+            "ready_slot_count": 10 - blocked_count,
+            "missing_slot_count": blocked_count,
+            "invalid_slot_count": 0,
+            "blocked_slot_count": blocked_count,
+        },
+        "modality_readiness": {
+            "target_launch_modalities": ["text", "audio", "image", "video"],
+            "covered_target_launch_modalities": (
+                ["text", "audio", "image", "video"] if blocked_count == 0 else ["text", "audio", "image"]
+            ),
+            "missing_target_launch_modalities": [] if blocked_count == 0 else ["video"],
+        },
+        "operator_action_plan": {
+            "status": "ready_for_gl13" if blocked_count == 0 else "action_required",
+            "pending_action_count": blocked_count,
+            "next_actions": [] if blocked_count == 0 else [{"action": "create_real_manifest"}],
+        },
+    }
+
+
 def _operations_readiness_report(status: str = "pass") -> dict[str, object]:
     return {
         "schema_version": "operations_readiness.v1",
@@ -330,6 +367,8 @@ def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
             str(root / "ci-evidence.json"),
             "--multimodal-quality-gate-report",
             str(root / "multimodal-quality-gate.json"),
+            "--real-loop-preflight-report",
+            str(root / "real-loop-preflight.json"),
             "--operations-readiness-report",
             str(root / "ops-readiness.json"),
             "--secrets-readiness-report",
@@ -686,6 +725,67 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
             check = next(
                 check for check in report.get("checks", []) if check.get("id") == "multimodal_quality_gate_status"
             )
+            self.assertEqual(check.get("status"), "pass")
+
+    def test_require_real_loop_preflight_missing_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-real-loop-preflight")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("real_loop_preflight_evidence", report.get("failed_checks", []))
+            self.assertIn("real_loop_preflight_status", report.get("failed_checks", []))
+
+    def test_require_real_loop_preflight_failed_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(
+                root / "real-loop-preflight.json",
+                _real_loop_preflight_report("REAL_LOOP_MANIFEST_PREFLIGHT_PENDING"),
+            )
+
+            report = _run_gate(root, "--require-real-loop-preflight")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("real_loop_preflight_status", report.get("failed_checks", []))
+            check = next(check for check in report.get("checks", []) if check.get("id") == "real_loop_preflight_status")
+            self.assertEqual(check.get("actual", {}).get("status"), "REAL_LOOP_MANIFEST_PREFLIGHT_PENDING")
+            self.assertEqual(check.get("actual", {}).get("missing_item_count"), 1)
+
+    def test_require_real_loop_preflight_passes_with_ready_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "real-loop-preflight.json", _real_loop_preflight_report())
+
+            report = _run_gate(root, "--require-real-loop-preflight")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            check = next(check for check in report.get("checks", []) if check.get("id") == "real_loop_preflight_status")
             self.assertEqual(check.get("status"), "pass")
 
     def test_dry_run_marker_keeps_hold(self) -> None:
