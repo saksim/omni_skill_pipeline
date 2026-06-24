@@ -1,6 +1,6 @@
 # 操作文档入口
 
-这是 `v0.2.5-internal.2` 发版候选的当前操作入口。
+这是 `v0.2.6-internal.3` 发版候选的当前操作入口。
 
 当前支持的上线姿态是内部 dogfood。使用这些文档可以在内部路径下运行、验证、打包和操作本仓库。不要把这些文档当作外部 Beta、GA、SaaS、Docker/Postgres 生产验证或 K8s readiness 的证据。
 
@@ -48,7 +48,7 @@
 
 ## 当前边界
 
-- `v0.2.5-internal.2` 继承已完成的非基础设施内部 dogfood 路径，并补齐未来真实数据接入、验收和归档口径。
+- `v0.2.6-internal.3` 继承已完成的非基础设施内部 dogfood 路径，并补齐未来真实数据接入、验收、归档和 strict launch gate 口径。
 - 本地 file artifact 加密是可选能力，默认关闭。
 - Docker、Postgres、K8s、Vault/KMS、自动 key rotation、OCR hardening 和 external real-loop collection 都不是当前已完成 release claim。
 - `scripts/launch_gate.py` 仍可能返回 `HOLD`；这会阻断外部上线声明，不阻断内部 dogfood 操作。当前最主要的 HOLD 原因是缺少 10 个 launch-gate-eligible 真实闭环和 4 个真实模态覆盖。

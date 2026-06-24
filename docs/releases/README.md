@@ -13,4 +13,4 @@
 
 跨多个 release 汇总的已完成能力，应在相关 release 真正发布后归档到 `docs/archive/status/`。当前记录：`docs/archive/status/2026-06-19-completed-capabilities-archive.md`。
 
-当前发版候选：`v0.2.5-internal.2`。本轮 release 重点是在没有真实业务数据时收敛为内部 dogfood 口径，并补齐后续真实数据接入、验收和归档文档。
+当前发版候选：`v0.2.6-internal.3`。本轮 release 重点是把 06-23 施工成果发布为内部自证闭环版本，补齐导出校验、release artifact fallback、Python 3.11/3.12 矩阵、CI evidence、真实 loop preflight、多模态质量和生产化 readiness 门禁。

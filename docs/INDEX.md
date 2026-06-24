@@ -81,6 +81,7 @@
 
 - [变更日志](releases/CHANGELOG.md)
 - [发布说明](releases/notes/README.md)
+- [v0.2.6-internal.3 发布说明](releases/notes/v0.2.6-internal.3.md)
 - [v0.2.5-internal.2 发布说明](releases/notes/v0.2.5-internal.2.md)
 - [v0.2.4-internal.1 发布说明](releases/notes/v0.2.4-internal.1.md)
 - [v0.2.3-internal.1 发布说明](releases/notes/v0.2.3-internal.1.md)

@@ -2,7 +2,7 @@
 
 ## 当前操作入口
 
-`v0.2.5-internal.2` 发版候选的一线操作优先使用本节命令。后面的 TP 附录是历史测试映射和生成记录，主要用于 doc sync 与回归追溯，不是日常操作入口。
+`v0.2.6-internal.3` 发版候选的一线操作优先使用本节命令。后面的 TP 附录是历史测试映射和生成记录，主要用于 doc sync 与回归追溯，不是日常操作入口。
 
 本地回归：
 
@@ -19,7 +19,7 @@ python scripts/release_consumer_smoke.py --release-dir <release-dir> --expected-
 最新已发布内部版本示例：
 
 ```bash
-python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.5-internal.2
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.6-internal.3
 ```
 
 本地 artifact 加密回归：
@@ -76,7 +76,7 @@ python scripts/launch_gate.py --require-real-loop-preflight --real-loop-prefligh
 
 The real-loop preflight report must be `REAL_LOOP_MANIFEST_PREFLIGHT_READY`, use `real_trial_loop_manifest_preflight.v1`, have zero missing/invalid/pending items, and have no blocked slot or operator action before launch evidence can pass.
 
-Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.2` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
+Docker/Postgres/K8s 生产验证不属于 `v0.2.6-internal.3` 的外部生产 ready 声明。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test
 
