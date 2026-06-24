@@ -105,17 +105,19 @@ Run strict validation evidence before any launch claim:
 
 ```bash
 python scripts/release_gate.py --python python3 --output docs/working/status/baselines/e13-release-gate-validation-plan.json
-python scripts/launch_gate.py --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
 python scripts/doc_sync.py --output docs/working/status/baselines/e13-doc-sync-check-report.json
 python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
 python scripts/docker_readiness.py --output docs/working/status/baselines/docker-readiness-report.json --summary-output docs/working/status/baselines/docker-readiness-summary.md
 python scripts/k8s_readiness.py --output docs/working/status/baselines/k8s-readiness-report.json --summary-output docs/working/status/baselines/k8s-readiness-summary.md
 python scripts/observability_readiness.py --output docs/working/status/baselines/observability-readiness-report.json --summary-output docs/working/status/baselines/observability-readiness-summary.md
+python scripts/ci_evidence.py --evidence-dir docs/working/status/baselines/ci-matrix --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-ci-evidence --ci-evidence-report docs/working/status/baselines/ci-matrix/ci_evidence_report.json --output docs/working/status/baselines/broad-launch-readiness-report.json --summary-output docs/working/status/baselines/broad-launch-readiness-summary.md
 ```
 
 Decision rules:
 
 - If release gate or launch readiness is `HOLD`, stop launch expansion and remediate.
+- The strict launch gate must read `docs/working/status/baselines/ci-matrix/ci_evidence_report.json` before CI-backed launch readiness can pass.
 - Do not use dry-run, relaxed flags, or skipped checks for launch claims.
 
 ## Rollback Workflow

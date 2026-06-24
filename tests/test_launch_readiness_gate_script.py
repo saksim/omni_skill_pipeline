@@ -203,6 +203,19 @@ def _doc_sync_report(status: str = "pass") -> dict[str, object]:
     }
 
 
+def _ci_evidence_report(status: str = "CI_EVIDENCE_READY") -> dict[str, object]:
+    fail_count = 0 if status == "CI_EVIDENCE_READY" else 1
+    return {
+        "schema_version": "ci_evidence.v1",
+        "status": status,
+        "required_python_versions": ["3.11", "3.12"],
+        "check_count": 7,
+        "pass_count": 7 - fail_count,
+        "fail_count": fail_count,
+        "blocking_codes": [] if fail_count == 0 else ["ci_summary_missing:3.12"],
+    }
+
+
 def _operations_readiness_report(status: str = "pass") -> dict[str, object]:
     return {
         "schema_version": "operations_readiness.v1",
@@ -293,6 +306,8 @@ def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
             str(root / "security.json"),
             "--doc-sync-report",
             str(root / "doc-sync.json"),
+            "--ci-evidence-report",
+            str(root / "ci-evidence.json"),
             "--operations-readiness-report",
             str(root / "ops-readiness.json"),
             "--secrets-readiness-report",
@@ -528,6 +543,63 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "HOLD")
             self.assertIn("doc_sync_status", report.get("failed_checks", []))
+
+    def test_require_ci_evidence_missing_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-ci-evidence")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("ci_evidence_evidence", report.get("failed_checks", []))
+            self.assertIn("ci_evidence_status", report.get("failed_checks", []))
+
+    def test_require_ci_evidence_failed_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "ci-evidence.json", _ci_evidence_report("CI_EVIDENCE_BLOCKED"))
+
+            report = _run_gate(root, "--require-ci-evidence")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("ci_evidence_status", report.get("failed_checks", []))
+            check = next(check for check in report.get("checks", []) if check.get("id") == "ci_evidence_status")
+            self.assertEqual(check.get("actual", {}).get("status"), "CI_EVIDENCE_BLOCKED")
+
+    def test_require_ci_evidence_passes_with_ready_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "ci-evidence.json", _ci_evidence_report())
+
+            report = _run_gate(root, "--require-ci-evidence")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            check = next(check for check in report.get("checks", []) if check.get("id") == "ci_evidence_status")
+            self.assertEqual(check.get("status"), "pass")
 
     def test_dry_run_marker_keeps_hold(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

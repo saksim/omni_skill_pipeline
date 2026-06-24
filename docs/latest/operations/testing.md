@@ -52,6 +52,14 @@ The archived CI evidence directory must contain:
 
 `launch_gate.json` may still report `HOLD` while real external loop evidence is incomplete; this command only verifies that CI archived an explicit launch-gate artifact.
 
+Strict launch readiness can require the archived CI evidence explicitly:
+
+```bash
+python scripts/launch_gate.py --require-ci-evidence --ci-evidence-report docs/working/status/baselines/ci-matrix/ci_evidence_report.json --print-json
+```
+
+The CI evidence report validates the Python 3.11/3.12 matrix summaries, coverage XML, doc-sync output, release artifacts, release consumer smoke, and launch-gate artifact before strict launch readiness can pass.
+
 Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.2` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test
