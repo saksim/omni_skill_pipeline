@@ -38,6 +38,27 @@ class SkillUsabilityValidatorTests(unittest.TestCase):
         self.assertIn('MISSING_FRONTMATTER', report.failure_codes)
         self.assertIn('MISSING_SECTION', report.failure_codes)
 
+    def test_validator_allows_draft_only_when_explicitly_requested(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            package_dir = self._write_valid_package(root, review_status='review_pending')
+
+            strict_report = validate_skill_package(package_path=package_dir, max_lines=500)
+            draft_report = validate_skill_package(package_path=package_dir, max_lines=500, allow_draft=True)
+
+        self.assertEqual(strict_report.status, 'fail')
+        self.assertIn('REVIEW_APPROVAL_MISSING', strict_report.failure_codes)
+        self.assertEqual(draft_report.status, 'pass')
+
+    def test_validator_rejects_rejected_package_even_with_allow_draft(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            package_dir = self._write_valid_package(root, review_status='rejected')
+            report = validate_skill_package(package_path=package_dir, max_lines=500, allow_draft=True)
+
+        self.assertEqual(report.status, 'fail')
+        self.assertIn('REVIEW_REJECTED', report.failure_codes)
+
     def test_validator_catches_path_secret_and_dangerous_command_leaks(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -147,7 +168,7 @@ class SkillUsabilityValidatorTests(unittest.TestCase):
         self.assertEqual(report.status, 'fail')
         self.assertIn('WEAK_DESCRIPTION', report.failure_codes)
 
-    def _write_valid_package(self, root: Path) -> Path:
+    def _write_valid_package(self, root: Path, *, review_status: str = 'published') -> Path:
         package_dir = root / 'portable' / 'sample-skill'
         references_dir = package_dir / 'references'
         references_dir.mkdir(parents=True, exist_ok=True)
@@ -187,7 +208,7 @@ class SkillUsabilityValidatorTests(unittest.TestCase):
         (package_dir / 'agent_skill_package.json').write_text(
             json.dumps(
                 {
-                    'review_status': 'published',
+                    'review_status': review_status,
                     'package_name': 'sample-skill',
                 },
                 ensure_ascii=False,

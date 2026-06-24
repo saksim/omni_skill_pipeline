@@ -189,6 +189,7 @@ class AgentSkillExporter(object):
                 'target_layout': str(self._TARGET_LAYOUTS[target] / package_name).replace('\\', '/'),
                 'export_bundle_path': str(bundle_path),
                 'schema_version': 'agent_skill_package.v1',
+                **self._build_review_metadata(payload, review_status=review_status),
             },
         )
 
@@ -302,6 +303,81 @@ class AgentSkillExporter(object):
         )
 
     def _resolve_review_status(self, payload: dict[str, Any]) -> ReviewStatus:
+        skill_status = self._coerce_review_status(
+            self._read_nested_status(payload.get('skill'), key='review_status'),
+            default=ReviewStatus.DRAFT,
+        )
+        if skill_status in {ReviewStatus.PUBLISHED, ReviewStatus.REJECTED}:
+            return skill_status
+
+        review_task_payload = self._resolve_review_task_payload(payload)
+        task_status = self._coerce_review_status(
+            self._read_nested_status(review_task_payload, key='status'),
+            default=ReviewStatus.DRAFT,
+        )
+        if task_status in {ReviewStatus.PUBLISHED, ReviewStatus.REJECTED}:
+            return task_status
+
+        task_decision = str(review_task_payload.get('decision', '')).strip().lower()
+        if task_decision in {'auto_publish', 'approve', 'approved'} and task_status == ReviewStatus.PUBLISHED:
+            return ReviewStatus.PUBLISHED
+
+        if skill_status == ReviewStatus.REVIEW_PENDING or task_status == ReviewStatus.REVIEW_PENDING:
+            return ReviewStatus.REVIEW_PENDING
+        return ReviewStatus.DRAFT
+
+    def _read_nested_status(self, payload: Any, *, key: str) -> str:
+        if not isinstance(payload, dict):
+            return ''
+        return str(payload.get(key, '')).strip().lower()
+
+    def _coerce_review_status(self, raw: str, *, default: ReviewStatus) -> ReviewStatus:
+        normalized = str(raw or '').strip().lower()
+        if normalized in {'approved', 'approve'}:
+            return ReviewStatus.PUBLISHED
+        if normalized in {'review_required', 'needs_rework'}:
+            return ReviewStatus.REVIEW_PENDING
+        try:
+            return ReviewStatus(normalized)
+        except ValueError:
+            return default
+
+    def _resolve_review_task_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        review_task_payload = payload.get('review_task')
+        if isinstance(review_task_payload, dict):
+            return dict(review_task_payload)
+        adapter_metadata = payload.get('adapter_metadata')
+        if isinstance(adapter_metadata, dict):
+            adapter_review_task = adapter_metadata.get('review_task')
+            if isinstance(adapter_review_task, dict):
+                return dict(adapter_review_task)
+        return {}
+
+    def _build_review_metadata(self, payload: dict[str, Any], *, review_status: ReviewStatus) -> dict[str, str]:
+        review_task_payload = self._resolve_review_task_payload(payload)
+        metadata: dict[str, str] = {'review_status_source': 'skill'}
+        task_status = self._coerce_review_status(
+            self._read_nested_status(review_task_payload, key='status'),
+            default=ReviewStatus.DRAFT,
+        )
+        task_decision = str(review_task_payload.get('decision', '')).strip().lower()
+        task_matches_final_status = task_status == review_status
+        task_auto_published = review_status == ReviewStatus.PUBLISHED and task_decision in {
+            'auto_publish',
+            'approve',
+            'approved',
+        }
+        if review_task_payload and (task_matches_final_status or task_auto_published):
+            metadata['review_status_source'] = 'review_task'
+        review_task_id = str(review_task_payload.get('review_task_id', '')).strip()
+        if review_task_id:
+            metadata['review_task_id'] = review_task_id
+        decision = str(review_task_payload.get('decision', '')).strip()
+        if decision:
+            metadata['review_decision'] = decision
+        return metadata
+
+    def _resolve_legacy_review_status(self, payload: dict[str, Any]) -> ReviewStatus:
         skill_payload = payload.get('skill', {})
         if isinstance(skill_payload, dict):
             raw = str(skill_payload.get('review_status', '')).strip().lower()

@@ -1,0 +1,88 @@
+{
+  "schema_version": "docker_readiness.v1",
+  "generated_at_utc": "2026-06-23T15:51:21Z",
+  "status": "DOCKER_READINESS_READY",
+  "live_evidence_required": false,
+  "required_live_status_fields": [
+    "image_build_status",
+    "image_size_status",
+    "cli_smoke_status",
+    "container_run_status",
+    "healthz_status",
+    "logs_collected_status",
+    "cleanup_status"
+  ],
+  "check_count": 5,
+  "pass_count": 5,
+  "fail_count": 0,
+  "failed_checks": [],
+  "checks": [
+    {
+      "id": "dockerfile_runtime_contract",
+      "status": "pass",
+      "actual": {
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_markers": []
+      },
+      "details": "Runtime Dockerfile must build the API image with Python 3.11 and expose /healthz on port 8000."
+    },
+    {
+      "id": "dockerignore_hygiene_contract",
+      "status": "pass",
+      "actual": {
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_markers": []
+      },
+      "details": "Docker build context must exclude VCS, caches, coverage, generated skills, and transient files."
+    },
+    {
+      "id": "container_smoke_contract",
+      "status": "pass",
+      "actual": {
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_markers": []
+      },
+      "details": "container_smoke.py must record build/run/health/log/cleanup stages and expose dry-run/skip flags."
+    },
+    {
+      "id": "docker_ci_contract",
+      "status": "pass",
+      "actual": {
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_markers": []
+      },
+      "details": "CI must run a real Docker smoke job and upload structured container smoke evidence."
+    },
+    {
+      "id": "docker_docs_contract",
+      "status": "pass",
+      "actual": {
+        "missing_docs": [],
+        "missing_markers": []
+      },
+      "expected": {
+        "missing_docs": [],
+        "missing_markers": []
+      },
+      "details": "Docker operations docs must explain build/run/health/log/cleanup evidence and the readiness gate."
+    }
+  ],
+  "evidence_paths": {
+    "dockerfile": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\Dockerfile",
+    "dockerignore": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.dockerignore",
+    "container_smoke_source": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\scripts\\container_smoke.py",
+    "ci_workflow": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\.github\\workflows\\ci.yml",
+    "testing_doc": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\latest\\operations\\testing.md",
+    "docker_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\latest\\operations\\runbooks\\docker-zero-to-release.md",
+    "production_ops_runbook": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\latest\\operations\\runbooks\\production-operations-baseline.md",
+    "live_evidence": "D:\\Download\\gaming\\new_program\\data_helper\\3_omni_skill_pipeline\\docs\\working\\status\\baselines\\docker-live-evidence.json"
+  }
+}

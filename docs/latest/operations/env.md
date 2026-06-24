@@ -2,11 +2,11 @@
 
 ## 基线
 
-运行时只需要干净的 Python 3.11 环境、可选媒体二进制工具，以及在启用 provider 时提供对应凭证。文档中不要硬编码绝对解释器路径。
+运行时只需要干净的 Python 3.11 或 3.12 环境、可选媒体二进制工具，以及在启用 provider 时提供对应凭证。文档中不要硬编码绝对解释器路径。
 
 ## 运行时
 
-- Python：`3.11+`
+- Python：`3.11` 或 `3.12`。`v0.2.x` 不声明支持 Python 3.13。
 - 安装模式：优先使用隔离虚拟环境。
 - Package root：`src/omni_skill_pipeline/`
 - API 入口：`apps/api/main.py`
@@ -147,6 +147,20 @@ python -c "from omni_skill_pipeline.artifact_crypto import generate_fernet_key; 
 - 加密关闭时，旧 plaintext artifact 仍可读。
 - 读取加密 review queue entry 需要配置同一个 key。
 - 不提供 Vault/KMS 集成或自动 key rotation。
+
+## Secrets Readiness
+
+默认 secrets readiness 只证明仓库内没有明显明文 secret、`.env.example` 使用空值或占位符、运行手册要求 key 存放在仓库外：
+
+```bash
+python scripts/secrets_readiness.py --print-json
+```
+
+生产级密钥管理必须提供外部 Secret Manager/Vault/KMS 证据，不能把本地 `.env`、CI secret 或手工密码管理器说明当作完整生产集成：
+
+```bash
+python scripts/secrets_readiness.py --require-production-manager --fail-on-blocked --print-json
+```
 
 ## Scratch Root Prune 变量
 

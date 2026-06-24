@@ -112,6 +112,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     validate_parser.add_argument('--package', required=True, help='Exported package directory path.')
     validate_parser.add_argument('--max-lines', type=int, default=500, help='Max allowed SKILL.md line count.')
+    validate_parser.add_argument(
+        '--allow-draft',
+        action='store_true',
+        help='Allow draft/review_pending packages for local development checks only.',
+    )
     review_parser = subparsers.add_parser('review-queue', help='Operate review queue tasks through repository runtime.')
     review_parser.add_argument('--action', required=True, help='list/claim/close/approve/reject/needs-rework')
     review_parser.add_argument('--review-task-id', default='')
@@ -517,6 +522,7 @@ def main(argv: list = None) -> int:
         report = validate_skill_package(
             package_path=Path(args.package),
             max_lines=int(args.max_lines),
+            allow_draft=bool(args.allow_draft),
         )
         print('status=%s package=%s skill=%s' % (report.status, report.package_path, report.skill_path))
         if report.failure_codes:

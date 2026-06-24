@@ -42,12 +42,17 @@ class ContainerSmokeScriptTests(unittest.TestCase):
 
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Plan: docker build -t omni:test .", completed.stdout)
+            self.assertIn("Plan: docker image inspect omni:test --format {{.Size}}", completed.stdout)
+            self.assertIn("Plan: docker run --rm omni:test omni-skill --help", completed.stdout)
             self.assertIn("Plan: docker run -d --name omni-smoke -p 18080:8000 omni:test", completed.stdout)
             self.assertIn("Plan: poll http://127.0.0.1:18080/healthz", completed.stdout)
             report = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(report.get("schema_version"), "container_smoke.v1")
             self.assertEqual(report.get("decision"), "DRY_RUN")
             self.assertEqual(report.get("config", {}).get("health_url"), "http://127.0.0.1:18080/healthz")
+            self.assertEqual(report.get("commands", {}).get("image_size", [])[0:4], ["docker", "image", "inspect", "omni:test"])
+            self.assertEqual(report.get("commands", {}).get("cli_smoke", [])[0:5], ["docker", "run", "--rm", "omni:test", "omni-skill"])
+            self.assertEqual(report.get("image", {}).get("size_bytes"), None)
             self.assertIn("Decision: `DRY_RUN`", summary_path.read_text(encoding="utf-8"))
 
     def test_skip_build_and_run_returns_usage_error(self) -> None:

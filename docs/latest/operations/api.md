@@ -357,5 +357,33 @@ These endpoints follow the same API key and rate-limit middleware used by `/v1/d
   - Behavior:
     - Returns a single aggregated operator/reviewer surface with six view groups: `trial_runs`, `review_queue`, `skill_registry`, `metrics`, `security_failures`, and `cost`.
     - Uses current baseline evidence files under `docs/working/status/baselines/` plus review queue/runtime and governance ledger.
+    - The `metrics` view includes job runtime duration/success/fail/retry counters, modality success rate, human review scores, agent smoke pass/fail counts, release artifact build pass/fail evidence, and redaction/secret failure counters when the corresponding baseline reports exist.
     - Keeps tenant scope filtering aligned with GL-08 authz constraints.
   - Primary use: one-call snapshot for operators to monitor trial state and launch blockers without manually reading raw artifact directories.
+
+## Beta Product Workflow Surface (P2-5)
+
+The minimum beta product entry is an API plus CLI workflow, not a broad GUI. It gives operators one documented path through:
+
+- source intake: `POST /v1/distill/text`, `/audio`, `/image`, `/tabular`, `/video`, and `/corpus`.
+- job run: each distill endpoint returns the generated bundle summary and review routing fields.
+- generated skill preview: distill responses expose `skill_markdown`, graph metadata, available publications, `review_status`, `review_task_id`, and lifecycle decision fields.
+- human review: `GET /v1/review/queue`, `POST /v1/review/queue/claim`, `POST /v1/review/queue/{review_task_id}/close`, and `POST /v1/review/queue/{review_task_id}/decision`.
+- export/validate: use `omni-skill export-skill` followed by `omni-skill validate-skill` from the controlled beta runbook.
+- evidence/manifest: use manifest validation, governance operations, trial metrics, and launch readiness reports as the auditable record.
+- launch gate dashboard: `POST /v1/console/views` aggregates trial runs, review queue, skill registry, metrics, security failures, and cost for operator review.
+
+Static product-surface readiness is validated by:
+
+```bash
+python scripts/product_surface_readiness.py --print-json
+```
+
+Strict beta product-surface readiness requires live operator evidence and must be wired into launch gate explicitly:
+
+```bash
+python scripts/product_surface_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-product-surface-readiness --product-surface-readiness-report docs/working/status/baselines/product-surface-readiness-report.json --print-json
+```
+
+Do not treat the static API/console contract as proof that a real external beta user completed the flow.

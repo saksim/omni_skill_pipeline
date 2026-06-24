@@ -63,8 +63,8 @@ python scripts/release_consumer_smoke.py --release-dir "release-artifacts/$RELEA
 
 当前状态：
 
-- Docker real-run closure 不属于 `v0.2.5-internal.2` 已归档完成范围。
-- Postgres 生产验证不属于 `v0.2.5-internal.2` 已归档完成范围。
+- Docker real-run closure 不属于 `v0.2.6-internal.3` 的外部生产 ready 声明。
+- Postgres 生产验证不属于 `v0.2.6-internal.3` 的外部生产 ready 声明。
 - K8s/Helm/Kubernetes 操作不是当前已完成 release claim。
 
 只有当环境具备对应服务时，才使用更严格的基础设施 runbook：

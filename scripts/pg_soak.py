@@ -20,6 +20,7 @@ DEFAULT_PLAN_OUTPUT = (
 )
 DEFAULT_STAGES = ('tp_postgres', 'review_queue', 'dual_write_benchmark')
 ALL_STAGES = tuple(DEFAULT_STAGES)
+REPORT_SCHEMA_VERSION = 'postgres_soak_validation.v1'
 POSTGRES_REQUIRED_STAGES = {'tp_postgres', 'dual_write_benchmark'}
 
 
@@ -147,7 +148,11 @@ def _build_stage_map(args: argparse.Namespace, *, python_cmd: list[str]) -> dict
 
 def _build_plan(stage_specs: list[StageSpec], *, postgres_dsn_provided: bool) -> dict[str, Any]:
     return {
+        'schema_version': REPORT_SCHEMA_VERSION,
         'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+        'execution_mode': 'pending',
+        'decision': 'PENDING',
+        'blocking_codes': [],
         'stage_count': len(stage_specs),
         'postgres_dsn_provided': postgres_dsn_provided,
         'stages': [
@@ -158,6 +163,7 @@ def _build_plan(stage_specs: list[StageSpec], *, postgres_dsn_provided: bool) ->
             }
             for stage in stage_specs
         ],
+        'stage_results': [],
     }
 
 
@@ -172,6 +178,25 @@ def _print_plan(stage_specs: list[StageSpec]) -> None:
 def _write_plan(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def _emit_report(args: argparse.Namespace, payload: dict[str, Any]) -> None:
+    output_value = str(args.output or '').strip()
+    if output_value and output_value != '-':
+        output_path = Path(output_value).resolve()
+        _write_plan(output_path, payload)
+        print('Report written: %s' % output_path)
+    if args.print_json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+
+
+def _stage_result(stage: StageSpec, *, exit_code: int, status: str) -> dict[str, Any]:
+    return {
+        'name': stage.name,
+        'status': status,
+        'exit_code': int(exit_code),
+        'command': stage.command,
+    }
 
 
 def _validate_runtime_requirements(
@@ -194,23 +219,26 @@ def _validate_runtime_requirements(
     return 0
 
 
-def _run_stages(stage_specs: list[StageSpec], *, postgres_dsn: str = '') -> int:
+def _run_stages(stage_specs: list[StageSpec], *, postgres_dsn: str = '') -> tuple[int, list[dict[str, Any]]]:
     env_override = None
     if postgres_dsn:
         env_override = os.environ.copy()
         env_override['OMNI_TEST_POSTGRES_DSN'] = postgres_dsn
 
+    results: list[dict[str, Any]] = []
     for stage in stage_specs:
         print('Running stage: %s' % stage.name)
         stage_env = env_override if stage.name in POSTGRES_REQUIRED_STAGES else None
         completed = subprocess.run(stage.command, check=False, env=stage_env)
+        status = 'pass' if completed.returncode == 0 else 'fail'
+        results.append(_stage_result(stage, exit_code=completed.returncode, status=status))
         if completed.returncode != 0:
             print(
                 'Stage failed: %s (exit=%s)' % (stage.name, completed.returncode),
                 file=sys.stderr,
             )
-            return completed.returncode
-    return 0
+            return completed.returncode, results
+    return 0, results
 
 
 def main() -> int:
@@ -232,16 +260,11 @@ def main() -> int:
     _print_plan(stage_specs)
 
     plan_payload = _build_plan(stage_specs, postgres_dsn_provided=bool(postgres_dsn))
-    output_value = str(args.output or '').strip()
-    if output_value and output_value != '-':
-        output_path = Path(output_value).resolve()
-        _write_plan(output_path, plan_payload)
-        print('Plan written: %s' % output_path)
-
-    if args.print_json:
-        print(json.dumps(plan_payload, ensure_ascii=False, indent=2))
 
     if args.dry_run:
+        plan_payload['execution_mode'] = 'dry_run'
+        plan_payload['decision'] = 'DRY_RUN'
+        _emit_report(args, plan_payload)
         return 0
 
     validation_code = _validate_runtime_requirements(
@@ -250,8 +273,18 @@ def main() -> int:
         benchmark_iterations=int(args.benchmark_iterations),
     )
     if validation_code != 0:
+        plan_payload['execution_mode'] = 'blocked'
+        plan_payload['decision'] = 'FAIL'
+        plan_payload['blocking_codes'] = ['runtime_requirements_failed']
+        _emit_report(args, plan_payload)
         return validation_code
-    return _run_stages(stage_specs, postgres_dsn=postgres_dsn)
+    execution_code, stage_results = _run_stages(stage_specs, postgres_dsn=postgres_dsn)
+    plan_payload['execution_mode'] = 'executed'
+    plan_payload['decision'] = 'PASS' if execution_code == 0 else 'FAIL'
+    plan_payload['stage_results'] = stage_results
+    plan_payload['blocking_codes'] = [] if execution_code == 0 else ['stage_failed']
+    _emit_report(args, plan_payload)
+    return execution_code
 
 
 if __name__ == '__main__':

@@ -143,7 +143,9 @@ def _to_config(args: argparse.Namespace) -> SmokeConfig:
 def _print_plan(config: SmokeConfig) -> None:
     if not config.skip_build:
         print("Plan: docker build -t %s ." % config.image_tag)
+    print("Plan: docker image inspect %s --format {{.Size}}" % config.image_tag)
     if not config.skip_run:
+        print("Plan: docker run --rm %s omni-skill --help" % config.image_tag)
         print(
             "Plan: docker run -d --name %s -p %s:8000 %s"
             % (config.container_name, config.host_port, config.image_tag)
@@ -176,6 +178,14 @@ def _command_string(command: list[str]) -> str:
 
 def _build_command(config: SmokeConfig) -> list[str]:
     return ["docker", "build", "-t", config.image_tag, "."]
+
+
+def _image_size_command(config: SmokeConfig) -> list[str]:
+    return ["docker", "image", "inspect", config.image_tag, "--format", "{{.Size}}"]
+
+
+def _cli_smoke_command(config: SmokeConfig) -> list[str]:
+    return ["docker", "run", "--rm", config.image_tag, "omni-skill", "--help"]
 
 
 def _run_command(config: SmokeConfig) -> list[str]:
@@ -224,9 +234,14 @@ def _new_report(config: SmokeConfig) -> dict[str, Any]:
         },
         "commands": {
             "build": _build_command(config),
+            "image_size": _image_size_command(config),
+            "cli_smoke": _cli_smoke_command(config),
             "run": _run_command(config),
             "logs": _logs_command(config),
             "cleanup": _cleanup_command(config),
+        },
+        "image": {
+            "size_bytes": None,
         },
         "stages": [],
     }
@@ -243,6 +258,7 @@ def _record_stage(
     stderr: str = "",
     message: str = "",
     category: str = "",
+    details: dict[str, Any] | None = None,
 ) -> None:
     stage: dict[str, Any] = {
         "name": name,
@@ -260,6 +276,8 @@ def _record_stage(
         stage["stdout_tail"] = _tail_text(stdout)
     if stderr:
         stage["stderr_tail"] = _tail_text(stderr)
+    if details:
+        stage["details"] = details
     report.setdefault("stages", []).append(stage)
 
 
@@ -298,6 +316,9 @@ def _write_json(path_value: str, payload: dict[str, Any]) -> None:
 
 def _render_summary(report: dict[str, Any]) -> str:
     config = report.get("config", {})
+    image = report.get("image", {})
+    if not isinstance(image, dict):
+        image = {}
     stages = report.get("stages", [])
     if not isinstance(stages, list):
         stages = []
@@ -308,6 +329,7 @@ def _render_summary(report: dict[str, Any]) -> str:
         "- Failure stage: `%s`" % str(report.get("failure_stage", "")),
         "- Failure category: `%s`" % str(report.get("failure_category", "")),
         "- Image tag: `%s`" % str(config.get("image_tag", "")),
+        "- Image size bytes: `%s`" % str(image.get("size_bytes", "")),
         "- Container name: `%s`" % str(config.get("container_name", "")),
         "- Health URL: `%s`" % str(config.get("health_url", "")),
         "",
@@ -470,12 +492,90 @@ def main() -> int:
     else:
         _record_stage(report, name="image_build", status="skipped", message="--skip-build was set.")
 
+    image_size_command = _image_size_command(config)
+    image_size = _run_capture(image_size_command, env=env)
+    image_size_text = image_size.stdout.strip().splitlines()[-1] if image_size.stdout.strip() else ""
+    try:
+        image_size_bytes = int(image_size_text)
+    except ValueError:
+        image_size_bytes = -1
+    if image_size.returncode != 0 or image_size_bytes < 0:
+        message = "Docker image size inspection failed."
+        _record_stage(
+            report,
+            name="image_size",
+            status="fail",
+            command=image_size_command,
+            returncode=image_size.returncode,
+            stdout=image_size.stdout,
+            stderr=image_size.stderr,
+            message=message,
+            category="docker_image_size_inspect_failed",
+        )
+        _set_decision(
+            report,
+            "FAIL",
+            failure_stage="image_size",
+            failure_category="docker_image_size_inspect_failed",
+            failure_message=message,
+        )
+        _emit_outputs(config, report)
+        return image_size.returncode or 125
+    report["image"]["size_bytes"] = image_size_bytes
+    _record_stage(
+        report,
+        name="image_size",
+        status="pass",
+        command=image_size_command,
+        returncode=image_size.returncode,
+        stdout=image_size.stdout,
+        stderr=image_size.stderr,
+        message="Docker image size recorded.",
+        details={"image_size_bytes": image_size_bytes},
+    )
+
     if config.skip_run:
         _record_stage(report, name="container_run", status="skipped", message="--skip-run was set.")
+        _record_stage(report, name="cli_smoke", status="skipped", message="--skip-run was set.")
         _record_stage(report, name="healthz", status="skipped", message="--skip-run was set.")
         _set_decision(report, "PASS")
         _emit_outputs(config, report)
         return 0
+
+    cli_smoke_command = _cli_smoke_command(config)
+    cli_smoke = _run_capture(cli_smoke_command, env=env)
+    if cli_smoke.returncode != 0:
+        message = "Container CLI smoke failed."
+        _record_stage(
+            report,
+            name="cli_smoke",
+            status="fail",
+            command=cli_smoke_command,
+            returncode=cli_smoke.returncode,
+            stdout=cli_smoke.stdout,
+            stderr=cli_smoke.stderr,
+            message=message,
+            category="container_cli_smoke_failed",
+        )
+        _set_decision(
+            report,
+            "FAIL",
+            failure_stage="cli_smoke",
+            failure_category="container_cli_smoke_failed",
+            failure_message=message,
+        )
+        _emit_outputs(config, report)
+        return cli_smoke.returncode
+    _record_stage(
+        report,
+        name="cli_smoke",
+        status="pass",
+        command=cli_smoke_command,
+        returncode=cli_smoke.returncode,
+        stdout=cli_smoke.stdout,
+        stderr=cli_smoke.stderr,
+        message="Container CLI smoke completed.",
+    )
 
     run_command = _run_command(config)
     run = _run_capture(run_command, env=env)

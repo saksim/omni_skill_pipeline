@@ -1,6 +1,6 @@
 # 操作文档入口
 
-这是 `v0.2.5-internal.2` 发版候选的当前操作入口。
+这是 `v0.2.6-internal.3` 发版候选的当前操作入口。
 
 当前支持的上线姿态是内部 dogfood。使用这些文档可以在内部路径下运行、验证、打包和操作本仓库。不要把这些文档当作外部 Beta、GA、SaaS、Docker/Postgres 生产验证或 K8s readiness 的证据。
 
@@ -13,6 +13,7 @@
 5. 后续拿到真实业务数据时，按 [真实数据接入与验收手册](runbooks/real-data-intake-and-validation.md) 执行。
 6. 需要保护 file-backed artifact 时，按 [Artifact Encryption](runbooks/artifact-encryption.md) 执行。
 7. 需要 live internal API dogfood 证据时，使用 release notes 和 runbook 中记录的 internal dogfood smoke 命令。
+8. 需要确认外部 Beta 是否可放行时，按 [Testing](testing.md) 中的 strict launch gate 命令组合执行 CI evidence、多模态质量门禁和 GL-64 real-loop preflight 检查。
 
 ## 当前操作域
 
@@ -25,6 +26,12 @@
 - GitHub release workflow：`.github/workflows/release.yml`
 - 标准 Linux release 测试脚本：`bash scripts/linux_release.sh`
 - [V1 -> V2 Migration Runbook](v1-to-v2-migration-runbook.md)
+
+## 功能手册状态
+
+- CLI/API/Worker/Environment/Testing/Script Name Map 是当前功能手册入口。
+- 真实数据接入与验收、agent smoke、GitHub release、artifact encryption、Docker/Postgres/K8s/secrets/product/observability readiness 的操作细节在 [Runbooks](runbooks/README.md) 和 [Script Name Map](script-name-map.md)。
+- 2026-06-23 施工蓝图已经归档到 `docs/archive/status/2026-06-23-gpt55-construction-blueprint/`，不再驱动当前操作。
 
 ## 扩展入口
 
@@ -41,10 +48,10 @@
 
 ## 当前边界
 
-- `v0.2.5-internal.2` 继承已完成的非基础设施内部 dogfood 路径，并补齐未来真实数据接入、验收和归档口径。
+- `v0.2.6-internal.3` 继承已完成的非基础设施内部 dogfood 路径，并补齐未来真实数据接入、验收、归档和 strict launch gate 口径。
 - 本地 file artifact 加密是可选能力，默认关闭。
 - Docker、Postgres、K8s、Vault/KMS、自动 key rotation、OCR hardening 和 external real-loop collection 都不是当前已完成 release claim。
-- `scripts/launch_gate.py` 仍可能返回 `HOLD`；这会阻断外部上线声明，不阻断内部 dogfood 操作。
+- `scripts/launch_gate.py` 仍可能返回 `HOLD`；这会阻断外部上线声明，不阻断内部 dogfood 操作。当前最主要的 HOLD 原因是缺少 10 个 launch-gate-eligible 真实闭环和 4 个真实模态覆盖。
 
 ## 说明
 

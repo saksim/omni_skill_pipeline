@@ -25,6 +25,8 @@ from omni_skill_pipeline.models import (
     ImageDistillRequest,
     LoadedCorpus,
     Publication,
+    PublicationType,
+    ReviewStatus,
     ReviewTask,
     SkillDocument,
     SkillGraph,
@@ -319,6 +321,12 @@ class DistillationService(object):
             ).to_dict()
             review_decision = self.review_policy.decide(quality_scores).to_dict()
             review_task = ReviewTask.from_review_policy(skill_id=skill.skill_id, review_policy=review_decision)
+            self._apply_review_status(
+                skill=skill,
+                skill_graph=skill_graph,
+                publications=publications,
+                review_status=review_task.status,
+            )
             review_feedback = self.review_feedback_engine.build(review_task).to_dict()
             tenant_scope = self._resolve_tenant_scope(request_metadata=request.metadata)
             review_task_with_tenant = self._with_tenant_scope_review_task(
@@ -473,6 +481,12 @@ class DistillationService(object):
         ).to_dict()
         review_decision = self.review_policy.decide(quality_scores).to_dict()
         review_task = ReviewTask.from_review_policy(skill_id=skill.skill_id, review_policy=review_decision)
+        self._apply_review_status(
+            skill=skill,
+            skill_graph=skill_graph,
+            publications=publications,
+            review_status=review_task.status,
+        )
         review_feedback = self.review_feedback_engine.build(review_task).to_dict()
         tenant_scope = self._resolve_tenant_scope(request_metadata=request.to_dict().get('metadata', {}))
         review_task_with_tenant = self._with_tenant_scope_review_task(
@@ -853,6 +867,49 @@ class DistillationService(object):
                 output[path_text] = str(value)
             return output
         return {}
+
+    def _apply_review_status(
+        self,
+        *,
+        skill: SkillDocument,
+        skill_graph: SkillGraph,
+        publications: list[Publication],
+        review_status: ReviewStatus,
+    ) -> None:
+        skill.review_status = review_status
+        skill_graph.review_status = review_status
+        status_value = review_status.value
+        for publication in publications:
+            if not isinstance(publication.content, dict):
+                continue
+            if publication.publication_type == PublicationType.SKILL_JSON:
+                skill_payload = publication.content.get('skill')
+                if isinstance(skill_payload, dict):
+                    skill_payload['review_status'] = status_value
+                continue
+            if publication.publication_type != PublicationType.SKILL_MARKDOWN:
+                continue
+            references = publication.content.get('references')
+            if isinstance(references, dict):
+                references['references/evidence.md'] = self._replace_review_status_line(
+                    str(references.get('references/evidence.md', '')),
+                    status_value=status_value,
+                )
+
+    def _replace_review_status_line(self, text: str, *, status_value: str) -> str:
+        if not text:
+            return text
+        lines = []
+        replaced = False
+        for line in text.splitlines():
+            if line.strip().startswith('- review_status:'):
+                lines.append('- review_status: `%s`' % status_value)
+                replaced = True
+            else:
+                lines.append(line)
+        if not replaced:
+            lines.insert(0, '- review_status: `%s`' % status_value)
+        return '\n'.join(lines) + '\n'
 
     def _resolve_review_task_payload(self, bundle: DistillBundle) -> dict[str, Any]:
         adapter_metadata = bundle.adapter_metadata if isinstance(bundle.adapter_metadata, dict) else {}

@@ -1,5 +1,20 @@
 # 变更日志
 
+## 2026-06-24
+
+### v0.2.6-internal.3
+
+- 关闭 `distill -> export -> validate` 内部闭环问题，保留 review/lifecycle source of truth，不删除 `REVIEW_APPROVAL_MISSING` 逻辑来伪造通过。
+- 修复 release artifact 在普通源码包形态下的可复现性，`git archive` 不可用时使用 source-tree fallback，并在 release manifest 中记录 archive mode。
+- 将 Python 支持口径收敛到 `>=3.11,<3.13`，并补齐 Python 3.11/3.12 CI evidence 合同和 workflow artifact 聚合。
+- 新增多模态质量门禁，覆盖 text/audio/image/video 的质量评分、人审、OCR/ASR 降级和 critical issue 阻断。
+- 新增 GL-64 real-loop manifest preflight 与 strict launch gate 联动，`launch_gate.py --require-real-loop-preflight` 会拒绝 missing/invalid/pending 的真实 loop manifest。
+- 新增真实 agent smoke strict gate，`not_run` 记录不能再作为外部 Beta readiness 证据。
+- 新增 Docker、Postgres、secrets、K8s、product surface 和 observability readiness 检查入口，生产化能力必须以显式 evidence report 通过后才能声明。
+- 补齐 script-name-map、testing、operations、real-data intake、GitHub release workflow 和 06-23 施工蓝图归档。
+- 将 package metadata 版本更新为 `0.2.6`，服务于 `v0.2.6-internal.3` 内部 release package。
+- 发布边界不变：本版本是内部 dogfood 与自证闭环门禁版本，不声明外部 Beta、GA、SaaS 或生产部署 ready；真实 loop 仍需后续由操作者提供 10 个合格闭环 manifest 才能解除外部 launch gate HOLD。
+
 ## 2026-06-20
 
 ### v0.2.5-internal.2

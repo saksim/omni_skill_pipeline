@@ -81,6 +81,7 @@
 
 - [变更日志](releases/CHANGELOG.md)
 - [发布说明](releases/notes/README.md)
+- [v0.2.6-internal.3 发布说明](releases/notes/v0.2.6-internal.3.md)
 - [v0.2.5-internal.2 发布说明](releases/notes/v0.2.5-internal.2.md)
 - [v0.2.4-internal.1 发布说明](releases/notes/v0.2.4-internal.1.md)
 - [v0.2.3-internal.1 发布说明](releases/notes/v0.2.3-internal.1.md)
@@ -92,6 +93,7 @@
 
 ## 归档（archive）
 
+- [GPT5.5 施工蓝图归档 2026-06-23](archive/status/2026-06-23-gpt55-construction-blueprint/README.md)
 - [已完成能力归档 2026-06-19](archive/status/2026-06-19-completed-capabilities-archive.md)
 - [内部 dogfood 与真实数据接入预案归档 2026-06-20](archive/status/2026-06-20-internal-dogfood-real-data-handoff-archive.md)
 - [中文文档与发布记录归档 2026-06-20](archive/status/2026-06-20-documentation-localization-archive.md)

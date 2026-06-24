@@ -160,11 +160,32 @@ def _prepare_repo_fixtures(repo_root: Path) -> None:
         'overall_status': 'fail',
         'ga_discussion_blocked': True,
         'trial_metrics': {
+            'loop_count': 2,
             'complete_loop_count': 1,
             'complete_modalities': ['text'],
+            'review_outcome_counts': {'approved': 1},
+            'reviewer_edit_distance_pct': {'median': 12.5, 'samples': 1},
+            'latency_ms': {'average': 125.5, 'samples': 1},
+            'provider_runtime': {
+                'provider_failure_count_total': 1,
+                'provider_call_count_total': 2,
+                'provider_failure_rate': 0.5,
+                'retry_count_total': 2,
+                'retry_count_average_per_loop': 1.0,
+            },
             'launch_gate_evidence': {
                 'complete_loop_count': 0,
                 'complete_modalities': [],
+            },
+            'safety': {
+                'unreviewed_published_count': 0,
+                'critical_secret_or_pii_leak_count': 0,
+                'high_severity_incident_count': 0,
+            },
+            'review_quality': {
+                'review_evaluable_count': 1,
+                'approval_rate_after_one_revision': 1.0,
+                'agent_smoke_success_rate': 0.5,
             },
         },
     }
@@ -208,6 +229,32 @@ def _prepare_repo_fixtures(repo_root: Path) -> None:
     _write_json(
         repo_root / 'docs' / 'working' / 'status' / 'baselines' / 'operations-readiness-report.json',
         ops_readiness,
+    )
+    _write_json(
+        repo_root / 'docs' / 'working' / 'status' / 'baselines' / 'controlled-trial' / 'agent-smoke-report.json',
+        {
+            'schema_version': 'cbt12.agent_smoke_report.v1',
+            'records': [
+                {'agent': 'codex', 'metrics_agent_smoke_result': 'passed'},
+                {'agent': 'opencode', 'metrics_agent_smoke_result': 'failed'},
+            ],
+        },
+    )
+    _write_json(
+        repo_root / 'docs' / 'working' / 'status' / 'baselines' / 'release_artifacts.json',
+        {
+            'schema_version': 'omni.release_artifacts.v1',
+            'release_id': 'console-test',
+            'artifacts': [{'path': 'pkg.whl', 'role': 'python_wheel', 'sha256': 'a' * 64}],
+        },
+    )
+    _write_json(
+        repo_root / 'docs' / 'working' / 'status' / 'baselines' / 'release_consumer_smoke.json',
+        {
+            'schema_version': 'release_consumer_smoke.v1',
+            'decision': 'PASS',
+            'stages': [{'name': 'manifest', 'status': 'pass'}],
+        },
     )
 
     bundle_payload = {
@@ -288,6 +335,20 @@ class ApiPlatformConsoleTests(unittest.TestCase):
         self.assertEqual(views['review_queue']['item_count'], 1)
         self.assertEqual(views['skill_registry']['item_count'], 1)
         self.assertEqual(views['metrics']['launch_readiness']['decision'], 'HOLD')
+        self.assertEqual(views['metrics']['trial_metrics']['job_runtime']['average_duration_ms'], 125.5)
+        self.assertEqual(views['metrics']['trial_metrics']['job_runtime']['retry_count_total'], 2)
+        self.assertEqual(views['metrics']['trial_metrics']['modality_success']['success_rate'], 0.5)
+        self.assertEqual(
+            views['metrics']['trial_metrics']['human_review_scores']['median_reviewer_edit_distance_pct'],
+            12.5,
+        )
+        self.assertEqual(views['metrics']['trial_metrics']['agent_smoke']['status_counts']['passed'], 1)
+        self.assertEqual(views['metrics']['trial_metrics']['agent_smoke']['status_counts']['failed'], 1)
+        self.assertEqual(views['metrics']['release_artifact_evidence']['release_artifacts_status'], 'pass')
+        self.assertEqual(
+            views['metrics']['trial_metrics']['redaction_secret_failures']['critical_secret_or_pii_leak_count'],
+            0,
+        )
         self.assertEqual(views['cost']['cost_summary']['entry_count'], 0)
 
 

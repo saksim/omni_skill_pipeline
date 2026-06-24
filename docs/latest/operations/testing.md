@@ -2,7 +2,7 @@
 
 ## 当前操作入口
 
-`v0.2.5-internal.2` 发版候选的一线操作优先使用本节命令。后面的 TP 附录是历史测试映射和生成记录，主要用于 doc sync 与回归追溯，不是日常操作入口。
+`v0.2.6-internal.3` 发版候选的一线操作优先使用本节命令。后面的 TP 附录是历史测试映射和生成记录，主要用于 doc sync 与回归追溯，不是日常操作入口。
 
 本地回归：
 
@@ -19,7 +19,7 @@ python scripts/release_consumer_smoke.py --release-dir <release-dir> --expected-
 最新已发布内部版本示例：
 
 ```bash
-python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.5-internal.2
+python scripts/release_consumer_smoke.py --release-dir . --expected-release-id v0.2.6-internal.3
 ```
 
 本地 artifact 加密回归：
@@ -34,7 +34,49 @@ python -m unittest tests.test_artifact_encryption tests.test_openai_provider_con
 python scripts/doc_sync.py --output -
 ```
 
-Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.2` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
+CI evidence contract:
+
+```bash
+python scripts/ci_evidence.py --evidence-dir ci-evidence --fail-on-blocked --print-json
+```
+
+The archived CI evidence directory must contain:
+
+- `ci_summary_python_3_11.json`
+- `ci_summary_python_3_12.json`
+- `coverage.xml`
+- `doc_sync.json`
+- `release_artifacts.json`
+- `release_consumer_smoke.json`
+- `launch_gate.json`
+
+`launch_gate.json` may still report `HOLD` while real external loop evidence is incomplete; this command only verifies that CI archived an explicit launch-gate artifact.
+
+Strict launch readiness can require the archived CI evidence explicitly:
+
+```bash
+python scripts/launch_gate.py --require-ci-evidence --ci-evidence-report docs/working/status/baselines/ci-matrix/ci_evidence_report.json --print-json
+```
+
+The CI evidence report validates the Python 3.11/3.12 matrix summaries, coverage XML, doc-sync output, release artifacts, release consumer smoke, and launch-gate artifact before strict launch readiness can pass.
+
+Strict launch readiness can also require the multimodal quality gate evidence explicitly:
+
+```bash
+python scripts/launch_gate.py --require-multimodal-quality-gate --multimodal-quality-gate-report docs/working/status/baselines/real-trial-loop-collection/real-trial-multimodal-quality-gate-report.json --print-json
+```
+
+The multimodal quality gate report must be `MULTIMODAL_QUALITY_GATE_READY`, cover text/audio/image/video, have no blocked quality records, and preserve the OCR/ASR fallback and human-review evidence contract.
+
+Strict launch readiness can also require GL-64 real-loop manifest preflight evidence explicitly:
+
+```bash
+python scripts/launch_gate.py --require-real-loop-preflight --real-loop-preflight-report docs/working/status/baselines/real-trial-loop-collection/real-trial-loop-manifest-preflight-report.json --print-json
+```
+
+The real-loop preflight report must be `REAL_LOOP_MANIFEST_PREFLIGHT_READY`, use `real_trial_loop_manifest_preflight.v1`, have zero missing/invalid/pending items, and have no blocked slot or operator action before launch evidence can pass.
+
+Docker/Postgres/K8s 生产验证不属于 `v0.2.6-internal.3` 的外部生产 ready 声明。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test
 
@@ -71,6 +113,10 @@ bash scripts/linux_release.sh
 这个仓当前走的是 `unittest` 体系，不是 `pytest` 体系；测试判断要按现有链路验尸，不要拿错刑具。
 
 ## 本地环境对齐
+
+Supported runtime for `v0.2.x`: Python `3.11` and `3.12`. Python `3.13`
+is outside the supported matrix until dependency constraints and CI are
+updated together.
 
 PowerShell:
 
@@ -133,7 +179,7 @@ python scripts/ci.py --no-coverage --keep-going --isolate-test-files --test-patt
 
 ## 容器烟测脚本
 
-容器基线烟测（构建镜像 + 启动容器 + 轮询 `/healthz`）：
+容器基线烟测（构建镜像 + 记录 image size + 容器内 CLI smoke + 启动容器 + 轮询 `/healthz`）：
 
 ```bash
 python scripts/container_smoke.py --image-tag omni-skill-pipeline:local --port 18000
@@ -145,7 +191,24 @@ python scripts/container_smoke.py --image-tag omni-skill-pipeline:local --port 1
 python scripts/container_smoke.py --dry-run
 ```
 
+GitHub Actions CI 在 Python 3.11/3.12 matrix 成功后也会执行真实 Docker smoke job，并上传 `docker-smoke-evidence` artifact，内含 `container_smoke_report.json` 与 `container_smoke_summary.md`。报告必须记录 image size、`omni-skill --help` CLI smoke、`/healthz` API smoke、container logs 与 cleanup 结果；`--dry-run`、`--skip-build` 或 `--skip-run` 结果不能作为 Docker readiness 证据。
+
 Linux 统一验测时建议直接使用该脚本，作为 `LC-L1-18` 的容器回归入口。
+
+Docker readiness also has two levels. The default command checks the static Dockerfile, `.dockerignore`, container smoke script, CI artifact wiring, and operations docs:
+
+```bash
+python scripts/docker_readiness.py --print-json
+```
+
+Strict Docker readiness requires live non-dry-run evidence for image build, image size, CLI smoke, container run, `/healthz`, logs, and cleanup; it must be wired into launch gate explicitly:
+
+```bash
+python scripts/docker_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-docker-readiness --docker-readiness-report docs/working/status/baselines/docker-readiness-report.json --print-json
+```
+
+Do not treat `--dry-run`, `--skip-build`, or `--skip-run` container smoke output as Docker readiness evidence.
 
 ## Dual-Write Benchmark Harness
 
@@ -159,6 +222,81 @@ python scripts/bench_dual_write.py --iterations 20 --postgres-dsn "$OMNI_TEST_PO
 - 第一个命令只测 file repository baseline。
 - 第二个命令测 file + Postgres dual-write 时延。
 - 默认报告落盘：`docs/working/status/baselines/e8-dual-write-benchmark-report.json`。
+
+Postgres/dual-write readiness 需要真实执行报告，不能使用 dry-run 计划替代：
+
+```bash
+python scripts/pg_ga.py --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
+python scripts/pg_soak.py --postgres-dsn "$OMNI_TEST_POSTGRES_DSN"
+python scripts/bench_dual_write.py --iterations 120 --postgres-dsn "$OMNI_TEST_POSTGRES_DSN" --output docs/working/status/baselines/e13-postgres-soak-benchmark-report.json
+python scripts/ops_evidence.py --output docs/working/status/baselines/operations-readiness-report.json --summary-output docs/working/status/baselines/operations-readiness-summary.md
+python scripts/postgres_readiness.py --fail-on-blocked --print-json
+```
+
+`postgres_readiness.py` only returns `POSTGRES_READINESS_READY` when the Postgres GA report and soak report are `execution_mode=executed` with `decision=PASS`, the benchmark has `run_postgres=true`, schema migration SQL exists, backup/restore operations evidence exists, and the retention policy CLI surface is documented.
+
+Secrets readiness has two levels. The default command checks repo secret hygiene, placeholders, and docs:
+
+```bash
+python scripts/secrets_readiness.py --print-json
+```
+
+Production secret-management readiness requires external Secret Manager/Vault/KMS evidence and must be wired into launch gate explicitly:
+
+```bash
+python scripts/secrets_readiness.py --require-production-manager --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-secrets-readiness --secrets-readiness-report docs/working/status/baselines/secrets-readiness-report.json --print-json
+```
+
+Do not treat local `.env.example`, `OMNI_ARTIFACT_ENCRYPTION_KEY_ID`, or internal dogfood encryption docs as proof that Vault/KMS/Secret Manager integration is complete.
+
+K8s readiness also has two levels. The default command checks static manifest hygiene only:
+
+```bash
+python scripts/k8s_readiness.py --print-json
+```
+
+Production Kubernetes readiness requires external cluster evidence and must be wired into launch gate explicitly:
+
+```bash
+kubectl apply --dry-run=server -f k8s/
+kubectl rollout status deployment/omni-skill-pipeline -n omni-skill-pipeline
+kubectl logs deployment/omni-skill-pipeline -n omni-skill-pipeline --tail=200
+python scripts/k8s_readiness.py --require-cluster-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-k8s-readiness --k8s-readiness-report docs/working/status/baselines/k8s-readiness-report.json --print-json
+```
+
+Do not treat the repository `k8s/` manifests or static readiness report as proof that a live Kubernetes rollout, server-side dry-run, or log inspection has completed.
+
+Product surface readiness also has two levels. The default command checks the P2-5 static beta product-entry contract only:
+
+```bash
+python scripts/product_surface_readiness.py --print-json
+```
+
+Strict beta product-surface readiness requires live operator evidence covering source intake, job run, generated skill preview, human review, export/validate, evidence/manifest, and launch gate dashboard review:
+
+```bash
+python scripts/product_surface_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-product-surface-readiness --product-surface-readiness-report docs/working/status/baselines/product-surface-readiness-report.json --print-json
+```
+
+Do not treat the static API/console surface as proof that a real external beta user completed the workflow.
+
+Observability readiness also has two levels. The default command checks the P2 static observability contract only:
+
+```bash
+python scripts/observability_readiness.py --print-json
+```
+
+Strict production observability readiness requires live dashboard or evidence-bundle proof covering job duration, job success/fail, retry, modality success rate, human review scores, release artifact build pass/fail, agent smoke pass/fail, and redaction/secret access failures:
+
+```bash
+python scripts/observability_readiness.py --require-live-evidence --fail-on-blocked --print-json
+python scripts/launch_gate.py --require-observability-readiness --observability-readiness-report docs/working/status/baselines/observability-readiness-report.json --print-json
+```
+
+Do not treat the static trial metrics, platform console fields, or release evidence contract as proof that a live production dashboard has been reviewed.
 
 ## 定向执行
 

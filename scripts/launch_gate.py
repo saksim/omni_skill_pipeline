@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agent_smoke import TARGET_AGENTS, build_matrix_report
+from agent_smoke import TARGET_AGENTS, apply_real_run_gate, build_matrix_report
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -29,8 +29,44 @@ DEFAULT_AGENT_SMOKE_REPORT = (
 DEFAULT_DOC_SYNC_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "e13-doc-sync-check-report.json"
 )
+DEFAULT_CI_EVIDENCE_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "ci-matrix" / "ci_evidence_report.json"
+)
+DEFAULT_MULTIMODAL_QUALITY_GATE_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-multimodal-quality-gate-report.json"
+)
+DEFAULT_REAL_LOOP_PREFLIGHT_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-loop-manifest-preflight-report.json"
+)
 DEFAULT_OPERATIONS_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-report.json"
+)
+DEFAULT_SECRETS_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "secrets-readiness-report.json"
+)
+DEFAULT_DOCKER_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "docker-readiness-report.json"
+)
+DEFAULT_K8S_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "k8s-readiness-report.json"
+)
+DEFAULT_PRODUCT_SURFACE_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "product-surface-readiness-report.json"
+)
+DEFAULT_OBSERVABILITY_READINESS_REPORT = (
+    REPO_ROOT / "docs" / "working" / "status" / "baselines" / "observability-readiness-report.json"
 )
 DEFAULT_OUTPUT_PATH = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "broad-launch-readiness-report.json"
@@ -96,12 +132,75 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--agent-smoke-report", default=str(DEFAULT_AGENT_SMOKE_REPORT))
     parser.add_argument("--security-gate-report", default="")
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
+    parser.add_argument("--ci-evidence-report", default=str(DEFAULT_CI_EVIDENCE_REPORT))
+    parser.add_argument("--multimodal-quality-gate-report", default=str(DEFAULT_MULTIMODAL_QUALITY_GATE_REPORT))
+    parser.add_argument("--real-loop-preflight-report", default=str(DEFAULT_REAL_LOOP_PREFLIGHT_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
+    parser.add_argument("--secrets-readiness-report", default=str(DEFAULT_SECRETS_READINESS_REPORT))
+    parser.add_argument("--docker-readiness-report", default=str(DEFAULT_DOCKER_READINESS_REPORT))
+    parser.add_argument("--k8s-readiness-report", default=str(DEFAULT_K8S_READINESS_REPORT))
+    parser.add_argument("--product-surface-readiness-report", default=str(DEFAULT_PRODUCT_SURFACE_READINESS_REPORT))
+    parser.add_argument("--observability-readiness-report", default=str(DEFAULT_OBSERVABILITY_READINESS_REPORT))
     parser.add_argument("--run-doc-sync", dest="run_doc_sync", action="store_true", default=True)
     parser.add_argument("--no-run-doc-sync", dest="run_doc_sync", action="store_false")
     parser.add_argument("--minimum-complete-loops", type=int, default=10)
     parser.add_argument("--minimum-modalities", type=int, default=4)
     parser.add_argument("--minimum-agent-smoke-success-rate", type=float, default=0.8)
+    parser.add_argument(
+        "--require-real-agent-smoke",
+        action="store_true",
+        help=(
+            "Require every launch-gate agent smoke matrix cell to be a passed live-run record. "
+            "Use this for controlled external beta readiness; not_run records stay acceptable only "
+            "for internal dogfood explanations."
+        ),
+    )
+    parser.add_argument(
+        "--minimum-real-agent-smoke-agents",
+        type=int,
+        default=len(TARGET_AGENTS),
+        help="Minimum distinct agents with passed live-run records when --require-real-agent-smoke is set.",
+    )
+    parser.add_argument(
+        "--require-secrets-readiness",
+        action="store_true",
+        help="Require a passing secrets-readiness report before launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-ci-evidence",
+        action="store_true",
+        help="Require a passing archived CI evidence report before strict launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-multimodal-quality-gate",
+        action="store_true",
+        help="Require a passing multimodal quality gate report before strict launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-real-loop-preflight",
+        action="store_true",
+        help="Require a passing GL-64 real-loop manifest preflight report before strict launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-docker-readiness",
+        action="store_true",
+        help="Require a passing Docker readiness report before strict production launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-k8s-readiness",
+        action="store_true",
+        help="Require a passing Kubernetes readiness report before strict production launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-product-surface-readiness",
+        action="store_true",
+        help="Require a passing beta product-entry surface readiness report before strict beta launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-observability-readiness",
+        action="store_true",
+        help="Require a passing observability readiness report before strict production launch readiness can pass.",
+    )
     parser.add_argument("--maximum-provider-failure-rate", type=float, default=0.05)
     parser.add_argument(
         "--max-evidence-age-hours",
@@ -665,6 +764,53 @@ def _evaluate_agent_smoke_matrix(
     )
 
 
+def _evaluate_agent_smoke_real_evidence(
+    report: dict[str, Any],
+    *,
+    trial_run_report: dict[str, Any] | None = None,
+    minimum_real_agents: int,
+) -> dict[str, Any]:
+    required_skill_ids = _agent_smoke_required_skill_ids(report, trial_run_report=trial_run_report)
+    matrix_report = build_matrix_report(
+        report,
+        required_skill_ids=required_skill_ids,
+        target_agents=list(TARGET_AGENTS),
+    )
+    matrix_report = apply_real_run_gate(
+        matrix_report,
+        min_passed_agents=max(0, int(minimum_real_agents)),
+    )
+    counts = matrix_report.get("counts", {})
+    real_gate = matrix_report.get("real_run_gate", {})
+    status = str(real_gate.get("status", "")).strip()
+    return _make_check(
+        "agent_smoke_real_evidence",
+        "pass" if status == "AGENT_SMOKE_REAL_EVIDENCE_READY" else "fail",
+        {
+            "real_run_status": status,
+            "matrix_status": str(matrix_report.get("status", "")).strip(),
+            "required_skill_ids": required_skill_ids,
+            "required_skill_count": int(counts.get("required_skill_count", 0) or 0),
+            "target_agents": matrix_report.get("target_agents", []),
+            "agents_required": int(real_gate.get("agents_required", 0) or 0),
+            "agents_passed": int(real_gate.get("agents_passed", 0) or 0),
+            "passed_agents": real_gate.get("passed_agents", []),
+            "non_passed_cells": real_gate.get("non_passed_cells", []),
+            "missing_cell_count": int(counts.get("missing_cell_count", 0) or 0),
+            "invalid_record_count": int(counts.get("invalid_record_count", 0) or 0),
+        },
+        {
+            "real_run_status": "AGENT_SMOKE_REAL_EVIDENCE_READY",
+            "agents_required": max(0, int(minimum_real_agents)),
+            "target_agents": list(TARGET_AGENTS),
+        },
+        details=(
+            "Controlled beta readiness requires passed live-run smoke records for every required "
+            "skill and target agent; failed and not_run records cannot satisfy this stricter gate."
+        ),
+    )
+
+
 def _run_doc_sync() -> tuple[dict[str, Any] | None, str]:
     script = REPO_ROOT / "scripts" / "doc_sync.py"
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -756,6 +902,302 @@ def _evaluate_operations_readiness(report: dict[str, Any] | None) -> dict[str, A
     )
 
 
+def _evaluate_secrets_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "secrets_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "secrets_readiness.v1", "status": "SECRETS_READINESS_READY"},
+            details="Missing secrets-readiness evidence keeps strict launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "secrets_readiness_status",
+        "pass"
+        if schema_version == "secrets_readiness.v1" and status == "SECRETS_READINESS_READY" and fail_count == 0
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "secrets_readiness.v1", "status": "SECRETS_READINESS_READY", "fail_count": 0},
+        details="Strict launch readiness requires repo secret hygiene and, when requested, external manager evidence.",
+    )
+
+
+def _evaluate_ci_evidence(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "ci_evidence_status",
+            "fail",
+            "missing",
+            {"schema_version": "ci_evidence.v1", "status": "CI_EVIDENCE_READY"},
+            details="Missing archived CI evidence keeps strict launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "ci_evidence_status",
+        "pass" if schema_version == "ci_evidence.v1" and status == "CI_EVIDENCE_READY" and fail_count == 0 else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "ci_evidence.v1", "status": "CI_EVIDENCE_READY", "fail_count": 0},
+        details=(
+            "Strict launch readiness requires archived Python 3.11/3.12 CI, coverage, doc sync, "
+            "release artifacts, release consumer smoke, and launch gate evidence."
+        ),
+    )
+
+
+def _evaluate_multimodal_quality_gate(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "multimodal_quality_gate_status",
+            "fail",
+            "missing",
+            {"schema_version": "multimodal_quality_gate.v1", "status": "MULTIMODAL_QUALITY_GATE_READY"},
+            details="Missing multimodal quality-gate evidence keeps strict launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    schema_version = str(report.get("schema_version", "")).strip()
+    counts = report.get("counts", {})
+    if not isinstance(counts, dict):
+        counts = {}
+    blocked_record_count = int(counts.get("blocked_record_count") or 0)
+    missing_required_modality_count = int(counts.get("missing_required_modality_count") or 0)
+    blocking_codes = report.get("blocking_codes", [])
+    missing_required_modalities = report.get("missing_required_modalities", [])
+    if not isinstance(blocking_codes, list):
+        blocking_codes = []
+    if not isinstance(missing_required_modalities, list):
+        missing_required_modalities = []
+    passed = (
+        schema_version == "multimodal_quality_gate.v1"
+        and status == "MULTIMODAL_QUALITY_GATE_READY"
+        and blocked_record_count == 0
+        and missing_required_modality_count == 0
+        and not blocking_codes
+    )
+    return _make_check(
+        "multimodal_quality_gate_status",
+        "pass" if passed else "fail",
+        {
+            "schema_version": schema_version,
+            "status": status,
+            "blocked_record_count": blocked_record_count,
+            "missing_required_modality_count": missing_required_modality_count,
+            "missing_required_modalities": missing_required_modalities,
+            "blocking_codes": blocking_codes,
+        },
+        {
+            "schema_version": "multimodal_quality_gate.v1",
+            "status": "MULTIMODAL_QUALITY_GATE_READY",
+            "blocked_record_count": 0,
+            "missing_required_modality_count": 0,
+            "blocking_codes": [],
+        },
+        details=(
+            "Strict launch readiness requires text/audio/image/video quality evidence with passing "
+            "beta thresholds, approved human review, safe OCR/ASR fallback handling, and no critical issues."
+        ),
+    )
+
+
+def _evaluate_real_loop_preflight(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "real_loop_preflight_status",
+            "fail",
+            "missing",
+            {
+                "schema_version": "real_trial_loop_manifest_preflight.v1",
+                "status": "REAL_LOOP_MANIFEST_PREFLIGHT_READY",
+            },
+            details="Missing GL-64 real-loop manifest preflight evidence keeps strict launch readiness at HOLD.",
+        )
+
+    def _count(container: dict[str, Any], key: str) -> int:
+        try:
+            return int(container.get(key) or 0)
+        except (TypeError, ValueError):
+            return -1
+
+    status = str(report.get("status", "")).strip()
+    schema_version = str(report.get("schema_version", "")).strip()
+    counts = report.get("counts", {})
+    if not isinstance(counts, dict):
+        counts = {}
+    slot_readiness = report.get("slot_readiness", {})
+    if not isinstance(slot_readiness, dict):
+        slot_readiness = {}
+    modality_readiness = report.get("modality_readiness", {})
+    if not isinstance(modality_readiness, dict):
+        modality_readiness = {}
+    operator_action_plan = report.get("operator_action_plan", {})
+    if not isinstance(operator_action_plan, dict):
+        operator_action_plan = {}
+
+    invalid_item_count = _count(counts, "invalid_item_count")
+    missing_item_count = _count(counts, "missing_item_count")
+    pending_item_count = _count(counts, "pending_item_count")
+    blocked_slot_count = _count(slot_readiness, "blocked_slot_count")
+    operator_pending_action_count = _count(operator_action_plan, "pending_action_count")
+    missing_target_launch_modalities = modality_readiness.get("missing_target_launch_modalities", [])
+    warning_codes = report.get("warning_codes", [])
+    if not isinstance(missing_target_launch_modalities, list):
+        missing_target_launch_modalities = []
+    if not isinstance(warning_codes, list):
+        warning_codes = []
+
+    passed = (
+        schema_version == "real_trial_loop_manifest_preflight.v1"
+        and status == "REAL_LOOP_MANIFEST_PREFLIGHT_READY"
+        and invalid_item_count == 0
+        and missing_item_count == 0
+        and pending_item_count == 0
+        and blocked_slot_count == 0
+        and operator_pending_action_count == 0
+        and not missing_target_launch_modalities
+    )
+    return _make_check(
+        "real_loop_preflight_status",
+        "pass" if passed else "fail",
+        {
+            "schema_version": schema_version,
+            "status": status,
+            "invalid_item_count": invalid_item_count,
+            "missing_item_count": missing_item_count,
+            "pending_item_count": pending_item_count,
+            "blocked_slot_count": blocked_slot_count,
+            "operator_pending_action_count": operator_pending_action_count,
+            "missing_target_launch_modalities": missing_target_launch_modalities,
+            "warning_codes": warning_codes,
+        },
+        {
+            "schema_version": "real_trial_loop_manifest_preflight.v1",
+            "status": "REAL_LOOP_MANIFEST_PREFLIGHT_READY",
+            "invalid_item_count": 0,
+            "missing_item_count": 0,
+            "pending_item_count": 0,
+            "blocked_slot_count": 0,
+            "operator_pending_action_count": 0,
+            "missing_target_launch_modalities": [],
+        },
+        details=(
+            "Strict launch readiness requires GL-64 to prove every operator-supplied real-loop manifest "
+            "is present, valid, launch-gate eligible, reviewed, quality-gated, and ready for GL-13 ingestion."
+        ),
+    )
+
+
+def _evaluate_docker_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "docker_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "docker_readiness.v1", "status": "DOCKER_READINESS_READY"},
+            details="Missing Docker readiness evidence keeps strict production launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "docker_readiness_status",
+        "pass"
+        if schema_version == "docker_readiness.v1" and status == "DOCKER_READINESS_READY" and fail_count == 0
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "docker_readiness.v1", "status": "DOCKER_READINESS_READY", "fail_count": 0},
+        details="Strict production readiness requires a complete Docker smoke evidence contract.",
+    )
+
+
+def _evaluate_k8s_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "k8s_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "k8s_readiness.v1", "status": "K8S_READINESS_READY"},
+            details="Missing Kubernetes readiness evidence keeps strict production launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "k8s_readiness_status",
+        "pass"
+        if schema_version == "k8s_readiness.v1" and status == "K8S_READINESS_READY" and fail_count == 0
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {"schema_version": "k8s_readiness.v1", "status": "K8S_READINESS_READY", "fail_count": 0},
+        details="Strict production readiness requires K8s manifests and, when requested by that report, cluster evidence.",
+    )
+
+
+def _evaluate_product_surface_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "product_surface_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "product_surface_readiness.v1", "status": "PRODUCT_SURFACE_READINESS_READY"},
+            details="Missing product-surface readiness evidence keeps strict beta launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "product_surface_readiness_status",
+        "pass"
+        if (
+            schema_version == "product_surface_readiness.v1"
+            and status == "PRODUCT_SURFACE_READINESS_READY"
+            and fail_count == 0
+        )
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {
+            "schema_version": "product_surface_readiness.v1",
+            "status": "PRODUCT_SURFACE_READINESS_READY",
+            "fail_count": 0,
+        },
+        details="Strict beta readiness requires a complete source-intake to dashboard product-entry contract.",
+    )
+
+
+def _evaluate_observability_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "observability_readiness_status",
+            "fail",
+            "missing",
+            {"schema_version": "observability_readiness.v1", "status": "OBSERVABILITY_READINESS_READY"},
+            details="Missing observability-readiness evidence keeps strict production launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    fail_count = int(report.get("fail_count") or 0)
+    schema_version = str(report.get("schema_version", "")).strip()
+    return _make_check(
+        "observability_readiness_status",
+        "pass"
+        if (
+            schema_version == "observability_readiness.v1"
+            and status == "OBSERVABILITY_READINESS_READY"
+            and fail_count == 0
+        )
+        else "fail",
+        {"schema_version": schema_version, "status": status, "fail_count": fail_count},
+        {
+            "schema_version": "observability_readiness.v1",
+            "status": "OBSERVABILITY_READINESS_READY",
+            "fail_count": 0,
+        },
+        details="Strict production readiness requires a complete observability evidence contract.",
+    )
+
+
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
@@ -793,7 +1235,15 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     trial_run_path = Path(args.controlled_trial_run_report).resolve()
     agent_smoke_path = Path(args.agent_smoke_report).resolve()
     doc_sync_path = Path(args.doc_sync_report).resolve()
+    ci_evidence_path = Path(args.ci_evidence_report).resolve()
+    multimodal_quality_gate_path = Path(args.multimodal_quality_gate_report).resolve()
+    real_loop_preflight_path = Path(args.real_loop_preflight_report).resolve()
     operations_readiness_path = Path(args.operations_readiness_report).resolve()
+    secrets_readiness_path = Path(args.secrets_readiness_report).resolve()
+    docker_readiness_path = Path(args.docker_readiness_report).resolve()
+    k8s_readiness_path = Path(args.k8s_readiness_report).resolve()
+    product_surface_readiness_path = Path(args.product_surface_readiness_report).resolve()
+    observability_readiness_path = Path(args.observability_readiness_report).resolve()
     security_report_path = Path(args.security_gate_report).resolve() if str(args.security_gate_report).strip() else None
 
     loaded: dict[str, Any] = {}
@@ -805,7 +1255,21 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         "agent_smoke_report": str(agent_smoke_path),
         "security_gate_report": str(security_report_path) if security_report_path else "",
         "doc_sync_report": str(doc_sync_path),
+        "ci_evidence_report": str(ci_evidence_path) if bool(args.require_ci_evidence) else "",
+        "multimodal_quality_gate_report": (
+            str(multimodal_quality_gate_path) if bool(args.require_multimodal_quality_gate) else ""
+        ),
+        "real_loop_preflight_report": str(real_loop_preflight_path) if bool(args.require_real_loop_preflight) else "",
         "operations_readiness_report": str(operations_readiness_path),
+        "secrets_readiness_report": str(secrets_readiness_path) if bool(args.require_secrets_readiness) else "",
+        "docker_readiness_report": str(docker_readiness_path) if bool(args.require_docker_readiness) else "",
+        "k8s_readiness_report": str(k8s_readiness_path) if bool(args.require_k8s_readiness) else "",
+        "product_surface_readiness_report": (
+            str(product_surface_readiness_path) if bool(args.require_product_surface_readiness) else ""
+        ),
+        "observability_readiness_report": (
+            str(observability_readiness_path) if bool(args.require_observability_readiness) else ""
+        ),
     }
     checks: list[dict[str, Any]] = []
 
@@ -915,6 +1379,222 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
             )
         )
 
+    ci_evidence_report = None
+    if bool(args.require_ci_evidence):
+        if ci_evidence_path.is_file():
+            try:
+                ci_evidence_report = _read_json(ci_evidence_path)
+                loaded["ci_evidence_report"] = ci_evidence_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "ci_evidence_evidence",
+                        "fail",
+                        str(exc),
+                        "readable CI evidence report",
+                        details="Archived CI evidence is required in strict launch evidence mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "ci_evidence_evidence",
+                    "fail",
+                    "missing",
+                    "readable CI evidence report",
+                    details="Archived CI evidence is required in strict launch evidence mode.",
+                )
+            )
+
+    multimodal_quality_gate_report = None
+    if bool(args.require_multimodal_quality_gate):
+        if multimodal_quality_gate_path.is_file():
+            try:
+                multimodal_quality_gate_report = _read_json(multimodal_quality_gate_path)
+                loaded["multimodal_quality_gate_report"] = multimodal_quality_gate_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "multimodal_quality_gate_evidence",
+                        "fail",
+                        str(exc),
+                        "readable multimodal quality gate report",
+                        details="Multimodal quality gate evidence is required in strict launch evidence mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "multimodal_quality_gate_evidence",
+                    "fail",
+                    "missing",
+                    "readable multimodal quality gate report",
+                    details="Multimodal quality gate evidence is required in strict launch evidence mode.",
+                )
+            )
+
+    real_loop_preflight_report = None
+    if bool(args.require_real_loop_preflight):
+        if real_loop_preflight_path.is_file():
+            try:
+                real_loop_preflight_report = _read_json(real_loop_preflight_path)
+                loaded["real_loop_preflight_report"] = real_loop_preflight_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "real_loop_preflight_evidence",
+                        "fail",
+                        str(exc),
+                        "readable GL-64 real-loop manifest preflight report",
+                        details="GL-64 real-loop manifest preflight evidence is required in strict launch mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "real_loop_preflight_evidence",
+                    "fail",
+                    "missing",
+                    "readable GL-64 real-loop manifest preflight report",
+                    details="GL-64 real-loop manifest preflight evidence is required in strict launch mode.",
+                )
+            )
+
+    secrets_readiness_report = None
+    if bool(args.require_secrets_readiness):
+        if secrets_readiness_path.is_file():
+            try:
+                secrets_readiness_report = _read_json(secrets_readiness_path)
+                loaded["secrets_readiness_report"] = secrets_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "secrets_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable secrets readiness report",
+                        details="Secrets-readiness evidence is required in strict secret mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "secrets_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable secrets readiness report",
+                    details="Secrets-readiness evidence is required in strict secret mode.",
+                )
+            )
+
+    docker_readiness_report = None
+    if bool(args.require_docker_readiness):
+        if docker_readiness_path.is_file():
+            try:
+                docker_readiness_report = _read_json(docker_readiness_path)
+                loaded["docker_readiness_report"] = docker_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "docker_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable Docker readiness report",
+                        details="Docker readiness evidence is required in strict Docker mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "docker_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable Docker readiness report",
+                    details="Docker readiness evidence is required in strict Docker mode.",
+                )
+            )
+
+    k8s_readiness_report = None
+    if bool(args.require_k8s_readiness):
+        if k8s_readiness_path.is_file():
+            try:
+                k8s_readiness_report = _read_json(k8s_readiness_path)
+                loaded["k8s_readiness_report"] = k8s_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "k8s_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable Kubernetes readiness report",
+                        details="Kubernetes readiness evidence is required in strict K8s mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "k8s_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable Kubernetes readiness report",
+                    details="Kubernetes readiness evidence is required in strict K8s mode.",
+                )
+            )
+
+    product_surface_readiness_report = None
+    if bool(args.require_product_surface_readiness):
+        if product_surface_readiness_path.is_file():
+            try:
+                product_surface_readiness_report = _read_json(product_surface_readiness_path)
+                loaded["product_surface_readiness_report"] = product_surface_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "product_surface_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable product-surface readiness report",
+                        details="Product-surface readiness evidence is required in strict beta product mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "product_surface_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable product-surface readiness report",
+                    details="Product-surface readiness evidence is required in strict beta product mode.",
+                )
+            )
+
+    observability_readiness_report = None
+    if bool(args.require_observability_readiness):
+        if observability_readiness_path.is_file():
+            try:
+                observability_readiness_report = _read_json(observability_readiness_path)
+                loaded["observability_readiness_report"] = observability_readiness_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "observability_readiness_evidence",
+                        "fail",
+                        str(exc),
+                        "readable observability readiness report",
+                        details="Observability readiness evidence is required in strict production observability mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "observability_readiness_evidence",
+                    "fail",
+                    "missing",
+                    "readable observability readiness report",
+                    details="Observability readiness evidence is required in strict production observability mode.",
+                )
+            )
+
     release_decision, release_source = _extract_release_decision(
         release_report=release_report,
         trial_metrics_report=trial_metrics_report,
@@ -964,9 +1644,33 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
             )
         )
         checks.append(_evaluate_agent_smoke_matrix(agent_smoke_report, trial_run_report=trial_run_report))
+        if bool(args.require_real_agent_smoke):
+            checks.append(
+                _evaluate_agent_smoke_real_evidence(
+                    agent_smoke_report,
+                    trial_run_report=trial_run_report,
+                    minimum_real_agents=int(args.minimum_real_agent_smoke_agents),
+                )
+            )
 
     checks.append(_evaluate_doc_sync(report=doc_sync_report, source=doc_sync_source))
+    if bool(args.require_ci_evidence):
+        checks.append(_evaluate_ci_evidence(ci_evidence_report))
+    if bool(args.require_multimodal_quality_gate):
+        checks.append(_evaluate_multimodal_quality_gate(multimodal_quality_gate_report))
+    if bool(args.require_real_loop_preflight):
+        checks.append(_evaluate_real_loop_preflight(real_loop_preflight_report))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
+    if bool(args.require_secrets_readiness):
+        checks.append(_evaluate_secrets_readiness(secrets_readiness_report))
+    if bool(args.require_docker_readiness):
+        checks.append(_evaluate_docker_readiness(docker_readiness_report))
+    if bool(args.require_k8s_readiness):
+        checks.append(_evaluate_k8s_readiness(k8s_readiness_report))
+    if bool(args.require_product_surface_readiness):
+        checks.append(_evaluate_product_surface_readiness(product_surface_readiness_report))
+    if bool(args.require_observability_readiness):
+        checks.append(_evaluate_observability_readiness(observability_readiness_report))
 
     forbidden_markers: list[dict[str, str]] = []
     for source, payload in loaded.items():
@@ -993,8 +1697,24 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         freshness_paths["security_gate_report"] = security_report_path
     if not args.run_doc_sync:
         freshness_paths["doc_sync_report"] = doc_sync_path
+    if bool(args.require_ci_evidence) and ci_evidence_path.is_file():
+        freshness_paths["ci_evidence_report"] = ci_evidence_path
+    if bool(args.require_multimodal_quality_gate) and multimodal_quality_gate_path.is_file():
+        freshness_paths["multimodal_quality_gate_report"] = multimodal_quality_gate_path
+    if bool(args.require_real_loop_preflight) and real_loop_preflight_path.is_file():
+        freshness_paths["real_loop_preflight_report"] = real_loop_preflight_path
     if operations_readiness_path.is_file():
         freshness_paths["operations_readiness_report"] = operations_readiness_path
+    if bool(args.require_secrets_readiness) and secrets_readiness_path.is_file():
+        freshness_paths["secrets_readiness_report"] = secrets_readiness_path
+    if bool(args.require_docker_readiness) and docker_readiness_path.is_file():
+        freshness_paths["docker_readiness_report"] = docker_readiness_path
+    if bool(args.require_k8s_readiness) and k8s_readiness_path.is_file():
+        freshness_paths["k8s_readiness_report"] = k8s_readiness_path
+    if bool(args.require_product_surface_readiness) and product_surface_readiness_path.is_file():
+        freshness_paths["product_surface_readiness_report"] = product_surface_readiness_path
+    if bool(args.require_observability_readiness) and observability_readiness_path.is_file():
+        freshness_paths["observability_readiness_report"] = observability_readiness_path
     checks.append(_evaluate_freshness(freshness_paths, max_age_hours=float(args.max_evidence_age_hours)))
 
     failed_checks = [check["id"] for check in checks if check.get("blocking") and check.get("status") != "pass"]

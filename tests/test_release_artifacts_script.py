@@ -80,6 +80,8 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
         self.assertEqual(manifest["project"]["name"], "omni-skill-pipeline")
         self.assertEqual(manifest["project"]["version"], self.project_version)
         self.assertTrue(manifest["git"]["commit"])
+        self.assertEqual(manifest["source_archive"]["source_archive_mode"], "git_archive")
+        self.assertTrue(manifest["source_archive"]["source_archive_sha256"])
 
         roles = {item["role"] for item in manifest["artifacts"]}
         self.assertEqual(roles, {"source_archive", "python_wheel", "coverage_xml"})
@@ -120,6 +122,44 @@ class ReleaseArtifactsScriptTests(unittest.TestCase):
 
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn("release notes file is missing", completed.stderr)
+
+    def test_source_tree_fallback_builds_pack_without_git_checkout(self) -> None:
+        source_tree = self.workspace / "source-tree"
+        script_dir = source_tree / "scripts"
+        script_dir.mkdir(parents=True)
+        shutil.copy2(SCRIPT_PATH, script_dir / "release_artifacts.py")
+        shutil.copy2(REPO_ROOT / "pyproject.toml", source_tree / "pyproject.toml")
+        (source_tree / "README.md").write_text("# source tree fallback\n", encoding="utf-8")
+        fallback_dist = source_tree / "dist"
+        fallback_output = source_tree / "release"
+        fallback_dist.mkdir()
+        fallback_output.mkdir()
+        shutil.copy2(self.dist_dir / self.wheel_name, fallback_dist / self.wheel_name)
+
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(script_dir / "release_artifacts.py"),
+                "--release-id",
+                "source-tree-001",
+                "--output-dir",
+                str(fallback_output),
+                "--dist-dir",
+                str(fallback_dist),
+            ],
+            cwd=source_tree,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        manifest = json.loads((fallback_output / "release-manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["source_archive"]["source_archive_mode"], "source_tree_fallback")
+        self.assertIsNone(manifest["source_archive"]["git_commit"])
+        self.assertTrue(manifest["source_archive"]["source_archive_sha256"])
+        self.assertIn(".git", manifest["source_archive"]["fallback_excludes"])
 
 
 if __name__ == "__main__":
