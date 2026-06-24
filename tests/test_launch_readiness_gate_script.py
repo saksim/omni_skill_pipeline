@@ -216,6 +216,26 @@ def _ci_evidence_report(status: str = "CI_EVIDENCE_READY") -> dict[str, object]:
     }
 
 
+def _multimodal_quality_gate_report(status: str = "MULTIMODAL_QUALITY_GATE_READY") -> dict[str, object]:
+    blocked_count = 0 if status == "MULTIMODAL_QUALITY_GATE_READY" else 1
+    return {
+        "schema_version": "multimodal_quality_gate.v1",
+        "status": status,
+        "required_modalities": ["text", "audio", "image", "video"],
+        "covered_required_modalities": ["text", "audio", "image", "video"] if blocked_count == 0 else ["text"],
+        "missing_required_modalities": [] if blocked_count == 0 else ["audio", "image", "video"],
+        "counts": {
+            "quality_record_count": 4,
+            "passed_record_count": 4 - blocked_count,
+            "blocked_record_count": blocked_count,
+            "required_modality_count": 4,
+            "covered_required_modality_count": 4 if blocked_count == 0 else 1,
+            "missing_required_modality_count": 0 if blocked_count == 0 else 3,
+        },
+        "blocking_codes": [] if blocked_count == 0 else ["required_modality_missing:audio"],
+    }
+
+
 def _operations_readiness_report(status: str = "pass") -> dict[str, object]:
     return {
         "schema_version": "operations_readiness.v1",
@@ -308,6 +328,8 @@ def _run_gate(root: Path, *extra_args: str) -> dict[str, object]:
             str(root / "doc-sync.json"),
             "--ci-evidence-report",
             str(root / "ci-evidence.json"),
+            "--multimodal-quality-gate-report",
+            str(root / "multimodal-quality-gate.json"),
             "--operations-readiness-report",
             str(root / "ops-readiness.json"),
             "--secrets-readiness-report",
@@ -599,6 +621,71 @@ class LaunchReadinessGateScriptTests(unittest.TestCase):
 
             self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
             check = next(check for check in report.get("checks", []) if check.get("id") == "ci_evidence_status")
+            self.assertEqual(check.get("status"), "pass")
+
+    def test_require_multimodal_quality_gate_missing_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+
+            report = _run_gate(root, "--require-multimodal-quality-gate")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("multimodal_quality_gate_evidence", report.get("failed_checks", []))
+            self.assertIn("multimodal_quality_gate_status", report.get("failed_checks", []))
+
+    def test_require_multimodal_quality_gate_failed_report_keeps_hold(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(
+                root / "multimodal-quality-gate.json",
+                _multimodal_quality_gate_report("MULTIMODAL_QUALITY_GATE_BLOCKED"),
+            )
+
+            report = _run_gate(root, "--require-multimodal-quality-gate")
+
+            self.assertEqual(report.get("decision"), "HOLD")
+            self.assertIn("multimodal_quality_gate_status", report.get("failed_checks", []))
+            check = next(
+                check for check in report.get("checks", []) if check.get("id") == "multimodal_quality_gate_status"
+            )
+            self.assertEqual(check.get("actual", {}).get("status"), "MULTIMODAL_QUALITY_GATE_BLOCKED")
+            self.assertEqual(check.get("actual", {}).get("missing_required_modality_count"), 3)
+
+    def test_require_multimodal_quality_gate_passes_with_ready_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "CURRENT_STATUS.md").write_text("Release switch decision: `GO`\n", encoding="utf-8")
+            _write_json(root / "release.json", _release_report())
+            _write_json(root / "trial-metrics.json", _trial_metrics_report(loops=10, modalities=4))
+            _write_json(root / "trial-run.json", {"samples": []})
+            _write_json(root / "agent-smoke.json", _agent_smoke_report())
+            _write_json(root / "security.json", _security_report())
+            _write_json(root / "doc-sync.json", _doc_sync_report())
+            _write_json(root / "ops-readiness.json", _operations_readiness_report())
+            _write_json(root / "multimodal-quality-gate.json", _multimodal_quality_gate_report())
+
+            report = _run_gate(root, "--require-multimodal-quality-gate")
+
+            self.assertEqual(report.get("decision"), "READY_FOR_CONTROLLED_BETA")
+            check = next(
+                check for check in report.get("checks", []) if check.get("id") == "multimodal_quality_gate_status"
+            )
             self.assertEqual(check.get("status"), "pass")
 
     def test_dry_run_marker_keeps_hold(self) -> None:

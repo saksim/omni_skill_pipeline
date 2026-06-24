@@ -325,7 +325,7 @@ python scripts\trial_metrics.py --manifest docs\working\status\baselines\real-tr
 最后跑 launch gate：
 
 ```powershell
-python scripts\launch_gate.py --output - --summary-output - --max-evidence-age-hours 0 --print-json
+python scripts\launch_gate.py --require-multimodal-quality-gate --multimodal-quality-gate-report docs\working\status\baselines\real-trial-loop-collection\real-trial-multimodal-quality-gate-report.json --output - --summary-output - --max-evidence-age-hours 0 --print-json
 ```
 
 文档同步检查：
@@ -345,6 +345,7 @@ python scripts\doc_sync.py --output -
 - source trace missing 为 `0`。
 - review trace missing 为 `0`。
 - multimodal quality gate 为 `MULTIMODAL_QUALITY_GATE_READY`，每条 manifest 的 `quality_gate_status=passed`。
+- strict launch gate 的 `multimodal_quality_gate_status=pass`。
 - placeholder field count 为 `0`。
 - `critical_secret_or_pii_leak` 为 `0`。
 

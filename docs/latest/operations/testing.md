@@ -60,6 +60,14 @@ python scripts/launch_gate.py --require-ci-evidence --ci-evidence-report docs/wo
 
 The CI evidence report validates the Python 3.11/3.12 matrix summaries, coverage XML, doc-sync output, release artifacts, release consumer smoke, and launch-gate artifact before strict launch readiness can pass.
 
+Strict launch readiness can also require the multimodal quality gate evidence explicitly:
+
+```bash
+python scripts/launch_gate.py --require-multimodal-quality-gate --multimodal-quality-gate-report docs/working/status/baselines/real-trial-loop-collection/real-trial-multimodal-quality-gate-report.json --print-json
+```
+
+The multimodal quality gate report must be `MULTIMODAL_QUALITY_GATE_READY`, cover text/audio/image/video, have no blocked quality records, and preserve the OCR/ASR fallback and human-review evidence contract.
+
 Docker/Postgres/K8s 验证不属于 `v0.2.5-internal.2` 已完成内部 release 边界。只有在具备 Docker 的 host 上，且目标是基础设施验证时，才使用 `bash scripts/linux_release.sh`。
 
 ## Standard Linux Release Test

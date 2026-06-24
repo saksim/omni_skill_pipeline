@@ -32,6 +32,15 @@ DEFAULT_DOC_SYNC_REPORT = (
 DEFAULT_CI_EVIDENCE_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "ci-matrix" / "ci_evidence_report.json"
 )
+DEFAULT_MULTIMODAL_QUALITY_GATE_REPORT = (
+    REPO_ROOT
+    / "docs"
+    / "working"
+    / "status"
+    / "baselines"
+    / "real-trial-loop-collection"
+    / "real-trial-multimodal-quality-gate-report.json"
+)
 DEFAULT_OPERATIONS_READINESS_REPORT = (
     REPO_ROOT / "docs" / "working" / "status" / "baselines" / "operations-readiness-report.json"
 )
@@ -115,6 +124,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--security-gate-report", default="")
     parser.add_argument("--doc-sync-report", default=str(DEFAULT_DOC_SYNC_REPORT))
     parser.add_argument("--ci-evidence-report", default=str(DEFAULT_CI_EVIDENCE_REPORT))
+    parser.add_argument("--multimodal-quality-gate-report", default=str(DEFAULT_MULTIMODAL_QUALITY_GATE_REPORT))
     parser.add_argument("--operations-readiness-report", default=str(DEFAULT_OPERATIONS_READINESS_REPORT))
     parser.add_argument("--secrets-readiness-report", default=str(DEFAULT_SECRETS_READINESS_REPORT))
     parser.add_argument("--docker-readiness-report", default=str(DEFAULT_DOCKER_READINESS_REPORT))
@@ -150,6 +160,11 @@ def _parse_args() -> argparse.Namespace:
         "--require-ci-evidence",
         action="store_true",
         help="Require a passing archived CI evidence report before strict launch readiness can pass.",
+    )
+    parser.add_argument(
+        "--require-multimodal-quality-gate",
+        action="store_true",
+        help="Require a passing multimodal quality gate report before strict launch readiness can pass.",
     )
     parser.add_argument(
         "--require-docker-readiness",
@@ -919,6 +934,60 @@ def _evaluate_ci_evidence(report: dict[str, Any] | None) -> dict[str, Any]:
     )
 
 
+def _evaluate_multimodal_quality_gate(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return _make_check(
+            "multimodal_quality_gate_status",
+            "fail",
+            "missing",
+            {"schema_version": "multimodal_quality_gate.v1", "status": "MULTIMODAL_QUALITY_GATE_READY"},
+            details="Missing multimodal quality-gate evidence keeps strict launch readiness at HOLD.",
+        )
+    status = str(report.get("status", "")).strip()
+    schema_version = str(report.get("schema_version", "")).strip()
+    counts = report.get("counts", {})
+    if not isinstance(counts, dict):
+        counts = {}
+    blocked_record_count = int(counts.get("blocked_record_count") or 0)
+    missing_required_modality_count = int(counts.get("missing_required_modality_count") or 0)
+    blocking_codes = report.get("blocking_codes", [])
+    missing_required_modalities = report.get("missing_required_modalities", [])
+    if not isinstance(blocking_codes, list):
+        blocking_codes = []
+    if not isinstance(missing_required_modalities, list):
+        missing_required_modalities = []
+    passed = (
+        schema_version == "multimodal_quality_gate.v1"
+        and status == "MULTIMODAL_QUALITY_GATE_READY"
+        and blocked_record_count == 0
+        and missing_required_modality_count == 0
+        and not blocking_codes
+    )
+    return _make_check(
+        "multimodal_quality_gate_status",
+        "pass" if passed else "fail",
+        {
+            "schema_version": schema_version,
+            "status": status,
+            "blocked_record_count": blocked_record_count,
+            "missing_required_modality_count": missing_required_modality_count,
+            "missing_required_modalities": missing_required_modalities,
+            "blocking_codes": blocking_codes,
+        },
+        {
+            "schema_version": "multimodal_quality_gate.v1",
+            "status": "MULTIMODAL_QUALITY_GATE_READY",
+            "blocked_record_count": 0,
+            "missing_required_modality_count": 0,
+            "blocking_codes": [],
+        },
+        details=(
+            "Strict launch readiness requires text/audio/image/video quality evidence with passing "
+            "beta thresholds, approved human review, safe OCR/ASR fallback handling, and no critical issues."
+        ),
+    )
+
+
 def _evaluate_docker_readiness(report: dict[str, Any] | None) -> dict[str, Any]:
     if report is None:
         return _make_check(
@@ -1065,6 +1134,7 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     agent_smoke_path = Path(args.agent_smoke_report).resolve()
     doc_sync_path = Path(args.doc_sync_report).resolve()
     ci_evidence_path = Path(args.ci_evidence_report).resolve()
+    multimodal_quality_gate_path = Path(args.multimodal_quality_gate_report).resolve()
     operations_readiness_path = Path(args.operations_readiness_report).resolve()
     secrets_readiness_path = Path(args.secrets_readiness_report).resolve()
     docker_readiness_path = Path(args.docker_readiness_report).resolve()
@@ -1083,6 +1153,9 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         "security_gate_report": str(security_report_path) if security_report_path else "",
         "doc_sync_report": str(doc_sync_path),
         "ci_evidence_report": str(ci_evidence_path) if bool(args.require_ci_evidence) else "",
+        "multimodal_quality_gate_report": (
+            str(multimodal_quality_gate_path) if bool(args.require_multimodal_quality_gate) else ""
+        ),
         "operations_readiness_report": str(operations_readiness_path),
         "secrets_readiness_report": str(secrets_readiness_path) if bool(args.require_secrets_readiness) else "",
         "docker_readiness_report": str(docker_readiness_path) if bool(args.require_docker_readiness) else "",
@@ -1226,6 +1299,33 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
                     "missing",
                     "readable CI evidence report",
                     details="Archived CI evidence is required in strict launch evidence mode.",
+                )
+            )
+
+    multimodal_quality_gate_report = None
+    if bool(args.require_multimodal_quality_gate):
+        if multimodal_quality_gate_path.is_file():
+            try:
+                multimodal_quality_gate_report = _read_json(multimodal_quality_gate_path)
+                loaded["multimodal_quality_gate_report"] = multimodal_quality_gate_report
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                checks.append(
+                    _make_check(
+                        "multimodal_quality_gate_evidence",
+                        "fail",
+                        str(exc),
+                        "readable multimodal quality gate report",
+                        details="Multimodal quality gate evidence is required in strict launch evidence mode.",
+                    )
+                )
+        else:
+            checks.append(
+                _make_check(
+                    "multimodal_quality_gate_evidence",
+                    "fail",
+                    "missing",
+                    "readable multimodal quality gate report",
+                    details="Multimodal quality gate evidence is required in strict launch evidence mode.",
                 )
             )
 
@@ -1425,6 +1525,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
     checks.append(_evaluate_doc_sync(report=doc_sync_report, source=doc_sync_source))
     if bool(args.require_ci_evidence):
         checks.append(_evaluate_ci_evidence(ci_evidence_report))
+    if bool(args.require_multimodal_quality_gate):
+        checks.append(_evaluate_multimodal_quality_gate(multimodal_quality_gate_report))
     checks.append(_evaluate_operations_readiness(operations_readiness_report))
     if bool(args.require_secrets_readiness):
         checks.append(_evaluate_secrets_readiness(secrets_readiness_report))
@@ -1464,6 +1566,8 @@ def _build_report(args: argparse.Namespace) -> dict[str, Any]:
         freshness_paths["doc_sync_report"] = doc_sync_path
     if bool(args.require_ci_evidence) and ci_evidence_path.is_file():
         freshness_paths["ci_evidence_report"] = ci_evidence_path
+    if bool(args.require_multimodal_quality_gate) and multimodal_quality_gate_path.is_file():
+        freshness_paths["multimodal_quality_gate_report"] = multimodal_quality_gate_path
     if operations_readiness_path.is_file():
         freshness_paths["operations_readiness_report"] = operations_readiness_path
     if bool(args.require_secrets_readiness) and secrets_readiness_path.is_file():
