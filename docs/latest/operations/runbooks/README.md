@@ -20,3 +20,4 @@
 - GitHub publication 使用 `Release` workflow。它会生成 source、wheel、coverage、manifest、summary 和 `SHA256SUMS`。
 - 严格 container/API release 证据优先使用 `scripts/linux_release.sh`，不要手动复制分散命令。该脚本会输出包含日志、退出码、baseline 和 summary 的 `release-artifacts-<release_id>.tar.gz`。
 - `v0.2.5-internal.2` 是当前内部 dogfood 发版候选边界。真实数据接入路径记录在 `real-data-intake-and-validation.md`；非基础设施加固路径记录在 `artifact-encryption.md`；Docker、Postgres、K8s 和 external real-loop gate 是独立门禁。
+- 外部 Beta 放行前必须让 `scripts/launch_gate.py` 的 strict evidence checks 通过。当前最关键的是真实 loop 证据：10 个槽位 manifest、`text/audio/image/video` 覆盖、GL-64 preflight READY、多模态质量门禁 READY 和真实 agent smoke 记录。

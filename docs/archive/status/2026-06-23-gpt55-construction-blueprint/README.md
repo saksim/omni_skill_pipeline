@@ -3,6 +3,8 @@
 生成日期：2026-06-23  
 适用项目：`omni_skill_pipeline` / `v0.2.5-internal.2` 评估后续施工
 
+归档状态：本目录已从 `docs/working/2026-06-23/` 迁移到 `docs/archive/status/2026-06-23-gpt55-construction-blueprint/`。它保留 2026-06-23 的施工蓝图和验收口径，只用于追溯，不再作为当前施工入口。当前操作入口以 `docs/latest/` 和 `docs/working/status/CURRENT_STATUS.md` 为准。
+
 ## 使用方式
 
 建议按以下顺序阅读：

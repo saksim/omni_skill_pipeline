@@ -15,6 +15,7 @@ Omni Skill Pipeline 用于把文本、音频、图像、视频、表格和混合
 - 审核控制：已包含质量评分、review policy、review task、review feedback、reviewer packet 和 review queue 操作。
 - 发布交付：已包含 GitHub Release 工件包、校验和、可安装 wheel、发布说明和 release consumer smoke（发布消费者冒烟验证）。
 - 内部 dogfood 加固：已包含 live API smoke 证据，以及本地 file-backed artifact 的可选 Fernet 加密。
+- 上线门禁：已包含 release switch、trial metrics、agent smoke、CI evidence、多模态质量、GL-64 real-loop preflight、Docker/Postgres/K8s/secrets/product/observability readiness 的显式检查入口；这些门禁不会伪造真实外部证据。
 
 ## 快速开始
 
@@ -77,4 +78,4 @@ python scripts/ci.py --isolate-test-files --coverage-fail-under 50 --coverage-xm
 
 ## 当前工程判断
 
-内部 dogfood 路径已经可供内部使用。广义外部上线 gate 仍保持 `HOLD`，原因是 launch-gate-eligible 的真实业务闭环证据仍不足。后续拿到真实数据时，先按 `docs/latest/operations/runbooks/real-data-intake-and-validation.md` 投递本地原始数据和脱敏 manifest，再运行 GL-64、GL-13、trial metrics 与 launch gate。Docker、Postgres、K8s、Vault/KMS、生产 key rotation、OCR hardening 和外部真实闭环采集，仍不属于当前内部版本已完成边界，除非后续 release 明确关闭这些能力。
+内部 dogfood 路径已经可供内部使用。广义外部上线 gate 仍保持 `HOLD`，原因是 launch-gate-eligible 的真实业务闭环证据仍不足：当前仓库没有 10 个可上线真实 loop，也没有 text/audio/image/video 四类真实模态覆盖。后续拿到真实数据或公开 demo 闭环样本时，先按 `docs/latest/operations/runbooks/real-data-intake-and-validation.md` 投递本地原始数据和脱敏 manifest，再运行 GL-64、GL-13、trial metrics 与 launch gate。Docker、Postgres、K8s、Vault/KMS、生产 key rotation、OCR hardening 和外部真实闭环采集，仍不属于当前内部版本已完成边界，除非后续 release 明确关闭这些能力。

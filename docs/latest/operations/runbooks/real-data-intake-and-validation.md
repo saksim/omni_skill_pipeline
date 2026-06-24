@@ -12,6 +12,22 @@
 - 没有真实 source trace、review trace 和 agent smoke 记录时，不允许设置 `launch_gate_eligible=true`。
 - `fixture`、`mock`、`template`、`placeholder`、未审核产物和人工未确认结果永远不能伪装成真实上线证据。
 
+## 需要操作者提供什么
+
+当前阻塞不是“还缺一个代码功能”，而是 launch gate 缺少可验证的真实闭环证据。操作者不一定要提供商业客户数据；可以先提供公开或自有 demo 样本，但每个样本必须形成完整闭环。
+
+最小交付是 10 个槽位，覆盖 `text/audio/image/video`：
+
+- 原始 source bundle：放在本地 `data/real-inputs/<batch-id>/`，不提交仓库。
+- `task.md`：这个输入要完成什么业务任务。
+- `expected.md`：什么算做对，必须命中哪些点，必须拒绝哪些内容。
+- `review.md`：人工审阅记录和是否批准。
+- `run-evidence.json`：本地运行耗时、产物数、provider 调用、重试和成本估算。
+- `quality-evidence.json`：多模态质量评分、OCR/ASR 降级说明和人审结论。
+- 脱敏 manifest：只提交可追溯引用、hash、review id、quality gate ref 和 agent smoke ref，不提交原文、绝对路径、客户信息或凭证。
+
+如果你只能先给公开 demo 闭环，目标是解除“没有真实闭环证据”的 HOLD；如果要证明业务 Beta/GA 准备度，则需要授权业务数据闭环。
+
 ## 数据怎么给项目
 
 推荐由操作者交付一个真实数据批次目录，目录名使用日期和批次号：
