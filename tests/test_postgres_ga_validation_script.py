@@ -60,6 +60,9 @@ class PostgresGaValidationScriptTests(unittest.TestCase):
             self.assertIn('scripts/bench_dual_write.py', completed.stdout)
 
             report = json.loads(output_path.read_text(encoding='utf-8'))
+            self.assertEqual(report.get('schema_version'), 'postgres_ga_validation.v1')
+            self.assertEqual(report.get('execution_mode'), 'dry_run')
+            self.assertEqual(report.get('decision'), 'DRY_RUN')
             self.assertEqual(report.get('stage_count'), 5)
             self.assertEqual(
                 [item.get('name') for item in report.get('stages', [])],
@@ -69,6 +72,48 @@ class PostgresGaValidationScriptTests(unittest.TestCase):
                     'dual_write_contract',
                     'dual_write_integration',
                     'dual_write_benchmark',
+                ],
+            )
+
+    def test_script_execution_writes_stage_results_for_non_postgres_stage(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            output_path = Path(tmp_dir) / 'postgres-ga-report.json'
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    '--python',
+                    sys.executable,
+                    '--stages',
+                    'dual_write_contract',
+                    '--output',
+                    str(output_path),
+                ],
+                cwd=REPO_ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            report = json.loads(output_path.read_text(encoding='utf-8'))
+            self.assertEqual(report.get('schema_version'), 'postgres_ga_validation.v1')
+            self.assertEqual(report.get('execution_mode'), 'executed')
+            self.assertEqual(report.get('decision'), 'PASS')
+            self.assertEqual(report.get('blocking_codes'), [])
+            self.assertEqual(
+                report.get('stage_results'),
+                [
+                    {
+                        'name': 'dual_write_contract',
+                        'status': 'pass',
+                        'exit_code': 0,
+                        'command': [
+                            sys.executable,
+                            '-m',
+                            'unittest',
+                            'tests.test_dual_write_repository.DualWriteRepositoryTests',
+                        ],
+                    }
                 ],
             )
 

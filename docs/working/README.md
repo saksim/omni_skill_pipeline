@@ -17,4 +17,8 @@
 - [当前状态](status/CURRENT_STATUS.md)
 - [上线 readiness 总计划](status/launch-readiness-master-plan.md)
 
+已归档的阶段性施工包：
+
+- [2026-06-23 GPT5.5 施工蓝图归档](../archive/status/2026-06-23-gpt55-construction-blueprint/README.md)
+
 当内容成为已发布使用手册时，应迁移或同步到 `docs/latest/`。当内容记录某次发布决策时，应迁移或同步到 `docs/releases/`。当内容只保留历史追溯价值时，应迁移到 `docs/archive/`。

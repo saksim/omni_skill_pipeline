@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: omni-skill-pipeline-config
+  labels:
+    app.kubernetes.io/name: omni-skill-pipeline
+data:
+  OMNI_REPO_ROOT: /app
+  OMNI_LOG_LEVEL: INFO
+  OMNI_ARTIFACT_ENCRYPTION_KEY_ID: default

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: omni-skill-pipeline
+  labels:
+    app.kubernetes.io/name: omni-skill-pipeline
+    app.kubernetes.io/part-of: omni-skill-pipeline

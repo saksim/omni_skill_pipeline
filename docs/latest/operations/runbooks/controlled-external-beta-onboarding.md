@@ -16,6 +16,16 @@ This runbook does not declare GA. It is only for controlled external Beta pre-pr
 - Trial metrics collection
 - Launch readiness gate decision check
 
+Minimum beta product workflow terms used by readiness checks:
+
+- source intake: submit text/audio/image/tabular/video/corpus material through the documented CLI or API path.
+- job run: record the distill command or API request, response status, generated bundle path, and review routing fields.
+- generated skill preview: inspect the generated `SKILL.md`, graph metadata, publications, and review status before approval.
+- human review: claim and close or decide a review queue task with an identified reviewer.
+- export/validate: run `export-skill` and then `validate-skill` against the portable package.
+- evidence/manifest: preserve manifest validation, run evidence, review evidence, security gate, metrics, and launch gate output.
+- launch gate dashboard: use `POST /v1/console/views` to inspect trial, review, skill registry, metrics, security, and cost state from one operator surface.
+
 ## Prerequisites
 
 - Python 3.11 environment with `requirements-dev.txt` installed

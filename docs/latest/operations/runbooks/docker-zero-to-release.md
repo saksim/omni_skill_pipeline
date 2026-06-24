@@ -68,7 +68,7 @@ the `postgres_preflight` stage fails before the release switch.
 
 ## Python Contract
 
-- 项目声明：`pyproject.toml` 中 `requires-python = ">=3.11"`。
+- 项目声明：`pyproject.toml` 中 `requires-python = ">=3.11,<3.13"`。
 - 当前运行镜像：`Dockerfile` 使用 `python:3.11-slim`。
 - 当前测试镜像：`Dockerfile.test` 也使用 `python:3.11-slim`。
 - 魔尊确认的 Python 3.11 与项目要求一致；除非后续 `pyproject.toml` 提高版本，否则线上按 Python 3.11 执行。

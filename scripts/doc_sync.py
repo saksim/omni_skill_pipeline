@@ -18,6 +18,8 @@ DEFAULT_CLI_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'cli.md'
 DEFAULT_API_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'api.md'
 DEFAULT_WORKER_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'worker.md'
 DEFAULT_TESTING_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'testing.md'
+DEFAULT_SCRIPT_MAP_DOC_PATH = REPO_ROOT / 'docs' / 'latest' / 'operations' / 'script-name-map.md'
+DEFAULT_SCRIPTS_DIR = REPO_ROOT / 'scripts'
 DEFAULT_ARCH_MIGRATION_DOC_PATH = (
     REPO_ROOT / 'docs' / 'latest' / 'architecture' / 'v1-to-v2-migration-guide.md'
 )
@@ -62,6 +64,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument('--api-doc', default=str(DEFAULT_API_DOC_PATH), help='API operation doc path.')
     parser.add_argument('--worker-doc', default=str(DEFAULT_WORKER_DOC_PATH), help='Worker operation doc path.')
     parser.add_argument('--testing-doc', default=str(DEFAULT_TESTING_DOC_PATH), help='Testing operation doc path.')
+    parser.add_argument('--script-map-doc', default=str(DEFAULT_SCRIPT_MAP_DOC_PATH), help='Script name map doc path.')
+    parser.add_argument('--scripts-dir', default=str(DEFAULT_SCRIPTS_DIR), help='Directory containing operational scripts.')
     parser.add_argument(
         '--arch-migration-doc',
         default=str(DEFAULT_ARCH_MIGRATION_DOC_PATH),
@@ -275,6 +279,30 @@ def _check_stale_pending_tp_markers(
     }
 
 
+def _check_script_name_map_coverage(*, scripts_dir: Path, script_map_doc_text: str) -> dict[str, Any]:
+    if not scripts_dir.is_dir():
+        return {
+            'name': 'script_name_map_coverage',
+            'status': 'fail',
+            'details': {
+                'scripts_dir': str(scripts_dir),
+                'missing': [],
+                'error': 'scripts_dir_missing',
+            },
+        }
+    scripts = sorted(path.name for path in scripts_dir.glob('*.py') if path.is_file())
+    missing = [script for script in scripts if script not in script_map_doc_text]
+    return {
+        'name': 'script_name_map_coverage',
+        'status': 'pass' if not missing else 'fail',
+        'details': {
+            'scripts_dir': str(scripts_dir),
+            'script_count': len(scripts),
+            'missing': missing,
+        },
+    }
+
+
 def _check_migration_guide_completeness(arch_doc_text: str, ops_doc_text: str) -> dict[str, Any]:
     required_arch_headings = [
         '## 3. 迁移步骤',
@@ -432,7 +460,7 @@ def _check_docker_zero_to_release_runbook_completeness(
     required_markers = [
         'Bare Linux',
         'Docker Engine',
-        'requires-python = ">=3.11"',
+        'requires-python = ">=3.11,<3.13"',
         'python:3.11-slim',
         'Dockerfile.test',
         'tar -czf',
@@ -561,6 +589,7 @@ def main() -> int:
         'api_doc': Path(args.api_doc).resolve(),
         'worker_doc': Path(args.worker_doc).resolve(),
         'testing_doc': Path(args.testing_doc).resolve(),
+        'script_map_doc': Path(args.script_map_doc).resolve(),
         'arch_migration_doc': Path(args.arch_migration_doc).resolve(),
         'ops_migration_doc': Path(args.ops_migration_doc).resolve(),
         'release_standard_doc': Path(args.release_standard_doc).resolve(),
@@ -581,6 +610,7 @@ def main() -> int:
         api_doc_text = _read_utf8(paths['api_doc'])
         worker_doc_text = _read_utf8(paths['worker_doc'])
         testing_doc_text = _read_utf8(paths['testing_doc'])
+        script_map_doc_text = _read_utf8(paths['script_map_doc'])
         arch_migration_doc_text = _read_utf8(paths['arch_migration_doc'])
         ops_migration_doc_text = _read_utf8(paths['ops_migration_doc'])
         release_standard_doc_text = _read_utf8(paths['release_standard_doc'])
@@ -597,6 +627,10 @@ def main() -> int:
                 _check_api_ops_contract(api_doc_text),
                 _check_worker_kinds(worker_source_text, worker_doc_text),
                 _check_recent_tp_mentions(tp_source_text, testing_doc_text),
+                _check_script_name_map_coverage(
+                    scripts_dir=Path(args.scripts_dir).resolve(),
+                    script_map_doc_text=script_map_doc_text,
+                ),
                 _check_migration_guide_completeness(arch_migration_doc_text, ops_migration_doc_text),
                 _check_release_switch_standard(release_standard_doc_text, release_history_doc_text),
                 _check_launch_beta_runbook_completeness(launch_beta_runbook_text),

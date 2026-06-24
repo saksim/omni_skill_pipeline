@@ -120,6 +120,10 @@ python -m omni_skill_pipeline.cli validate-skill \
   --max-lines 500
 ```
 
+`validate-skill` defaults to rejecting `draft` and `review_pending` packages with
+`REVIEW_APPROVAL_MISSING`. Use `--allow-draft` only for local development checks;
+it is not valid release or launch-gate evidence.
+
 Exit code contract:
 
 - `0`: package passed usability/safety validation.

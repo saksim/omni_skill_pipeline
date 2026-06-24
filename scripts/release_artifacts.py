@@ -17,6 +17,28 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RELEASE_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
+SOURCE_TREE_FALLBACK_EXCLUDES = (
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "dist",
+    "build",
+    "node_modules",
+    "release-artifacts",
+)
+SOURCE_TREE_FALLBACK_SUFFIX_EXCLUDES = (
+    ".egg-info",
+)
+SOURCE_TREE_FALLBACK_FILE_SUFFIX_EXCLUDES = (
+    ".pyc",
+)
+SOURCE_TREE_FALLBACK_FILE_EXCLUDES = (
+    ".DS_Store",
+)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -60,9 +82,16 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _run_git(args: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
+    env = dict(os.environ)
+    env["GIT_CEILING_DIRECTORIES"] = os.pathsep.join(
+        item
+        for item in (str(REPO_ROOT.parent), env.get("GIT_CEILING_DIRECTORIES", ""))
+        if item
+    )
     return subprocess.run(
         ["git", *args],
         cwd=REPO_ROOT,
+        env=env,
         check=check,
         text=True,
         stdout=subprocess.PIPE,
@@ -116,7 +145,7 @@ def _validate_release_id(value: str) -> str:
     return release_id
 
 
-def _archive_source(source_ref: str, output_dir: Path, release_id: str) -> Path:
+def _archive_source(source_ref: str, output_dir: Path, release_id: str) -> tuple[Path, dict[str, Any]]:
     archive_path = output_dir / ("omni-skill-pipeline-source-%s.tar.gz" % release_id)
     prefix = "omni-skill-pipeline-%s/" % release_id
     completed = _run_git(
@@ -130,9 +159,82 @@ def _archive_source(source_ref: str, output_dir: Path, release_id: str) -> Path:
         check=False,
     )
     if completed.returncode != 0:
-        raise RuntimeError("git archive failed: %s" % (completed.stderr.strip() or completed.stdout.strip()))
+        return _archive_source_tree(
+            archive_path=archive_path,
+            output_dir=output_dir,
+            prefix=prefix,
+            git_error=completed.stderr.strip() or completed.stdout.strip(),
+        )
     _assert_tar_readable(archive_path)
-    return archive_path
+    return archive_path, {
+        "source_archive_mode": "git_archive",
+        "git_archive_error": "",
+        "fallback_excludes": [],
+    }
+
+
+def _archive_source_tree(
+    *,
+    archive_path: Path,
+    output_dir: Path,
+    prefix: str,
+    git_error: str,
+) -> tuple[Path, dict[str, Any]]:
+    excluded_roots = set(SOURCE_TREE_FALLBACK_EXCLUDES)
+    resolved_output_dir = output_dir.resolve()
+    resolved_archive_path = archive_path.resolve()
+    with tarfile.open(archive_path, "w:gz") as archive:
+        for path in sorted(REPO_ROOT.rglob("*")):
+            resolved_path = path.resolve()
+            if _is_source_tree_fallback_excluded(
+                path,
+                resolved_path=resolved_path,
+                output_dir=resolved_output_dir,
+                archive_path=resolved_archive_path,
+                excluded_roots=excluded_roots,
+            ):
+                continue
+            arcname = "%s%s" % (prefix, path.relative_to(REPO_ROOT).as_posix())
+            archive.add(path, arcname=arcname, recursive=False)
+    _assert_tar_readable(archive_path)
+    return archive_path, {
+        "source_archive_mode": "source_tree_fallback",
+        "git_archive_error": git_error,
+        "fallback_excludes": [
+            *SOURCE_TREE_FALLBACK_EXCLUDES,
+            *("*%s" % item for item in SOURCE_TREE_FALLBACK_SUFFIX_EXCLUDES),
+            *("*%s" % item for item in SOURCE_TREE_FALLBACK_FILE_SUFFIX_EXCLUDES),
+            *SOURCE_TREE_FALLBACK_FILE_EXCLUDES,
+        ],
+    }
+
+
+def _is_source_tree_fallback_excluded(
+    path: Path,
+    *,
+    resolved_path: Path,
+    output_dir: Path,
+    archive_path: Path,
+    excluded_roots: set[str],
+) -> bool:
+    if resolved_path == archive_path:
+        return True
+    try:
+        resolved_path.relative_to(output_dir)
+        return True
+    except ValueError:
+        pass
+    relative = path.relative_to(REPO_ROOT)
+    parts = relative.parts
+    if any(part in excluded_roots for part in parts):
+        return True
+    if any(part.endswith(SOURCE_TREE_FALLBACK_SUFFIX_EXCLUDES) for part in parts):
+        return True
+    if path.is_file() and path.name in SOURCE_TREE_FALLBACK_FILE_EXCLUDES:
+        return True
+    if path.is_file() and path.suffix in SOURCE_TREE_FALLBACK_FILE_SUFFIX_EXCLUDES:
+        return True
+    return False
 
 
 def _assert_tar_readable(path: Path) -> None:
@@ -205,10 +307,15 @@ def _write_manifest(
     release_id: str,
     source_ref: str,
     artifact_records: list[dict[str, Any]],
+    source_archive_context: dict[str, Any],
 ) -> Path:
     metadata = _project_metadata()
     commit = _git_stdout(["rev-parse", source_ref], default="")
     status = _git_stdout(["status", "--short"], default="")
+    source_archive_record = next(
+        (item for item in artifact_records if item.get("role") == "source_archive"),
+        {},
+    )
     manifest = {
         "schema_version": "omni.release_artifacts.v1",
         "release_id": release_id,
@@ -220,6 +327,14 @@ def _write_manifest(
             "short_commit": commit[:12],
             "branch": _git_stdout(["rev-parse", "--abbrev-ref", "HEAD"], default=""),
             "dirty": bool(status),
+        },
+        "source_archive": {
+            "source_archive_mode": str(source_archive_context.get("source_archive_mode", "")),
+            "git_commit": commit or None,
+            "git_dirty": bool(status),
+            "source_archive_sha256": str(source_archive_record.get("sha256", "")),
+            "fallback_excludes": list(source_archive_context.get("fallback_excludes", [])),
+            "git_archive_error": str(source_archive_context.get("git_archive_error", "")),
         },
         "workflow": {
             "github_run_id": os.environ.get("GITHUB_RUN_ID", ""),
@@ -315,7 +430,7 @@ def build_release_pack(args: argparse.Namespace) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     artifact_records: list[dict[str, Any]] = []
-    source_archive = _archive_source(str(args.source_ref), output_dir, release_id)
+    source_archive, source_archive_context = _archive_source(str(args.source_ref), output_dir, release_id)
     artifact_records.append(_artifact_record(source_archive, role="source_archive", output_dir=output_dir))
 
     dist_dir = Path(args.dist_dir)
@@ -335,6 +450,7 @@ def build_release_pack(args: argparse.Namespace) -> Path:
         release_id=release_id,
         source_ref=str(args.source_ref),
         artifact_records=artifact_records,
+        source_archive_context=source_archive_context,
     )
     _write_summary(
         output_dir,

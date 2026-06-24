@@ -372,6 +372,26 @@ class CliCorpusCommandTests(unittest.TestCase):
             self.assertIn('status=fail', output)
             self.assertIn('failure_codes=REVIEW_APPROVAL_MISSING', output)
 
+    def test_validate_skill_command_allows_draft_only_with_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            package_dir = self._write_validated_package(root, approved=False)
+            exit_code, output = _run_cli(
+                [
+                    'validate-skill',
+                    '--package',
+                    str(package_dir),
+                    '--max-lines',
+                    '500',
+                    '--allow-draft',
+                ],
+                _CapturingService(),
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn('status=pass', output)
+            self.assertNotIn('failure_codes=', output)
+
     def test_review_queue_list_command_outputs_items(self) -> None:
         service = _CapturingService()
         exit_code, output = _run_cli(
